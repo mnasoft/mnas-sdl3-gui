@@ -68,22 +68,29 @@
     
     ;; Draw different patterns based on character
     (cond
-      ((char= ch #\A)
+      ;; Vowels - vertical lines
+      ((or (char= ch #\A) (char= ch #\E) (char= ch #\I) (char= ch #\O) (char= ch #\U))
        (draw-vertical-lines renderer x y rect-height r g b a))
-      ((char= ch #\B)
+      ;; Consonants - horizontal lines
+      ((or (char= ch #\B) (char= ch #\C) (char= ch #\D) (char= ch #\F) (char= ch #\G)
+           (char= ch #\H) (char= ch #\J) (char= ch #\K) (char= ch #\L) (char= ch #\M)
+           (char= ch #\N) (char= ch #\P) (char= ch #\Q) (char= ch #\R) (char= ch #\S)
+           (char= ch #\T) (char= ch #\V) (char= ch #\W) (char= ch #\X) (char= ch #\Y)
+           (char= ch #\Z))
        (draw-horizontal-lines renderer x y rect-width r g b a))
-      ((char= ch #\0)
+      ;; Numbers - diamond or cross
+      ((or (char= ch #\0) (char= ch #\1) (char= ch #\2) (char= ch #\3) (char= ch #\4)
+           (char= ch #\5) (char= ch #\6) (char= ch #\7) (char= ch #\8) (char= ch #\9))
        (draw-diamond renderer x y rect-width rect-height r g b a))
+      ;; Space - just leave it empty
+      ((char= ch #\Space)
+       nil)
+      ;; Other characters - cross pattern
       (t
-       ;; Draw a dot for any other character
-       (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
-       (let ((dot (make-instance 'sdl3:frect
-                                 :%x (float (+ x 2) 1.0) :%y (float (+ y 4) 1.0)
-                                 :%w 2.0 :%h 2.0)))
-         (sdl3:render-fill-rect renderer dot))))))
+       (draw-cross renderer x y rect-width rect-height r g b a)))))
 
 (defun draw-vertical-lines (renderer x y height r g b a)
-  "Draw vertical lines pattern (for 'A')."
+  "Draw vertical lines pattern (for vowels)."
   (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
   (sdl3:render-line renderer (float (+ x 1) 1.0) (float y 1.0)
                     (float (+ x 1) 1.0) (float (+ y height) 1.0))
@@ -91,12 +98,14 @@
                     (float (+ x 4) 1.0) (float (+ y height) 1.0)))
 
 (defun draw-horizontal-lines (renderer x y width r g b a)
-  "Draw horizontal lines pattern (for 'B')."
+  "Draw horizontal lines pattern (for consonants)."
   (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
   (sdl3:render-line renderer (float x 1.0) (float (+ y 2) 1.0)
                     (float (+ x width) 1.0) (float (+ y 2) 1.0))
   (sdl3:render-line renderer (float x 1.0) (float (+ y 5) 1.0)
-                    (float (+ x width) 1.0) (float (+ y 5) 1.0)))
+                    (float (+ x width) 1.0) (float (+ y 5) 1.0))
+  (sdl3:render-line renderer (float x 1.0) (float (+ y 8) 1.0)
+                    (float (+ x width) 1.0) (float (+ y 8) 1.0)))
 
 (defun draw-diamond (renderer x y width height r g b a)
   "Draw diamond pattern (for numbers)."
@@ -111,6 +120,16 @@
                       (float x 1.0) (float cy 1.0))
     (sdl3:render-line renderer (float x 1.0) (float cy 1.0)
                       (float cx 1.0) (float y 1.0))))
+
+(defun draw-cross (renderer x y width height r g b a)
+  "Draw cross pattern (for special characters)."
+  (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
+  (let ((cx (+ x (/ width 2)))
+        (cy (+ y (/ height 2))))
+    (sdl3:render-line renderer (float x 1.0) (float y 1.0)
+                      (float (+ x width) 1.0) (float (+ y height) 1.0))
+    (sdl3:render-line renderer (float (+ x width) 1.0) (float y 1.0)
+                      (float x 1.0) (float (+ y height) 1.0))))
 
 (defun render-widget (renderer widget)
   "Render a widget using appropriate method based on widget type."
