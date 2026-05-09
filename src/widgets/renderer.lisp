@@ -163,7 +163,19 @@
 
 (defmethod render-widget-with-style ((style widget-style) renderer (widget edit-box))
   (declare (ignore style))
-  (render-edit-box renderer widget))
+  (render-edit-box-flat renderer widget))
+
+(defmethod render-widget-with-style ((style flat-widget-style) renderer (widget edit-box))
+  (declare (ignore style))
+  (render-edit-box-flat renderer widget))
+
+(defmethod render-widget-with-style ((style windows-widget-style) renderer (widget edit-box))
+  (declare (ignore style))
+  (render-edit-box-windows renderer widget))
+
+(defmethod render-widget-with-style ((style motif-widget-style) renderer (widget edit-box))
+  (declare (ignore style))
+  (render-edit-box-motif renderer widget))
 
 (defmethod render-widget-with-style ((style widget-style) renderer (widget list-box))
   (declare (ignore style))
@@ -301,29 +313,60 @@
             (* cursor +font-char-width+)))
         (* cursor +font-char-width+))))
 
-(defun render-edit-box (renderer widget)
-  "Render an edit box widget."
-  ;; Background
-  (fill-rect renderer (widget-x widget) (widget-y widget)
-             (widget-width widget) (widget-height widget)
-             (if (widget-focused widget) '(255 255 255 255) '(245 245 245 255)))
-  ;; Border
-  (stroke-rect renderer (widget-x widget) (widget-y widget)
-               (widget-width widget) (widget-height widget)
-               (if (widget-focused widget) +color-focus-border+ +color-border+)
-               2)
-  ;; Text
+(defun render-edit-box-text-and-cursor (renderer widget)
+  "Render edit-box text and cursor for current widget state."
   (render-text renderer (edit-box-text widget)
                (+ (widget-x widget) +widget-padding+)
                (+ (widget-y widget) (/ (- (widget-height widget) +font-text-height+) 2))
                +color-text+)
-  ;; Cursor
   (when (widget-focused widget)
     (let ((cursor-x (+ (widget-x widget) +widget-padding+
                        (edit-box-cursor-pixel-offset widget))))
       (sdl3:set-render-draw-color renderer 0 0 0 255)
       (sdl3:render-line renderer (float cursor-x 1.0) (float (+ (widget-y widget) 2) 1.0)
                         (float cursor-x 1.0) (float (- (+ (widget-y widget) (widget-height widget)) 2) 1.0)))))
+
+(defun render-edit-box-flat (renderer widget)
+  "Render edit-box in flat style."
+  (fill-rect renderer (widget-x widget) (widget-y widget)
+             (widget-width widget) (widget-height widget)
+             (if (widget-focused widget) '(255 255 255 255) '(245 245 245 255)))
+  (stroke-rect renderer (widget-x widget) (widget-y widget)
+               (widget-width widget) (widget-height widget)
+               (if (widget-focused widget) +color-focus-border+ +color-border+)
+               2)
+  (render-edit-box-text-and-cursor renderer widget))
+
+(defun render-edit-box-windows (renderer widget)
+  "Render edit-box in Windows-like style (sunken bevel)."
+  (let ((x (widget-x widget))
+        (y (widget-y widget))
+        (w (widget-width widget))
+        (h (widget-height widget)))
+    (fill-rect renderer x y w h '(255 255 255 255))
+    ;; Sunken outer/inner bevel
+    (render-bevel-rect renderer x y w h '(128 128 128 255) '(255 255 255 255) 1)
+    (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                       '(64 64 64 255) '(224 224 224 255) 1)
+    (when (widget-focused widget)
+      (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-focus-border+ 1)))
+  (render-edit-box-text-and-cursor renderer widget))
+
+(defun render-edit-box-motif (renderer widget)
+  "Render edit-box in Motif-like style (thicker recessed frame)."
+  (let ((x (widget-x widget))
+        (y (widget-y widget))
+        (w (widget-width widget))
+        (h (widget-height widget)))
+    (fill-rect renderer x y w h '(250 250 250 255))
+    (render-bevel-rect renderer x y w h '(110 110 110 255) '(238 238 238 255) 2)
+    (when (widget-focused widget)
+      (stroke-rect renderer (+ x 3) (+ y 3) (- w 6) (- h 6) +color-focus-border+ 1)))
+  (render-edit-box-text-and-cursor renderer widget))
+
+(defun render-edit-box (renderer widget)
+  "Render an edit box widget using current style."
+  (render-widget-with-style *widget-style* renderer widget))
 
 (defun render-list-box (renderer widget)
   "Render a list box widget."

@@ -6,6 +6,7 @@
 (defparameter *renderer-dialog* nil)
 (defparameter *widgets* nil)
 (defparameter *status-message* "Widget demo. Click, type, and interact with controls.")
+(defparameter *dialog-style* :flat)
 
 ;;; Create demo widgets
 
@@ -76,6 +77,9 @@
               *renderer-dialog* renderer
               *widgets* (create-demo-widgets)
               *status-message* "Widget demo. Click, type, and interact with controls.")))
+        ;; Apply selected widget style and initialize TTF for Unicode text rendering.
+        (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
+        (mnas-sdl3-gui/widgets:init-ttf-font)
   :continue)
 
 (sdl3:def-app-iterate dialog-iterate ()
@@ -87,8 +91,14 @@
   (loop for widget in *widgets*
         do (mnas-sdl3-gui/widgets:render-widget *renderer-dialog* widget))
   
-  ;; Render status message at bottom
-  (sdl3:set-render-draw-color *renderer-dialog* 52 52 52 255)
+    ;; Render style and status text through SDL3_ttf-aware pipeline.
+    (mnas-sdl3-gui/widgets:render-text
+     *renderer-dialog*
+     (format nil "Style: ~(~a~)" *dialog-style*)
+     20.0 440.0 '(32 32 32 255))
+    (mnas-sdl3-gui/widgets:render-text
+     *renderer-dialog* *status-message* 20.0 464.0 '(52 52 52 255))
+
   (sdl3:render-present *renderer-dialog*)
   :continue)
 
@@ -141,14 +151,16 @@
 
 (sdl3:def-app-quit dialog-quit (result)
   (declare (ignore result))
+  (mnas-sdl3-gui/widgets:cleanup-ttf)
   (sdl3:destroy-renderer *renderer-dialog*)
   (sdl3:destroy-window *window-dialog*)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-dialog-demo ()
-  "Run the widget dialog demo."
+(defun do-dialog-demo (&optional (style :flat))
+  "Run the widget dialog demo with STYLE (:flat, :windows, :motif)."
+  (setf *dialog-style* style)
   (sdl3:enter-app-main-callbacks
    'dialog-init
    'dialog-iterate

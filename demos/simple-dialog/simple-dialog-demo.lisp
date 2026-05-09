@@ -11,6 +11,7 @@
 ;; Dialog state
 (defparameter *ok-button* nil)
 (defparameter *cancel-button* nil)
+(defparameter *extra-button* nil)
 (defparameter *message* "Are you sure you want to continue?")
 
 ;;; Dialog initialization
@@ -34,6 +35,12 @@
                                                   (declare (ignore widget))
                                                   (setf *dialog-result* :cancel
                                                         *dialog-open* nil))))
+  (setf *extra-button* (make-instance 'mnas-sdl3-gui/widgets:button
+                                      :x 160 :y 320 :width 130 :height 34
+                                      :text "Кнопка_1"
+                                      :on-click (lambda (widget)
+                                                  (declare (ignore widget))
+                                                  (format t "[DEMO] Нажата кнопка: Кнопка_1~%"))))
   (values))
 
 ;;; Rendering
@@ -68,19 +75,22 @@
   
   ;; Render buttons
   (mnas-sdl3-gui/widgets:render-widget *renderer* *ok-button*)
-  (mnas-sdl3-gui/widgets:render-widget *renderer* *cancel-button*))
+  (mnas-sdl3-gui/widgets:render-widget *renderer* *cancel-button*)
+  (mnas-sdl3-gui/widgets:render-widget *renderer* *extra-button*))
 
 ;;; Event handling
 
 (defun handle-dialog-mouse-down (x y)
   "Handle mouse press in dialog."
   (mnas-sdl3-gui/widgets:handle-widget-mouse-down *ok-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *cancel-button* (float x 1.0) (float y 1.0)))
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *cancel-button* (float x 1.0) (float y 1.0))
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *extra-button* (float x 1.0) (float y 1.0)))
 
 (defun handle-dialog-mouse-up (x y)
   "Handle mouse release in dialog."
   (mnas-sdl3-gui/widgets:handle-widget-mouse-up *ok-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *cancel-button* (float x 1.0) (float y 1.0)))
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *cancel-button* (float x 1.0) (float y 1.0))
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *extra-button* (float x 1.0) (float y 1.0)))
 
 ;;; SDL3 demo callbacks
 

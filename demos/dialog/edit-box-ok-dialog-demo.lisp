@@ -8,6 +8,7 @@
 (defparameter *edit-dialog-result* nil)
 (defparameter *edit-dialog-input* nil)
 (defparameter *edit-dialog-ok-button* nil)
+(defparameter *edit-dialog-style* :flat)
 
 (defparameter *edit-dialog-title* "Введите текст и нажмите ОК")
 (defparameter *edit-dialog-hint* "Проверьте кириллицу: Съешь ещё этих мягких булок")
@@ -55,6 +56,7 @@
                 *renderer-edit-dialog* renderer
                 *edit-dialog-open* t
                 *edit-dialog-result* nil)
+          (mnas-sdl3-gui/widgets:set-widget-style *edit-dialog-style*)
           ;; TTF must be initialized after SDL video subsystem is ready.
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (sdl3:start-text-input window)
@@ -136,9 +138,10 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-edit-box-dialog-demo ()
+(defun do-edit-box-dialog-demo (&optional (style :flat))
   "Run edit-box dialog and return entered text when OK is pressed.
 Returns NIL when dialog is cancelled/closed."
+  (setf *edit-dialog-style* style)
   (sdl3:enter-app-main-callbacks
    'edit-dialog-init
    'edit-dialog-iterate
