@@ -6,6 +6,7 @@
            #:do-edit-box-dialog-demo
            #:do-cyrillic-font-demo
            #:do-toggle-group-demo
-           #:do-check-box-demo))
+           #:do-check-box-demo
+           #:do-pack-layout-demo))
 
 (in-package :mnas-sdl3-gui/demos/dialog)

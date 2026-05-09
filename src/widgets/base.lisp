@@ -4,6 +4,11 @@
 
 ;;; Base Widget Class
 
+;; Declared here to keep compilation of this module warning-free before
+;; SDL3_ttf initialization module sets the runtime values.
+(defvar *ttf-available-p* nil)
+(defvar *ttf-font* nil)
+
 (defclass widget ()
   ((x :initarg :x :initform 0 :accessor widget-x
       :documentation "X coordinate of widget")
@@ -78,6 +83,74 @@
   (:documentation "Scrollable list box widget"))
 
 ;;; Widget Utilities
+
+(defparameter +layout-font-char-width+ 8)
+(defparameter +layout-font-text-height+ 16)
+
+(defun widget-text-pixel-size (text)
+  "Return TEXT width and height using SDL3_ttf metrics when available."
+  (if (and (boundp '*ttf-available-p*)
+           (boundp '*ttf-font*)
+           *ttf-available-p*
+           *ttf-font*)
+      (handler-case
+          (multiple-value-bind (w h)
+              (sdl3-ttf:ttf-get-string-size *ttf-font* text)
+            (values (or w 0) (or h +layout-font-text-height+)))
+        (error ()
+          (values (* (length text) +layout-font-char-width+)
+                  +layout-font-text-height+)))
+      (values (* (length text) +layout-font-char-width+)
+              +layout-font-text-height+)))
+
+(defgeneric widget-min-size (widget)
+  (:documentation "Return minimal width and height for WIDGET as two values."))
+
+(defmethod widget-min-size ((widget widget))
+  (values (max 1 (widget-width widget))
+          (max 1 (widget-height widget))))
+
+(defmethod widget-min-size ((widget label))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (label-text widget))
+    (values (max 24 (+ tw 8))
+            (max 20 (+ th 6)))))
+
+(defmethod widget-min-size ((widget button))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (button-text widget))
+    (values (max 64 (+ tw 24))
+            (max 28 (+ th 12)))))
+
+(defmethod widget-min-size ((widget toggle))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (toggle-label widget))
+    (declare (ignore th))
+    ;; Radio glyph width (40) + spacing (9) + label text.
+    (values (max 80 (+ 40 9 tw))
+            24)))
+
+(defmethod widget-min-size ((widget check-box))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (check-box-label widget))
+    (values (max 72 (+ 16 4 tw))
+            (max 22 (+ th 6)))))
+
+(defmethod widget-min-size ((widget edit-box))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (edit-box-text widget))
+    (values (max 120 (+ tw 12))
+            (max 30 (+ th 10)))))
+
+(defmethod widget-min-size ((widget list-box))
+  (let* ((longest-item (or (loop for item in (list-box-items widget)
+                                 maximize (length (format nil "~a" item)))
+                          8))
+         (lines (max 3 (min 8 (length (list-box-items widget)))))
+         (text-width (* longest-item +layout-font-char-width+))
+         (min-height (+ (* lines (list-box-item-height widget)) 4)))
+    (values (max 120 (+ text-width 12))
+            (max min-height 72))))
 
 (defun contains-point-p (widget x y)
   "Check if point (x, y) is inside widget bounds."

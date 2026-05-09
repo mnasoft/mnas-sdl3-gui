@@ -15,6 +15,7 @@
    #:widget-visible
    #:widget-value
    #:widget-on-change
+  #:widget-min-size
   ;; style classes and helpers
   #:widget-style
   #:flat-widget-style
@@ -53,6 +54,12 @@
    #:list-box-items
    #:list-box-selected-index
    #:list-box-item-height
+  ;; layout managers
+  #:pack-widget
+  #:unpack-widget
+  #:clear-pack-layout
+  #:pack-layout-widgets
+  #:place-widget
    ;; rendering
   #:render-text
    #:render-widget
