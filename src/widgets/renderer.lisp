@@ -134,6 +134,21 @@
                  (+ box-y (/ (- box-size +font-text-height+) 2))
                  +color-text+)))
 
+(defun edit-box-cursor-pixel-offset (widget)
+  "Return cursor offset in pixels using real glyph widths when TTF is available."
+  (let* ((text (edit-box-text widget))
+         (cursor (max 0 (min (edit-box-cursor widget) (length text))))
+         (prefix (subseq text 0 cursor)))
+    (if (and *ttf-available-p* *ttf-font*)
+        (handler-case
+            (multiple-value-bind (w h)
+                (sdl3-ttf:ttf-get-string-size *ttf-font* prefix)
+              (declare (ignore h))
+              (or w 0))
+          (error ()
+            (* cursor +font-char-width+)))
+        (* cursor +font-char-width+))))
+
 (defun render-edit-box (renderer widget)
   "Render an edit box widget."
   ;; Background
@@ -153,7 +168,7 @@
   ;; Cursor
   (when (widget-focused widget)
     (let ((cursor-x (+ (widget-x widget) +widget-padding+
-                       (* (edit-box-cursor widget) +font-char-width+))))
+                       (edit-box-cursor-pixel-offset widget))))
       (sdl3:set-render-draw-color renderer 0 0 0 255)
       (sdl3:render-line renderer (float cursor-x 1.0) (float (+ (widget-y widget) 2) 1.0)
                         (float cursor-x 1.0) (float (- (+ (widget-y widget) (widget-height widget)) 2) 1.0)))))
