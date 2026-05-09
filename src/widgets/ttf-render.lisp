@@ -71,5 +71,6 @@
          char  ; ASCII printable
          #\*)))))  ; Unknown character
 
-;; Export the main function
-(export 'render-text-with-fallback)
+;; Export the main functions
+(export '(render-text-with-fallback
+          approximate-cyrillic-text))

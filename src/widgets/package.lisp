@@ -43,6 +43,14 @@
    #:list-box-item-height
    ;; rendering
    #:render-widget
+   ;; TTF/font rendering
+   #:render-text-with-ttf
+   #:*ttf-available-p*
+   #:*ttf-font-path*
+   #:*ttf-font-size*
+   #:initialize-ttf-rendering
+   ;; Cyrillic approximation
+   #:approximate-cyrillic-text
    ;; event handling
    #:handle-widget-click
    #:handle-widget-mouse-motion

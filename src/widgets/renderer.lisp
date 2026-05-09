@@ -45,9 +45,9 @@
                (sdl3:render-rect renderer outline)))))
 
 (defun render-text (renderer text x y color)
-  "Render text using SDL3 built-in debug font.
-   For non-ASCII (e.g., Cyrillic), approximates with ASCII transliteration."
-  (render-text-with-fallback renderer text x y color))
+  "Render text using TTF font if available, with fallback to ASCII approximation.
+   Supports Unicode text including Cyrillic characters."
+  (render-text-with-ttf renderer text x y color))
 
 (defun render-widget (renderer widget)
   "Render a widget using appropriate method based on widget type."
