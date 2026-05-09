@@ -1,0 +1,174 @@
+(in-package :mnas-sdl3-gui/demos/menu)
+
+(defparameter *window-screen-menu* nil)
+(defparameter *renderer-screen-menu* nil)
+(defparameter *menu-bar-demo* nil)
+(defparameter *status-message*
+  "Class-based menu demo. Click File/Edit/Help.")
+
+(defconstant +mouse-button-left+ 1)
+
+(defun make-demo-menu-bar ()
+  (let* ((recent-submenu
+           (make-instance 'mnas-sdl3-gui/menu/model:dropdown-menu
+                          :title "Recent"
+                          :entries (list
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "alpha.txt" :hotkey ""
+                                                   :action :recent-alpha)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "beta.txt" :hotkey ""
+                                                   :action :recent-beta)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:separator-entry)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Clear Recent" :hotkey ""
+                                                   :action :clear-recent))))
+         (file-menu
+           (make-instance 'mnas-sdl3-gui/menu/model:dropdown-menu
+                          :title "File"
+                          :entries (list
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "New" :hotkey "Ctrl+N"
+                                                   :action :new)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Open" :hotkey "Ctrl+O"
+                                                   :action :open)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:separator-entry)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:submenu-entry
+                                                   :label "Recent"
+                                                   :submenu recent-submenu)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:separator-entry)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Quit" :hotkey "Ctrl+Q"
+                                                   :action :quit))))
+         (edit-menu
+           (make-instance 'mnas-sdl3-gui/menu/model:dropdown-menu
+                          :title "Edit"
+                          :entries (list
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Undo" :hotkey "Ctrl+Z"
+                                                   :action :undo)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Redo" :hotkey "Ctrl+Y"
+                                                   :action :redo)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:separator-entry)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Preferences" :hotkey ""
+                                                   :action :preferences))))
+         (help-menu
+           (make-instance 'mnas-sdl3-gui/menu/model:dropdown-menu
+                          :title "Help"
+                          :entries (list
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "Documentation" :hotkey "F1"
+                                                   :action :docs)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:separator-entry)
+                                    (make-instance 'mnas-sdl3-gui/menu/model:command-entry
+                                                   :label "About" :hotkey ""
+                                                   :action :about))))
+         (bar (make-instance 'mnas-sdl3-gui/menu/model:menu-bar
+                             :menus (list file-menu edit-menu help-menu)
+                             :left 0 :top 0 :width 760
+                             :height mnas-sdl3-gui/menu/model:+menu-bar-height+)))
+    (mnas-sdl3-gui/menu/model:layout-menu-bar bar)
+    bar))
+
+(defun execute-command-action (action label)
+  (setf *status-message* (format nil "Action: ~a (~a)" label action))
+  (if (eq action :quit)
+      :success
+      :continue))
+
+(sdl3:def-app-init screen-menu-init (argc argv)
+  (declare (ignore argc argv))
+  (sdl3:set-app-metadata "mnas-sdl3-gui menu demo" "1.0"
+                         "com.mna.sdl3.gui.menu.demo")
+  (when (not (sdl3:init :video))
+    (format t "~a~%" (sdl3:get-error))
+    (return-from screen-menu-init :failure))
+  (multiple-value-bind (ok window renderer)
+      (sdl3:create-window-and-renderer "Screen Menu Demo" 760 520 0)
+    (if (not ok)
+        (progn
+          (format t "~a~%" (sdl3:get-error))
+          (return-from screen-menu-init :failure))
+        (setf *window-screen-menu* window
+              *renderer-screen-menu* renderer
+              *menu-bar-demo* (make-demo-menu-bar)
+              *status-message* "Class-based menu demo. Click File/Edit/Help.")))
+  :continue)
+
+(sdl3:def-app-iterate screen-menu-iterate ()
+  (sdl3:set-render-draw-color *renderer-screen-menu* 244 239 228 255)
+  (sdl3:render-clear *renderer-screen-menu*)
+
+  (sdl3:set-render-draw-color *renderer-screen-menu* 52 52 52 255)
+  (mnas-sdl3-gui/menu/renderer:render-debug-text
+   *renderer-screen-menu*
+   24.0 82.0
+   "Menu demo adapted for mnas-sdl3-gui packages.")
+  (mnas-sdl3-gui/menu/renderer:render-debug-text
+   *renderer-screen-menu*
+   24.0 106.0
+   "Dropdown widths are computed from visible text + paddings.")
+  (mnas-sdl3-gui/menu/renderer:render-debug-text
+   *renderer-screen-menu*
+   24.0 150.0
+   *status-message*)
+
+  (mnas-sdl3-gui/menu/renderer:draw-menu-bar
+   *renderer-screen-menu*
+   *menu-bar-demo*)
+
+  (sdl3:render-present *renderer-screen-menu*)
+  :continue)
+
+(sdl3:def-app-event screen-menu-event (type event)
+  (declare (ignore type))
+  (let ((ev (sdl3:event-unmarshal event)))
+    (typecase ev
+      (sdl3:quit-event
+       :success)
+      (sdl3:mouse-motion-event
+       (mnas-sdl3-gui/menu/controller:handle-mouse-motion
+        *menu-bar-demo*
+        (round (slot-value ev 'sdl3:%x))
+        (round (slot-value ev 'sdl3:%y)))
+       :continue)
+      (sdl3:mouse-button-event
+       (if (and (slot-value ev 'sdl3:%down)
+                (= (slot-value ev 'sdl3:%button) +mouse-button-left+))
+           (multiple-value-bind (kind action label)
+               (mnas-sdl3-gui/menu/controller:handle-left-click
+                *menu-bar-demo*
+                (round (slot-value ev 'sdl3:%x))
+                (round (slot-value ev 'sdl3:%y)))
+             (if (eq kind :command)
+                 (execute-command-action action label)
+                 :continue))
+           :continue))
+      (sdl3:keyboard-event
+       (when (and (slot-value ev 'sdl3:%down)
+                  (not (slot-value ev 'sdl3:%repeat))
+                  (eq (slot-value ev 'sdl3:%key) :escape))
+         (if (mnas-sdl3-gui/menu/model:bar-open-menu-index *menu-bar-demo*)
+             (mnas-sdl3-gui/menu/model:close-menu *menu-bar-demo*)
+             (return-from screen-menu-event :success)))
+       :continue)
+      (t
+       :continue))))
+
+(sdl3:def-app-quit screen-menu-quit (result)
+  (declare (ignore result))
+  (sdl3:destroy-renderer *renderer-screen-menu*)
+  (sdl3:destroy-window *window-screen-menu*)
+  (sdl3:pump-events)
+  (sdl3:quit-sub-system :video)
+  (sdl3:quit))
+
+(defun do-screen-menu-demo ()
+  (sdl3:enter-app-main-callbacks
+   'screen-menu-init
+   'screen-menu-iterate
+   'screen-menu-event
+   'screen-menu-quit))
