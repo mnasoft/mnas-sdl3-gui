@@ -45,19 +45,72 @@
                (sdl3:render-rect renderer outline)))))
 
 (defun render-text (renderer text x y color)
-  "Render simple text as colored blocks (placeholder for font rendering).
-   Shows white rectangle blocks where text would be."
+  "Render simple text using ASCII character pixel-art representation.
+   Each character is rendered as a small pixelated glyph."
   (destructuring-bind (r g b a) color
     (sdl3:set-render-draw-color renderer r g b a)
-    ;; Draw a simple text placeholder: a rectangle for each character
-    (loop for i from 0 below (min (length text) 20)  ; Max 20 chars
+    ;; For each character, draw it as a simple pattern
+    (loop for i from 0 below (min (length text) 40)  ; Max 40 chars
           for char-x = (+ x (* i (+ +font-char-width+ 1)))
-          do (let ((char-rect (make-instance 'sdl3:frect
-                                             :%x (float char-x 1.0)
-                                             :%y (float y 1.0)
-                                             :%w (float +font-char-width+ 1.0)
-                                             :%h (float +font-text-height+ 1.0))))
-               (sdl3:render-fill-rect renderer char-rect)))))
+          for ch = (char text i)
+          do (render-char renderer ch char-x y r g b a))))
+
+(defun render-char (renderer ch x y r g b a)
+  "Render a single character as pixel art."
+  (let ((rect-width 6)
+        (rect-height 10))
+    ;; Draw character background box
+    (sdl3:set-render-draw-color renderer r g b a)
+    (let ((box (make-instance 'sdl3:frect
+                              :%x (float x 1.0) :%y (float y 1.0)
+                              :%w (float rect-width 1.0) :%h (float rect-height 1.0))))
+      (sdl3:render-fill-rect renderer box))
+    
+    ;; Draw different patterns based on character
+    (cond
+      ((char= ch #\A)
+       (draw-vertical-lines renderer x y rect-height r g b a))
+      ((char= ch #\B)
+       (draw-horizontal-lines renderer x y rect-width r g b a))
+      ((char= ch #\0)
+       (draw-diamond renderer x y rect-width rect-height r g b a))
+      (t
+       ;; Draw a dot for any other character
+       (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
+       (let ((dot (make-instance 'sdl3:frect
+                                 :%x (float (+ x 2) 1.0) :%y (float (+ y 4) 1.0)
+                                 :%w 2.0 :%h 2.0)))
+         (sdl3:render-fill-rect renderer dot))))))
+
+(defun draw-vertical-lines (renderer x y height r g b a)
+  "Draw vertical lines pattern (for 'A')."
+  (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
+  (sdl3:render-line renderer (float (+ x 1) 1.0) (float y 1.0)
+                    (float (+ x 1) 1.0) (float (+ y height) 1.0))
+  (sdl3:render-line renderer (float (+ x 4) 1.0) (float y 1.0)
+                    (float (+ x 4) 1.0) (float (+ y height) 1.0)))
+
+(defun draw-horizontal-lines (renderer x y width r g b a)
+  "Draw horizontal lines pattern (for 'B')."
+  (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
+  (sdl3:render-line renderer (float x 1.0) (float (+ y 2) 1.0)
+                    (float (+ x width) 1.0) (float (+ y 2) 1.0))
+  (sdl3:render-line renderer (float x 1.0) (float (+ y 5) 1.0)
+                    (float (+ x width) 1.0) (float (+ y 5) 1.0)))
+
+(defun draw-diamond (renderer x y width height r g b a)
+  "Draw diamond pattern (for numbers)."
+  (sdl3:set-render-draw-color renderer (- 255 r) (- 255 g) (- 255 b) a)
+  (let ((cx (+ x (/ width 2)))
+        (cy (+ y (/ height 2))))
+    (sdl3:render-line renderer (float cx 1.0) (float y 1.0)
+                      (float (+ x width) 1.0) (float cy 1.0))
+    (sdl3:render-line renderer (float (+ x width) 1.0) (float cy 1.0)
+                      (float cx 1.0) (float (+ y height) 1.0))
+    (sdl3:render-line renderer (float cx 1.0) (float (+ y height) 1.0)
+                      (float x 1.0) (float cy 1.0))
+    (sdl3:render-line renderer (float x 1.0) (float cy 1.0)
+                      (float cx 1.0) (float y 1.0))))
 
 (defun render-widget (renderer widget)
   "Render a widget using appropriate method based on widget type."
