@@ -136,6 +136,16 @@
                  offset-y)))
   (render-text renderer (button-text widget) x y color))))
 
+(defun render-button-focus-outline (renderer widget &key (inset 0))
+  "Render a high-contrast focus outline for button widgets." 
+  (let* ((x (+ (widget-x widget) inset))
+         (y (+ (widget-y widget) inset))
+         (w (- (widget-width widget) (* 2 inset)))
+         (h (- (widget-height widget) (* 2 inset))))
+    (when (and (> w 6) (> h 6))
+      (stroke-rect renderer x y w h +color-focus-border+ 2)
+      (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) '(255 255 255 255) 1))))
+
 (defgeneric render-widget-with-style (style renderer widget)
   (:documentation "Render WIDGET using STYLE on RENDERER."))
 
@@ -191,8 +201,10 @@
                color)
     (stroke-rect renderer (widget-x widget) (widget-y widget)
                  (widget-width widget) (widget-height widget)
-                 (if (widget-focused widget) +color-focus-border+ +color-border+)
-                 2))
+                 +color-border+
+                 2)
+    (when (widget-focused widget)
+      (render-button-focus-outline renderer widget)))
   (render-button-label renderer widget
                        (if (widget-enabled widget) +color-text+ +color-disabled+)
                        :offset-y (if (button-pressed-p widget) 1 0)))
@@ -206,8 +218,6 @@
         (pressed (button-pressed-p widget))
         (face (if (widget-enabled widget) '(212 208 200 255) '(190 190 190 255))))
     (fill-rect renderer x y w h face)
-    (when (widget-focused widget)
-      (stroke-rect renderer x y w h +color-focus-border+ 1))
     (if pressed
         (progn
           (render-bevel-rect renderer x y w h '(128 128 128 255) '(255 255 255 255) 1)
@@ -216,7 +226,9 @@
         (progn
           (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
           (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                             '(240 240 240 255) '(64 64 64 255) 1))))
+                             '(240 240 240 255) '(64 64 64 255) 1)))
+    (when (widget-focused widget)
+      (render-button-focus-outline renderer widget :inset 2)))
   (render-button-label renderer widget
                        (if (widget-enabled widget) +color-text+ +color-disabled+)
                        :offset-x (if (button-pressed-p widget) 1 0)
@@ -235,7 +247,7 @@
         (render-bevel-rect renderer x y w h '(90 90 90 255) '(238 238 238 255) 2)
         (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2))
     (when (widget-focused widget)
-      (stroke-rect renderer (+ x 3) (+ y 3) (- w 6) (- h 6) +color-focus-border+ 1)))
+      (render-button-focus-outline renderer widget :inset 4)))
   (render-button-label renderer widget
                        (if (widget-enabled widget) +color-text+ +color-disabled+)
                        :offset-x (if (button-pressed-p widget) 1 0)

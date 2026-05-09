@@ -14,6 +14,20 @@
 (defparameter *extra-button* nil)
 (defparameter *message* "Are you sure you want to continue?")
 
+(defun dialog-widgets ()
+  "Return focus-traversable widgets in the simple dialog."
+  (list *ok-button* *cancel-button* *extra-button*))
+
+(defun dialog-tab-backward-p (ev)
+  "Return true when Tab navigation should move backward."
+  (let ((mods (slot-value ev 'sdl3:%mod)))
+    (typecase mods
+      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
+                (member :shift mods) (member :lshift mods) (member :rshift mods)))
+      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
+      (integer (not (zerop (logand mods #x0303))))
+      (t nil))))
+
 ;;; Dialog initialization
 
 (defun create-dialog-buttons ()
@@ -64,14 +78,15 @@
 
 (defun render-dialog-content (renderer)
   "Render dialog title, message, and buttons."
-  ;; Title
-  (sdl3:set-render-draw-color renderer 0 0 0 255)
-  (sdl3:render-debug-text renderer 70.0 170.0 "Confirmation Dialog")
-  (sdl3:render-debug-text renderer 70.0 192.0
-                          (format nil "Style: ~(~a~)" *dialog-style*))
-  
-  ;; Message
-  (sdl3:render-debug-text renderer 70.0 230.0 *message*)
+  ;; Title and message via SDL3_ttf-aware text pipeline.
+  (mnas-sdl3-gui/widgets:render-text renderer "Confirmation Dialog" 70.0 170.0 '(0 0 0 255))
+  (mnas-sdl3-gui/widgets:render-text renderer
+                                     (format nil "Style: ~(~a~)" *dialog-style*)
+                                     70.0 192.0 '(0 0 0 255))
+  (mnas-sdl3-gui/widgets:render-text renderer *message* 70.0 230.0 '(0 0 0 255))
+  (mnas-sdl3-gui/widgets:render-text renderer
+                                     "Tab/Shift+Tab: focus, Space: activate button"
+                                     70.0 252.0 '(0 0 0 255))
   
   ;; Render buttons
   (mnas-sdl3-gui/widgets:render-widget *renderer* *ok-button*)
@@ -82,9 +97,12 @@
 
 (defun handle-dialog-mouse-down (x y)
   "Handle mouse press in dialog."
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *ok-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *cancel-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *extra-button* (float x 1.0) (float y 1.0)))
+  (let ((mx (float x 1.0))
+        (my (float y 1.0)))
+    (loop for widget in (dialog-widgets)
+          when (mnas-sdl3-gui/widgets:handle-widget-mouse-down widget mx my)
+          do (mnas-sdl3-gui/widgets:set-widget-focus (dialog-widgets) widget)
+             (return))))
 
 (defun handle-dialog-mouse-up (x y)
   "Handle mouse release in dialog."
@@ -113,7 +131,9 @@
           *dialog-result* nil
           *dialog-open* t)
         (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
-        (create-dialog-buttons))))
+        (mnas-sdl3-gui/widgets:init-ttf-font)
+        (create-dialog-buttons)
+        (mnas-sdl3-gui/widgets:move-widget-focus (dialog-widgets)))))
   :continue)
 
 (sdl3:def-app-iterate simple-dialog-iterate ()
@@ -146,10 +166,30 @@
              (handle-dialog-mouse-up (round (slot-value ev 'sdl3:%x))
                                      (round (slot-value ev 'sdl3:%y)))))
        :continue)
+      (sdl3:keyboard-event
+       (when (and (slot-value ev 'sdl3:%down)
+                  (not (slot-value ev 'sdl3:%repeat)))
+         (cond
+           ((eq (slot-value ev 'sdl3:%key) :escape)
+            (setf *dialog-open* nil)
+            :success)
+           ((eq (slot-value ev 'sdl3:%key) :tab)
+            (mnas-sdl3-gui/widgets:move-widget-focus
+             (dialog-widgets)
+             :backward (dialog-tab-backward-p ev))
+            :continue)
+           ((eq (slot-value ev 'sdl3:%key) :space)
+            (let ((focused (mnas-sdl3-gui/widgets:focused-widget (dialog-widgets))))
+              (when focused
+                (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil)))
+            :continue)
+           (t :continue)))
+       :continue)
       (t :continue))))
 
 (sdl3:def-app-quit simple-dialog-quit (result)
   (declare (ignore result))
+  (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *renderer*
     (sdl3:destroy-renderer *renderer*))
   (when *window*
@@ -170,3 +210,6 @@
    'simple-dialog-event
    'simple-dialog-quit)
   *dialog-result*)
+
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (do-simple-dialog-demo)
