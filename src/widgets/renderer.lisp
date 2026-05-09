@@ -45,9 +45,19 @@
                (sdl3:render-rect renderer outline)))))
 
 (defun render-text (renderer text x y color)
-  "Render simple text (placeholder - would use font rendering in real app)."
+  "Render simple text as colored blocks (placeholder for font rendering).
+   Shows white rectangle blocks where text would be."
   (destructuring-bind (r g b a) color
-    (sdl3:set-render-draw-color renderer r g b a)))
+    (sdl3:set-render-draw-color renderer r g b a)
+    ;; Draw a simple text placeholder: a rectangle for each character
+    (loop for i from 0 below (min (length text) 20)  ; Max 20 chars
+          for char-x = (+ x (* i (+ +font-char-width+ 1)))
+          do (let ((char-rect (make-instance 'sdl3:frect
+                                             :%x (float char-x 1.0)
+                                             :%y (float y 1.0)
+                                             :%w (float +font-char-width+ 1.0)
+                                             :%h (float +font-text-height+ 1.0))))
+               (sdl3:render-fill-rect renderer char-rect)))))
 
 (defun render-widget (renderer widget)
   "Render a widget using appropriate method based on widget type."
