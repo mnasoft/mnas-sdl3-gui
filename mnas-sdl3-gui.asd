@@ -16,6 +16,7 @@
                (:file "src/widgets/package")
                (:file "src/widgets/base")
                (:file "src/widgets/renderer")
+               (:file "src/widgets/ttf-render")
                (:file "src/widgets/events")))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos

@@ -45,10 +45,9 @@
                (sdl3:render-rect renderer outline)))))
 
 (defun render-text (renderer text x y color)
-  "Render text using SDL3 built-in debug font (same as menu rendering)."
-  (declare (ignore color))
-  ;; Use SDL3's built-in debug font for consistent text rendering
-  (sdl3:render-debug-text renderer (float x 1.0) (float y 1.0) text))
+  "Render text using SDL3 built-in debug font.
+   For non-ASCII (e.g., Cyrillic), approximates with ASCII transliteration."
+  (render-text-with-fallback renderer text x y color))
 
 (defun render-widget (renderer widget)
   "Render a widget using appropriate method based on widget type."

@@ -9,48 +9,10 @@
 (defparameter *edit-dialog-input* nil)
 (defparameter *edit-dialog-ok-button* nil)
 
-(defun keymod-active-p (mods mod-key)
-  "Return T when MOD-KEY is active in SDL3 keyboard modifiers value MODS."
-  (cond
-    ((listp mods)
-     (member mod-key mods))
-    ((keywordp mods)
-     (eq mods mod-key))
-    (t
-     nil)))
-
-(defun key-to-char (key shift-active-p caps-active-p)
-  "Convert SDL3 key keyword to character with proper case handling."
-  (cond
-    ((and (keywordp key)
-          (= (length (symbol-name key)) 1))
-     (let* ((ch (char (symbol-name key) 0))
-            (alpha (alpha-char-p ch))
-            ;; For letters, Shift and CapsLock both affect case.
-            (upper-p (if alpha
-                         (if caps-active-p
-                             (not shift-active-p)
-                             shift-active-p)
-                         nil)))
-       (cond
-         ((not alpha)
-          ch)
-         (upper-p
-          (char-upcase ch))
-         (t
-          (char-downcase ch)))))
-    ((eq key :space)
-     #\Space)
-    ((eq key :period)
-     #\.)
-    ((eq key :comma)
-     #\,)
-    ((eq key :minus)
-     #\-)
-    ((eq key :slash)
-     #\/)
-    (t
-     nil)))
+(defun insert-text-into-edit-box (widget text)
+  "Insert TEXT into edit-box WIDGET at cursor position."
+  (loop for ch across text
+        do (mnas-sdl3-gui/widgets:handle-widget-key-press widget nil ch)))
 
 (defun create-edit-dialog-widgets ()
   "Create edit-box and OK button widgets for dialog demo."
@@ -90,6 +52,7 @@
                 *renderer-edit-dialog* renderer
                 *edit-dialog-open* t
                 *edit-dialog-result* nil)
+              (sdl3:start-text-input window)
           (create-edit-dialog-widgets))))
   :continue)
 
@@ -127,12 +90,7 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-          (let* ((key (slot-value ev 'sdl3:%key))
-            (mods (slot-value ev 'sdl3:%mod))
-            (shift-active-p (or (keymod-active-p mods :lshift)
-                 (keymod-active-p mods :rshift)))
-            (caps-active-p (keymod-active-p mods :caps))
-            (char (key-to-char key shift-active-p caps-active-p)))
+          (let ((key (slot-value ev 'sdl3:%key)))
            (cond
              ((eq key :escape)
               (setf *edit-dialog-result* nil
@@ -143,15 +101,23 @@
                     (mnas-sdl3-gui/widgets:edit-box-text *edit-dialog-input*)
                     *edit-dialog-open* nil)
               :success)
+         ((member key '(:backspace :delete :left :right :home :end))
+          (mnas-sdl3-gui/widgets:handle-widget-key-press
+           *edit-dialog-input* key nil)
+          :continue)
              (t
-              (mnas-sdl3-gui/widgets:handle-widget-key-press
-               *edit-dialog-input* key char)
               :continue))))
+       :continue)
+      (sdl3:text-input-event
+       ;; SDL text input already respects the current keyboard layout/IME.
+       (insert-text-into-edit-box *edit-dialog-input* (slot-value ev 'sdl3:%text))
        :continue)
       (t :continue))))
 
 (sdl3:def-app-quit edit-dialog-quit (result)
   (declare (ignore result))
+  (when *window-edit-dialog*
+    (sdl3:stop-text-input *window-edit-dialog*))
   (when *renderer-edit-dialog*
     (sdl3:destroy-renderer *renderer-edit-dialog*))
   (when *window-edit-dialog*
