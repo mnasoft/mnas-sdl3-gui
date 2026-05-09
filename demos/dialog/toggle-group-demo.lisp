@@ -9,6 +9,16 @@
 (defparameter *toggle-group-widgets* nil)
 (defparameter *toggle-group-status* "Выберите переключатель в любой группе.")
 
+(defun toggle-group-tab-backward-p (ev)
+  "Return true when Tab navigation should move backward."
+  (let ((mods (slot-value ev 'sdl3:%mod)))
+    (typecase mods
+      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
+                (member :shift mods) (member :lshift mods) (member :rshift mods)))
+      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
+      (integer (not (zerop (logand mods #x0303))))
+      (t nil))))
+
 (defun selected-toggle-label (group)
   "Return label of the selected toggle in GROUP, or NIL."
   (let ((toggle
@@ -86,7 +96,8 @@
                 *toggle-group-open* t)
           (mnas-sdl3-gui/widgets:set-widget-style *toggle-group-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
-          (create-toggle-group-widgets))))
+          (create-toggle-group-widgets)
+          (mnas-sdl3-gui/widgets:move-widget-focus *toggle-group-widgets*))))
   :continue)
 
 (sdl3:def-app-iterate toggle-group-demo-iterate ()
@@ -131,17 +142,30 @@
            (if (slot-value ev 'sdl3:%down)
                (loop for widget in *toggle-group-widgets*
                      when (mnas-sdl3-gui/widgets:handle-widget-mouse-down widget mx my)
-                     do (return))
+                     do (mnas-sdl3-gui/widgets:set-widget-focus *toggle-group-widgets* widget)
+                        (return))
                (loop for widget in *toggle-group-widgets*
                      when (mnas-sdl3-gui/widgets:handle-widget-mouse-up widget mx my)
                      do (return)))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat))
-                  (eq (slot-value ev 'sdl3:%key) :escape))
-         (setf *toggle-group-open* nil)
-         :success)
+                  (not (slot-value ev 'sdl3:%repeat)))
+         (cond
+           ((eq (slot-value ev 'sdl3:%key) :escape)
+            (setf *toggle-group-open* nil)
+            :success)
+           ((eq (slot-value ev 'sdl3:%key) :tab)
+            (mnas-sdl3-gui/widgets:move-widget-focus
+             *toggle-group-widgets*
+             :backward (toggle-group-tab-backward-p ev))
+            :continue)
+           ((eq (slot-value ev 'sdl3:%key) :space)
+            (let ((focused (mnas-sdl3-gui/widgets:focused-widget *toggle-group-widgets*)))
+              (when focused
+                (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil)))
+            :continue)
+           (t :continue)))
        :continue)
       (t :continue))))
 

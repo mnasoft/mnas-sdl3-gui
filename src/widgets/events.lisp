@@ -32,6 +32,57 @@
 (defmethod initialize-instance :after ((widget toggle) &key &allow-other-keys)
   (register-toggle-group-member widget))
 
+(defun focusable-widget-p (widget)
+  "Return true when WIDGET participates in keyboard focus traversal."
+  (and (widget-enabled widget)
+       (widget-visible widget)
+       (typep widget '(or button toggle check-box edit-box list-box))))
+
+(defun focused-widget (widgets)
+  "Return the currently focused widget from WIDGETS, or NIL."
+  (find-if #'widget-focused widgets))
+
+(defun set-widget-focus (widgets target)
+  "Assign keyboard focus to TARGET and clear it from the other WIDGETS."
+  (loop for widget in widgets
+        do (setf (widget-focused widget) (eq widget target)))
+  target)
+
+(defun move-widget-focus (widgets &key backward)
+  "Move focus within WIDGETS. When BACKWARD is non-NIL, move to previous widget."
+  (let* ((focusable (remove-if-not #'focusable-widget-p widgets))
+         (count (length focusable)))
+    (when (plusp count)
+      (let* ((current (position-if #'widget-focused focusable))
+             (next-index (cond
+                           ((null current) (if backward (1- count) 0))
+                           (backward (mod (1- current) count))
+                           (t (mod (1+ current) count)))))
+        (set-widget-focus widgets (nth next-index focusable))))))
+
+(defun activate-widget (widget)
+  "Activate WIDGET from keyboard focus. Returns T when handled."
+  (when (and widget (widget-enabled widget) (widget-visible widget))
+    (typecase widget
+      (button
+       (setf (button-armed-p widget) t
+             (button-pressed-p widget) t)
+       (unwind-protect
+            (progn
+              (when (button-on-click widget)
+                (funcall (button-on-click widget) widget))
+              t)
+         (setf (button-armed-p widget) nil
+               (button-pressed-p widget) nil)))
+      (toggle
+       (select-toggle-in-group widget)
+       t)
+      (check-box
+       (setf (check-box-checked widget) (not (check-box-checked widget)))
+       (update-widget-value widget (check-box-checked widget))
+       t)
+      (t nil))))
+
 (defun handle-widget-mouse-down (widget x y)
   "Handle mouse button press. Returns T if event was consumed."
   (when (and (widget-enabled widget) (widget-visible widget))
@@ -44,10 +95,12 @@
          inside)
         (toggle
          (when inside
+            (setf (widget-focused widget) t)
            (select-toggle-in-group widget)
            t))
         (check-box
          (when inside
+            (setf (widget-focused widget) t)
            (setf (check-box-checked widget) (not (check-box-checked widget)))
            (update-widget-value widget (check-box-checked widget))
            t))
@@ -95,14 +148,21 @@
       (when (typep widget 'button)
         ;; While button is armed, pressed visuals track pointer location.
         (when (button-armed-p widget)
-          (setf (button-pressed-p widget) inside)))
-      (unless (eql (widget-focused widget) inside)
-        (setf (widget-focused widget) inside)))))
+          (setf (button-pressed-p widget) inside))))))
 
 (defun handle-widget-key-press (widget key char)
   "Handle keyboard input for a widget. Returns T if key was handled."
   (when (and (widget-enabled widget) (widget-visible widget))
     (typecase widget
+      (button
+       (when (eq key :space)
+         (activate-widget widget)))
+      (toggle
+       (when (eq key :space)
+         (activate-widget widget)))
+      (check-box
+       (when (eq key :space)
+         (activate-widget widget)))
       (edit-box
        (cond
          ((eq key :backspace)

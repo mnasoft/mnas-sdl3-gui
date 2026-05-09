@@ -303,6 +303,10 @@
     ;; Selected state marker.
     (when (toggle-state widget)
       (fill-circle renderer circle-cx circle-cy 4 +color-text+))
+    (when (widget-focused widget)
+      (stroke-rect renderer (widget-x widget) (widget-y widget)
+                   (widget-width widget) (widget-height widget)
+                   +color-focus-border+ 1))
     ;; Label.
     (render-text renderer (toggle-label widget)
                  label-x
@@ -321,6 +325,10 @@
     ;; Check mark if checked
     (when (check-box-checked widget)
       (fill-rect renderer (+ box-x 3) (+ box-y 3) 10 10 +color-text+))
+    (when (widget-focused widget)
+      (stroke-rect renderer (widget-x widget) (widget-y widget)
+                   (widget-width widget) (widget-height widget)
+                   +color-focus-border+ 1))
     ;; Label
     (render-text renderer (check-box-label widget)
                  (+ box-x box-size +widget-padding+)

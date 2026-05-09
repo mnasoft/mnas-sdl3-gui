@@ -10,6 +10,20 @@
 (defparameter *edit-dialog-ok-button* nil)
 (defparameter *edit-dialog-style* :flat)
 
+(defun edit-dialog-tab-backward-p (ev)
+  "Return true when Tab navigation should move backward."
+  (let ((mods (slot-value ev 'sdl3:%mod)))
+    (typecase mods
+      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
+                (member :shift mods) (member :lshift mods) (member :rshift mods)))
+      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
+      (integer (not (zerop (logand mods #x0303))))
+      (t nil))))
+
+(defun edit-dialog-widgets ()
+  "Return focus-traversable widgets in edit dialog."
+  (list *edit-dialog-input* *edit-dialog-ok-button*))
+
 (defparameter *edit-dialog-title* "Введите текст и нажмите ОК")
 (defparameter *edit-dialog-hint* "Проверьте кириллицу: Съешь ещё этих мягких булок")
 
@@ -60,7 +74,9 @@
           ;; TTF must be initialized after SDL video subsystem is ready.
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (sdl3:start-text-input window)
-          (create-edit-dialog-widgets))))
+          (create-edit-dialog-widgets)
+          (mnas-sdl3-gui/widgets:set-widget-focus (edit-dialog-widgets)
+                                                  *edit-dialog-input*))))
   :continue)
 
 (sdl3:def-app-iterate edit-dialog-iterate ()
@@ -94,8 +110,12 @@
                (my (round (slot-value ev 'sdl3:%y))))
            (if (slot-value ev 'sdl3:%down)
                (progn
-                 (mnas-sdl3-gui/widgets:handle-widget-mouse-down *edit-dialog-input* mx my)
-                 (mnas-sdl3-gui/widgets:handle-widget-mouse-down *edit-dialog-ok-button* mx my))
+                 (when (mnas-sdl3-gui/widgets:handle-widget-mouse-down *edit-dialog-input* mx my)
+                   (mnas-sdl3-gui/widgets:set-widget-focus (edit-dialog-widgets)
+                                                           *edit-dialog-input*))
+                 (when (mnas-sdl3-gui/widgets:handle-widget-mouse-down *edit-dialog-ok-button* mx my)
+                   (mnas-sdl3-gui/widgets:set-widget-focus (edit-dialog-widgets)
+                                                           *edit-dialog-ok-button*)))
                (mnas-sdl3-gui/widgets:handle-widget-mouse-up *edit-dialog-ok-button* mx my))))
        :continue)
       (sdl3:keyboard-event
@@ -107,11 +127,20 @@
               (setf *edit-dialog-result* nil
                     *edit-dialog-open* nil)
               :success)
+             ((eq key :tab)
+              (mnas-sdl3-gui/widgets:move-widget-focus (edit-dialog-widgets)
+                                                       :backward (edit-dialog-tab-backward-p ev))
+              :continue)
              ((eq key :return)
               (setf *edit-dialog-result*
                     (mnas-sdl3-gui/widgets:edit-box-text *edit-dialog-input*)
                     *edit-dialog-open* nil)
               :success)
+             ((eq key :space)
+              (let ((focused (mnas-sdl3-gui/widgets:focused-widget (edit-dialog-widgets))))
+                (when focused
+                  (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil)))
+              :continue)
              ((member key '(:backspace :delete :left :right :home :end :pageup :pagedown))
               (mnas-sdl3-gui/widgets:handle-widget-key-press
                *edit-dialog-input* key nil)

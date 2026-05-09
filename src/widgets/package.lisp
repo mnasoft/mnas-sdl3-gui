@@ -72,6 +72,11 @@
   #:handle-widget-mouse-up
    #:handle-widget-mouse-motion
   #:handle-widget-key-press
+  #:focusable-widget-p
+  #:focused-widget
+  #:set-widget-focus
+  #:move-widget-focus
+  #:activate-widget
   ;; toggle group helpers
   #:clear-toggle-group-registry))
 

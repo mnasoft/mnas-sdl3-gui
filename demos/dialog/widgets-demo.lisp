@@ -8,6 +8,16 @@
 (defparameter *status-message* "Widget demo. Click, type, and interact with controls.")
 (defparameter *dialog-style* :flat)
 
+(defun tab-backward-p (ev)
+  "Return true when current Tab navigation should move backward."
+  (let ((mods (slot-value ev 'sdl3:%mod)))
+    (typecase mods
+      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
+                (member :shift mods) (member :lshift mods) (member :rshift mods)))
+      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
+      (integer (not (zerop (logand mods #x0303))))
+      (t nil))))
+
 (defun focused-edit-box ()
   "Return currently focused edit-box widget, or NIL."
   (find-if (lambda (widget)
@@ -93,6 +103,7 @@
               *status-message* "Widget demo. Click, type, and interact with controls.")))
         ;; Apply selected widget style and initialize TTF for Unicode text rendering.
         (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
+          (mnas-sdl3-gui/widgets:move-widget-focus *widgets*)
         (mnas-sdl3-gui/widgets:init-ttf-font)
         (sdl3:start-text-input *window-dialog*)
   :continue)
@@ -133,18 +144,19 @@
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (if (slot-value ev 'sdl3:%down)
-         (loop for widget in *widgets*
-           when (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-             widget
-             (round (slot-value ev 'sdl3:%x))
-             (round (slot-value ev 'sdl3:%y)))
-           do (return))
-         (loop for widget in *widgets*
-           when (mnas-sdl3-gui/widgets:handle-widget-mouse-up
-             widget
-             (round (slot-value ev 'sdl3:%x))
-             (round (slot-value ev 'sdl3:%y)))
-           do (return))))
+             (loop for widget in *widgets*
+                   when (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+                         widget
+                         (round (slot-value ev 'sdl3:%x))
+                         (round (slot-value ev 'sdl3:%y)))
+                   do (mnas-sdl3-gui/widgets:set-widget-focus *widgets* widget)
+                      (return))
+             (loop for widget in *widgets*
+                   when (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+                         widget
+                         (round (slot-value ev 'sdl3:%x))
+                         (round (slot-value ev 'sdl3:%y)))
+                   do (return))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
@@ -152,6 +164,13 @@
          (cond
            ((eq (slot-value ev 'sdl3:%key) :escape)
             (return-from dialog-event :success))
+           ((eq (slot-value ev 'sdl3:%key) :tab)
+            (mnas-sdl3-gui/widgets:move-widget-focus *widgets*
+                                                     :backward (tab-backward-p ev)))
+           ((eq (slot-value ev 'sdl3:%key) :space)
+            (let ((focused (mnas-sdl3-gui/widgets:focused-widget *widgets*)))
+              (when focused
+                (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil))))
            (t
             ;; Find focused widget and send key event
             (loop for widget in *widgets*
