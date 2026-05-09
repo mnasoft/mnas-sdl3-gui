@@ -9,6 +9,9 @@
 (defparameter *edit-dialog-input* nil)
 (defparameter *edit-dialog-ok-button* nil)
 
+(defparameter *edit-dialog-title* "Введите текст и нажмите ОК")
+(defparameter *edit-dialog-hint* "Проверьте кириллицу: Съешь ещё этих мягких булок")
+
 (defun insert-text-into-edit-box (widget text)
   "Insert TEXT into edit-box WIDGET at cursor position."
   (loop for ch across text
@@ -19,14 +22,14 @@
   (setf *edit-dialog-input*
         (make-instance 'mnas-sdl3-gui/widgets:edit-box
                        :x 40 :y 90 :width 320 :height 36
-                       :text ""
-                       :cursor 0
+           :text "Привет, мир!"
+           :cursor 12
                        :max-length 128
                        :focused t))
   (setf *edit-dialog-ok-button*
         (make-instance 'mnas-sdl3-gui/widgets:button
                        :x 150 :y 150 :width 100 :height 34
-                       :text "OK"
+           :text "ОК"
                        :on-click (lambda (widget)
                                    (declare (ignore widget))
                                    (setf *edit-dialog-result*
@@ -52,7 +55,9 @@
                 *renderer-edit-dialog* renderer
                 *edit-dialog-open* t
                 *edit-dialog-result* nil)
-              (sdl3:start-text-input window)
+          ;; TTF must be initialized after SDL video subsystem is ready.
+          (mnas-sdl3-gui/widgets:init-ttf-font)
+          (sdl3:start-text-input window)
           (create-edit-dialog-widgets))))
   :continue)
 
@@ -63,8 +68,10 @@
   (sdl3:set-render-draw-color *renderer-edit-dialog* 230 230 230 255)
   (sdl3:render-clear *renderer-edit-dialog*)
 
-  (sdl3:set-render-draw-color *renderer-edit-dialog* 0 0 0 255)
-  (sdl3:render-debug-text *renderer-edit-dialog* 40.0 40.0 "Enter text and press OK")
+  (mnas-sdl3-gui/widgets:render-text *renderer-edit-dialog*
+                                     *edit-dialog-title* 40.0 40.0 '(0 0 0 255))
+  (mnas-sdl3-gui/widgets:render-text *renderer-edit-dialog*
+                                     *edit-dialog-hint* 40.0 62.0 '(70 70 70 255))
 
   (mnas-sdl3-gui/widgets:render-widget *renderer-edit-dialog* *edit-dialog-input*)
   (mnas-sdl3-gui/widgets:render-widget *renderer-edit-dialog* *edit-dialog-ok-button*)
@@ -118,6 +125,7 @@
   (declare (ignore result))
   (when *window-edit-dialog*
     (sdl3:stop-text-input *window-edit-dialog*))
+  (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *renderer-edit-dialog*
     (sdl3:destroy-renderer *renderer-edit-dialog*))
   (when *window-edit-dialog*
