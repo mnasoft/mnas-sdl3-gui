@@ -12,7 +12,11 @@
                (:file "src/menu/controller/package")
                (:file "src/menu/controller/functions")
                (:file "src/menu/renderer/package")
-               (:file "src/menu/renderer/functions")))
+               (:file "src/menu/renderer/functions")
+               (:file "src/widgets/package")
+               (:file "src/widgets/base")
+               (:file "src/widgets/renderer")
+               (:file "src/widgets/events")))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos
   :description "Demos for mnas-sdl3-gui"
@@ -22,4 +26,6 @@
   :depends-on (#:mnas-sdl3-gui)
   :serial t
   :components ((:file "demos/menu/package")
-               (:file "demos/menu/screen-menu-classes")))
+               (:file "demos/menu/screen-menu-classes")
+               (:file "demos/dialog/package")
+               (:file "demos/dialog/widgets-demo")))
