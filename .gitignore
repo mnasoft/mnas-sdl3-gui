@@ -1,0 +1,51 @@
+# Lisp compilation and cache
+*.fasl
+*.ufasl
+*.o
+*.so
+*.a
+*.lib
+*.dll
+*.dylib
+*.exe
+*.pyc
+
+# Editor backups
+*~
+*.bak
+*.swp
+*.swo
+*.tmp
+*.backup
+
+# Emacs
+.#*
+*~
+#*#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Quicklisp local-projects
+.quicklisp/
+quicklisp/
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Dependencies
+node_modules/
+vendor/
