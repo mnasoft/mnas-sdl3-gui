@@ -87,12 +87,14 @@
        (setf *edit-dialog-open* nil)
        :success)
       (sdl3:mouse-button-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (= (slot-value ev 'sdl3:%button) 1))
+       (when (= (slot-value ev 'sdl3:%button) 1)
          (let ((mx (round (slot-value ev 'sdl3:%x)))
                (my (round (slot-value ev 'sdl3:%y))))
-           (mnas-sdl3-gui/widgets:handle-widget-click *edit-dialog-input* mx my)
-           (mnas-sdl3-gui/widgets:handle-widget-click *edit-dialog-ok-button* mx my)))
+           (if (slot-value ev 'sdl3:%down)
+               (progn
+                 (mnas-sdl3-gui/widgets:handle-widget-mouse-down *edit-dialog-input* mx my)
+                 (mnas-sdl3-gui/widgets:handle-widget-mouse-down *edit-dialog-ok-button* mx my))
+               (mnas-sdl3-gui/widgets:handle-widget-mouse-up *edit-dialog-ok-button* mx my))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

@@ -106,14 +106,20 @@
                  (round (slot-value ev 'sdl3:%y))))
        :continue)
       (sdl3:mouse-button-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (= (slot-value ev 'sdl3:%button) 1))
+       (when (= (slot-value ev 'sdl3:%button) 1)
+         (if (slot-value ev 'sdl3:%down)
          (loop for widget in *widgets*
-               when (mnas-sdl3-gui/widgets:handle-widget-click
-                     widget
-                     (round (slot-value ev 'sdl3:%x))
-                     (round (slot-value ev 'sdl3:%y)))
-               do (return)))
+           when (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+             widget
+             (round (slot-value ev 'sdl3:%x))
+             (round (slot-value ev 'sdl3:%y)))
+           do (return))
+         (loop for widget in *widgets*
+           when (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+             widget
+             (round (slot-value ev 'sdl3:%x))
+             (round (slot-value ev 'sdl3:%y)))
+           do (return))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

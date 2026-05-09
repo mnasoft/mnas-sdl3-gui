@@ -35,6 +35,10 @@
 (defclass button (widget)
   ((text :initarg :text :initform "Button" :accessor button-text
          :documentation "Button label text")
+   (pressed :initarg :pressed :initform nil :accessor button-pressed-p
+       :documentation "Whether button is currently shown as pressed")
+   (armed :initarg :armed :initform nil :accessor button-armed-p
+     :documentation "Whether mouse press started on this button")
    (on-click :initarg :on-click :initform nil :accessor button-on-click
              :documentation "Callback function called on button click"))
   (:documentation "Clickable button widget"))

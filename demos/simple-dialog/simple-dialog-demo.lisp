@@ -72,10 +72,15 @@
 
 ;;; Event handling
 
-(defun handle-dialog-click (x y)
-  "Handle mouse click in dialog."
-  (mnas-sdl3-gui/widgets:handle-widget-click *ok-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-click *cancel-button* (float x 1.0) (float y 1.0)))
+(defun handle-dialog-mouse-down (x y)
+  "Handle mouse press in dialog."
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *ok-button* (float x 1.0) (float y 1.0))
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *cancel-button* (float x 1.0) (float y 1.0)))
+
+(defun handle-dialog-mouse-up (x y)
+  "Handle mouse release in dialog."
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *ok-button* (float x 1.0) (float y 1.0))
+  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *cancel-button* (float x 1.0) (float y 1.0)))
 
 ;;; SDL3 demo callbacks
 
@@ -124,10 +129,12 @@
        (setf *dialog-open* nil)
        :success)
       (sdl3:mouse-button-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (= (slot-value ev 'sdl3:%button) 1))
-         (handle-dialog-click (round (slot-value ev 'sdl3:%x))
-                              (round (slot-value ev 'sdl3:%y))))
+       (when (= (slot-value ev 'sdl3:%button) 1)
+         (if (slot-value ev 'sdl3:%down)
+             (handle-dialog-mouse-down (round (slot-value ev 'sdl3:%x))
+                                       (round (slot-value ev 'sdl3:%y)))
+             (handle-dialog-mouse-up (round (slot-value ev 'sdl3:%x))
+                                     (round (slot-value ev 'sdl3:%y)))))
        :continue)
       (t :continue))))
 

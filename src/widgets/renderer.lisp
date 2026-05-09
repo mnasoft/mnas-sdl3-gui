@@ -114,11 +114,27 @@
                                (float (- (+ x w) offset 1) 1.0)
                                (float (- (+ y h) offset 1) 1.0)))))
 
-(defun render-button-label (renderer widget color)
+(defun text-pixel-size (text)
+  "Return TEXT width and height in pixels for current renderer text pipeline." 
+  (if (and *ttf-available-p* *ttf-font*)
+      (handler-case
+          (sdl3-ttf:ttf-get-string-size *ttf-font* text)
+        (error ()
+          (values (* (length text) +font-char-width+) +font-text-height+)))
+      (values (* (length text) +font-char-width+) +font-text-height+)))
+
+(defun render-button-label (renderer widget color &key (offset-x 0) (offset-y 0))
   "Render centered button label." 
-  (let* ((x (+ (widget-x widget) +widget-padding+))
-         (y (+ (widget-y widget) (/ (- (widget-height widget) +font-text-height+) 2))))
-    (render-text renderer (button-text widget) x y color)))
+  (multiple-value-bind (text-w text-h)
+      (text-pixel-size (button-text widget))
+    (let* ((x (+ (widget-x widget)
+                 (max +widget-padding+
+                      (floor (- (widget-width widget) text-w) 2))
+                 offset-x))
+           (y (+ (widget-y widget)
+                 (max 0 (floor (- (widget-height widget) text-h) 2))
+                 offset-y)))
+  (render-text renderer (button-text widget) x y color))))
 
 (defgeneric render-widget-with-style (style renderer widget)
   (:documentation "Render WIDGET using STYLE on RENDERER."))
@@ -154,7 +170,10 @@
   (render-list-box renderer widget))
 
 (defmethod render-widget-with-style ((style flat-widget-style) renderer (widget button))
-  (let ((color (if (widget-enabled widget) +color-bg+ +color-disabled+)))
+  (let ((color (cond
+                 ((not (widget-enabled widget)) +color-disabled+)
+                 ((button-pressed-p widget) +color-button-active+)
+                 (t +color-bg+))))
     (fill-rect renderer (widget-x widget) (widget-y widget)
                (widget-width widget) (widget-height widget)
                color)
@@ -163,7 +182,8 @@
                  (if (widget-focused widget) +color-focus-border+ +color-border+)
                  2))
   (render-button-label renderer widget
-                       (if (widget-enabled widget) +color-text+ +color-disabled+)))
+                       (if (widget-enabled widget) +color-text+ +color-disabled+)
+                       :offset-y (if (button-pressed-p widget) 1 0)))
 
 (defmethod render-widget-with-style ((style windows-widget-style) renderer (widget button))
   (declare (ignore style))
@@ -171,15 +191,24 @@
         (y (widget-y widget))
         (w (widget-width widget))
         (h (widget-height widget))
+        (pressed (button-pressed-p widget))
         (face (if (widget-enabled widget) '(212 208 200 255) '(190 190 190 255))))
     (fill-rect renderer x y w h face)
     (when (widget-focused widget)
       (stroke-rect renderer x y w h +color-focus-border+ 1))
-    (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
-    (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                       '(240 240 240 255) '(64 64 64 255) 1))
+    (if pressed
+        (progn
+          (render-bevel-rect renderer x y w h '(128 128 128 255) '(255 255 255 255) 1)
+          (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                             '(64 64 64 255) '(240 240 240 255) 1))
+        (progn
+          (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
+          (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                             '(240 240 240 255) '(64 64 64 255) 1))))
   (render-button-label renderer widget
-                       (if (widget-enabled widget) +color-text+ +color-disabled+)))
+                       (if (widget-enabled widget) +color-text+ +color-disabled+)
+                       :offset-x (if (button-pressed-p widget) 1 0)
+                       :offset-y (if (button-pressed-p widget) 1 0)))
 
 (defmethod render-widget-with-style ((style motif-widget-style) renderer (widget button))
   (declare (ignore style))
@@ -187,13 +216,18 @@
         (y (widget-y widget))
         (w (widget-width widget))
         (h (widget-height widget))
+        (pressed (button-pressed-p widget))
         (face (if (widget-enabled widget) '(196 196 196 255) '(170 170 170 255))))
     (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2)
+    (if pressed
+        (render-bevel-rect renderer x y w h '(90 90 90 255) '(238 238 238 255) 2)
+        (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2))
     (when (widget-focused widget)
       (stroke-rect renderer (+ x 3) (+ y 3) (- w 6) (- h 6) +color-focus-border+ 1)))
   (render-button-label renderer widget
-                       (if (widget-enabled widget) +color-text+ +color-disabled+)))
+                       (if (widget-enabled widget) +color-text+ +color-disabled+)
+                       :offset-x (if (button-pressed-p widget) 1 0)
+                       :offset-y (if (button-pressed-p widget) 1 0)))
 
 (defun render-label (renderer widget)
   "Render a label widget."

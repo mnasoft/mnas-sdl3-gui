@@ -35,6 +35,8 @@
    #:label-text
    ;; button accessors
    #:button-text
+  #:button-pressed-p
+  #:button-armed-p
    #:button-on-click
    ;; toggle accessors
    #:toggle-state
@@ -65,6 +67,8 @@
    #:approximate-cyrillic-text
    ;; event handling
    #:handle-widget-click
+  #:handle-widget-mouse-down
+  #:handle-widget-mouse-up
    #:handle-widget-mouse-motion
    #:handle-widget-key-press))
 
