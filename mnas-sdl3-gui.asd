@@ -29,5 +29,6 @@
                (:file "demos/menu/screen-menu-classes")
                (:file "demos/dialog/package")
                (:file "demos/dialog/widgets-demo")
+               (:file "demos/dialog/edit-box-ok-dialog-demo")
                (:file "demos/simple-dialog/package")
                (:file "demos/simple-dialog/simple-dialog-demo")))
