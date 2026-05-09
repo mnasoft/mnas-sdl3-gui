@@ -45,10 +45,12 @@
 
 (defclass toggle (widget)
   ((state :initarg :state :initform nil :accessor toggle-state
-          :documentation "Current toggle state (T or NIL)")
+    :documentation "Current toggle state (selected or NIL)")
+   (group :initarg :group :initform nil :accessor toggle-group
+    :documentation "Group identifier for mutually exclusive toggles")
    (label :initarg :label :initform "Toggle" :accessor toggle-label
           :documentation "Label for toggle"))
-  (:documentation "Toggle switch widget (on/off)"))
+  (:documentation "Radio-style toggle widget (single selection per group)"))
 
 (defclass check-box (widget)
   ((checked :initarg :checked :initform nil :accessor check-box-checked

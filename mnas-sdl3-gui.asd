@@ -32,6 +32,7 @@
                (:file "demos/dialog/package")
                (:file "demos/dialog/widgets-demo")
                (:file "demos/dialog/edit-box-ok-dialog-demo")
+               (:file "demos/dialog/toggle-group-demo")
                (:file "demos/dialog/cyrillic-font-demo")
                (:file "demos/simple-dialog/package")
                (:file "demos/simple-dialog/simple-dialog-demo")))

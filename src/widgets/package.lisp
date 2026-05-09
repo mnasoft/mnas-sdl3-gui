@@ -40,6 +40,7 @@
    #:button-on-click
    ;; toggle accessors
    #:toggle-state
+  #:toggle-group
    #:toggle-label
    ;; check-box accessors
    #:check-box-checked
@@ -70,6 +71,8 @@
   #:handle-widget-mouse-down
   #:handle-widget-mouse-up
    #:handle-widget-mouse-motion
-   #:handle-widget-key-press))
+  #:handle-widget-key-press
+  ;; toggle group helpers
+  #:clear-toggle-group-registry))
 
 (in-package :mnas-sdl3-gui/widgets)

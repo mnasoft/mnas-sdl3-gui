@@ -4,6 +4,34 @@
 
 ;;; Event Handling
 
+(defparameter *toggle-groups* (make-hash-table :test #'equal)
+  "Registry of grouped toggles keyed by group designator.")
+
+(defun clear-toggle-group-registry ()
+  "Remove all registered toggle groups."
+  (clrhash *toggle-groups*))
+
+(defun register-toggle-group-member (widget)
+  "Register WIDGET in the toggle group registry when it belongs to a group."
+  (let ((group (toggle-group widget)))
+    (when group
+      (pushnew widget (gethash group *toggle-groups*) :test #'eq))))
+
+(defun select-toggle-in-group (widget)
+  "Select WIDGET and clear all other toggles from the same group."
+  (let ((group (toggle-group widget)))
+    (setf (toggle-state widget) t)
+    (update-widget-value widget t)
+    (when group
+      (dolist (member (gethash group *toggle-groups*))
+        (unless (eq member widget)
+          (when (toggle-state member)
+            (setf (toggle-state member) nil)
+            (update-widget-value member nil)))))))
+
+(defmethod initialize-instance :after ((widget toggle) &key &allow-other-keys)
+  (register-toggle-group-member widget))
+
 (defun handle-widget-mouse-down (widget x y)
   "Handle mouse button press. Returns T if event was consumed."
   (when (and (widget-enabled widget) (widget-visible widget))
@@ -16,8 +44,7 @@
          inside)
         (toggle
          (when inside
-           (setf (toggle-state widget) (not (toggle-state widget)))
-           (update-widget-value widget (toggle-state widget))
+           (select-toggle-in-group widget)
            t))
         (check-box
          (when inside

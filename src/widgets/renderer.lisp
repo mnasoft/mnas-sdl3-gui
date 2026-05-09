@@ -259,25 +259,54 @@
   "Render a button widget."
   (render-widget-with-style *widget-style* renderer widget))
 
+(defun fill-circle (renderer cx cy radius color)
+  "Fill a circle centered at CX/CY with RADIUS and COLOR."
+  (destructuring-bind (r g b a) color
+    (sdl3:set-render-draw-color renderer r g b a))
+  (loop for dy from (- radius) to radius
+        for span = (floor (sqrt (max 0 (- (* radius radius) (* dy dy)))))
+        do (sdl3:render-line renderer
+                             (float (- cx span) 1.0)
+                             (float (+ cy dy) 1.0)
+                             (float (+ cx span) 1.0)
+                             (float (+ cy dy) 1.0))))
+
+(defun stroke-circle (renderer cx cy radius color &optional (segments 32))
+  "Draw a circle outline centered at CX/CY with RADIUS and COLOR."
+  (destructuring-bind (r g b a) color
+    (sdl3:set-render-draw-color renderer r g b a))
+  (loop for index from 0 below segments
+        for angle-a = (* 2 pi (/ index segments))
+        for angle-b = (* 2 pi (/ (1+ index) segments))
+        for x-a = (+ cx (* radius (cos angle-a)))
+        for y-a = (+ cy (* radius (sin angle-a)))
+        for x-b = (+ cx (* radius (cos angle-b)))
+        for y-b = (+ cy (* radius (sin angle-b)))
+        do (sdl3:render-line renderer
+                             (float x-a 1.0) (float y-a 1.0)
+                             (float x-b 1.0) (float y-b 1.0))))
+
 (defun render-toggle (renderer widget)
-  "Render a toggle switch widget."
+  "Render a radio-style toggle widget."
   (let* ((toggle-width 40)
          (toggle-height 20)
          (toggle-x (widget-x widget))
          (toggle-y (+ (widget-y widget) (/ (- (widget-height widget) toggle-height) 2)))
-         (knob-size 16)
-         (knob-x (if (toggle-state widget)
-                    (+ toggle-x toggle-width (- knob-size 4))
-                    (+ toggle-x 4))))
-    ;; Toggle background
-    (fill-rect renderer toggle-x toggle-y toggle-width toggle-height
-               (if (toggle-state widget) '(100 150 200 255) +color-bg+))
-    ;; Knob
-    (fill-rect renderer knob-x toggle-y knob-size knob-size +color-text+)
-    ;; Label
+         (circle-radius 8)
+         (circle-cx (+ toggle-x circle-radius))
+         (circle-cy (+ toggle-y circle-radius))
+         (label-x (+ toggle-x toggle-width +widget-padding+ 5))
+         (label-y (+ toggle-y (/ (- toggle-height +font-text-height+) 2))))
+    ;; Radio outer circle.
+    (fill-circle renderer circle-cx circle-cy circle-radius +color-bg+)
+    (stroke-circle renderer circle-cx circle-cy circle-radius +color-border+)
+    ;; Selected state marker.
+    (when (toggle-state widget)
+      (fill-circle renderer circle-cx circle-cy 4 +color-text+))
+    ;; Label.
     (render-text renderer (toggle-label widget)
-                 (+ toggle-x toggle-width +widget-padding+ 5)
-                 (+ toggle-y (/ (- toggle-height +font-text-height+) 2))
+                 label-x
+                 label-y
                  +color-text+)))
 
 (defun render-check-box (renderer widget)

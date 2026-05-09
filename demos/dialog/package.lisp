@@ -4,6 +4,7 @@
   (:use #:cl)
   (:export #:do-dialog-demo
            #:do-edit-box-dialog-demo
-           #:do-cyrillic-font-demo))
+           #:do-cyrillic-font-demo
+           #:do-toggle-group-demo))
 
 (in-package :mnas-sdl3-gui/demos/dialog)
