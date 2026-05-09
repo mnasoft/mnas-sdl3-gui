@@ -113,8 +113,9 @@
 (defmethod widget-min-size ((widget label))
   (multiple-value-bind (tw th)
       (widget-text-pixel-size (label-text widget))
+    ;; Padding: 4px left/right + 4px right, 4px top/bottom
     (values (max 24 (+ tw 8))
-            (max 20 (+ th 6)))))
+            (max 20 (+ th 8)))))
 
 (defmethod widget-min-size ((widget button))
   (multiple-value-bind (tw th)
@@ -133,12 +134,14 @@
 (defmethod widget-min-size ((widget check-box))
   (multiple-value-bind (tw th)
       (widget-text-pixel-size (check-box-label widget))
+    ;; Box (16) + padding (4) + label text, vertical padding 4+4
     (values (max 72 (+ 16 4 tw))
-            (max 22 (+ th 6)))))
+            (max 22 (+ th 8)))))
 
 (defmethod widget-min-size ((widget edit-box))
   (multiple-value-bind (tw th)
       (widget-text-pixel-size (edit-box-text widget))
+    ;; Text + padding (4 left + 4 right) + border
     (values (max 120 (+ tw 12))
             (max 30 (+ th 10)))))
 

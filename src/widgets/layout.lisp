@@ -7,16 +7,20 @@
 (defparameter *pack-layout-options* (make-hash-table :test #'eq)
   "Mapping from widget object to pack options plist.")
 
-(defun pack-widget (widget &key (side :top) (fill :none) (expand nil) (padx 0) (pady 0))
+(defun pack-widget (widget &key (side :top) (fill :none) (expand nil) (padx 0) (pady 0)
+                                (use-content-size nil))
   "Register WIDGET for pack layout.
 SIDE is one of :top, :bottom, :left, :right.
 FILL is one of :none, :x, :y, :both.
-EXPAND controls whether WIDGET can consume extra slot space along packing axis."
+EXPAND controls whether WIDGET can consume extra slot space along packing axis.
+USE-CONTENT-SIZE makes PACK use only WIDGET-MIN-SIZE as preferred dimensions.
+When PACK-LAYOUT-WIDGETS is applied, WIDGET X/Y are always computed by layout."
   (check-type side (member :top :bottom :left :right))
   (check-type fill (member :none :x :y :both))
   (setf (gethash widget *pack-layout-options*)
         (list :side side :fill fill :expand (not (null expand))
-              :padx (max 0 padx) :pady (max 0 pady)))
+              :padx (max 0 padx) :pady (max 0 pady)
+              :use-content-size (not (null use-content-size))))
   widget)
 
 (defun unpack-widget (widget)
@@ -65,6 +69,37 @@ Relative coordinates use RELX/RELY/RELWIDTH/RELHEIGHT in [0,1] against container
                        (member side '(:top :bottom))
                        (member side '(:left :right))))))
 
+(defun pack-layout-required-size (widgets)
+  "Return minimal container width and height for packed WIDGETS.
+Only widgets registered by PACK-WIDGET are included in the calculation."
+  (let ((required-width 0)
+        (required-height 0))
+    (loop for widget in widgets
+          for opts = (gethash widget *pack-layout-options*)
+          do (when opts
+               (let* ((side (getf opts :side :top))
+                      (padx (getf opts :padx 0))
+                      (pady (getf opts :pady 0))
+                      (use-content-size (getf opts :use-content-size nil))
+                      (min-w 1)
+                      (min-h 1))
+                 (multiple-value-setq (min-w min-h)
+                   (widget-min-size widget))
+                 (let* ((pref-w (if use-content-size min-w
+                                    (max min-w (widget-width widget))))
+                        (pref-h (if use-content-size min-h
+                                    (max min-h (widget-height widget))))
+                        (slot-w (+ pref-w (* 2 padx)))
+                        (slot-h (+ pref-h (* 2 pady))))
+                   (if (member side '(:top :bottom))
+                       (progn
+                         (setf required-width (max required-width slot-w))
+                         (incf required-height slot-h))
+                       (progn
+                         (incf required-width slot-w)
+                         (setf required-height (max required-height slot-h))))))))
+    (values (max 1 required-width) (max 1 required-height))))
+
 (defun pack-layout-widgets (widgets x y width height)
   "Lay out WIDGETS inside container rectangle by pack options.
 Only widgets previously registered with PACK-WIDGET are repositioned."
@@ -81,6 +116,7 @@ Only widgets previously registered with PACK-WIDGET are repositioned."
                       (expand (getf opts :expand nil))
                       (padx (getf opts :padx 0))
                       (pady (getf opts :pady 0))
+                      (use-content-size (getf opts :use-content-size nil))
                 (min-w 1)
                 (min-h 1)
                       (avail-w (max 0 (- right left)))
@@ -91,8 +127,10 @@ Only widgets previously registered with PACK-WIDGET are repositioned."
                 (widget-min-size widget))
                  (cond
                    ((member side '(:top :bottom))
-              (let* ((pref-h (max (widget-height widget) min-h))
-                  (pref-w (max (widget-width widget) min-w))
+                    (let* ((pref-h (if use-content-size min-h
+                                       (max (widget-height widget) min-h)))
+                           (pref-w (if use-content-size min-w
+                                       (max (widget-width widget) min-w)))
                   (slot-h (if expand
                         (max pref-h
                                             (floor avail-h rem-expand-y))
@@ -118,8 +156,10 @@ Only widgets previously registered with PACK-WIDGET are repositioned."
                           (incf top slot-h)
                           (decf bottom slot-h))))
                    ((member side '(:left :right))
-                        (let* ((pref-w (max (widget-width widget) min-w))
-                            (pref-h (max (widget-height widget) min-h))
+                              (let* ((pref-w (if use-content-size min-w
+                                  (max (widget-width widget) min-w)))
+                                (pref-h (if use-content-size min-h
+                                  (max (widget-height widget) min-h)))
                             (slot-w (if expand
                                   (max pref-w
                                             (floor avail-w rem-expand-x))

@@ -58,6 +58,7 @@
   #:pack-widget
   #:unpack-widget
   #:clear-pack-layout
+  #:pack-layout-required-size
   #:pack-layout-widgets
   #:place-widget
    ;; rendering
