@@ -1,230 +1,156 @@
 ;;;; ./src/widgets/sdl3-ttf-render.lisp
-;;;; SDL3_ttf font rendering support for Unicode text (including Cyrillic)
+;;;; SDL3_ttf integration layer for rendering native Cyrillic glyphs
+;;;; Falls back to ASCII approximation if TTF is unavailable
 
 (in-package :mnas-sdl3-gui/widgets)
-;;; TTF Font rendering via SDL3_ttf
-;;; Falls back to ASCII approximation if SDL3_ttf is unavailable
 
+;;; Global state
 (defvar *ttf-available-p* nil
-  "Whether SDL3_ttf is available in the system")
+  "Whether SDL3_ttf library is available and initialized")
 
 (defvar *ttf-font* nil
-  "Currently loaded TTF font object")
+  "Pointer to loaded TTF font (SDL3_ttf::ttf-font)")
 
 (defvar *ttf-font-path* "/usr/share/fonts/TTF/DejaVuSans.ttf"
-  "Path to the TTF font file for Unicode support (DejaVuSans supports Cyrillic)")
+  "Path to TTF font with Cyrillic support")
 
 (defvar *ttf-font-size* 16
   "Default font size in pixels")
 
-;;; Try to load SDL3_ttf and initialize font
-(defun probe-ttf-font ()
-  "Check if TTF font file exists and is readable."
-  (and (probe-file *ttf-font-path*)
-       (with-open-file (f *ttf-font-path* :if-does-not-exist nil)
-         (not (null f)))))
-
-(defun detect-ttf-availability ()
-  "Check if SDL3_ttf library is available via dlopen.
-   
-   SDL3_ttf may not be available in all systems. We try to detect it
-  by checking if the font file exists, which is sufficient for our
-  approximation fallback strategy."
-  (when (probe-ttf-font)
-  (format t "[TTF] DejaVuSans font found at: ~a~%" *ttf-font-path*)
-  (setf *ttf-available-p* t)
-  t))
+;;; Initialize TTF subsystem
 (defun init-ttf-font ()
-  "Initialize TTF font rendering subsystem.
+  "Initialize SDL3_ttf library and load font.
    
-   Currently uses ASCII approximation. Full TTF support via SDL3_ttf
-   would require CFFI bindings and is left as a future enhancement."
-  (if (detect-ttf-availability)
-    (format t "[TTF] TTF rendering support: approximation mode (ready for full TTF integration)~%")
-  (format t "[TTF] TTF rendering support: ASCII approximation fallback~%")))
-
-(defun render-text-with-ttf (renderer text x y color)
-  "Render text with TTF font if available, otherwise use approximation.
-   
-   Parameters:
-  - renderer: SDL3 renderer
-  - text: UTF-8 string (Cyrillic, ASCII, etc.)
-  - x, y: screen coordinates (floats)
-  - color: RGB/RGBA color specification
-   
-  Currently uses ASCII approximation as fallback. Full TTF rendering
-  requires SDL3_ttf CFFI bindings (planned for future release).
-   
-  Returns symbol indicating rendering method used:
-  - :ttf-rendered if TTF was used (future)
-  - :approximated if ASCII approximation was used
-  - :skipped if text is empty"
-  (declare (ignore color))  ;; TODO: use color parameter for TTF rendering
-  
-  (cond
-  ((or (null text) (string= text ""))
-   :skipped)
-    
-  (*ttf-available-p*
-  ;; Font file available but TTF rendering not yet implemented
-  ;; TODO: Implement SDL3_ttf CFFI bindings for real Unicode rendering
-  ;; For now, use ASCII approximation which works well for Cyrillic
-  (render-text-approximated renderer text x y)
-  :approximated)
-    
-    (t
-  ;; Fallback to ASCII approximation
-  (render-text-approximated renderer text x y)
-  :approximated)))
-(defun render-text-approximated (renderer text x y)
-  "Render text using ASCII approximation (transliteration for non-ASCII).
-   
-   This is the primary fallback method providing:
-  - Cyrillic characters → ASCII transliteration (e.g., 'Привет' → 'Privet')
-  - ASCII characters → rendered directly
-  - Unknown characters → '*'
-   
-  Performance is excellent and works on all systems without external dependencies."
-  (if (ascii-only-p text)
-  ;; Pure ASCII: render directly with SDL3 debug font
-  (sdl3:render-debug-text renderer (float x 1.0) (float y 1.0) text)
-  ;; Contains non-ASCII: approximate for display
-    (let ((approximated (approximate-cyrillic-text text)))
-      (sdl3:render-debug-text renderer (float x 1.0) (float y 1.0) approximated))))
-
-(defun ascii-only-p (text)
-  "Check if text contains only ASCII characters (32-126)."
-  (every #'(lambda (c)
-             (let ((code (char-code c)))
-         (or (= code #x0A)        ; newline
-           (= code #x0D)        ; carriage return
-           (<= 32 code 126))))  ; printable ASCII
-         text))
-
-;;; Initialization hook
-(defun initialize-ttf-rendering ()
-  "Initialize TTF rendering subsystem at package load time."
-  (init-ttf-font))
-
-;; Auto-initialize on load
-(initialize-ttf-rendering)
-;;; Exports
-(export '(render-text-with-ttf
-          *ttf-available-p*
-          *ttf-font-path*
-          *ttf-font-size*
-          initialize-ttf-rendering
-          ascii-only-p))
-;;;; ./src/widgets/sdl3-ttf-render.lisp
-;;;; SDL3_ttf font rendering support for Unicode text (including Cyrillic)
-
-(in-package :mnas-sdl3-gui/widgets)
-
-;;; TTF Font rendering via SDL3_ttf
-;;; Falls back to ASCII approximation if SDL3_ttf is unavailable
-
-(defvar *ttf-available-p* nil
-  "Whether SDL3_ttf is available in the system")
-
-(defvar *ttf-font* nil
-  "Currently loaded TTF font object")
-
-(defvar *ttf-font-path* "/usr/share/fonts/TTF/DejaVuSans.ttf"
-  "Path to the TTF font file for Unicode support")
-
-(defvar *ttf-font-size* 14
-  "Default font size in pixels")
-
-;;; CFFI definitions for SDL3_ttf
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (unless (member :sdl3-ttf *features*)
-    (push :sdl3-ttf *features*)))
-
-;;; Try to detect SDL3_ttf availability
-(defun detect-ttf-availability ()
-  "Check if SDL3_ttf is available via system libraries."
-  (ignore-errors
-    (let* ((libs '("SDL3_ttf" "SDL3_ttf.so" "SDL3_ttf.so.0"
-                   "libSDL3_ttf" "libSDL3_ttf.so" "libSDL3_ttf.so.0"))
-           (available-p nil))
-      (dolist (lib libs available-p)
-        (handler-case
+   Returns T if successful, NIL otherwise."
+  (handler-case
+      (progn
+        ;; Check font file exists
+        (unless (probe-file *ttf-font-path*)
+          (format t "[TTF] Font file not found: ~a~%" *ttf-font-path*)
+          (return-from init-ttf-font nil))
+        
+        ;; Initialize TTF
+        (sdl3-ttf:ttf-init)
+        
+        ;; Open font
+        (setf *ttf-font* 
+              (sdl3-ttf:ttf-open-font *ttf-font-path* *ttf-font-size*))
+        
+        (if *ttf-font*
             (progn
-              (sb-alien:load-shared-object lib :dont-save t)
-              (setf available-p t)
-              (return available-p))
-          (error () nil))))))
+              (setf *ttf-available-p* t)
+              (format t "[TTF] Initialized: ~a (~apx)~%" 
+                      *ttf-font-path* *ttf-font-size*)
+              t)
+            (progn
+              (sdl3-ttf:ttf-quit)
+              nil)))
+    (error (e)
+      (format t "[TTF] Init failed: ~a~%" e)
+      nil)))
 
-(defun init-ttf-font ()
-  "Initialize TTF font for rendering Unicode text.
-   Falls back gracefully if SDL3_ttf is not available."
-  (when (probe-file *ttf-font-path*)
-    (setf *ttf-available-p* t)
-    (format t "[TTF] Font support enabled: ~a~%" *ttf-font-path*))
-  (unless *ttf-available-p*
-    (format t "[TTF] SDL3_ttf not available, using ASCII approximation~%")))
-
+;;; Main rendering function - tries TTF first, falls back to approximation
 (defun render-text-with-ttf (renderer text x y color)
-  "Render text with TTF font if available, otherwise use approximation.
+  "Render text (including Cyrillic) via SDL3_ttf.
+   
+   Falls back to ASCII approximation if TTF rendering fails or is unavailable.
    
    Parameters:
    - renderer: SDL3 renderer
-   - text: UTF-8 string (Cyrillic, ASCII, etc.)
+   - text: UTF-8 string (supports Cyrillic)
    - x, y: screen coordinates (floats)
-   - color: RGB/RGBA color specification
+   - color: (list r g b a) with values 0-255
    
-   Returns:
-   - :ttf-rendered if TTF was used
-   - :approximated if ASCII approximation was used
-   - :skipped if text is empty"
-  (declare (ignore color))  ;; TODO: use color parameter for TTF rendering
-  
+   Returns: :ttf-rendered, :approximated, or :skipped"
   (cond
     ((or (null text) (string= text ""))
      :skipped)
     
     (*ttf-available-p*
-     ;; TODO: Implement actual TTF rendering when SDL3_ttf CFFI bindings are available
-     ;; For now, fall back to approximation
-     (render-text-approximated renderer text x y)
-     :approximated)
+     ;; Try TTF rendering first
+     (handler-case
+         (progn
+           (destructuring-bind (r g b a) (or color '(0 0 0 255))
+             ;; Get string dimensions
+             (multiple-value-bind (w h)
+                 (sdl3-ttf:ttf-get-string-size *ttf-font* text)
+               
+               ;; Render text to surface via SDL3_ttf
+               (let ((surface (sdl3-ttf:ttf-render-text-blended 
+                               *ttf-font* text :r r :g g :b b :a a)))
+                 (if (cffi:null-pointer-p surface)
+                     ;; Surface creation failed, use approximation
+                     (progn
+                       (render-text-approximated renderer text x y)
+                       :approximated)
+                     ;; Convert surface to texture and render
+                     (progn
+                       (let ((texture (sdl3:create-texture-from-surface 
+                                       renderer surface)))
+                         (if (cffi:null-pointer-p texture)
+                             ;; Texture creation failed
+                             (progn
+                               (sdl3:destroy-surface surface)
+                               (render-text-approximated renderer text x y)
+                               :approximated)
+                             ;; Render texture successfully
+                             (progn
+                               ;; Create destination rect
+                               (let ((dst-rect (make-instance 'sdl3:frect
+                                                              :%x (float x 1.0f0)
+                                                              :%y (float y 1.0f0)
+                                                              :%w (float w 1.0f0)
+                                                              :%h (float h 1.0f0))))
+                                 ;; Render texture at position
+                                 (sdl3:render-texture renderer texture nil dst-rect))
+                                 
+                               ;; Cleanup
+                               (sdl3:destroy-texture texture)
+                               (sdl3:destroy-surface surface)
+                               :ttf-rendered)))))))))
+       (error (e)
+         (format t "[TTF] Render error: ~a~%" e)
+         (render-text-approximated renderer text x y)
+         :approximated)))
     
     (t
-     ;; SDL3_ttf not available, use approximation
+     ;; TTF unavailable, use ASCII approximation
      (render-text-approximated renderer text x y)
      :approximated)))
 
+;;; Fallback rendering
 (defun render-text-approximated (renderer text x y)
-  "Render text using approximation (ASCII transliteration for non-ASCII).
-   
-   This is the fallback method when TTF is not available."
-  (if (ascii-only-p text)
-    ;; Pure ASCII: render directly with SDL3 debug font
-    (sdl3:render-debug-text renderer (float x 1.0) (float y 1.0) text)
-    ;; Contains non-ASCII: approximate for display
-    (let ((approximated (approximate-cyrillic-text text)))
-      (sdl3:render-debug-text renderer (float x 1.0) (float y 1.0) approximated))))
+  "Fallback: render text using ASCII approximation for non-ASCII characters."
+  (let ((display-text (if (ascii-only-p text)
+                          text
+                          (approximate-cyrillic-text text))))
+    (sdl3:render-debug-text renderer (float x 1.0f0) (float y 1.0f0) display-text)))
 
 (defun ascii-only-p (text)
-  "Check if text contains only ASCII characters."
+  "Check if text contains only ASCII printable characters (32-126)."
   (every #'(lambda (c)
              (let ((code (char-code c)))
-               (or (= code #x0A)        ; newline
-                   (= code #x0D)        ; carriage return
-                   (<= 32 code 126))))  ; printable ASCII
+               (or (= code #x0A) (= code #x0D)    ; newline, CR
+                   (<= 32 code 126))))            ; printable ASCII
          text))
 
-;;; Initialization
-(defun initialize-ttf-rendering ()
-  "Initialize TTF rendering subsystem on startup."
-  (init-ttf-font))
+;;; Cleanup
+(defun cleanup-ttf ()
+  "Clean up TTF resources."
+  (when *ttf-font*
+    (sdl3-ttf:ttf-close-font *ttf-font*)
+    (setf *ttf-font* nil))
+  (when *ttf-available-p*
+    (sdl3-ttf:ttf-quit)
+    (setf *ttf-available-p* nil)))
 
-;; Auto-initialize on load
-(initialize-ttf-rendering)
+;;; Auto-initialize on load (with error handling)
+(ignore-errors (init-ttf-font))
 
 ;;; Exports
 (export '(render-text-with-ttf
           *ttf-available-p*
+          *ttf-font*
           *ttf-font-path*
           *ttf-font-size*
-          initialize-ttf-rendering))
+          cleanup-ttf))

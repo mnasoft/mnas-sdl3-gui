@@ -42,13 +42,16 @@
    #:list-box-selected-index
    #:list-box-item-height
    ;; rendering
+  #:render-text
    #:render-widget
    ;; TTF/font rendering
    #:render-text-with-ttf
    #:*ttf-available-p*
+   #:*ttf-font*
    #:*ttf-font-path*
    #:*ttf-font-size*
-   #:initialize-ttf-rendering
+   #:init-ttf-font
+   #:cleanup-ttf
    ;; Cyrillic approximation
    #:approximate-cyrillic-text
    ;; event handling

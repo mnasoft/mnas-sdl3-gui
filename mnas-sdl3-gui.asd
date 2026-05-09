@@ -3,7 +3,7 @@
   :author "mna"
   :license "GPL-3.0"
   :version "0.1.0"
-  :depends-on (#:sdl3)
+  :depends-on (#:sdl3 #:sdl3-ttf)
   :serial t
   :components ((:file "src/mnas-sdl3-gui")
                (:file "src/menu/model/package")
@@ -32,5 +32,6 @@
                (:file "demos/dialog/package")
                (:file "demos/dialog/widgets-demo")
                (:file "demos/dialog/edit-box-ok-dialog-demo")
+               (:file "demos/dialog/cyrillic-font-demo")
                (:file "demos/simple-dialog/package")
                (:file "demos/simple-dialog/simple-dialog-demo")))
