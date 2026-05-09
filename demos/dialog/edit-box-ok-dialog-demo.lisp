@@ -9,12 +9,36 @@
 (defparameter *edit-dialog-input* nil)
 (defparameter *edit-dialog-ok-button* nil)
 
-(defun key-to-char (key)
-  "Convert SDL3 key keyword to character when possible."
+(defun keymod-active-p (mods mod-key)
+  "Return T when MOD-KEY is active in SDL3 keyboard modifiers value MODS."
+  (cond
+    ((listp mods)
+     (member mod-key mods))
+    ((keywordp mods)
+     (eq mods mod-key))
+    (t
+     nil)))
+
+(defun key-to-char (key shift-active-p caps-active-p)
+  "Convert SDL3 key keyword to character with proper case handling."
   (cond
     ((and (keywordp key)
           (= (length (symbol-name key)) 1))
-     (char-downcase (char (symbol-name key) 0)))
+     (let* ((ch (char (symbol-name key) 0))
+            (alpha (alpha-char-p ch))
+            ;; For letters, Shift and CapsLock both affect case.
+            (upper-p (if alpha
+                         (if caps-active-p
+                             (not shift-active-p)
+                             shift-active-p)
+                         nil)))
+       (cond
+         ((not alpha)
+          ch)
+         (upper-p
+          (char-upcase ch))
+         (t
+          (char-downcase ch)))))
     ((eq key :space)
      #\Space)
     ((eq key :period)
@@ -103,8 +127,12 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (let* ((key (slot-value ev 'sdl3:%key))
-                (char (key-to-char key)))
+          (let* ((key (slot-value ev 'sdl3:%key))
+            (mods (slot-value ev 'sdl3:%mod))
+            (shift-active-p (or (keymod-active-p mods :lshift)
+                 (keymod-active-p mods :rshift)))
+            (caps-active-p (keymod-active-p mods :caps))
+            (char (key-to-char key shift-active-p caps-active-p)))
            (cond
              ((eq key :escape)
               (setf *edit-dialog-result* nil
