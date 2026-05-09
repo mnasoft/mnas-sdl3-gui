@@ -15,6 +15,15 @@
    #:widget-visible
    #:widget-value
    #:widget-on-change
+  ;; style classes and helpers
+  #:widget-style
+  #:flat-widget-style
+  #:windows-widget-style
+  #:motif-widget-style
+  #:*widget-style*
+  #:make-widget-style
+  #:set-widget-style
+  #:widget-style-name
    ;; concrete widgets
    #:label
    #:button

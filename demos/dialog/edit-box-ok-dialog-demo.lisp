@@ -108,10 +108,10 @@
                     (mnas-sdl3-gui/widgets:edit-box-text *edit-dialog-input*)
                     *edit-dialog-open* nil)
               :success)
-         ((member key '(:backspace :delete :left :right :home :end))
-          (mnas-sdl3-gui/widgets:handle-widget-key-press
-           *edit-dialog-input* key nil)
-          :continue)
+             ((member key '(:backspace :delete :left :right :home :end :pageup :pagedown))
+              (mnas-sdl3-gui/widgets:handle-widget-key-press
+               *edit-dialog-input* key nil)
+              :continue)
              (t
               :continue))))
        :continue)

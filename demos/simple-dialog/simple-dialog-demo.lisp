@@ -6,6 +6,7 @@
 (defparameter *renderer* nil)
 (defparameter *dialog-result* nil)
 (defparameter *dialog-open* t)
+(defparameter *dialog-style* :windows)
 
 ;; Dialog state
 (defparameter *ok-button* nil)
@@ -59,6 +60,8 @@
   ;; Title
   (sdl3:set-render-draw-color renderer 0 0 0 255)
   (sdl3:render-debug-text renderer 70.0 170.0 "Confirmation Dialog")
+  (sdl3:render-debug-text renderer 70.0 192.0
+                          (format nil "Style: ~(~a~)" *dialog-style*))
   
   ;; Message
   (sdl3:render-debug-text renderer 70.0 230.0 *message*)
@@ -94,6 +97,7 @@
           *renderer* renderer
           *dialog-result* nil
           *dialog-open* t)
+        (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
         (create-dialog-buttons))))
   :continue)
 
@@ -139,9 +143,10 @@
 
 ;;; Public demo function
 
-(defun do-simple-dialog-demo ()
+(defun do-simple-dialog-demo (&optional (style :windows))
   "Run the simple dialog demo.
    Returns :ok or :cancel depending on which button was clicked."
+  (setf *dialog-style* style)
   (sdl3:enter-app-main-callbacks
    'simple-dialog-init
    'simple-dialog-iterate

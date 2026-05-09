@@ -81,6 +81,9 @@
          ((eq key :end)
           (setf (edit-box-cursor widget) (length (edit-box-text widget)))
           t)
+         ((member key '(:pageup :pagedown))
+          ;; Edit boxes do not use page-wise navigation; consume the key.
+          t)
          ((characterp char)
           (when (< (length (edit-box-text widget)) (edit-box-max-length widget))
             (let ((text (edit-box-text widget)))
