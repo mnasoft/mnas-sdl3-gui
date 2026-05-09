@@ -23,11 +23,9 @@ Common Lisp GUI toolkit built on top of SDL3 for cross-platform graphical user i
 - Mouse and keyboard event handling
 
 ### Text Rendering
-- Pixel-art style character patterns for visibility:
-  - Vowels (A,E,I,O,U): vertical line patterns
-  - Consonants (B-Z): horizontal line patterns
-  - Numbers (0-9): diamond patterns
-  - Special characters: cross patterns
+- Built-in SDL3 debug font for clean, readable text
+- Consistent rendering across menu and widget components
+- Full Unicode support via SDL3
 
 ### Demo Applications
 - `demos/menu` — Interactive menu bar demonstration
