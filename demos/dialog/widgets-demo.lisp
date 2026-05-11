@@ -8,30 +8,6 @@
 (defparameter *status-message* "Widget demo. Click, type, and interact with controls.")
 (defparameter *dialog-style* :flat)
 
-(defun tab-backward-p (ev)
-  "Return true when current Tab navigation should move backward."
-  (let ((mods (slot-value ev 'sdl3:%mod)))
-    (typecase mods
-      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
-                (member :shift mods) (member :lshift mods) (member :rshift mods)))
-      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
-      (integer (not (zerop (logand mods #x0303))))
-      (t nil))))
-
-(defun focused-edit-box ()
-  "Return currently focused edit-box widget, or NIL."
-  (find-if (lambda (widget)
-             (and (typep widget 'mnas-sdl3-gui/widgets:edit-box)
-                  (mnas-sdl3-gui/widgets:widget-focused widget)))
-           *widgets*))
-
-(defun insert-text-into-focused-edit-box (text)
-  "Insert TEXT into currently focused edit-box, character by character."
-  (let ((edit-box (focused-edit-box)))
-    (when edit-box
-      (loop for ch across text
-            do (mnas-sdl3-gui/widgets:handle-widget-key-press edit-box nil ch)))))
-
 ;;; Create demo widgets
 
 (defun create-demo-widgets ()
@@ -78,7 +54,7 @@
     (make-instance 'mnas-sdl3-gui/widgets:list-box
                    :x 20 :y 270 :width 300 :height 150
                    :items '("Option 1" "Option 2" "Option 3" "Option 4" "Option 5"
-                           "Option 6" "Option 7" "Option 8")
+              "Option 6" "Option 7" "Option 8")
                    :selected-index 0
                    :item-height 24)))
 
@@ -97,15 +73,16 @@
         (progn
           (format t "~a~%" (sdl3:get-error))
           (return-from dialog-init :failure))
-        (setf *window-dialog* window
-              *renderer-dialog* renderer
-              *widgets* (create-demo-widgets)
-              *status-message* "Widget demo. Click, type, and interact with controls.")))
-        ;; Apply selected widget style and initialize TTF for Unicode text rendering.
-        (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
+        (progn
+          (setf *window-dialog* window
+                *renderer-dialog* renderer
+                *widgets* (create-demo-widgets)
+                *status-message* "Widget demo. Click, type, and interact with controls.")
+          ;; Apply selected widget style and initialize TTF for Unicode text rendering.
+          (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
           (mnas-sdl3-gui/widgets:move-widget-focus *widgets*)
-        (mnas-sdl3-gui/widgets:init-ttf-font)
-        (sdl3:start-text-input *window-dialog*)
+          (mnas-sdl3-gui/widgets:init-ttf-font)
+          (mnas-sdl3-gui/widgets:start-widget-text-input *window-dialog*))))
   :continue)
 
 (sdl3:def-app-iterate dialog-iterate ()
@@ -135,62 +112,45 @@
       (sdl3:quit-event
        :success)
       (sdl3:mouse-motion-event
-       (loop for widget in *widgets*
-             do (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-                 widget
-                 (round (slot-value ev 'sdl3:%x))
-                 (round (slot-value ev 'sdl3:%y))))
+       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+        *widgets*
+        (round (slot-value ev 'sdl3:%x))
+        (round (slot-value ev 'sdl3:%y)))
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (if (slot-value ev 'sdl3:%down)
-             (loop for widget in *widgets*
-                   when (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-                         widget
-                         (round (slot-value ev 'sdl3:%x))
-                         (round (slot-value ev 'sdl3:%y)))
-                   do (mnas-sdl3-gui/widgets:set-widget-focus *widgets* widget)
-                      (return))
-             (loop for widget in *widgets*
-                   when (mnas-sdl3-gui/widgets:handle-widget-mouse-up
-                         widget
-                         (round (slot-value ev 'sdl3:%x))
-                         (round (slot-value ev 'sdl3:%y)))
-                   do (return))))
+             (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+              *widgets*
+              (round (slot-value ev 'sdl3:%x))
+              (round (slot-value ev 'sdl3:%y)))
+             (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
+              *widgets*
+              (round (slot-value ev 'sdl3:%x))
+              (round (slot-value ev 'sdl3:%y)))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (cond
-           ((eq (slot-value ev 'sdl3:%key) :escape)
-            (return-from dialog-event :success))
-           ((eq (slot-value ev 'sdl3:%key) :tab)
-            (mnas-sdl3-gui/widgets:move-widget-focus *widgets*
-                                                     :backward (tab-backward-p ev)))
-           ((eq (slot-value ev 'sdl3:%key) :space)
-            (let ((focused (mnas-sdl3-gui/widgets:focused-widget *widgets*)))
-              (when focused
-                (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil))))
-           (t
-            ;; Find focused widget and send key event
-            (loop for widget in *widgets*
-                  when (mnas-sdl3-gui/widgets:widget-focused widget)
-                  do (mnas-sdl3-gui/widgets:handle-widget-key-press
-                      widget
-                      (slot-value ev 'sdl3:%key)
-                      nil)))))
+         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+          *widgets*
+          (slot-value ev 'sdl3:%key)
+          :mods (slot-value ev 'sdl3:%mod)
+          :on-escape (lambda ()
+                       (return-from dialog-event :success))))
        :continue)
-              (sdl3:text-input-event
-               ;; Text input comes from current keyboard layout/IME and is UTF-8 safe.
-               (insert-text-into-focused-edit-box (slot-value ev 'sdl3:%text))
-               :continue)
+          (sdl3:text-input-event
+           ;; Text input comes from current keyboard layout/IME and is UTF-8 safe.
+           (mnas-sdl3-gui/widgets:dispatch-focused-text-input
+            *widgets*
+            (slot-value ev 'sdl3:%text))
+           :continue)
       (t
        :continue))))
 
 (sdl3:def-app-quit dialog-quit (result)
   (declare (ignore result))
-  (when *window-dialog*
-    (sdl3:stop-text-input *window-dialog*))
+  (mnas-sdl3-gui/widgets:stop-widget-text-input *window-dialog*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (sdl3:destroy-renderer *renderer-dialog*)
   (sdl3:destroy-window *window-dialog*)

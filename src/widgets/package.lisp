@@ -93,10 +93,21 @@
    #:handle-widget-click
   #:handle-widget-mouse-down
   #:handle-widget-mouse-up
+  #:dispatch-widget-mouse-down
+  #:dispatch-widget-mouse-up
+  #:dispatch-widget-mouse-motion
    #:handle-widget-mouse-motion
   #:handle-widget-key-press
+  #:handle-widget-key-event
   #:focusable-widget-p
   #:focused-widget
+  #:focused-edit-box
+  #:dispatch-focused-widget-key-event
+  #:dispatch-focused-text-input
+  #:dispatch-widget-keyboard-event
+  #:tab-navigation-backward-p
+  #:start-widget-text-input
+  #:stop-widget-text-input
   #:set-widget-focus
   #:move-widget-focus
   #:activate-widget

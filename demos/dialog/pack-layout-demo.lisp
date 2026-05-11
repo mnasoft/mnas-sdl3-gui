@@ -15,30 +15,6 @@
 (defparameter +pack-demo-section-gap+ 6)
 (defparameter +pack-demo-status-band+ 26)
 
-(defun pack-demo-tab-backward-p (ev)
-  "Return true when Tab navigation should move backward."
-  (let ((mods (slot-value ev 'sdl3:%mod)))
-    (typecase mods
-      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
-                (member :shift mods) (member :lshift mods) (member :rshift mods)))
-      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
-      (integer (not (zerop (logand mods #x0303))))
-      (t nil))))
-
-(defun pack-demo-focused-edit-box ()
-  "Return currently focused edit-box widget, or NIL."
-  (find-if (lambda (widget)
-             (and (typep widget 'mnas-sdl3-gui/widgets:edit-box)
-                  (mnas-sdl3-gui/widgets:widget-focused widget)))
-           *pack-demo-widgets*))
-
-(defun pack-demo-insert-text (text)
-  "Insert TEXT into focused edit-box, one character at a time."
-  (let ((edit-box (pack-demo-focused-edit-box)))
-    (when edit-box
-      (loop for ch across text
-            do (mnas-sdl3-gui/widgets:handle-widget-key-press edit-box nil ch)))))
-
 (defun create-pack-demo-widgets ()
   "Create pack-managed widgets and return (values widgets window-width window-height)."
   (mnas-sdl3-gui/widgets:clear-pack-layout)
@@ -173,7 +149,7 @@
                   *pack-demo-open* t
                   *pack-demo-status* "Pack layout demo: кнопки/checkbox/toggle идут отдельными строками.")
             (mnas-sdl3-gui/widgets:set-widget-style *pack-demo-style*)
-            (sdl3:start-text-input window)
+            (mnas-sdl3-gui/widgets:start-widget-text-input window)
             (setf *pack-demo-widgets* widgets)
             (mnas-sdl3-gui/widgets:move-widget-focus *pack-demo-widgets*)))))
   :continue)
@@ -202,60 +178,39 @@
        (setf *pack-demo-open* nil)
        :success)
       (sdl3:mouse-motion-event
-       (loop for widget in *pack-demo-widgets*
-             do (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-                 widget
-                 (round (slot-value ev 'sdl3:%x))
-                 (round (slot-value ev 'sdl3:%y))))
+       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+        *pack-demo-widgets*
+        (round (slot-value ev 'sdl3:%x))
+        (round (slot-value ev 'sdl3:%y)))
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (let ((mx (round (slot-value ev 'sdl3:%x)))
                (my (round (slot-value ev 'sdl3:%y))))
            (if (slot-value ev 'sdl3:%down)
-               (loop for widget in *pack-demo-widgets*
-                     when (mnas-sdl3-gui/widgets:handle-widget-mouse-down widget mx my)
-                     do (mnas-sdl3-gui/widgets:set-widget-focus *pack-demo-widgets* widget)
-                        (return))
-               (loop for widget in *pack-demo-widgets*
-                     when (mnas-sdl3-gui/widgets:handle-widget-mouse-up widget mx my)
-                     do (return)))))
+               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *pack-demo-widgets* mx my)
+               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *pack-demo-widgets* mx my))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (cond
-           ((eq (slot-value ev 'sdl3:%key) :escape)
-            (setf *pack-demo-open* nil)
-            :success)
-           ((eq (slot-value ev 'sdl3:%key) :tab)
-            (mnas-sdl3-gui/widgets:move-widget-focus
-             *pack-demo-widgets*
-             :backward (pack-demo-tab-backward-p ev))
-            :continue)
-           ((eq (slot-value ev 'sdl3:%key) :space)
-            (let ((focused (mnas-sdl3-gui/widgets:focused-widget *pack-demo-widgets*)))
-              (when focused
-                (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil)))
-            :continue)
-           (t
-            (let ((focused (mnas-sdl3-gui/widgets:focused-widget *pack-demo-widgets*)))
-              (when focused
-                (mnas-sdl3-gui/widgets:handle-widget-key-press
-                 focused
-                 (slot-value ev 'sdl3:%key)
-                 nil)))
-            :continue)))
+        (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+         *pack-demo-widgets*
+         (slot-value ev 'sdl3:%key)
+         :mods (slot-value ev 'sdl3:%mod)
+         :on-escape (lambda ()
+                  (setf *pack-demo-open* nil)
+                  :success)))
        :continue)
       (sdl3:text-input-event
-       (pack-demo-insert-text (slot-value ev 'sdl3:%text))
+         (mnas-sdl3-gui/widgets:dispatch-focused-text-input *pack-demo-widgets*
+                                                            (slot-value ev 'sdl3:%text))
        :continue)
       (t :continue))))
 
 (sdl3:def-app-quit pack-layout-demo-quit (result)
   (declare (ignore result))
-  (when *pack-demo-window*
-    (sdl3:stop-text-input *pack-demo-window*))
+  (mnas-sdl3-gui/widgets:stop-widget-text-input *pack-demo-window*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *pack-demo-renderer*
     (sdl3:destroy-renderer *pack-demo-renderer*))

@@ -18,16 +18,6 @@
   "Return focus-traversable widgets in the simple dialog."
   (list *ok-button* *cancel-button* *extra-button*))
 
-(defun dialog-tab-backward-p (ev)
-  "Return true when Tab navigation should move backward."
-  (let ((mods (slot-value ev 'sdl3:%mod)))
-    (typecase mods
-      (list (or (member :alt mods) (member :lalt mods) (member :ralt mods)
-                (member :shift mods) (member :lshift mods) (member :rshift mods)))
-      (symbol (member mods '(:alt :lalt :ralt :shift :lshift :rshift)))
-      (integer (not (zerop (logand mods #x0303))))
-      (t nil))))
-
 ;;; Dialog initialization
 
 (defun create-dialog-buttons ()
@@ -93,23 +83,6 @@
   (mnas-sdl3-gui/widgets:render-widget *renderer* *cancel-button*)
   (mnas-sdl3-gui/widgets:render-widget *renderer* *extra-button*))
 
-;;; Event handling
-
-(defun handle-dialog-mouse-down (x y)
-  "Handle mouse press in dialog."
-  (let ((mx (float x 1.0))
-        (my (float y 1.0)))
-    (loop for widget in (dialog-widgets)
-          when (mnas-sdl3-gui/widgets:handle-widget-mouse-down widget mx my)
-          do (mnas-sdl3-gui/widgets:set-widget-focus (dialog-widgets) widget)
-             (return))))
-
-(defun handle-dialog-mouse-up (x y)
-  "Handle mouse release in dialog."
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *ok-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *cancel-button* (float x 1.0) (float y 1.0))
-  (mnas-sdl3-gui/widgets:handle-widget-mouse-up *extra-button* (float x 1.0) (float y 1.0)))
-
 ;;; SDL3 demo callbacks
 
 (sdl3:def-app-init simple-dialog-init (argc argv)
@@ -161,29 +134,25 @@
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (if (slot-value ev 'sdl3:%down)
-             (handle-dialog-mouse-down (round (slot-value ev 'sdl3:%x))
-                                       (round (slot-value ev 'sdl3:%y)))
-             (handle-dialog-mouse-up (round (slot-value ev 'sdl3:%x))
-                                     (round (slot-value ev 'sdl3:%y)))))
+             (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+              (dialog-widgets)
+              (float (round (slot-value ev 'sdl3:%x)) 1.0)
+              (float (round (slot-value ev 'sdl3:%y)) 1.0))
+             (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
+              (dialog-widgets)
+              (float (round (slot-value ev 'sdl3:%x)) 1.0)
+              (float (round (slot-value ev 'sdl3:%y)) 1.0))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (cond
-           ((eq (slot-value ev 'sdl3:%key) :escape)
-            (setf *dialog-open* nil)
-            :success)
-           ((eq (slot-value ev 'sdl3:%key) :tab)
-            (mnas-sdl3-gui/widgets:move-widget-focus
-             (dialog-widgets)
-             :backward (dialog-tab-backward-p ev))
-            :continue)
-           ((eq (slot-value ev 'sdl3:%key) :space)
-            (let ((focused (mnas-sdl3-gui/widgets:focused-widget (dialog-widgets))))
-              (when focused
-                (mnas-sdl3-gui/widgets:handle-widget-key-press focused :space nil)))
-            :continue)
-           (t :continue)))
+         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+          (dialog-widgets)
+          (slot-value ev 'sdl3:%key)
+          :mods (slot-value ev 'sdl3:%mod)
+          :on-escape (lambda ()
+                       (setf *dialog-open* nil)
+                       :success)))
        :continue)
       (t :continue))))
 
