@@ -50,6 +50,17 @@
    #:edit-box-text
    #:edit-box-cursor
    #:edit-box-max-length
+   #:edit-box-selection-start
+   #:edit-box-selection-end
+   ;; edit-box selection and clipboard utilities
+   #:clear-edit-box-selection
+   #:get-edit-box-selected-text
+   #:set-edit-box-selection
+   #:edit-box-copy-to-clipboard
+   #:edit-box-paste-from-clipboard
+   #:edit-box-delete-selection
+   #:edit-box-move-to-previous-word
+   #:edit-box-move-to-next-word
    ;; list-box accessors
    #:list-box-items
    #:list-box-selected-index

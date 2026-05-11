@@ -362,18 +362,70 @@
             (* cursor +font-char-width+)))
         (* cursor +font-char-width+))))
 
+(defun compute-text-segment-pixel-width (widget text-start text-end)
+  "Compute pixel width of TEXT from TEXT-START to TEXT-END position."
+  (let ((text (edit-box-text widget)))
+    (if (>= text-start text-end)
+        0
+        (let ((segment (subseq text text-start text-end)))
+          (if (and *ttf-available-p* *ttf-font*)
+              (handler-case
+                  (multiple-value-bind (w h)
+                      (sdl3-ttf:ttf-get-string-size *ttf-font* segment)
+                    (declare (ignore h))
+                    (or w 0))
+                (error ()
+                  (* (length segment) +font-char-width+)))
+              (* (length segment) +font-char-width+))))))
+
+(defun compute-text-offset-to-position (widget text-pos)
+  "Compute pixel offset for TEXT-POS in edit-box WIDGET."
+  (let* ((text (edit-box-text widget))
+         (pos (max 0 (min text-pos (length text))))
+         (prefix (subseq text 0 pos)))
+    (if (and *ttf-available-p* *ttf-font*)
+        (handler-case
+            (multiple-value-bind (w h)
+                (sdl3-ttf:ttf-get-string-size *ttf-font* prefix)
+              (declare (ignore h))
+              (or w 0))
+          (error ()
+            (* pos +font-char-width+)))
+        (* pos +font-char-width+))))
+
 (defun render-edit-box-text-and-cursor (renderer widget)
-  "Render edit-box text and cursor for current widget state."
-  (render-text renderer (edit-box-text widget)
-               (+ (widget-x widget) +widget-padding+)
-               (+ (widget-y widget) (/ (- (widget-height widget) +font-text-height+) 2))
-               +color-text+)
-  (when (widget-focused widget)
-    (let ((cursor-x (+ (widget-x widget) +widget-padding+
-                       (edit-box-cursor-pixel-offset widget))))
-      (sdl3:set-render-draw-color renderer 0 0 0 255)
-      (sdl3:render-line renderer (float cursor-x 1.0) (float (+ (widget-y widget) 2) 1.0)
-                        (float cursor-x 1.0) (float (- (+ (widget-y widget) (widget-height widget)) 2) 1.0)))))
+  "Render edit-box text, selection highlight, and cursor for current widget state."
+  (let* ((text (edit-box-text widget))
+         (text-x (+ (widget-x widget) +widget-padding+))
+         (text-y (+ (widget-y widget) (/ (- (widget-height widget) +font-text-height+) 2)))
+         (sel-start (edit-box-selection-start widget))
+         (sel-end (edit-box-selection-end widget))
+         (has-selection (and (not (null sel-start)) (not (null sel-end)) (< sel-start sel-end))))
+    ;; Render text before selection
+    (when (or (not has-selection) (and sel-start (> sel-start 0)))
+      (let ((before-end (if has-selection sel-start (length text))))
+        (render-text renderer (subseq text 0 before-end) text-x text-y +color-text+)))
+    ;; Render selection highlight with background
+    (when has-selection
+      (let ((sel-start-offset (compute-text-offset-to-position widget sel-start))
+            (sel-end-offset (compute-text-offset-to-position widget sel-end)))
+        ;; Draw selection background rectangle
+        (fill-rect renderer (+ text-x sel-start-offset) (- text-y 2)
+                   (- sel-end-offset sel-start-offset) (+ +font-text-height+ 4)
+                   '(0 120 215 255))
+        ;; Draw selected text in white
+        (render-text renderer (subseq text sel-start sel-end)
+                     (+ text-x sel-start-offset) text-y '(255 255 255 255))))
+    ;; Render text after selection
+    (when (and has-selection (< sel-end (length text)))
+      (let ((after-start-offset (compute-text-offset-to-position widget sel-end)))
+        (render-text renderer (subseq text sel-end) (+ text-x after-start-offset) text-y +color-text+)))
+    ;; Render cursor
+    (when (widget-focused widget)
+      (let ((cursor-x (+ text-x (compute-text-offset-to-position widget (edit-box-cursor widget)))))
+        (sdl3:set-render-draw-color renderer 0 0 0 255)
+        (sdl3:render-line renderer (float cursor-x 1.0) (float (+ (widget-y widget) 2) 1.0)
+                          (float cursor-x 1.0) (float (- (+ (widget-y widget) (widget-height widget)) 2) 1.0))))))
 
 (defun render-edit-box-flat (renderer widget)
   "Render edit-box in flat style."

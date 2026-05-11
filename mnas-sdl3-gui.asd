@@ -28,7 +28,8 @@
   :version "0.1.0"
   :depends-on (#:mnas-sdl3-gui)
   :serial t
-  :components ((:file "demos/menu/package")
+  :components ((:file "demos/package")
+               (:file "demos/menu/package")
                (:file "demos/menu/screen-menu-classes")
                (:file "demos/dialog/package")
                (:file "demos/dialog/widgets-demo")

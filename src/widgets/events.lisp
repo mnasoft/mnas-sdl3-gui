@@ -150,82 +150,217 @@
         (when (button-armed-p widget)
           (setf (button-pressed-p widget) inside))))))
 
+;;; Edit-Box Selection and Clipboard Utilities
+
+(defun clear-edit-box-selection (widget)
+  "Clear the text selection in an edit-box WIDGET."
+  (setf (edit-box-selection-start widget) nil
+        (edit-box-selection-end widget) nil))
+
+(defun get-edit-box-selected-text (widget)
+  "Return the selected text from edit-box WIDGET, or empty string if no selection."
+  (let ((start (edit-box-selection-start widget))
+        (end (edit-box-selection-end widget)))
+    (if (and start end (< start end))
+        (subseq (edit-box-text widget) start end)
+        "")))
+
+(defun set-edit-box-selection (widget start end)
+  "Set the text selection in edit-box WIDGET from START to END positions."
+  (let ((text-len (length (edit-box-text widget))))
+    (setf (edit-box-selection-start widget) (max 0 (min start text-len))
+          (edit-box-selection-end widget) (max 0 (min end text-len)))))
+
+(defun edit-box-copy-to-clipboard (widget)
+  "Copy selected text from edit-box WIDGET to system clipboard."
+  (let ((selected (get-edit-box-selected-text widget)))
+    (when (plusp (length selected))
+      (sdl3:set-clipboard-text selected))))
+
+(defun edit-box-paste-from-clipboard (widget)
+  "Paste text from system clipboard into edit-box WIDGET at cursor position."
+  (when (sdl3:has-clipboard-text)
+    (handler-case
+        (let* ((clipboard-text (sdl3:get-clipboard-text))
+               (current-text (edit-box-text widget))
+               (cursor (edit-box-cursor widget))
+               (max-len (edit-box-max-length widget))
+               (combined (concatenate 'string
+                                     (subseq current-text 0 cursor)
+                                     clipboard-text
+                                     (subseq current-text cursor)))
+               (truncated (if (> (length combined) max-len)
+                             (subseq combined 0 max-len)
+                             combined)))
+          (setf (edit-box-text widget) truncated)
+          (incf (edit-box-cursor widget) (length clipboard-text))
+          (clear-edit-box-selection widget)
+          (update-widget-value widget truncated))
+      (error (e)
+        ;; Handle any clipboard access errors gracefully
+        (format *error-output* "Clipboard error: ~a~%" e)))))
+
+(defun edit-box-delete-selection (widget)
+  "Delete selected text from edit-box WIDGET. Returns T if deletion occurred."
+  (let ((start (edit-box-selection-start widget))
+        (end (edit-box-selection-end widget)))
+    (when (and start end (< start end))
+      (let ((text (edit-box-text widget)))
+        (setf (edit-box-text widget)
+              (concatenate 'string
+                           (subseq text 0 start)
+                           (subseq text end)))
+        (setf (edit-box-cursor widget) start)
+        (clear-edit-box-selection widget)
+        (update-widget-value widget (edit-box-text widget))
+        t))))
+
+(defun char-is-word-char-p (char)
+  "Return T if CHAR is part of a word (alphanumeric or underscore)."
+  (or (alphanumericp char) (char= char #\_)))
+
+(defun find-word-start (text pos)
+  "Find the start position of the word containing position POS in TEXT."
+  (let ((i (max 0 (1- pos))))
+    (loop while (and (>= i 0) (char-is-word-char-p (aref text i)))
+          do (decf i))
+    (1+ i)))
+
+(defun find-word-end (text pos)
+  "Find the end position of the word containing position POS in TEXT."
+  (let ((i pos)
+        (len (length text)))
+    (loop while (and (< i len) (char-is-word-char-p (aref text i)))
+          do (incf i))
+    i))
+
+(defun edit-box-move-to-previous-word (widget)
+  "Move cursor to the start of the previous word in edit-box WIDGET."
+  (let* ((text (edit-box-text widget))
+         (cursor (edit-box-cursor widget))
+         (len (length text)))
+    (when (> cursor 0)
+      ;; Skip any spaces/non-word chars before cursor
+      (loop while (> cursor 0)
+            do (decf cursor)
+            unless (char-is-word-char-p (aref text cursor))
+            return nil)
+      ;; Skip word chars to find word boundary
+      (loop while (> cursor 0)
+            do (decf cursor)
+            while (char-is-word-char-p (aref text cursor)))
+      ;; Move forward one if we went back too far
+      (when (and (< cursor len) (not (char-is-word-char-p (aref text cursor))))
+        (incf cursor))
+      (setf (edit-box-cursor widget) cursor)
+      (clear-edit-box-selection widget))))
+
+(defun edit-box-move-to-next-word (widget)
+  "Move cursor to the start of the next word in edit-box WIDGET."
+  (let* ((text (edit-box-text widget))
+         (cursor (edit-box-cursor widget))
+         (len (length text)))
+    (when (< cursor len)
+      ;; Skip any current word chars
+      (loop while (< cursor len)
+            do (incf cursor)
+            while (and (< cursor len) (char-is-word-char-p (aref text (1- cursor)))))
+      ;; Skip spaces/non-word chars
+      (loop while (< cursor len)
+            while (not (char-is-word-char-p (aref text cursor)))
+            do (incf cursor))
+      (setf (edit-box-cursor widget) cursor)
+      (clear-edit-box-selection widget))))
+
 (defun handle-widget-key-press (widget key char)
   "Handle keyboard input for a widget. Returns T if key was handled."
   (when (and (widget-enabled widget) (widget-visible widget))
-    (typecase widget
-      (button
-       (when (eq key :space)
-         (activate-widget widget)))
-      (toggle
-       (when (eq key :space)
-         (activate-widget widget)))
-      (check-box
-       (when (eq key :space)
-         (activate-widget widget)))
-      (edit-box
-       (cond
-         ((eq key :backspace)
-          (when (> (edit-box-cursor widget) 0)
-            (let ((text (edit-box-text widget)))
-              (setf (edit-box-text widget)
-                    (concatenate 'string
-                               (subseq text 0 (1- (edit-box-cursor widget)))
-                               (subseq text (edit-box-cursor widget))))
-              (decf (edit-box-cursor widget))
-              (update-widget-value widget (edit-box-text widget))))
-          t)
-         ((eq key :delete)
-          (when (< (edit-box-cursor widget) (length (edit-box-text widget)))
-            (let ((text (edit-box-text widget)))
-              (setf (edit-box-text widget)
-                    (concatenate 'string
-                               (subseq text 0 (edit-box-cursor widget))
-                               (subseq text (1+ (edit-box-cursor widget)))))
-              (update-widget-value widget (edit-box-text widget))))
-          t)
-         ((eq key :left)
-          (when (> (edit-box-cursor widget) 0)
-            (decf (edit-box-cursor widget)))
-          t)
-         ((eq key :right)
-          (when (< (edit-box-cursor widget) (length (edit-box-text widget)))
-            (incf (edit-box-cursor widget)))
-          t)
-         ((eq key :home)
-          (setf (edit-box-cursor widget) 0)
-          t)
-         ((eq key :end)
-          (setf (edit-box-cursor widget) (length (edit-box-text widget)))
-          t)
-         ((member key '(:pageup :pagedown))
-          ;; Edit boxes do not use page-wise navigation; consume the key.
-          t)
-         ((characterp char)
-          (when (< (length (edit-box-text widget)) (edit-box-max-length widget))
-            (let ((text (edit-box-text widget)))
-              (setf (edit-box-text widget)
-                    (concatenate 'string
-                               (subseq text 0 (edit-box-cursor widget))
-                               (string char)
-                               (subseq text (edit-box-cursor widget))))
-              (incf (edit-box-cursor widget))
-              (update-widget-value widget (edit-box-text widget))))
-          t)
-         (t nil)))
-      (list-box
-       (cond
-         ((eq key :up)
-          (when (> (list-box-selected-index widget) 0)
-            (decf (list-box-selected-index widget))
-            (update-widget-value widget (nth (list-box-selected-index widget)
-                                             (list-box-items widget))))
-          t)
-         ((eq key :down)
-          (when (< (1+ (list-box-selected-index widget)) (length (list-box-items widget)))
-            (incf (list-box-selected-index widget))
-            (update-widget-value widget (nth (list-box-selected-index widget)
-                                             (list-box-items widget))))
-          t)
-         (t nil)))
-      (t nil))))
+    (let ((handled
+            (typecase widget
+              (button
+               (when (eq key :space)
+                 (activate-widget widget)))
+              (toggle
+               (when (eq key :space)
+                 (activate-widget widget)))
+              (check-box
+               (when (eq key :space)
+                 (activate-widget widget)))
+              (edit-box
+               (cond
+                 ((eq key :backspace)
+                  ;; If there's a selection, delete it; otherwise delete character before cursor
+                  (unless (edit-box-delete-selection widget)
+                    (when (> (edit-box-cursor widget) 0)
+                      (let ((text (edit-box-text widget)))
+                        (setf (edit-box-text widget)
+                              (concatenate 'string
+                                           (subseq text 0 (1- (edit-box-cursor widget)))
+                                           (subseq text (edit-box-cursor widget))))
+                        (decf (edit-box-cursor widget))
+                        (update-widget-value widget (edit-box-text widget)))))
+                  t)
+                 ((eq key :delete)
+                  ;; If there's a selection, delete it; otherwise delete character at cursor
+                  (unless (edit-box-delete-selection widget)
+                    (when (< (edit-box-cursor widget) (length (edit-box-text widget)))
+                      (let ((text (edit-box-text widget)))
+                        (setf (edit-box-text widget)
+                              (concatenate 'string
+                                           (subseq text 0 (edit-box-cursor widget))
+                                           (subseq text (1+ (edit-box-cursor widget)))))
+                        (update-widget-value widget (edit-box-text widget)))))
+                  t)
+                 ((eq key :left)
+                  (when (> (edit-box-cursor widget) 0)
+                    (decf (edit-box-cursor widget)))
+                  (clear-edit-box-selection widget)
+                  t)
+                 ((eq key :right)
+                  (when (< (edit-box-cursor widget) (length (edit-box-text widget)))
+                    (incf (edit-box-cursor widget)))
+                  (clear-edit-box-selection widget)
+                  t)
+                 ((eq key :home)
+                  (setf (edit-box-cursor widget) 0)
+                  (clear-edit-box-selection widget)
+                  t)
+                 ((eq key :end)
+                  (setf (edit-box-cursor widget) (length (edit-box-text widget)))
+                  (clear-edit-box-selection widget)
+                  t)
+                 ((member key '(:pageup :pagedown))
+                  ;; Edit boxes do not use page-wise navigation; consume the key.
+                  t)
+                 ((characterp char)
+                  ;; Delete selection if any, then insert character
+                  (edit-box-delete-selection widget)
+                  (when (< (length (edit-box-text widget)) (edit-box-max-length widget))
+                    (let ((text (edit-box-text widget)))
+                      (setf (edit-box-text widget)
+                            (concatenate 'string
+                                         (subseq text 0 (edit-box-cursor widget))
+                                         (string char)
+                                         (subseq text (edit-box-cursor widget))))
+                      (incf (edit-box-cursor widget))
+                      (update-widget-value widget (edit-box-text widget))))
+                  t)
+                 (t nil)))
+              (list-box
+               (cond
+                 ((eq key :up)
+                  (when (> (list-box-selected-index widget) 0)
+                    (decf (list-box-selected-index widget))
+                    (update-widget-value widget (nth (list-box-selected-index widget)
+                                                     (list-box-items widget))))
+                  t)
+                 ((eq key :down)
+                  (when (< (1+ (list-box-selected-index widget))
+                           (length (list-box-items widget)))
+                    (incf (list-box-selected-index widget))
+                    (update-widget-value widget (nth (list-box-selected-index widget)
+                                                     (list-box-items widget))))
+                  t)
+                 (t nil)))
+              (t nil))))
+      handled)))

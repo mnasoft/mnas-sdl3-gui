@@ -69,9 +69,23 @@
          :documentation "Text content of edit box")
    (cursor :initarg :cursor :initform 0 :accessor edit-box-cursor
            :documentation "Cursor position in text")
+   (selection-start :initarg :selection-start :initform nil :accessor edit-box-selection-start
+                    :documentation "Start of text selection (NIL if no selection)")
+   (selection-end :initarg :selection-end :initform nil :accessor edit-box-selection-end
+                  :documentation "End of text selection (NIL if no selection)")
    (max-length :initarg :max-length :initform 256 :accessor edit-box-max-length
                :documentation "Maximum length of text"))
   (:documentation "Text input box widget"))
+
+;;; Print-object for edit-box
+(defmethod print-object ((obj edit-box) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (format stream "text=~S cursor=~A sel=~A..~A max=~A"
+            (edit-box-text obj)
+            (edit-box-cursor obj)
+            (edit-box-selection-start obj)
+            (edit-box-selection-end obj)
+            (edit-box-max-length obj))))
 
 (defclass list-box (widget)
   ((items :initarg :items :initform nil :accessor list-box-items
