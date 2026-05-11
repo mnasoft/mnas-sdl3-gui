@@ -106,6 +106,10 @@
            t))
         (edit-box
          (setf (widget-focused widget) inside)
+           (when inside
+             (setf (edit-box-cursor widget) (edit-box-position-from-pixel widget x))
+             (clear-edit-box-selection widget)
+             (edit-box-ensure-cursor-visible widget))
          inside)
         (list-box
          (when inside
@@ -211,6 +215,21 @@
 (defun edit-box-scroll-to-start (widget)
   "Scroll WIDGET so the beginning of the text is visible." 
   (setf (edit-box-scroll-offset widget) 0))
+
+(defun edit-box-position-from-pixel (widget x)
+  "Return character position in WIDGET nearest to pixel coordinate X." 
+  (let* ((text-len (length (edit-box-text widget)))
+         (visible-start (max 0 (min (edit-box-scroll-offset widget) text-len)))
+         (visible-width (edit-box-inner-width widget))
+         (relative-x (max 0 (min (- x (widget-x widget) 4) visible-width)))
+         (previous-width 0))
+    (loop for position from visible-start below text-len
+          for next-width = (edit-box-text-width-between widget visible-start (1+ position))
+          for midpoint = (+ previous-width (/ (- next-width previous-width) 2))
+          do (when (<= relative-x midpoint)
+               (return position))
+             (setf previous-width next-width)
+          finally (return text-len))))
 
 (defun edit-box-scroll-to-end (widget)
   "Scroll WIDGET so the end of the text is visible." 
