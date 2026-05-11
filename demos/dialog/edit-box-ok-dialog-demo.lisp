@@ -88,6 +88,7 @@ When there is no active selection, use the current cursor position."
   "Extend selection in WIDGET to the start of the text." 
   (let ((anchor (edit-dialog-selection-anchor widget)))
     (setf (mnas-sdl3-gui/widgets:edit-box-cursor widget) 0)
+    (mnas-sdl3-gui/widgets:edit-box-scroll-to-start widget)
     (edit-dialog-select-from-anchor widget anchor)))
 
 (defun edit-dialog-select-to-end (widget)
@@ -95,6 +96,7 @@ When there is no active selection, use the current cursor position."
   (let ((anchor (edit-dialog-selection-anchor widget)))
     (setf (mnas-sdl3-gui/widgets:edit-box-cursor widget)
           (length (mnas-sdl3-gui/widgets:edit-box-text widget)))
+    (mnas-sdl3-gui/widgets:edit-box-scroll-to-end widget)
     (edit-dialog-select-from-anchor widget anchor)))
 
 (defun edit-dialog-widgets ()
@@ -274,6 +276,7 @@ When there is no active selection, use the current cursor position."
                                (unless start
                                  (mnas-sdl3-gui/widgets:set-edit-box-selection widget cursor cursor))
                                (decf (mnas-sdl3-gui/widgets:edit-box-cursor widget))
+                               (mnas-sdl3-gui/widgets:edit-box-ensure-cursor-visible widget)
                                (let* ((new-cursor (mnas-sdl3-gui/widgets:edit-box-cursor widget))
                                       (anchor (or (mnas-sdl3-gui/widgets:edit-box-selection-start widget) cursor)))
                                  (if (< new-cursor anchor)
@@ -289,6 +292,7 @@ When there is no active selection, use the current cursor position."
                                (unless start
                                  (mnas-sdl3-gui/widgets:set-edit-box-selection widget cursor cursor))
                                (incf (mnas-sdl3-gui/widgets:edit-box-cursor widget))
+                               (mnas-sdl3-gui/widgets:edit-box-ensure-cursor-visible widget)
                                (let* ((new-cursor (mnas-sdl3-gui/widgets:edit-box-cursor widget))
                                       (anchor (or (mnas-sdl3-gui/widgets:edit-box-selection-start widget) cursor)))
                                  (if (> new-cursor anchor)

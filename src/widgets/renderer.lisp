@@ -393,6 +393,23 @@
             (* pos +font-char-width+)))
         (* pos +font-char-width+))))
 
+(defun edit-box-visible-text-width (widget)
+  "Return the available pixel width for edit-box text content." 
+  (max 1 (- (widget-width widget) (* 2 +widget-padding+))))
+
+(defun edit-box-visible-range (widget)
+  "Return visible character range for WIDGET as START and END positions." 
+  (let* ((text-len (length (edit-box-text widget)))
+         (start (max 0 (min (edit-box-scroll-offset widget) text-len)))
+         (visible-width (edit-box-visible-text-width widget))
+         (end start))
+    (loop while (< end text-len)
+          for candidate = (1+ end)
+          while (<= (compute-text-segment-pixel-width widget start candidate)
+                    visible-width)
+          do (incf end))
+    (values start end)))
+
 (defun render-edit-box-text-and-cursor (renderer widget)
   "Render edit-box text, selection highlight, and cursor for current widget state."
   (let* ((text (edit-box-text widget))
@@ -401,31 +418,37 @@
          (sel-start (edit-box-selection-start widget))
          (sel-end (edit-box-selection-end widget))
          (has-selection (and (not (null sel-start)) (not (null sel-end)) (< sel-start sel-end))))
-    ;; Render text before selection
-    (when (or (not has-selection) (and sel-start (> sel-start 0)))
-      (let ((before-end (if has-selection sel-start (length text))))
-        (render-text renderer (subseq text 0 before-end) text-x text-y +color-text+)))
-    ;; Render selection highlight with background
-    (when has-selection
-      (let ((sel-start-offset (compute-text-offset-to-position widget sel-start))
-            (sel-end-offset (compute-text-offset-to-position widget sel-end)))
-        ;; Draw selection background rectangle
-        (fill-rect renderer (+ text-x sel-start-offset) (- text-y 2)
-                   (- sel-end-offset sel-start-offset) (+ +font-text-height+ 4)
-                   '(0 120 215 255))
-        ;; Draw selected text in white
-        (render-text renderer (subseq text sel-start sel-end)
-                     (+ text-x sel-start-offset) text-y '(255 255 255 255))))
-    ;; Render text after selection
-    (when (and has-selection (< sel-end (length text)))
-      (let ((after-start-offset (compute-text-offset-to-position widget sel-end)))
-        (render-text renderer (subseq text sel-end) (+ text-x after-start-offset) text-y +color-text+)))
-    ;; Render cursor
-    (when (widget-focused widget)
-      (let ((cursor-x (+ text-x (compute-text-offset-to-position widget (edit-box-cursor widget)))))
-        (sdl3:set-render-draw-color renderer 0 0 0 255)
-        (sdl3:render-line renderer (float cursor-x 1.0) (float (+ (widget-y widget) 2) 1.0)
-                          (float cursor-x 1.0) (float (- (+ (widget-y widget) (widget-height widget)) 2) 1.0))))))
+    (multiple-value-bind (visible-start visible-end)
+        (edit-box-visible-range widget)
+      (labels ((segment-x (position)
+                 (+ text-x
+                    (compute-text-segment-pixel-width widget visible-start position)))
+               (render-visible-segment (start end color)
+                 (when (< start end)
+                   (render-text renderer (subseq text start end)
+                                (segment-x start) text-y color))))
+        (if has-selection
+            (let ((before-start visible-start)
+                  (before-end (min visible-end sel-start))
+                  (selected-start (max visible-start sel-start))
+                  (selected-end (min visible-end sel-end))
+                  (after-start (max visible-start sel-end))
+                  (after-end visible-end))
+              (render-visible-segment before-start before-end +color-text+)
+              (when (< selected-start selected-end)
+                (let ((selection-x (segment-x selected-start))
+                      (selection-w (compute-text-segment-pixel-width widget selected-start selected-end)))
+                  (fill-rect renderer selection-x (- text-y 2)
+                             selection-w (+ +font-text-height+ 4)
+                             '(0 120 215 255))
+                  (render-visible-segment selected-start selected-end '(255 255 255 255))))
+              (render-visible-segment after-start after-end +color-text+))
+            (render-visible-segment visible-start visible-end +color-text+))
+        (when (widget-focused widget)
+          (let ((cursor-x (segment-x (edit-box-cursor widget))))
+            (sdl3:set-render-draw-color renderer 0 0 0 255)
+            (sdl3:render-line renderer (float cursor-x 1.0) (float (+ (widget-y widget) 2) 1.0)
+                              (float cursor-x 1.0) (float (- (+ (widget-y widget) (widget-height widget)) 2) 1.0)))))))
 
 (defun render-edit-box-flat (renderer widget)
   "Render edit-box in flat style."
@@ -494,4 +517,4 @@
              (render-text renderer (format nil "~a" item)
                          (+ (widget-x widget) +widget-padding+)
                          (+ item-y (/ (- (list-box-item-height widget) +font-text-height+) 2))
-                         +color-text+))))
+                         +color-text+)))))

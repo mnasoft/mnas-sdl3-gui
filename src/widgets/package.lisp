@@ -49,6 +49,7 @@
    ;; edit-box accessors
    #:edit-box-text
    #:edit-box-cursor
+  #:edit-box-scroll-offset
    #:edit-box-max-length
    #:edit-box-selection-start
    #:edit-box-selection-end
@@ -61,6 +62,9 @@
    #:edit-box-delete-selection
    #:edit-box-move-to-previous-word
    #:edit-box-move-to-next-word
+  #:edit-box-ensure-cursor-visible
+  #:edit-box-scroll-to-start
+  #:edit-box-scroll-to-end
    ;; list-box accessors
    #:list-box-items
    #:list-box-selected-index

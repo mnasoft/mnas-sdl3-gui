@@ -69,6 +69,8 @@
          :documentation "Text content of edit box")
    (cursor :initarg :cursor :initform 0 :accessor edit-box-cursor
            :documentation "Cursor position in text")
+   (scroll-offset :initarg :scroll-offset :initform 0 :accessor edit-box-scroll-offset
+      :documentation "Character offset of the first visible glyph")
    (selection-start :initarg :selection-start :initform nil :accessor edit-box-selection-start
                     :documentation "Start of text selection (NIL if no selection)")
    (selection-end :initarg :selection-end :initform nil :accessor edit-box-selection-end
@@ -80,9 +82,10 @@
 ;;; Print-object for edit-box
 (defmethod print-object ((obj edit-box) stream)
   (print-unreadable-object (obj stream :type t :identity t)
-    (format stream "text=~S cursor=~A sel=~A..~A max=~A"
+    (format stream "text=~S cursor=~A scroll=~A sel=~A..~A max=~A"
             (edit-box-text obj)
             (edit-box-cursor obj)
+            (edit-box-scroll-offset obj)
             (edit-box-selection-start obj)
             (edit-box-selection-end obj)
             (edit-box-max-length obj))))
