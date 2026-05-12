@@ -10,6 +10,7 @@
    #:widget-y
    #:widget-width
    #:widget-height
+  #:widget-z-order
    #:widget-enabled
    #:widget-focused
    #:widget-visible
@@ -32,6 +33,7 @@
    #:check-box
    #:edit-box
    #:list-box
+  #:combo-box
    ;; label accessors
    #:label-text
    ;; button accessors
@@ -70,6 +72,9 @@
    #:list-box-selected-index
   #:list-box-scroll-offset
    #:list-box-item-height
+  ;; combo-box accessors
+  #:combo-box-expanded-p
+  #:combo-box-max-visible-items
   ;; layout managers
   #:pack-widget
   #:unpack-widget
@@ -80,6 +85,7 @@
    ;; rendering
   #:render-text
    #:render-widget
+    #:render-widgets
    ;; TTF/font rendering
    #:render-text-with-ttf
    #:*ttf-available-p*

@@ -97,8 +97,7 @@
   (sdl3:set-render-draw-color *toggle-group-renderer* 240 240 240 255)
   (sdl3:render-clear *toggle-group-renderer*)
 
-  (loop for widget in *toggle-group-widgets*
-        do (mnas-sdl3-gui/widgets:render-widget *toggle-group-renderer* widget))
+  (mnas-sdl3-gui/widgets:render-widgets *toggle-group-renderer* *toggle-group-widgets*)
 
   (mnas-sdl3-gui/widgets:render-text *toggle-group-renderer*
                                      *toggle-group-status*

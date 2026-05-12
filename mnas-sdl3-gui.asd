@@ -85,6 +85,7 @@
                (:file "demos/dialog/check-box-demo")
                (:file "demos/dialog/pack-layout-demo")
                (:file "demos/dialog/two-list-boxes-demo")
+               (:file "demos/dialog/combo-box-demo")
                (:file "demos/dialog/cyrillic-font-demo")
                (:file "demos/simple-dialog/package")
                (:file "demos/simple-dialog/simple-dialog-demo")))

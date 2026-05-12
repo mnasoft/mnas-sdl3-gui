@@ -7,6 +7,14 @@
 (defun dispatch-widget-mouse-down (widgets x y)
   "Dispatch mouse-down to WIDGETS and focus the widget that consumes it."
   (loop for widget in widgets
+        when (and (typep widget 'combo-box)
+                  (combo-box-expanded-p widget)
+                  (not (contains-point-p widget x y)))
+        do (progn
+         (sync-combo-box-expanded-state widget nil)
+         (setf (list-box-scrollbar-dragging-p widget) nil
+           (list-box-scrollbar-drag-offset widget) 0)))
+  (loop for widget in (widgets-in-hit-test-order widgets)
         when (handle-widget-mouse-down widget x y)
           do (set-widget-focus widgets widget)
              (return widget)
@@ -14,7 +22,7 @@
 
 (defun dispatch-widget-mouse-up (widgets x y)
   "Dispatch mouse-up to WIDGETS and return the widget that consumes it."
-  (loop for widget in widgets
+  (loop for widget in (widgets-in-hit-test-order widgets)
         when (handle-widget-mouse-up widget x y)
           return widget
         finally (return nil)))
@@ -27,13 +35,17 @@
 
 (defun dispatch-widget-mouse-wheel (widgets x y dx dy)
   "Dispatch mouse-wheel input to widgets under X/Y and return the widget that consumes it."
-  (loop for widget in widgets
+  (loop for widget in (widgets-in-hit-test-order widgets)
         when (and (widget-visible widget)
                   (widget-enabled widget)
                   (contains-point-p widget x y)
-                  (typep widget 'list-box)
                   (not (zerop dy))
-                  (list-box-scroll-by widget (- dy)))
+                  (or (and (typep widget 'combo-box)
+                           (combo-box-expanded-p widget)
+                           (list-box-scroll-by widget (- dy)))
+                      (and (typep widget 'list-box)
+                           (not (typep widget 'combo-box))
+                           (list-box-scroll-by widget (- dy)))))
           return widget
         finally (return nil)))
 
@@ -47,6 +59,12 @@
   "Handle mouse motion over a widget."
   (when (widget-visible widget)
     (cond
+      ((typep widget 'combo-box)
+       (when (and (combo-box-expanded-p widget)
+                  (list-box-scrollbar-dragging-p widget))
+         (combo-box-set-scroll-offset-from-thumb-top
+          widget
+          (- y (list-box-scrollbar-drag-offset widget)))))
       ((typep widget 'list-box)
        (when (list-box-scrollbar-dragging-p widget)
          (list-box-set-scroll-offset-from-thumb-top

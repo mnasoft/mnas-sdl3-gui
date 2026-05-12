@@ -27,3 +27,10 @@
     (setf (list-box-scrollbar-dragging-p widget) nil
           (list-box-scrollbar-drag-offset widget) 0)
     dragging-p))
+
+(defmethod handle-widget-mouse-up ((widget combo-box) x y)
+  (declare (ignore x y))
+  (let ((dragging-p (list-box-scrollbar-dragging-p widget)))
+    (setf (list-box-scrollbar-dragging-p widget) nil
+          (list-box-scrollbar-drag-offset widget) 0)
+    dragging-p))

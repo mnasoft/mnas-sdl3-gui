@@ -13,6 +13,8 @@
           :documentation "Width of widget")
    (height :initarg :height :initform 30 :accessor widget-height
            :documentation "Height of widget")
+     (z-order :initarg :z-order :initform 0 :accessor widget-z-order
+        :documentation "Relative drawing order; higher values are rendered above lower ones")
    (enabled :initarg :enabled :initform t :accessor widget-enabled
             :documentation "Whether widget is enabled for interaction")
    (focused :initarg :focused :initform nil :accessor widget-focused
@@ -88,6 +90,15 @@
    (item-height :initarg :item-height :initform 24 :accessor list-box-item-height
                 :documentation "Height of each item"))
   (:documentation "Scrollable list box widget"))
+
+(defclass combo-box (list-box)
+  ((main-height :initarg :main-height :initform 30 :accessor combo-box-main-height
+                :documentation "Collapsed header height of the combo-box")
+   (expanded-p :initarg :expanded-p :initform nil :accessor combo-box-expanded-p
+               :documentation "Whether combo-box popup list is currently visible")
+   (max-visible-items :initarg :max-visible-items :initform 6 :accessor combo-box-max-visible-items
+                      :documentation "Maximum number of visible rows in the popup list"))
+  (:documentation "Drop-down selection widget backed by a popup list."))
 
 ;;; Rendering style classes
 

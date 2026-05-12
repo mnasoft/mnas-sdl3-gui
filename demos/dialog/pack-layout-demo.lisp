@@ -161,8 +161,7 @@
   (sdl3:set-render-draw-color *pack-demo-renderer* 242 242 242 255)
   (sdl3:render-clear *pack-demo-renderer*)
 
-  (loop for widget in *pack-demo-widgets*
-        do (mnas-sdl3-gui/widgets:render-widget *pack-demo-renderer* widget))
+  (mnas-sdl3-gui/widgets:render-widgets *pack-demo-renderer* *pack-demo-widgets*)
 
   (mnas-sdl3-gui/widgets:render-text
    *pack-demo-renderer* *pack-demo-status* 16.0 *pack-demo-status-y* '(45 45 45 255))

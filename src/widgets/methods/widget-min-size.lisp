@@ -51,3 +51,13 @@
          (min-height (+ (* lines (list-box-item-height widget)) 4)))
     (values (max 120 (+ text-width 12 scrollbar-width))
             (max min-height 72))))
+
+(defmethod widget-min-size ((widget combo-box))
+  (let* ((longest-item (or (loop for item in (list-box-items widget)
+                                 maximize (length (format nil "~a" item)))
+                          8))
+         (text-width (* longest-item +layout-font-char-width+))
+         (arrow-width 24))
+    (values (max 120 (+ text-width arrow-width 12))
+      (max (combo-box-total-height widget)
+        (combo-box-main-height widget)))))

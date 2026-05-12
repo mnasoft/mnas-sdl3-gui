@@ -66,6 +66,16 @@
             (list-box-scrollbar-dragging-p obj)
             (list-box-item-height obj))))
 
+(defmethod print-object ((obj combo-box) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (%print-widget-core obj stream)
+    (format stream " items=~A selected=~A expanded=~A scroll=~A max-visible=~A"
+            (length (list-box-items obj))
+            (list-box-selected-index obj)
+            (combo-box-expanded-p obj)
+            (list-box-scroll-offset obj)
+            (combo-box-max-visible-items obj))))
+
 (defmethod print-object ((obj widget-style) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (format stream "name=~A" (widget-style-name obj))))

@@ -98,8 +98,7 @@
   (sdl3:set-render-draw-color *check-box-renderer* 240 240 240 255)
   (sdl3:render-clear *check-box-renderer*)
 
-  (loop for widget in *check-box-widgets*
-        do (mnas-sdl3-gui/widgets:render-widget *check-box-renderer* widget))
+  (mnas-sdl3-gui/widgets:render-widgets *check-box-renderer* *check-box-widgets*)
 
   (mnas-sdl3-gui/widgets:render-text *check-box-renderer*
                                      *check-box-status*

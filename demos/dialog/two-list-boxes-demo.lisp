@@ -99,8 +99,7 @@
   (sdl3:set-render-draw-color *two-list-boxes-renderer* 236 236 236 255)
   (sdl3:render-clear *two-list-boxes-renderer*)
 
-  (loop for widget in *two-list-boxes-widgets*
-        do (mnas-sdl3-gui/widgets:render-widget *two-list-boxes-renderer* widget))
+  (mnas-sdl3-gui/widgets:render-widgets *two-list-boxes-renderer* *two-list-boxes-widgets*)
 
   (sdl3:render-present *two-list-boxes-renderer*)
   :continue)

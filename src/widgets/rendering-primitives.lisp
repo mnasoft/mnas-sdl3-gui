@@ -112,6 +112,11 @@
   (when (widget-visible widget)
     (render renderer widget *widget-style*)))
 
+(defun render-widgets (renderer widgets)
+  "Render WIDGETS, keeping expanded combo-box popups on the topmost pass."
+  (loop for widget in (widgets-in-render-order widgets)
+    do (render-widget renderer widget)))
+
 (defun fill-circle (renderer cx cy radius color)
   "Fill a circle centered at CX/CY with RADIUS and COLOR."
   (destructuring-bind (r g b a) color

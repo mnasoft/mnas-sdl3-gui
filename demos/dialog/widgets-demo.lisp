@@ -91,8 +91,7 @@
   (sdl3:render-clear *renderer-dialog*)
   
   ;; Render all widgets
-  (loop for widget in *widgets*
-        do (mnas-sdl3-gui/widgets:render-widget *renderer-dialog* widget))
+  (mnas-sdl3-gui/widgets:render-widgets *renderer-dialog* *widgets*)
   
     ;; Render style and status text through SDL3_ttf-aware pipeline.
     (mnas-sdl3-gui/widgets:render-text

@@ -28,3 +28,9 @@
   (setf (check-box-checked widget) (not (check-box-checked widget)))
   (update-widget-value widget (check-box-checked widget))
   t)
+
+(defmethod activate-widget ((widget combo-box))
+  (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))
+  (when (combo-box-expanded-p widget)
+    (ensure-combo-box-selection-visible widget))
+  t)

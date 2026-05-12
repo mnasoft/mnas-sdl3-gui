@@ -22,7 +22,13 @@
 
 (defun dispatch-widget-keyboard-event (widgets key &key mods on-escape on-return)
   "Handle common demo keyboard dispatch for WIDGETS and return app status keyword."
-  (cond
+  (let ((focused (focused-widget widgets)))
+    (cond
+    ((and (typep focused 'combo-box)
+          (combo-box-expanded-p focused)
+          (member key '(:escape :return)))
+     (handle-widget-key-event focused key nil)
+     :continue)
     ((eq key :escape)
      (if on-escape
          (funcall on-escape)
@@ -43,4 +49,4 @@
       :ctrl (key-modifier-active-p mods :ctrl)
       :shift (key-modifier-active-p mods :shift)
       :alt (key-modifier-active-p mods :alt))
-     :continue)))
+    :continue))))

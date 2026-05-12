@@ -114,8 +114,7 @@
   (mnas-sdl3-gui/widgets:render-text *renderer-edit-dialog*
                                      *edit-dialog-hint* 40.0 62.0 '(70 70 70 255))
 
-  (mnas-sdl3-gui/widgets:render-widget *renderer-edit-dialog* *edit-dialog-input*)
-  (mnas-sdl3-gui/widgets:render-widget *renderer-edit-dialog* *edit-dialog-ok-button*)
+  (mnas-sdl3-gui/widgets:render-widgets *renderer-edit-dialog* (edit-dialog-widgets))
 
   (sdl3:render-present *renderer-edit-dialog*)
   :continue)

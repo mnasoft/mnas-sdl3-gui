@@ -79,9 +79,7 @@
                                      70.0 252.0 '(0 0 0 255))
   
   ;; Render buttons
-  (mnas-sdl3-gui/widgets:render-widget *renderer* *ok-button*)
-  (mnas-sdl3-gui/widgets:render-widget *renderer* *cancel-button*)
-  (mnas-sdl3-gui/widgets:render-widget *renderer* *extra-button*))
+  (mnas-sdl3-gui/widgets:render-widgets *renderer* (dialog-widgets)))
 
 ;;; SDL3 demo callbacks
 
