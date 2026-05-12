@@ -66,8 +66,7 @@
                (:file "src/widgets/methods/handle-widget-mouse-down")
                (:file "src/widgets/methods/handle-widget-mouse-up")
                (:file "src/widgets/methods/handle-widget-key-press")
-               (:file "src/widgets/methods/handle-widget-key-event")
-               (:file "src/widgets/methods/render-widget-with-style")))
+               (:file "src/widgets/methods/handle-widget-key-event")))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos
   :description "Demos for mnas-sdl3-gui"

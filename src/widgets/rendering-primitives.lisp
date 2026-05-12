@@ -110,7 +110,7 @@
 (defun render-widget (renderer widget)
   "Render a widget using appropriate method based on widget type."
   (when (widget-visible widget)
-    (render-widget-with-style *widget-style* renderer widget)))
+    (render renderer widget *widget-style*)))
 
 (defun fill-circle (renderer cx cy radius color)
   "Fill a circle centered at CX/CY with RADIUS and COLOR."

@@ -101,8 +101,8 @@
 (defgeneric render-edit-box-text-and-cursor (renderer widget)
   (:documentation "Render edit-box text, selection highlight, and cursor."))
 
-(defgeneric render (renderer widget)
-  (:documentation "Render WIDGET on RENDERER using widget-specific dispatch."))
+(defgeneric render (renderer widget style)
+  (:documentation "Render WIDGET on RENDERER using STYLE for widget-specific dispatch."))
 
 (defgeneric handle-widget-mouse-down (widget x y)
   (:documentation "Handle mouse button press. Returns T if event was consumed."))
@@ -115,6 +115,3 @@
 
 (defgeneric handle-widget-key-event (widget key char &key ctrl shift alt)
   (:documentation "Handle keyboard input for WIDGET including modifier-aware bindings."))
-
-(defgeneric render-widget-with-style (style renderer widget)
-  (:documentation "Render WIDGET using STYLE on RENDERER."))
