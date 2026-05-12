@@ -1,0 +1,21 @@
+;;;; ./src/widgets/methods/edit-box-move-to-previous-word.lisp
+
+(in-package :mnas-sdl3-gui/widgets)
+
+(defmethod edit-box-move-to-previous-word ((widget edit-box))
+  (let* ((text (edit-box-text widget))
+         (cursor (edit-box-cursor widget))
+         (len (length text)))
+    (when (> cursor 0)
+      (loop while (> cursor 0)
+            do (decf cursor)
+            unless (char-is-word-char-p (aref text cursor))
+            return nil)
+      (loop while (> cursor 0)
+            do (decf cursor)
+            while (char-is-word-char-p (aref text cursor)))
+      (when (and (< cursor len) (not (char-is-word-char-p (aref text cursor))))
+        (incf cursor))
+      (setf (edit-box-cursor widget) cursor)
+      (clear-edit-box-selection widget)
+      (edit-box-ensure-cursor-visible widget))))
