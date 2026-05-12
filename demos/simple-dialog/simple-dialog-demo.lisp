@@ -98,15 +98,15 @@
         (progn
           (format t "Failed to create window/renderer: ~a~%" (sdl3:get-error))
           (return-from simple-dialog-init :failure))
-      (progn
-        (setf *window* window
-          *renderer* renderer
-          *dialog-result* nil
-          *dialog-open* t)
-        (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
-        (mnas-sdl3-gui/widgets:init-ttf-font)
-        (create-dialog-buttons)
-        (mnas-sdl3-gui/widgets:move-widget-focus (dialog-widgets)))))
+        (progn
+          (setf *window*        window
+                *renderer*      renderer
+                *dialog-result* nil
+                *dialog-open*   t)
+          (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
+          (mnas-sdl3-gui/widgets:init-ttf-font)
+          (create-dialog-buttons)
+          (mnas-sdl3-gui/widgets:move-widget-focus (dialog-widgets)))))
   :continue)
 
 (sdl3:def-app-iterate simple-dialog-iterate ()
