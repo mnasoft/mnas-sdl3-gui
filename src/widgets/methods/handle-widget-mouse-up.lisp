@@ -20,3 +20,10 @@
       (when (button-on-click widget)
         (funcall (button-on-click widget) widget)))
     (or armed inside)))
+
+(defmethod handle-widget-mouse-up ((widget list-box) x y)
+  (declare (ignore x y))
+  (let ((dragging-p (list-box-scrollbar-dragging-p widget)))
+    (setf (list-box-scrollbar-dragging-p widget) nil
+          (list-box-scrollbar-drag-offset widget) 0)
+    dragging-p))

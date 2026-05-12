@@ -129,6 +129,14 @@
               (round (slot-value ev 'sdl3:%x))
               (round (slot-value ev 'sdl3:%y)))))
        :continue)
+          (sdl3:mouse-wheel-event
+           (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+            *widgets*
+            (round (slot-value ev 'sdl3:%mouse-x))
+            (round (slot-value ev 'sdl3:%mouse-y))
+            (round (slot-value ev 'sdl3:%x))
+            (round (slot-value ev 'sdl3:%y)))
+           :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))

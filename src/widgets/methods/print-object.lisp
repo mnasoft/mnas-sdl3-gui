@@ -59,9 +59,11 @@
 (defmethod print-object ((obj list-box) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " items=~A selected=~A item-height=~A"
+    (format stream " items=~A selected=~A scroll=~A drag=~A item-height=~A"
             (length (list-box-items obj))
             (list-box-selected-index obj)
+            (list-box-scroll-offset obj)
+            (list-box-scrollbar-dragging-p obj)
             (list-box-item-height obj))))
 
 (defmethod print-object ((obj widget-style) stream)

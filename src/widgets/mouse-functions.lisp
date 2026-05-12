@@ -25,6 +25,18 @@
         do (handle-widget-mouse-motion widget x y))
   nil)
 
+(defun dispatch-widget-mouse-wheel (widgets x y dx dy)
+  "Dispatch mouse-wheel input to widgets under X/Y and return the widget that consumes it."
+  (loop for widget in widgets
+        when (and (widget-visible widget)
+                  (widget-enabled widget)
+                  (contains-point-p widget x y)
+                  (typep widget 'list-box)
+                  (not (zerop dy))
+                  (list-box-scroll-by widget (- dy)))
+          return widget
+        finally (return nil)))
+
 (defun handle-widget-click (widget x y)
   "Compatibility helper: emulate click as mouse-down followed by mouse-up."
   (let ((down (handle-widget-mouse-down widget x y))
@@ -34,7 +46,14 @@
 (defun handle-widget-mouse-motion (widget x y)
   "Handle mouse motion over a widget."
   (when (widget-visible widget)
-    (let ((inside (contains-point-p widget x y)))
-      (when (typep widget 'button)
-        (when (button-armed-p widget)
-          (setf (button-pressed-p widget) inside))))))
+    (cond
+      ((typep widget 'list-box)
+       (when (list-box-scrollbar-dragging-p widget)
+         (list-box-set-scroll-offset-from-thumb-top
+          widget
+          (- y (list-box-scrollbar-drag-offset widget)))))
+      (t
+       (let ((inside (contains-point-p widget x y)))
+         (when (typep widget 'button)
+           (when (button-armed-p widget)
+             (setf (button-pressed-p widget) inside))))))))

@@ -77,6 +77,14 @@
           :documentation "List of items in the box")
    (selected-index :initarg :selected-index :initform 0 :accessor list-box-selected-index
                    :documentation "Index of currently selected item")
+   (scroll-offset :initarg :scroll-offset :initform 0 :accessor list-box-scroll-offset
+                  :documentation "Index of the first visible item")
+   (scrollbar-dragging-p :initarg :scrollbar-dragging-p :initform nil
+                         :accessor list-box-scrollbar-dragging-p
+                         :documentation "Whether the list-box scrollbar thumb is currently dragged")
+   (scrollbar-drag-offset :initarg :scrollbar-drag-offset :initform 0
+                          :accessor list-box-scrollbar-drag-offset
+                          :documentation "Mouse Y offset inside the dragged scrollbar thumb")
    (item-height :initarg :item-height :initform 24 :accessor list-box-item-height
                 :documentation "Height of each item"))
   (:documentation "Scrollable list box widget"))
