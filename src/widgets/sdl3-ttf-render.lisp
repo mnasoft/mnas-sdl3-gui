@@ -11,8 +11,10 @@
 (defvar *ttf-font* nil
   "Pointer to loaded TTF font (SDL3_ttf::ttf-font)")
 
-(defvar *ttf-font-path* "/usr/share/fonts/TTF/DejaVuSans.ttf"
-  "Path to TTF font with Cyrillic support")
+(defparameter *ttf-font-path*
+  #+windows "D:/home/_namatv/PRG/msys64/home/namatv/quicklisp/local-projects/sdl3/mnas-sdl3-gui/fonts/DejaVuSans.ttf"
+  #+linux "/usr/share/fonts/TTF/DejaVuSans.ttf"
+    "Path to TTF font with Cyrillic support") 
 
 (defvar *ttf-font-size* 16
   "Default font size in pixels")
