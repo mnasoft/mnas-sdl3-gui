@@ -14,30 +14,30 @@
         collect (format nil "~A ~D" prefix index)))
 
 (defun create-combo-box-demo-widgets ()
-  (let ((title (make-instance 'mnas-sdl3-gui/widgets:label
-                              :x 20 :y 18 :width 520 :height 24
-                              :text "Combo-Box Demo"))
-        (hint (make-instance 'mnas-sdl3-gui/widgets:label
-                             :x 20 :y 42 :width 560 :height 24
-                             :text "Return confirms, Escape closes popup, wheel scrolls expanded lists."))
-        (small (make-instance 'mnas-sdl3-gui/widgets:combo-box
-                              :x 20 :y 86 :width 240 :height 32
-                              :items '("Flat" "Windows" "Motif" "Experimental")
-                              :selected-index 1))
-        (large (make-instance 'mnas-sdl3-gui/widgets:combo-box
-                              :x 20 :y 136 :width 320 :height 32
-                              :items (combo-box-demo-items "Preset" 18)
-                              :selected-index 4
-                              :max-visible-items 7))
-        (action (make-instance 'mnas-sdl3-gui/widgets:button
-                               :x 20 :y 196 :width 140 :height 34
-                               :text "Report Value"
-                               :on-click (lambda (widget)
-                                           (declare (ignore widget))
-                                           (setf *combo-box-status*
-                                                 (format nil "Selected: ~A / ~A"
-                                                         (mnas-sdl3-gui/widgets:widget-value small)
-                                                         (mnas-sdl3-gui/widgets:widget-value large)))))))
+  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
+                               :x 20 :y 18 :width 520 :height 24
+                               :text "Combo-Box Demo"))
+         (hint (make-instance 'mnas-sdl3-gui/widgets:label
+                              :x 20 :y 42 :width 560 :height 24
+                              :text "Return confirms, Escape closes popup, wheel scrolls expanded lists."))
+         (small (make-instance 'mnas-sdl3-gui/widgets:combo-box
+                               :x 20 :y 86 :width 240 :height 32
+                               :items '("Flat" "Windows" "Motif" "Experimental")
+                               :selected-index 1))
+         (large (make-instance 'mnas-sdl3-gui/widgets:combo-box
+                               :x 20 :y 136 :width 320 :height 32
+                               :items (combo-box-demo-items "Preset" 18)
+                               :selected-index 4
+                               :max-visible-items 7))
+         (action (make-instance 'mnas-sdl3-gui/widgets:button
+                                :x 20 :y 196 :width 140 :height 34
+                                :text "Report Value"
+                                :on-click (lambda (widget)
+                                            (declare (ignore widget))
+                                            (setf *combo-box-status*
+                                                  (format nil "Selected: ~A / ~A"
+                                                          (mnas-sdl3-gui/widgets:widget-value small)
+                                                          (mnas-sdl3-gui/widgets:widget-value large)))))))
     (setf *combo-box-widgets* (list title hint small large action))
     *combo-box-widgets*))
 
