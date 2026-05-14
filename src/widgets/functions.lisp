@@ -128,6 +128,25 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
     (when (and items (<= 0 index) (< index (length items)))
       (nth index items))))
 
+(defun combo-box-find-item-index (widget item)
+  "Return index of ITEM in combo-box WIDGET items, or NIL if missing."
+  (position item (list-box-items widget) :test #'equal))
+
+(defun combo-box-add-item (widget item &key (select t))
+  "Add ITEM to combo-box WIDGET items, optionally selecting it.
+If ITEM already exists, it becomes selected instead of duplicated." 
+  (let ((items (list-box-items widget))
+        (index (combo-box-find-item-index widget item)))
+    (if index
+        (when select
+          (setf (list-box-selected-index widget) index))
+        (progn
+          (setf (list-box-items widget) (append items (list item))
+                (list-box-selected-index widget) (1- (length (list-box-items widget))))))
+    (when select
+      (update-widget-value widget item)))
+  widget)
+
 (defun widget-effective-z-order (widget)
   "Return effective z-order for WIDGET, keeping expanded combo-box popups on top."
   (+ (widget-z-order widget)

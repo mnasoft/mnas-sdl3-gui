@@ -271,7 +271,107 @@
                              '(180 180 180 255)
                              '(96 96 96 255))))
 
-(defmethod render (renderer (widget combo-box) (style motif-widget-style))
+(defun %render-editable-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width)
+  (let ((main-height (combo-box-main-height widget)))
+    (fill-rect renderer (widget-x widget) (widget-y widget)
+               (widget-width widget) main-height
+               bg-color)
+    (stroke-rect renderer (widget-x widget) (widget-y widget)
+                 (widget-width widget) main-height
+                 border-color
+                 (or border-width 1))
+    (stroke-rect renderer (- (+ (widget-x widget) (widget-width widget)) arrow-width)
+                 (widget-y widget)
+                 arrow-width
+                 main-height
+                 border-color)
+    (let ((text (edit-box-text widget))
+          (placeholder (editable-combo-box-placeholder widget)))
+      (if (and (zerop (length text)) (plusp (length placeholder))
+               (not (widget-focused widget)))
+          (render-text renderer placeholder
+                       (+ (widget-x widget) +widget-padding+)
+                       (+ (widget-y widget)
+                          (/ (- main-height +font-text-height+) 2))
+                       '(160 160 160 255))
+          (render-edit-box-text-and-cursor renderer widget)))
+    (render-text renderer arrow-text
+                 (+ (- (+ (widget-x widget) (widget-width widget)) arrow-width) 8)
+                 (+ (widget-y widget) offset-y)
+                 +color-text+)))
+
+(defmethod render (renderer (widget editable-combo-box) (style widget-style))
+  (declare (ignore style))
+  (let ((arrow-width 24)
+        (border-color (if (widget-focused widget) +color-focus-border+ +color-border+)))
+    (%render-editable-combo-box-main renderer widget
+                                     (if (widget-enabled widget) '(255 255 255 255) '(245 245 245 255))
+                                     border-color
+                                     arrow-width
+                                     (if (combo-box-expanded-p widget) "^" "v")
+                                     6)
+    (when (combo-box-expanded-p widget)
+      (%render-combo-box-popup renderer widget +color-border+
+                               '(255 255 255 255)
+                               '(232 232 232 255)
+                               '(180 180 180 255)
+                               '(120 120 120 255)))))
+
+(defmethod render (renderer (widget editable-combo-box) (style windows-widget-style))
+  (declare (ignore style))
+  (let ((x (widget-x widget))
+        (y (widget-y widget))
+        (w (widget-width widget))
+        (h (combo-box-main-height widget))
+        (arrow-width 24)
+        (face (if (widget-enabled widget) '(255 255 255 255) '(236 236 236 255))))
+    (fill-rect renderer x y w h face)
+    (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
+    (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                       '(240 240 240 255) '(64 64 64 255) 1)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(128 128 128 255))
+    (%render-editable-combo-box-main renderer widget face
+                                     (if (widget-focused widget) +color-focus-border+ '(128 128 128 255))
+                                     arrow-width
+                                     (if (combo-box-expanded-p widget) "^" "v")
+                                     6
+                                     :border-width 0)
+    (when (widget-focused widget)
+      (%render-combo-box-focus-outline renderer widget 3)))
+  (when (combo-box-expanded-p widget)
+    (%render-combo-box-popup renderer widget '(128 128 128 255)
+                             '(255 255 255 255)
+                             '(232 232 232 255)
+                             '(180 180 180 255)
+                             '(96 96 96 255))))
+
+(defmethod render (renderer (widget editable-combo-box) (style motif-widget-style))
+  (declare (ignore style))
+  (let ((x (widget-x widget))
+        (y (widget-y widget))
+        (w (widget-width widget))
+        (h (combo-box-main-height widget))
+        (arrow-width 24)
+        (face (if (widget-enabled widget) '(244 244 244 255) '(224 224 224 255))))
+    (fill-rect renderer x y w h face)
+    (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(110 110 110 255))
+    (%render-editable-combo-box-main renderer widget face
+                                     (if (widget-focused widget) +color-focus-border+ '(110 110 110 255))
+                                     arrow-width
+                                     (if (combo-box-expanded-p widget) "^" "v")
+                                     6
+                                     :border-width 0)
+    (when (widget-focused widget)
+      (%render-combo-box-focus-outline renderer widget 4)))
+  (when (combo-box-expanded-p widget)
+    (%render-combo-box-popup renderer widget '(110 110 110 255)
+                             '(250 250 250 255)
+                             '(226 226 226 255)
+                             '(176 176 176 255)
+                             '(96 96 96 255))))
+
+(defmethod render (renderer (widget button) (style windows-widget-style))
   (declare (ignore style))
   (let* ((x (widget-x widget))
          (y (widget-y widget))

@@ -100,6 +100,12 @@
                       :documentation "Maximum number of visible rows in the popup list"))
   (:documentation "Drop-down selection widget backed by a popup list."))
 
+(defclass editable-combo-box (edit-box combo-box)
+  ((placeholder :initarg :placeholder :initform ""
+                :accessor editable-combo-box-placeholder
+                :documentation "Placeholder text shown when the input is empty."))
+  (:documentation "Editable combo-box with inline text entry and drop-down item selection."))
+
 ;;; Rendering style classes
 
 (defclass widget-style ()

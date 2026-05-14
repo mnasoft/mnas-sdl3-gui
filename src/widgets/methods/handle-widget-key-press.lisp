@@ -128,6 +128,37 @@
      t)
     (t nil))))
 
+(defmethod handle-widget-key-press ((widget editable-combo-box) key char)
+  (declare (ignore char))
+  (cond
+    ((and (eq key :escape)
+          (combo-box-expanded-p widget))
+     (sync-combo-box-expanded-state widget nil)
+     t)
+    ((eq key :return)
+     (let* ((text (string-trim '(#\Space #\Tab #\Newline #\Return)
+                               (edit-box-text widget))))
+       (when (> (length text) 0)
+         (combo-box-add-item widget text :select t)
+         (setf (edit-box-text widget) text
+               (edit-box-cursor widget) (length text)))
+       (sync-combo-box-expanded-state widget nil)
+       t))
+    ((and (combo-box-expanded-p widget)
+          (member key '(:up :down :pageup :pagedown)))
+     (let ((handled (call-next-method)))
+       (when (null handled)
+         (setf handled (call-next-method)))
+       (when handled
+         (let ((item (combo-box-selected-item widget)))
+           (when item
+             (setf (edit-box-text widget) (format nil "~a" item)
+                   (edit-box-cursor widget) (length (edit-box-text widget))
+                   (widget-value widget) (edit-box-text widget)))))
+       t))
+    (t
+     (call-next-method))))
+
 (defmethod handle-widget-key-press ((widget combo-box) key char)
   (declare (ignore char))
   (let ((visible-count (combo-box-visible-item-count widget))
