@@ -10,7 +10,9 @@
            #:do-pack-layout-demo
            #:do-two-list-boxes-demo
            #:do-combo-box-demo
-           #:do-editable-combo-box-demo))
+           #:do-editable-combo-box-demo
+           #:do-polyhedron-demo
+           #:do-resizable-window-demo))
 
 (in-package :mnas-sdl3-gui/demos/dialog)
 

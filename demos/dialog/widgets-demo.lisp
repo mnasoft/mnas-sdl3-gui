@@ -49,10 +49,22 @@
                    :text "Type here..."
                    :cursor 0
                    :max-length 100)
-    
+
+    ;; Editable combo box with dropdown and item creation
+    (make-instance 'mnas-sdl3-gui/widgets:editable-combo-box
+                   :x 20 :y 260 :width 300 :height 30
+                   :main-height 30
+                   :items '("Preset A" "Preset B" "Preset C")
+                   :selected-index 0
+                   :text ""
+                   :cursor 0
+                   :max-length 100
+                   :max-visible-items 5
+                   :placeholder "Type new item or select from list")
+
     ;; List box with items
     (make-instance 'mnas-sdl3-gui/widgets:list-box
-                   :x 20 :y 270 :width 300 :height 150
+                   :x 20 :y 310 :width 300 :height 150
                    :items '("Option 1" "Option 2" "Option 3" "Option 4" "Option 5"
               "Option 6" "Option 7" "Option 8")
                    :selected-index 0
