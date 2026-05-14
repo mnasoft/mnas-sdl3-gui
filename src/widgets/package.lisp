@@ -33,7 +33,8 @@
    #:check-box
    #:edit-box
    #:list-box
-  #:combo-box
+   #:combo-box
+   #:editable-combo-box
    ;; label accessors
    #:label-text
    ;; button accessors
@@ -75,6 +76,9 @@
   ;; combo-box accessors
   #:combo-box-expanded-p
   #:combo-box-max-visible-items
+  #:combo-box-add-item
+  ;; editable combo-box accessors
+  #:editable-combo-box-placeholder
   ;; layout managers
   #:pack-widget
   #:unpack-widget
