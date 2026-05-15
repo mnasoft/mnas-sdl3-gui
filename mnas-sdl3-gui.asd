@@ -88,6 +88,7 @@
                (:file "demos/dialog/combo-box-demo")
                (:file "demos/dialog/editable-combo-box-demo")
                (:file "demos/dialog/polyhedron-demo")
+               (:file "demos/dialog/polyhedron-vulkan-demo")
                (:file "demos/dialog/resizable-window-demo")
                (:file "demos/dialog/cyrillic-font-demo")
                (:file "demos/simple-dialog/package")

@@ -12,6 +12,7 @@
            #:do-combo-box-demo
            #:do-editable-combo-box-demo
            #:do-polyhedron-demo
+           #:do-polyhedron-vulkan-demo
            #:do-resizable-window-demo))
 
 (in-package :mnas-sdl3-gui/demos/dialog)

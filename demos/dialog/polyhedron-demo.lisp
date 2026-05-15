@@ -66,6 +66,36 @@
     (0 2 3 1)
     (4 5 7 6)))
 
+(defparameter *tetrahedron-vertices*
+  '((1.0 1.0 1.0)
+    (1.0 -1.0 -1.0)
+    (-1.0 1.0 -1.0)
+    (-1.0 -1.0 1.0)))
+
+(defparameter *tetrahedron-faces*
+  '((0 1 2)
+    (0 3 1)
+    (0 2 3)
+    (1 3 2)))
+
+(defparameter *octahedron-vertices*
+  '((1.0 0.0 0.0)
+    (-1.0 0.0 0.0)
+    (0.0 1.0 0.0)
+    (0.0 -1.0 0.0)
+    (0.0 0.0 1.0)
+    (0.0 0.0 -1.0)))
+
+(defparameter *octahedron-faces*
+  '((0 2 4)
+    (2 1 4)
+    (1 3 4)
+    (3 0 4)
+    (0 5 2)
+    (2 5 1)
+    (1 5 3)
+    (3 5 0)))
+
 (defun polyhedron-seconds-now ()
   (/ (get-internal-real-time) internal-time-units-per-second))
 
@@ -147,7 +177,17 @@
               :vertices *cube-vertices*
               :faces *cube-faces*
               :color '(255 190 70)
-              :scale 1.35)))
+              :scale 1.35)
+        (list :name "Tetrahedron"
+              :vertices *tetrahedron-vertices*
+              :faces *tetrahedron-faces*
+              :color '(255 120 180)
+              :scale 1.45)
+        (list :name "Octahedron"
+              :vertices *octahedron-vertices*
+              :faces *octahedron-faces*
+              :color '(135 255 145)
+              :scale 1.25)))
 
 (defun current-shape-spec ()
   (nth *polyhedron-shape-index* *shape-specs*))
