@@ -11,7 +11,7 @@
 (format t "3. Click OK to see the result~%")
 (format t "4. Example: 'Привет' -> 'Privet'~%~%")
 
-(let ((result (mnas-sdl3-gui/demos/dialog:do-edit-box-dialog-demo)))
+(let ((result (mnas-sdl3-gui/demos/dialog:do-entry-dialog-demo)))
   (format t "~%You entered: ~a~%" result)
   (if result
       (format t "Characters in result: ~d~%" (length result))

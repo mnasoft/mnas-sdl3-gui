@@ -1,11 +1,11 @@
-;;;; ./src/widgets/methods/compute-text-offset-to-position.lisp
+;;;; ./src/widgets/methods/entry-cursor-pixel-offset.lisp
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod compute-text-offset-to-position ((widget entry) text-pos)
+(defmethod entry-cursor-pixel-offset ((widget entry))
   (let* ((text (entry-text widget))
-         (pos (max 0 (min text-pos (length text))))
-         (prefix (subseq text 0 pos)))
+         (cursor (max 0 (min (entry-cursor widget) (length text))))
+         (prefix (subseq text 0 cursor)))
     (if (and *ttf-available-p* *ttf-font*)
         (handler-case
             (multiple-value-bind (w h)
@@ -13,5 +13,5 @@
               (declare (ignore h))
               (or w 0))
           (error ()
-            (* pos +font-char-width+)))
-        (* pos +font-char-width+))))
+            (* cursor +font-char-width+)))
+        (* cursor +font-char-width+))))

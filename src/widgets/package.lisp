@@ -31,7 +31,7 @@
    #:button
    #:toggle
    #:check-box
-   #:edit-box
+   #:entry
    #:list-box
    #:combo-box
    #:editable-combo-box
@@ -49,25 +49,25 @@
    ;; check-box accessors
    #:check-box-checked
    #:check-box-label
-   ;; edit-box accessors
-   #:edit-box-text
-   #:edit-box-cursor
-  #:edit-box-scroll-offset
-   #:edit-box-max-length
-   #:edit-box-selection-start
-   #:edit-box-selection-end
-   ;; edit-box selection and clipboard utilities
-   #:clear-edit-box-selection
-   #:get-edit-box-selected-text
-   #:set-edit-box-selection
-   #:edit-box-copy-to-clipboard
-   #:edit-box-paste-from-clipboard
-   #:edit-box-delete-selection
-   #:edit-box-move-to-previous-word
-   #:edit-box-move-to-next-word
-  #:edit-box-ensure-cursor-visible
-  #:edit-box-scroll-to-start
-  #:edit-box-scroll-to-end
+   ;; entry accessors
+   #:entry-text
+   #:entry-cursor
+  #:entry-scroll-offset
+   #:entry-max-length
+   #:entry-selection-start
+   #:entry-selection-end
+   ;; entry selection and clipboard utilities
+   #:clear-entry-selection
+   #:get-entry-selected-text
+   #:set-entry-selection
+   #:entry-copy-to-clipboard
+   #:entry-paste-from-clipboard
+   #:entry-delete-selection
+   #:entry-move-to-previous-word
+   #:entry-move-to-next-word
+  #:entry-ensure-cursor-visible
+  #:entry-scroll-to-start
+  #:entry-scroll-to-end
    ;; list-box accessors
    #:list-box-items
    #:list-box-selected-index
@@ -113,7 +113,7 @@
   #:handle-widget-key-event
   #:focusable-widget-p
   #:focused-widget
-  #:focused-edit-box
+  #:focused-entry
   #:dispatch-focused-widget-key-event
   #:dispatch-focused-text-input
   #:dispatch-widget-keyboard-event

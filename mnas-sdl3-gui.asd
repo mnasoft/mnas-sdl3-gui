@@ -27,36 +27,36 @@
                (:file "src/widgets/toggle-functions")
                (:file "src/widgets/focus-functions")
                (:file "src/widgets/mouse-functions")
-               (:file "src/widgets/edit-box-functions")
-               (:file "src/widgets/methods/edit-box-cursor-pixel-offset")
+               (:file "src/widgets/entry-functions")
+               (:file "src/widgets/methods/entry-cursor-pixel-offset")
                (:file "src/widgets/methods/compute-text-segment-pixel-width")
                (:file "src/widgets/methods/compute-text-offset-to-position")
-               (:file "src/widgets/methods/edit-box-visible-text-width")
-               (:file "src/widgets/methods/edit-box-visible-range")
-               (:file "src/widgets/methods/render-edit-box-text-and-cursor")
-               (:file "src/widgets/methods/clear-edit-box-selection")
-               (:file "src/widgets/methods/get-edit-box-selected-text")
-               (:file "src/widgets/methods/set-edit-box-selection")
-               (:file "src/widgets/methods/edit-box-selection-anchor")
-               (:file "src/widgets/methods/edit-box-select-from-anchor")
-               (:file "src/widgets/methods/edit-box-select-previous-char")
-               (:file "src/widgets/methods/edit-box-select-next-char")
-               (:file "src/widgets/methods/edit-box-select-previous-word")
-               (:file "src/widgets/methods/edit-box-select-next-word")
-               (:file "src/widgets/methods/edit-box-select-to-start")
-               (:file "src/widgets/methods/edit-box-select-to-end")
-               (:file "src/widgets/methods/edit-box-inner-width")
-               (:file "src/widgets/methods/edit-box-text-width-between")
-               (:file "src/widgets/methods/normalize-edit-box-scroll-offset")
-               (:file "src/widgets/methods/edit-box-ensure-cursor-visible")
-               (:file "src/widgets/methods/edit-box-scroll-to-start")
-               (:file "src/widgets/methods/edit-box-position-from-pixel")
-               (:file "src/widgets/methods/edit-box-scroll-to-end")
-               (:file "src/widgets/methods/edit-box-copy-to-clipboard")
-               (:file "src/widgets/methods/edit-box-paste-from-clipboard")
-               (:file "src/widgets/methods/edit-box-delete-selection")
-               (:file "src/widgets/methods/edit-box-move-to-previous-word")
-               (:file "src/widgets/methods/edit-box-move-to-next-word")
+               (:file "src/widgets/methods/entry-visible-text-width")
+               (:file "src/widgets/methods/entry-visible-range")
+               (:file "src/widgets/methods/render-entry-text-and-cursor")
+               (:file "src/widgets/methods/clear-entry-selection")
+               (:file "src/widgets/methods/get-entry-selected-text")
+               (:file "src/widgets/methods/set-entry-selection")
+               (:file "src/widgets/methods/entry-selection-anchor")
+               (:file "src/widgets/methods/entry-select-from-anchor")
+               (:file "src/widgets/methods/entry-select-previous-char")
+               (:file "src/widgets/methods/entry-select-next-char")
+               (:file "src/widgets/methods/entry-select-previous-word")
+               (:file "src/widgets/methods/entry-select-next-word")
+               (:file "src/widgets/methods/entry-select-to-start")
+               (:file "src/widgets/methods/entry-select-to-end")
+               (:file "src/widgets/methods/entry-inner-width")
+               (:file "src/widgets/methods/entry-text-width-between")
+               (:file "src/widgets/methods/normalize-entry-scroll-offset")
+               (:file "src/widgets/methods/entry-ensure-cursor-visible")
+               (:file "src/widgets/methods/entry-scroll-to-start")
+               (:file "src/widgets/methods/entry-position-from-pixel")
+               (:file "src/widgets/methods/entry-scroll-to-end")
+               (:file "src/widgets/methods/entry-copy-to-clipboard")
+               (:file "src/widgets/methods/entry-paste-from-clipboard")
+               (:file "src/widgets/methods/entry-delete-selection")
+               (:file "src/widgets/methods/entry-move-to-previous-word")
+               (:file "src/widgets/methods/entry-move-to-next-word")
                (:file "src/widgets/keyboard-functions")
                (:file "src/widgets/methods/initialize-instance")
                (:file "src/widgets/methods/contains-point-p")
@@ -74,7 +74,7 @@
                "mnas-sdl3-gui/demos/dialog/check-box-01"
                "mnas-sdl3-gui/demos/dialog/combo-box-01"
                "mnas-sdl3-gui/demos/dialog/combo-box-02"
-               "mnas-sdl3-gui/demos/dialog/edit-box-01"
+               "mnas-sdl3-gui/demos/dialog/entry-01"
                "mnas-sdl3-gui/demos/dialog/polyhedron-01"
                "mnas-sdl3-gui/demos/dialog/polyhedron-02"
                "mnas-sdl3-gui/demos/dialog/polyhedron-03"
@@ -126,14 +126,14 @@
                 :components ((:file "package")
                              (:file "combo-box-02")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/edit-box-01
+(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-01
   :description "Demos for mnas-sdl3-gui"
   :depends-on (#:mnas-sdl3-gui)
   :serial t
-  :components ((:module "demos/dialog/edit-box/edit-box-01"
+  :components ((:module "demos/dialog/entry/entry-01"
                 :serial t
                 :components ((:file "package")
-                             (:file "edit-box-01")))))
+                             (:file "entry-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-01
   :description "Demos for mnas-sdl3-gui"

@@ -1,0 +1,21 @@
+;;;; ./src/widgets/methods/entry-move-to-previous-word.lisp
+
+(in-package :mnas-sdl3-gui/widgets)
+
+(defmethod entry-move-to-previous-word ((widget entry))
+  (let* ((text (entry-text widget))
+         (cursor (entry-cursor widget))
+         (len (length text)))
+    (when (> cursor 0)
+      (loop while (> cursor 0)
+            do (decf cursor)
+            unless (char-is-word-char-p (aref text cursor))
+            return nil)
+      (loop while (> cursor 0)
+            do (decf cursor)
+            while (char-is-word-char-p (aref text cursor)))
+      (when (and (< cursor len) (not (char-is-word-char-p (aref text cursor))))
+        (incf cursor))
+      (setf (entry-cursor widget) cursor)
+      (clear-entry-selection widget)
+      (entry-ensure-cursor-visible widget))))

@@ -45,16 +45,16 @@
             (check-box-label obj)
             (check-box-checked obj))))
 
-(defmethod print-object ((obj edit-box) stream)
+(defmethod print-object ((obj entry) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
     (format stream "text=~S cursor=~A scroll=~A sel=~A..~A max=~A"
-            (edit-box-text obj)
-            (edit-box-cursor obj)
-            (edit-box-scroll-offset obj)
-            (edit-box-selection-start obj)
-            (edit-box-selection-end obj)
-            (edit-box-max-length obj))))
+            (entry-text obj)
+            (entry-cursor obj)
+            (entry-scroll-offset obj)
+            (entry-selection-start obj)
+            (entry-selection-end obj)
+            (entry-max-length obj))))
 
 (defmethod print-object ((obj list-box) stream)
   (print-unreadable-object (obj stream :type t :identity t)

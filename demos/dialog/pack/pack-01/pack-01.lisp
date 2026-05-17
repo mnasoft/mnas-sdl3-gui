@@ -47,11 +47,11 @@
          (check-backup (make-instance 'mnas-sdl3-gui/widgets:check-box
                                       :label "Создавать бэкап"
                                       :checked nil))
-         (edit-user (make-instance 'mnas-sdl3-gui/widgets:edit-box
+         (edit-user (make-instance 'mnas-sdl3-gui/widgets:entry
                                    :text "Имя пользователя"
                                    :cursor 0
                                    :max-length 120))
-         (edit-path (make-instance 'mnas-sdl3-gui/widgets:edit-box
+         (edit-path (make-instance 'mnas-sdl3-gui/widgets:entry
                                    :text "/tmp/output"
                                    :cursor 0
                                    :max-length 120))

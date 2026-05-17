@@ -2,7 +2,7 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog
   (:use #:cl)
-  (:export #:do-edit-box-dialog-demo
+  (:export #:do-entry-dialog-demo
            #:do-check-box-demo
            #:do-pack-layout-demo
            #:do-two-list-boxes-demo
@@ -13,7 +13,7 @@
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 
-;;;; (do-edit-box-dialog-demo)
+;;;; (do-entry-dialog-demo)
 ;;;; (do-check-box-demo)
 ;;;; (do-pack-layout-demo)
 ;;;; (do-two-list-boxes-demo)

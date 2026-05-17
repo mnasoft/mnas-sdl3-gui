@@ -59,18 +59,18 @@
           :documentation "Label for checkbox"))
   (:documentation "Checkbox widget"))
 
-(defclass edit-box (widget)
-  ((text :initarg :text :initform "" :accessor edit-box-text
-         :documentation "Text content of edit box")
-   (cursor :initarg :cursor :initform 0 :accessor edit-box-cursor
+(defclass entry (widget)
+  ((text :initarg :text :initform "" :accessor entry-text
+         :documentation "Text content of entry")
+   (cursor :initarg :cursor :initform 0 :accessor entry-cursor
            :documentation "Cursor position in text")
-   (scroll-offset :initarg :scroll-offset :initform 0 :accessor edit-box-scroll-offset
+   (scroll-offset :initarg :scroll-offset :initform 0 :accessor entry-scroll-offset
                   :documentation "Character offset of the first visible glyph")
-   (selection-start :initarg :selection-start :initform nil :accessor edit-box-selection-start
+   (selection-start :initarg :selection-start :initform nil :accessor entry-selection-start
                     :documentation "Start of text selection (NIL if no selection)")
-   (selection-end :initarg :selection-end :initform nil :accessor edit-box-selection-end
+   (selection-end :initarg :selection-end :initform nil :accessor entry-selection-end
                   :documentation "End of text selection (NIL if no selection)")
-   (max-length :initarg :max-length :initform 256 :accessor edit-box-max-length
+   (max-length :initarg :max-length :initform 256 :accessor entry-max-length
                :documentation "Maximum length of text"))
   (:documentation "Text input box widget"))
 
@@ -100,7 +100,7 @@
                       :documentation "Maximum number of visible rows in the popup list"))
   (:documentation "Drop-down selection widget backed by a popup list."))
 
-(defclass editable-combo-box (edit-box combo-box)
+(defclass editable-combo-box (entry combo-box)
   ((placeholder :initarg :placeholder :initform ""
                 :accessor editable-combo-box-placeholder
                 :documentation "Placeholder text shown when the input is empty."))

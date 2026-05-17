@@ -44,7 +44,7 @@
                    :checked t)
     
     ;; Edit box
-    (make-instance 'mnas-sdl3-gui/widgets:edit-box
+    (make-instance 'mnas-sdl3-gui/widgets:entry
                    :x 20 :y 210 :width 300 :height 35
                    :text "Type here..."
                    :cursor 0

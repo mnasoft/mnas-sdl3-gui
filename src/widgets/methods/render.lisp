@@ -77,7 +77,7 @@
                  (+ box-y (/ (- box-size label-height) 2))
                  +color-text+)))
 
-(defmethod render (renderer (widget edit-box) (style widget-style))
+(defmethod render (renderer (widget entry) (style widget-style))
   (declare (ignore style))
   (fill-rect renderer (widget-x widget) (widget-y widget)
              (widget-width widget) (widget-height widget)
@@ -86,9 +86,9 @@
                (widget-width widget) (widget-height widget)
                (if (widget-focused widget) +color-focus-border+ +color-border+)
                2)
-  (render-edit-box-text-and-cursor renderer widget))
+  (render-entry-text-and-cursor renderer widget))
 
-(defmethod render (renderer (widget edit-box) (style windows-widget-style))
+(defmethod render (renderer (widget entry) (style windows-widget-style))
   (declare (ignore style))
   (let ((x (widget-x widget))
         (y (widget-y widget))
@@ -100,9 +100,9 @@
                        '(64 64 64 255) '(224 224 224 255) 1)
     (when (widget-focused widget)
       (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-focus-border+ 1)))
-  (render-edit-box-text-and-cursor renderer widget))
+  (render-entry-text-and-cursor renderer widget))
 
-(defmethod render (renderer (widget edit-box) (style motif-widget-style))
+(defmethod render (renderer (widget entry) (style motif-widget-style))
   (declare (ignore style))
   (let ((x (widget-x widget))
         (y (widget-y widget))
@@ -112,7 +112,7 @@
     (render-bevel-rect renderer x y w h '(110 110 110 255) '(238 238 238 255) 2)
     (when (widget-focused widget)
       (stroke-rect renderer (+ x 3) (+ y 3) (- w 6) (- h 6) +color-focus-border+ 1)))
-  (render-edit-box-text-and-cursor renderer widget))
+  (render-entry-text-and-cursor renderer widget))
 
 (defmethod render (renderer (widget list-box) style)
   (declare (ignore style))
@@ -285,7 +285,7 @@
                  arrow-width
                  main-height
                  border-color)
-    (let ((text (edit-box-text widget))
+    (let ((text (entry-text widget))
           (placeholder (editable-combo-box-placeholder widget)))
       (if (and (zerop (length text)) (plusp (length placeholder))
                (not (widget-focused widget)))
@@ -294,7 +294,7 @@
                        (+ (widget-y widget)
                           (/ (- main-height +font-text-height+) 2))
                        '(160 160 160 255))
-          (render-edit-box-text-and-cursor renderer widget)))
+          (render-entry-text-and-cursor renderer widget)))
     (render-text renderer arrow-text
                  (+ (- (+ (widget-x widget) (widget-width widget)) arrow-width) 8)
                  (+ (widget-y widget) offset-y)

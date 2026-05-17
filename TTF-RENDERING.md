@@ -169,8 +169,8 @@ WARNING: Duplicate definition for RENDER-TEXT-WITH-TTF found in one file.
 ### Display Cyrillic in Edit Box
 
 ```lisp
-;; Automatically works with existing edit-box widget
-(let ((result (mnas-sdl3-gui/demos/dialog:do-edit-box-dialog-demo)))
+;; Automatically works with existing entry widget
+(let ((result (mnas-sdl3-gui/demos/dialog:do-entry-dialog-demo)))
   (format t "You entered: ~a~%" result)
   ;; Input stored as UTF-8, displayed with approximation
   )

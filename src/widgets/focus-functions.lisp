@@ -8,16 +8,16 @@
   "Return true when WIDGET participates in keyboard focus traversal."
   (and (widget-enabled widget)
        (widget-visible widget)
-  (typep widget '(or button toggle check-box edit-box list-box combo-box))))
+  (typep widget '(or button toggle check-box entry list-box combo-box))))
 
 (defun focused-widget (widgets)
   "Return the currently focused widget from WIDGETS, or NIL."
   (find-if #'widget-focused widgets))
 
-(defun focused-edit-box (widgets)
-  "Return the currently focused edit-box from WIDGETS, or NIL."
+(defun focused-entry (widgets)
+  "Return the currently focused entry from WIDGETS, or NIL."
   (find-if (lambda (widget)
-             (and (typep widget 'edit-box)
+             (and (typep widget 'entry)
                   (widget-focused widget)))
            widgets))
 
