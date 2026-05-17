@@ -22,3 +22,6 @@
     (loop while (and (< i len) (char-is-word-char-p (aref text i)))
           do (incf i))
     i))
+
+;; entry methods moved to src/widgets/methods/entry-show-text.lisp
+;; and src/widgets/methods/entry-valid-text-p.lisp

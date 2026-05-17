@@ -316,6 +316,19 @@
                                        (coerce (first b) 'single-float)
                                        (coerce (second b) 'single-float))))))))
 
+(defun rotate-point (point angle)
+  (destructuring-bind (x y z) point
+    (let* ((x-angle (* angle 0.7))
+           (cx (cos x-angle))
+           (sx (sin x-angle))
+           (cy (cos angle))
+           (sy (sin angle))
+           (y1 (- (* y cx) (* z sx)))
+           (z1 (+ (* y sx) (* z cx)))
+           (x2 (+ (* x cy) (* z1 sy)))
+           (z2 (- (* z1 cy) (* x sy))))
+      (list x2 y1 z2))))
+
 (sdl3:def-app-init p-vulkan-demo-init (argc argv)
     (declare (ignore argc argv))
     (sdl3:set-app-metadata "Polyhedron Vulkan Solid Demo" "1.0"
@@ -389,10 +402,10 @@
 (defun polyhedron-03 ()
     "Run the solid polyhedron Vulkan demo. Press Space to switch shapes."
     (sdl3:enter-app-main-callbacks
-     #'p-vulkan-demo-init
-     #'polyhedron-vulkan-solid-demo-iterate
-     #'polyhedron-vulkan-solid-demo-event
-     #'polyhedron-vulkan-solid-demo-quit))
+     'p-vulkan-demo-init
+     'polyhedron-vulkan-solid-demo-iterate
+     'polyhedron-vulkan-solid-demo-event
+     'polyhedron-vulkan-solid-demo-quit))
   
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron-03)
 ;;;; (polyhedron-03)

@@ -71,7 +71,12 @@
    (selection-end :initarg :selection-end :initform nil :accessor entry-selection-end
                   :documentation "End of text selection (NIL if no selection)")
    (max-length :initarg :max-length :initform 256 :accessor entry-max-length
-               :documentation "Maximum length of text"))
+               :documentation "Maximum length of text")
+   (show :initarg :show :initform nil :accessor entry-show
+         :documentation "Mask character or string used to display entry text.")
+   (validate :initarg :validate :initform nil :accessor entry-validate
+             :documentation "Optional validation function NEW-TEXT -> non-NIL.")
+   )
   (:documentation "Text input box widget"))
 
 (defclass list-box (widget)

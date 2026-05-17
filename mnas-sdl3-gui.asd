@@ -47,6 +47,8 @@
                (:file "src/widgets/methods/entry-select-to-end")
                (:file "src/widgets/methods/entry-inner-width")
                (:file "src/widgets/methods/entry-text-width-between")
+               (:file "src/widgets/methods/entry-show-text")
+               (:file "src/widgets/methods/entry-valid-text-p")
                (:file "src/widgets/methods/normalize-entry-scroll-offset")
                (:file "src/widgets/methods/entry-ensure-cursor-visible")
                (:file "src/widgets/methods/entry-scroll-to-start")
@@ -134,6 +136,15 @@
                 :serial t
                 :components ((:file "package")
                              (:file "entry-01")))))
+
+(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-02
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on (#:mnas-sdl3-gui)
+  :serial t
+  :components ((:module "demos/dialog/entry/entry-02"
+                :serial t
+                :components ((:file "package")
+                             (:file "entry-02")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-01
   :description "Demos for mnas-sdl3-gui"

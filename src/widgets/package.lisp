@@ -54,6 +54,8 @@
    #:entry-cursor
   #:entry-scroll-offset
    #:entry-max-length
+   #:entry-show
+   #:entry-validate
    #:entry-selection-start
    #:entry-selection-end
    ;; entry selection and clipboard utilities

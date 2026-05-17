@@ -4,6 +4,7 @@
 
 (defmethod render-entry-text-and-cursor (renderer (widget entry))
   (let* ((text (entry-text widget))
+         (display-text (or (entry-show-text widget) text))
          (text-x (+ (widget-x widget) +widget-padding+))
          (text-y (+ (widget-y widget)
                     (/ (- (widget-height widget) +font-text-height+) 2)))
@@ -19,7 +20,7 @@
                     (compute-text-segment-pixel-width widget visible-start position)))
                (render-visible-segment (start end color)
                  (when (< start end)
-                   (render-text renderer (subseq text start end)
+                   (render-text renderer (subseq display-text start end)
                                 (segment-x start)
                                 text-y
                                 color))))

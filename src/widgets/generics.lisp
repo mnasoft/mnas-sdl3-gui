@@ -53,6 +53,12 @@
 (defgeneric entry-text-width-between (widget start end)
   (:documentation "Return pixel width between START and END character positions in WIDGET."))
 
+(defgeneric entry-show-text (widget)
+  (:documentation "Return display text for entry WIDGET, applying its show mask if any."))
+
+(defgeneric entry-valid-text-p (widget text)
+  (:documentation "Return T when TEXT is accepted by entry WIDGET validation or no validator is set."))
+
 (defgeneric normalize-entry-scroll-offset (widget)
   (:documentation "Clamp and backfill WIDGET scroll offset to maximize visible text."))
 

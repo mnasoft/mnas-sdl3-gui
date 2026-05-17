@@ -19,3 +19,7 @@
 ;;;; (do-two-list-boxes-demo)
 ;;;; (do-combo-box-demo)
 
+(defun do-entry-dialog-demo (&optional (style :flat))
+  "Run the entry demo dialog from the entry-01 package."
+  (mnas-sdl3-gui/demos/dialog/entry-01:entry-01 style))
+

@@ -5,7 +5,9 @@
 (defmethod entry-text-width-between ((widget entry) start end)
   (if (>= start end)
       0
-      (multiple-value-bind (width height)
-          (widget-text-pixel-size (subseq (entry-text widget) start end))
-        (declare (ignore height))
-        width)))
+      (let ((text (or (entry-show-text widget)
+                      (entry-text widget))))
+        (multiple-value-bind (width height)
+            (widget-text-pixel-size (subseq text start end))
+          (declare (ignore height))
+          width))))
