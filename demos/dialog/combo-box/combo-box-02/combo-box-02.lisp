@@ -35,13 +35,13 @@
                                              (setf *combo-box-02-status*
                                                    (format nil "Value: ~A  Text: ~A"
                                                            (mnas-sdl3-gui/widgets:widget-value editable)
-                                                           (mnas-sdl3-gui/widgets:edit-box-text editable))))))
+                                                           (mnas-sdl3-gui/widgets:entry-text editable))))))
          (add-item (make-instance 'mnas-sdl3-gui/widgets:button
                                   :x 220 :y 140 :width 180 :height 34
                                   :text "Add current text"
                                   :on-click (lambda (widget)
                                               (declare (ignore widget))
-                                              (let ((text (mnas-sdl3-gui/widgets:edit-box-text editable)))
+                                              (let ((text (mnas-sdl3-gui/widgets:entry-text editable)))
                                                 (if (and text (not (string= text "")))
                                                     (progn
                                                       (mnas-sdl3-gui/widgets:combo-box-add-item editable text)

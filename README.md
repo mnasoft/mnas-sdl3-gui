@@ -17,7 +17,7 @@ Common Lisp GUI toolkit built on top of SDL3 for cross-platform graphical user i
   - `button` — clickable buttons with callbacks
   - `toggle` — on/off switches
   - `check-box` — checkbox controls
-  - `edit-box` — text input fields with cursor support
+  - `entry` — text input fields with cursor support
   - `list-box` — scrollable item lists with selection
 - SDL3-based rendering with color support
 - Mouse and keyboard event handling

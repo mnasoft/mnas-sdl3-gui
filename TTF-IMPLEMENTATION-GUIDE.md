@@ -252,7 +252,7 @@ sbcl --load src/widgets/sdl3-ttf-cffi.lisp \
 ### Phase 4: Integration Testing
 ```lisp
 (asdf:load-system :mnas-sdl3-gui/demos)
-(do-edit-box-dialog-demo)
+(do-entry-dialog-demo)
 ;; Type Russian text - should display native glyphs instead of approximation
 ```
 

@@ -1,8 +1,8 @@
-;;;; ./demos/dialog/package.lisp
+;;;; ./demos/dialog/list-box/list-box-01/package.lisp
 
 (defpackage :mnas-sdl3-gui/demos/dialog/list-box-01
   (:use #:cl)
-  (:export #:edit-box-01))
+  (:export #:list-box-01))
 
 (in-package :mnas-sdl3-gui/demos/dialog/list-box-01)
 

@@ -14,77 +14,77 @@
 (defgeneric update-widget-value (widget new-value)
   (:documentation "Update WIDGET with NEW-VALUE and trigger change callbacks when needed."))
 
-(defgeneric clear-edit-box-selection (widget)
-  (:documentation "Clear the text selection in edit-box WIDGET."))
+(defgeneric clear-entry-selection (widget)
+  (:documentation "Clear the text selection in entry WIDGET."))
 
-(defgeneric get-edit-box-selected-text (widget)
-  (:documentation "Return the selected text from edit-box WIDGET."))
+(defgeneric get-entry-selected-text (widget)
+  (:documentation "Return the selected text from entry WIDGET."))
 
-(defgeneric set-edit-box-selection (widget start end)
-  (:documentation "Set the selection in edit-box WIDGET from START to END."))
+(defgeneric set-entry-selection (widget start end)
+  (:documentation "Set the selection in entry WIDGET from START to END."))
 
-(defgeneric edit-box-selection-anchor (widget)
+(defgeneric entry-selection-anchor (widget)
   (:documentation "Return the fixed side of the current selection for WIDGET."))
 
-(defgeneric edit-box-select-from-anchor (widget anchor)
+(defgeneric entry-select-from-anchor (widget anchor)
   (:documentation "Update selection in WIDGET between ANCHOR and current cursor."))
 
-(defgeneric edit-box-select-previous-char (widget)
+(defgeneric entry-select-previous-char (widget)
   (:documentation "Extend selection in WIDGET one character to the left."))
 
-(defgeneric edit-box-select-next-char (widget)
+(defgeneric entry-select-next-char (widget)
   (:documentation "Extend selection in WIDGET one character to the right."))
 
-(defgeneric edit-box-select-previous-word (widget)
+(defgeneric entry-select-previous-word (widget)
   (:documentation "Extend selection in WIDGET to the previous word boundary."))
 
-(defgeneric edit-box-select-next-word (widget)
+(defgeneric entry-select-next-word (widget)
   (:documentation "Extend selection in WIDGET to the next word boundary."))
 
-(defgeneric edit-box-select-to-start (widget)
+(defgeneric entry-select-to-start (widget)
   (:documentation "Extend selection in WIDGET to the start of the text."))
 
-(defgeneric edit-box-select-to-end (widget)
+(defgeneric entry-select-to-end (widget)
   (:documentation "Extend selection in WIDGET to the end of the text."))
 
-(defgeneric edit-box-inner-width (widget)
-  (:documentation "Return the available pixel width for edit-box text content."))
+(defgeneric entry-inner-width (widget)
+  (:documentation "Return the available pixel width for entry text content."))
 
-(defgeneric edit-box-text-width-between (widget start end)
+(defgeneric entry-text-width-between (widget start end)
   (:documentation "Return pixel width between START and END character positions in WIDGET."))
 
-(defgeneric normalize-edit-box-scroll-offset (widget)
+(defgeneric normalize-entry-scroll-offset (widget)
   (:documentation "Clamp and backfill WIDGET scroll offset to maximize visible text."))
 
-(defgeneric edit-box-ensure-cursor-visible (widget)
+(defgeneric entry-ensure-cursor-visible (widget)
   (:documentation "Adjust WIDGET scroll offset so the cursor remains visible."))
 
-(defgeneric edit-box-scroll-to-start (widget)
+(defgeneric entry-scroll-to-start (widget)
   (:documentation "Scroll WIDGET so the beginning of the text is visible."))
 
-(defgeneric edit-box-position-from-pixel (widget x)
+(defgeneric entry-position-from-pixel (widget x)
   (:documentation "Return character position in WIDGET nearest to pixel coordinate X."))
 
-(defgeneric edit-box-scroll-to-end (widget)
+(defgeneric entry-scroll-to-end (widget)
   (:documentation "Scroll WIDGET so the end of the text is visible."))
 
-(defgeneric edit-box-copy-to-clipboard (widget)
-  (:documentation "Copy selected text from edit-box WIDGET to the system clipboard."))
+(defgeneric entry-copy-to-clipboard (widget)
+  (:documentation "Copy selected text from entry WIDGET to the system clipboard."))
 
-(defgeneric edit-box-paste-from-clipboard (widget)
-  (:documentation "Paste system clipboard text into edit-box WIDGET."))
+(defgeneric entry-paste-from-clipboard (widget)
+  (:documentation "Paste system clipboard text into entry WIDGET."))
 
-(defgeneric edit-box-delete-selection (widget)
-  (:documentation "Delete selected text from edit-box WIDGET."))
+(defgeneric entry-delete-selection (widget)
+  (:documentation "Delete selected text from entry WIDGET."))
 
-(defgeneric edit-box-move-to-previous-word (widget)
+(defgeneric entry-move-to-previous-word (widget)
   (:documentation "Move cursor to the start of the previous word in WIDGET."))
 
-(defgeneric edit-box-move-to-next-word (widget)
+(defgeneric entry-move-to-next-word (widget)
   (:documentation "Move cursor to the start of the next word in WIDGET."))
 
-(defgeneric edit-box-cursor-pixel-offset (widget)
-  (:documentation "Return cursor offset in pixels for edit-box WIDGET."))
+(defgeneric entry-cursor-pixel-offset (widget)
+  (:documentation "Return cursor offset in pixels for entry WIDGET."))
 
 (defgeneric compute-text-segment-pixel-width (widget text-start text-end)
   (:documentation "Compute pixel width in WIDGET for text between TEXT-START and TEXT-END."))
@@ -92,14 +92,14 @@
 (defgeneric compute-text-offset-to-position (widget text-pos)
   (:documentation "Compute pixel offset in WIDGET for TEXT-POS."))
 
-(defgeneric edit-box-visible-text-width (widget)
-  (:documentation "Return the available pixel width for edit-box WIDGET text content."))
+(defgeneric entry-visible-text-width (widget)
+  (:documentation "Return the available pixel width for entry WIDGET text content."))
 
-(defgeneric edit-box-visible-range (widget)
-  (:documentation "Return visible character range for edit-box WIDGET."))
+(defgeneric entry-visible-range (widget)
+  (:documentation "Return visible character range for entry WIDGET."))
 
-(defgeneric render-edit-box-text-and-cursor (renderer widget)
-  (:documentation "Render edit-box text, selection highlight, and cursor."))
+(defgeneric render-entry-text-and-cursor (renderer widget)
+  (:documentation "Render entry text, selection highlight, and cursor."))
 
 (defgeneric render (renderer widget style)
   (:documentation "Render WIDGET on RENDERER using STYLE for widget-specific dispatch."))

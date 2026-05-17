@@ -35,9 +35,9 @@
       (values (max 72 (+ indicator-width label-gap tw))
               (max 22 (+ th 8))))))
 
-(defmethod widget-min-size ((widget edit-box))
+(defmethod widget-min-size ((widget entry))
   (multiple-value-bind (tw th)
-      (widget-text-pixel-size (edit-box-text widget))
+      (widget-text-pixel-size (entry-text widget))
     (values (max 120 (+ tw 12))
             (max 30 (+ th 10)))))
 

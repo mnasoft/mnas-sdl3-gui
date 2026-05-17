@@ -32,13 +32,13 @@
       (update-widget-value widget (check-box-checked widget))
       t)))
 
-(defmethod handle-widget-mouse-down ((widget edit-box) x y)
+(defmethod handle-widget-mouse-down ((widget entry) x y)
   (let ((inside (contains-point-p widget x y)))
     (setf (widget-focused widget) inside)
     (when inside
-      (setf (edit-box-cursor widget) (edit-box-position-from-pixel widget x))
-      (clear-edit-box-selection widget)
-      (edit-box-ensure-cursor-visible widget))
+      (setf (entry-cursor widget) (entry-position-from-pixel widget x))
+      (clear-entry-selection widget)
+      (entry-ensure-cursor-visible widget))
     inside))
 
 (defmethod handle-widget-mouse-down ((widget list-box) x y)
@@ -100,10 +100,10 @@
                (when (combo-box-expanded-p widget)
                  (ensure-combo-box-selection-visible widget)))
              (progn
-               (setf (edit-box-cursor widget) (edit-box-position-from-pixel widget x)
-                     (edit-box-selection-start widget) nil
-                     (edit-box-selection-end widget) nil)
-               (edit-box-ensure-cursor-visible widget)
+               (setf (entry-cursor widget) (entry-position-from-pixel widget x)
+                     (entry-selection-start widget) nil
+                     (entry-selection-end widget) nil)
+               (entry-ensure-cursor-visible widget)
                (when (combo-box-expanded-p widget)
                  (sync-combo-box-expanded-state widget nil)))))
         ((and (combo-box-expanded-p widget)
@@ -138,8 +138,8 @@
                 (when (and (< row visible-count)
                            (< new-index (length (list-box-items widget))))
                   (setf (list-box-selected-index widget) new-index
-                        (edit-box-text widget) (format nil "~a" (nth new-index (list-box-items widget)))
-                        (edit-box-cursor widget) (length (edit-box-text widget)))
+                        (entry-text widget) (format nil "~a" (nth new-index (list-box-items widget)))
+                        (entry-cursor widget) (length (entry-text widget)))
                   (sync-combo-box-expanded-state widget nil)
                   (update-widget-value widget
                                        (nth new-index (list-box-items widget))))))
