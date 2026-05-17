@@ -1,16 +1,16 @@
 ;;;; ./demos/dialog/editable-combo-box-demo.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/combo-box-02)
 
-(defparameter *editable-combo-box-window* nil)
-(defparameter *editable-combo-box-renderer* nil)
-(defparameter *editable-combo-box-open* t)
-(defparameter *editable-combo-box-style* :flat)
-(defparameter *editable-combo-box-widgets* nil)
-(defparameter *editable-combo-box-status*
+(defparameter *combo-box-02-window* nil)
+(defparameter *combo-box-02-renderer* nil)
+(defparameter *combo-box-02-open* t)
+(defparameter *combo-box-02-style* :flat)
+(defparameter *combo-box-02-widgets* nil)
+(defparameter *combo-box-02-status*
   "Editable combo box demo. Type a value, select an item, or add a new one.")
 
-(defun create-editable-combo-box-demo-widgets ()
+(defun create-combo-box-02-demo-widgets ()
   (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
                                :x 20 :y 18 :width 560 :height 24
                                :text "Editable Combo-Box Demo"))
@@ -32,7 +32,7 @@
                                  :text "Show current value"
                                  :on-click (lambda (widget)
                                              (declare (ignore widget))
-                                             (setf *editable-combo-box-status*
+                                             (setf *combo-box-02-status*
                                                    (format nil "Value: ~A  Text: ~A"
                                                            (mnas-sdl3-gui/widgets:widget-value editable)
                                                            (mnas-sdl3-gui/widgets:edit-box-text editable))))))
@@ -45,60 +45,60 @@
                                                 (if (and text (not (string= text "")))
                                                     (progn
                                                       (mnas-sdl3-gui/widgets:combo-box-add-item editable text)
-                                                      (setf *editable-combo-box-status*
+                                                      (setf *combo-box-02-status*
                                                             (format nil "Added and selected: ~A" text)))
-                                                    (setf *editable-combo-box-status* "Type a non-empty value to add.")))))))
-    (setf *editable-combo-box-widgets* (list title hint editable report add-item))
-    *editable-combo-box-widgets*))
+                                                    (setf *combo-box-02-status* "Type a non-empty value to add.")))))))
+    (setf *combo-box-02-widgets* (list title hint editable report add-item))
+    *combo-box-02-widgets*))
 
-(sdl3:def-app-init editable-combo-box-demo-init (argc argv)
+(sdl3:def-app-init combo-box-02-demo-init (argc argv)
   (declare (ignore argc argv))
   (sdl3:set-app-metadata "Editable Combo-Box Demo" "1.0"
-                         "com.mna.sdl3.gui.editable-combo-box.demo")
+                         "com.mna.sdl3.gui.combo-box-02.demo")
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
-    (return-from editable-combo-box-demo-init :failure))
+    (return-from combo-box-02-demo-init :failure))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer "Editable Combo-Box Demo" 640 260 0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
-          (return-from editable-combo-box-demo-init :failure))
+          (return-from combo-box-02-demo-init :failure))
         (progn
-          (setf *editable-combo-box-window* window
-                *editable-combo-box-renderer* renderer
-                *editable-combo-box-open* t
-                *editable-combo-box-status* "Editable combo box demo. Type a value, select an item, or add a new one.")
-          (mnas-sdl3-gui/widgets:set-widget-style *editable-combo-box-style*)
+          (setf *combo-box-02-window* window
+                *combo-box-02-renderer* renderer
+                *combo-box-02-open* t
+                *combo-box-02-status* "Editable combo box demo. Type a value, select an item, or add a new one.")
+          (mnas-sdl3-gui/widgets:set-widget-style *combo-box-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
-          (create-editable-combo-box-demo-widgets)
-          (mnas-sdl3-gui/widgets:set-widget-focus *editable-combo-box-widgets*
-                                                  (third *editable-combo-box-widgets*))
-          (mnas-sdl3-gui/widgets:start-widget-text-input *editable-combo-box-window*))))
+          (create-combo-box-02-demo-widgets)
+          (mnas-sdl3-gui/widgets:set-widget-focus *combo-box-02-widgets*
+                                                  (third *combo-box-02-widgets*))
+          (mnas-sdl3-gui/widgets:start-widget-text-input *combo-box-02-window*))))
   :continue)
 
-(sdl3:def-app-iterate editable-combo-box-demo-iterate ()
-  (unless *editable-combo-box-open*
-    (return-from editable-combo-box-demo-iterate :success))
-  (sdl3:set-render-draw-color *editable-combo-box-renderer* 240 240 240 255)
-  (sdl3:render-clear *editable-combo-box-renderer*)
-  (mnas-sdl3-gui/widgets:render-widgets *editable-combo-box-renderer* *editable-combo-box-widgets*)
-  (mnas-sdl3-gui/widgets:render-text *editable-combo-box-renderer*
-                                     *editable-combo-box-status*
+(sdl3:def-app-iterate combo-box-02-demo-iterate ()
+  (unless *combo-box-02-open*
+    (return-from combo-box-02-demo-iterate :success))
+  (sdl3:set-render-draw-color *combo-box-02-renderer* 240 240 240 255)
+  (sdl3:render-clear *combo-box-02-renderer*)
+  (mnas-sdl3-gui/widgets:render-widgets *combo-box-02-renderer* *combo-box-02-widgets*)
+  (mnas-sdl3-gui/widgets:render-text *combo-box-02-renderer*
+                                     *combo-box-02-status*
                                      20.0 200.0 '(40 40 40 255))
-  (sdl3:render-present *editable-combo-box-renderer*)
+  (sdl3:render-present *combo-box-02-renderer*)
   :continue)
 
-(sdl3:def-app-event editable-combo-box-demo-event (type event)
+(sdl3:def-app-event combo-box-02-demo-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event
-       (setf *editable-combo-box-open* nil)
+       (setf *combo-box-02-open* nil)
        :success)
       (sdl3:mouse-motion-event
        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
-        *editable-combo-box-widgets*
+        *combo-box-02-widgets*
         (round (slot-value ev 'sdl3:%x))
         (round (slot-value ev 'sdl3:%y)))
        :continue)
@@ -108,13 +108,13 @@
                (my (round (slot-value ev 'sdl3:%y))))
            (if (slot-value ev 'sdl3:%down)
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                *editable-combo-box-widgets* mx my)
+                *combo-box-02-widgets* mx my)
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                *editable-combo-box-widgets* mx my))))
+                *combo-box-02-widgets* mx my))))
        :continue)
       (sdl3:mouse-wheel-event
        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
-        *editable-combo-box-widgets*
+        *combo-box-02-widgets*
         (round (slot-value ev 'sdl3:%mouse-x))
         (round (slot-value ev 'sdl3:%mouse-y))
         (round (slot-value ev 'sdl3:%x))
@@ -124,40 +124,40 @@
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
          (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *editable-combo-box-widgets*
+          *combo-box-02-widgets*
           (slot-value ev 'sdl3:%key)
           :mods (slot-value ev 'sdl3:%mod)
           :on-escape (lambda ()
-                       (setf *editable-combo-box-open* nil)
+                       (setf *combo-box-02-open* nil)
                        :success)))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input
-        *editable-combo-box-widgets*
+        *combo-box-02-widgets*
         (slot-value ev 'sdl3:%text))
        :continue)
       (t :continue))))
 
-(sdl3:def-app-quit editable-combo-box-demo-quit (result)
+(sdl3:def-app-quit combo-box-02-demo-quit (result)
   (declare (ignore result))
-  (mnas-sdl3-gui/widgets:stop-widget-text-input *editable-combo-box-window*)
+  (mnas-sdl3-gui/widgets:stop-widget-text-input *combo-box-02-window*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
-  (when *editable-combo-box-renderer*
-    (sdl3:destroy-renderer *editable-combo-box-renderer*))
-  (when *editable-combo-box-window*
-    (sdl3:destroy-window *editable-combo-box-window*))
+  (when *combo-box-02-renderer*
+    (sdl3:destroy-renderer *combo-box-02-renderer*))
+  (when *combo-box-02-window*
+    (sdl3:destroy-window *combo-box-02-window*))
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-editable-combo-box-demo (&optional (style :flat))
+(defun combo-box-02 (&optional (style :flat))
   "Run the editable combo-box demo with STYLE (:flat, :windows, :motif)."
-  (setf *editable-combo-box-style* style)
+  (setf *combo-box-02-style* style)
   (sdl3:enter-app-main-callbacks
-   'editable-combo-box-demo-init
-   'editable-combo-box-demo-iterate
-   'editable-combo-box-demo-event
-   'editable-combo-box-demo-quit))
+   'combo-box-02-demo-init
+   'combo-box-02-demo-iterate
+   'combo-box-02-demo-event
+   'combo-box-02-demo-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (mnas-sdl3-gui/demos/dialog:do-editable-combo-box-demo)
+;;;; (combo-box-02)

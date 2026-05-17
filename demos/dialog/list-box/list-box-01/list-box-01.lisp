@@ -1,0 +1,186 @@
+;;;; ./demos/dialog/two-list-boxes-demo.lisp
+
+(in-package :mnas-sdl3-gui/demos/dialog/list-box-01)
+
+(defparameter *list-box-01-window* nil)
+(defparameter *list-box-01-renderer* nil)
+(defparameter *list-box-01-open* t)
+(defparameter *list-box-01-result* nil)
+(defparameter *list-box-01-style* :windows)
+(defparameter *list-box-01-widgets* nil)
+(defparameter *list-box-01-left* nil)
+(defparameter *list-box-01-right* nil)
+(defparameter *list-box-01-ok* nil)
+(defparameter *list-box-01-cancel* nil)
+
+(defun list-box-01-items (count prefix)
+  "Create COUNT demo strings prefixed by PREFIX."
+  (loop for index from 1 to count
+        collect (format nil "~A ~D" prefix index)))
+
+(defun create-list-box-01-demo-widgets ()
+  "Create widgets for the list-box-01 demo."
+  (let ((title (make-instance 'mnas-sdl3-gui/widgets:label
+                              :x 20 :y 18 :width 600 :height 24
+                              :text "Two List-Boxes Demo"))
+        (subtitle (make-instance 'mnas-sdl3-gui/widgets:label
+                                 :x 20 :y 42 :width 600 :height 22
+                                 :text "Слева 50 элементов, справа 4 элемента")))
+    (setf *list-box-01-left*
+          (make-instance 'mnas-sdl3-gui/widgets:list-box
+                         :x 20 :y 74 :width 290 :height 170
+                         :items (list-box-01-items 50 "Элемент")
+                         :selected-index 0
+                         :item-height 24)
+          *list-box-01-right*
+          (make-instance 'mnas-sdl3-gui/widgets:list-box
+                         :x 330 :y 74 :width 290 :height 170
+                         :items (list-box-01-items 4 "Пункт")
+                         :selected-index 0
+                         :item-height 24)
+          *list-box-01-ok*
+          (make-instance 'mnas-sdl3-gui/widgets:button
+                         :x 350 :y 264 :width 120 :height 34
+                         :text "Ок"
+                         :on-click (lambda (widget)
+                                     (declare (ignore widget))
+                                     (setf *list-box-01-result*
+                                           (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)
+                                                            (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))
+                                                 :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*)
+                                                             (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*)))
+                                           *list-box-01-open* nil)))
+          *list-box-01-cancel*
+          (make-instance 'mnas-sdl3-gui/widgets:button
+                         :x 490 :y 264 :width 130 :height 34
+                         :text "Cancel"
+                         :on-click (lambda (widget)
+                                     (declare (ignore widget))
+                                     (setf *list-box-01-result* nil
+                                           *list-box-01-open* nil)))
+          *list-box-01-widgets*
+          (list title subtitle
+                *list-box-01-left*
+                *list-box-01-right*
+                *list-box-01-ok*
+                *list-box-01-cancel*))
+    *list-box-01-widgets*))
+
+(sdl3:def-app-init list-box-01-demo-init (argc argv)
+  (declare (ignore argc argv))
+  (sdl3:set-app-metadata "Two List-Boxes Demo" "1.0"
+                         "com.mna.sdl3.gui.list-box-01.demo")
+  (when (not (sdl3:init :video))
+    (format t "~a~%" (sdl3:get-error))
+    (return-from list-box-01-demo-init :failure))
+  (multiple-value-bind (ok window renderer)
+      (sdl3:create-window-and-renderer "Two List-Boxes Demo" 640 320 0)
+    (if (not ok)
+        (progn
+          (format t "~a~%" (sdl3:get-error))
+          (return-from list-box-01-demo-init :failure))
+        (progn
+          (setf *list-box-01-window* window
+                *list-box-01-renderer* renderer
+                *list-box-01-open* t
+                *list-box-01-result* nil)
+          (mnas-sdl3-gui/widgets:set-widget-style *list-box-01-style*)
+          (mnas-sdl3-gui/widgets:init-ttf-font)
+          (mnas-sdl3-gui/widgets:start-widget-text-input window)
+          (create-list-box-01-demo-widgets)
+          (mnas-sdl3-gui/widgets:set-widget-focus *list-box-01-widgets*
+                                                  *list-box-01-left*))))
+  :continue)
+
+(sdl3:def-app-iterate list-box-01-demo-iterate ()
+  (unless *list-box-01-open*
+    (return-from list-box-01-demo-iterate :success))
+
+  (sdl3:set-render-draw-color *list-box-01-renderer* 236 236 236 255)
+  (sdl3:render-clear *list-box-01-renderer*)
+
+  (mnas-sdl3-gui/widgets:render-widgets *list-box-01-renderer* *list-box-01-widgets*)
+
+  (sdl3:render-present *list-box-01-renderer*)
+  :continue)
+
+(sdl3:def-app-event list-box-01-demo-event (type event)
+  (declare (ignore type))
+  (let ((ev (sdl3:event-unmarshal event)))
+    (typecase ev
+      (sdl3:quit-event
+       (setf *list-box-01-open* nil)
+       :success)
+      (sdl3:mouse-motion-event
+       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+        *list-box-01-widgets*
+        (round (slot-value ev 'sdl3:%x))
+        (round (slot-value ev 'sdl3:%y)))
+       :continue)
+      (sdl3:mouse-button-event
+       (when (= (slot-value ev 'sdl3:%button) 1)
+         (let ((mx (round (slot-value ev 'sdl3:%x)))
+               (my (round (slot-value ev 'sdl3:%y))))
+           (if (slot-value ev 'sdl3:%down)
+               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *list-box-01-widgets* mx my)
+               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *list-box-01-widgets* mx my))))
+       :continue)
+      (sdl3:mouse-wheel-event
+       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+        *list-box-01-widgets*
+        (round (slot-value ev 'sdl3:%mouse-x))
+        (round (slot-value ev 'sdl3:%mouse-y))
+        (round (slot-value ev 'sdl3:%x))
+        (round (slot-value ev 'sdl3:%y)))
+       :continue)
+      (sdl3:keyboard-event
+       (when (and (slot-value ev 'sdl3:%down)
+                  (not (slot-value ev 'sdl3:%repeat)))
+         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+          *list-box-01-widgets*
+          (slot-value ev 'sdl3:%key)
+          :mods (slot-value ev 'sdl3:%mod)
+          :on-escape (lambda ()
+                       (setf *list-box-01-result* nil
+                             *list-box-01-open* nil)
+                       :success)
+          :on-return (lambda ()
+                       (setf *list-box-01-result*
+                             (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)
+                                              (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))
+                                   :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*)
+                                               (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*)))
+                             *list-box-01-open* nil)
+                       :success)))
+       :continue)
+      (sdl3:text-input-event
+       (mnas-sdl3-gui/widgets:dispatch-focused-text-input
+        *list-box-01-widgets*
+        (slot-value ev 'sdl3:%text))
+       :continue)
+      (t :continue))))
+
+(sdl3:def-app-quit list-box-01-demo-quit (result)
+  (declare (ignore result))
+  (mnas-sdl3-gui/widgets:stop-widget-text-input *list-box-01-window*)
+  (mnas-sdl3-gui/widgets:cleanup-ttf)
+  (when *list-box-01-renderer*
+    (sdl3:destroy-renderer *list-box-01-renderer*))
+  (when *list-box-01-window*
+    (sdl3:destroy-window *list-box-01-window*))
+  (sdl3:pump-events)
+  (sdl3:quit-sub-system :video)
+  (sdl3:quit))
+
+(defun list-box-01 (&optional (style :windows))
+  "Run demo with two list-box widgets and OK/Cancel buttons."
+  (setf *list-box-01-style* style)
+  (sdl3:enter-app-main-callbacks
+   'list-box-01-demo-init
+   'list-box-01-demo-iterate
+   'list-box-01-demo-event
+   'list-box-01-demo-quit)
+  *list-box-01-result*)
+
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/list-box-01)
+;;;; (list-box-01)

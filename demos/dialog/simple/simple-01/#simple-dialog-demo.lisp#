@@ -1,6 +1,6 @@
 ;;;; ./demos/simple-dialog/simple-dialog-demo.lisp
 
-(in-package :mnas-sdl3-gui/demos/simple-dialog)
+(in-package :mnas-sdl3-gui/demos/simple-01)
 
 (defparameter *window* nil)
 (defparameter *renderer* nil)
@@ -167,7 +167,7 @@
 
 ;;; Public demo function
 
-(defun do-simple-dialog-demo (&optional (style :windows))
+(defun simple-01 (&optional (style :windows))
   "Run the simple dialog demo.
    Returns :ok or :cancel depending on which button was clicked."
   (setf *dialog-style* style)
@@ -178,5 +178,6 @@
    'simple-dialog-quit)
   *dialog-result*)
 
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (do-simple-dialog-demo)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/simple-01)
+ 
+;;;; (simple-01)

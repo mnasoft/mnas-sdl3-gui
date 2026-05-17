@@ -1,6 +1,6 @@
-;;;; ./demos/dialog/widgets-demo.lisp
+;;;; ./demos/dialog/widget/widget-01.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/widget-01)
 
 (defparameter *window-dialog* nil)
 (defparameter *renderer-dialog* nil)
@@ -177,7 +177,7 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-dialog-demo (&optional (style :flat))
+(defun widget-01 (&optional (style :flat))
   "Run the widget dialog demo with STYLE (:flat, :windows, :motif)."
   (setf *dialog-style* style)
   (sdl3:enter-app-main-callbacks
@@ -186,5 +186,5 @@
    'dialog-event
    'dialog-quit))
 
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (do-dialog-demo)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget-01)
+;;;; (widget-01)

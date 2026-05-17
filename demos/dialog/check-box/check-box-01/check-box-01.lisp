@@ -1,6 +1,6 @@
-;;;; ./demos/dialog/check-box-demo.lisp
+;;;; ./mnas-sdl3-gui/demos/dialog/check-box/check-box-01/check-box-01.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/check-box-01)
 
 (defparameter *check-box-window* nil)
 (defparameter *check-box-renderer* nil)
@@ -155,7 +155,7 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-check-box-demo (&optional (style :windows))
+(defun check-box-01 (&optional (style :windows))
   "Run check-box demo with keyboard focus support."
   (setf *check-box-style* style)
   (sdl3:enter-app-main-callbacks
@@ -165,5 +165,5 @@
    'check-box-demo-quit)
   :done)
 
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (do-check-box-demo)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box-01)
+;;;; (check-box-01)

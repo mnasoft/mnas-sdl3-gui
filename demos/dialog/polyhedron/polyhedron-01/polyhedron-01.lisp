@@ -1,6 +1,6 @@
-;;;; ./demos/dialog/polyhedron-demo.lisp
+;;;; ./demos/dialog/polyhedron/polyhedron-01/polyhedron-01.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/polyhedron-01)
 
 (defparameter *polyhedron-window* nil)
 (defparameter *polyhedron-renderer* nil)
@@ -355,7 +355,7 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-polyhedron-demo ()
+(defun polyhedron-01 ()
   "Run the polyhedron demo. Press Space to switch shapes."
   (sdl3:enter-app-main-callbacks
    'polyhedron-demo-init
@@ -364,4 +364,4 @@
    'polyhedron-demo-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (mnas-sdl3-gui/demos/dialog:do-polyhedron-demo)
+;;;; (polyhedron-01)

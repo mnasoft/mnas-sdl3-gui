@@ -1,6 +1,6 @@
 ;;;; ./demos/dialog/pack-layout-demo.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/pack-01)
 
 (defparameter *pack-demo-window* nil)
 (defparameter *pack-demo-renderer* nil)
@@ -227,7 +227,7 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-pack-layout-demo (&optional (style :windows))
+(defun pack-01 (&optional (style :windows))
   "Run pack layout demo with multiple widgets of each type."
   (setf *pack-demo-style* style)
   (sdl3:enter-app-main-callbacks
@@ -237,5 +237,5 @@
    'pack-layout-demo-quit)
   :done)
 
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (do-pack-layout-demo)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/pack-01)
+;;;; (pack-01)

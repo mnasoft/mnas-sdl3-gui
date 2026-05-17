@@ -1,6 +1,6 @@
-;;;; ./demos/dialog/cyrillic-font-demo.lisp
+;;;; ./demos/dialog/font/font-01/font-01.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/font-01)
 
 (defparameter *cyrillic-font-window* nil)
 (defparameter *cyrillic-font-renderer* nil)
@@ -117,11 +117,14 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-cyrillic-font-demo ()
-  "Demonstrate native Cyrillic glyph rendering via SDL3_ttf (DejaVuSans)."
+(defun font-01 ()
+  "Run the Cyrillic font demo as a font example."
   (sdl3:enter-app-main-callbacks
    'cyrillic-font-demo-init
    'cyrillic-font-demo-iterate
    'cyrillic-font-demo-event
    'cyrillic-font-demo-quit)
   :done)
+
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/font-01)
+;;;; (font-01)

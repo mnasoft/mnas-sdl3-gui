@@ -1,6 +1,6 @@
-;;;; ./demos/dialog/combo-box-demo.lisp
+;;;; ./demos/dialog/combo-box-01.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog)
+(in-package :mnas-sdl3-gui/demos/dialog/combo-box-01)
 
 (defparameter *combo-box-window* nil)
 (defparameter *combo-box-renderer* nil)
@@ -9,11 +9,11 @@
 (defparameter *combo-box-widgets* nil)
 (defparameter *combo-box-status* "Use mouse, arrows, PgUp/PgDown, Return and Escape.")
 
-(defun combo-box-demo-items (prefix count)
+(defun combo-box-01-items (prefix count)
   (loop for index from 1 to count
         collect (format nil "~A ~D" prefix index)))
 
-(defun create-combo-box-demo-widgets ()
+(defun create-combo-box-01-widgets ()
   (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
                                :x 20 :y 18 :width 520 :height 24
                                :text "Combo-Box Demo"))
@@ -26,7 +26,7 @@
                                :selected-index 1))
          (large (make-instance 'mnas-sdl3-gui/widgets:combo-box
                                :x 20 :y 136 :width 320 :height 32
-                               :items (combo-box-demo-items "Preset" 18)
+                               :items (combo-box-01-items "Preset" 18)
                                :selected-index 4
                                :max-visible-items 7))
          (action (make-instance 'mnas-sdl3-gui/widgets:button
@@ -41,19 +41,19 @@
     (setf *combo-box-widgets* (list title hint small large action))
     *combo-box-widgets*))
 
-(sdl3:def-app-init combo-box-demo-init (argc argv)
+(sdl3:def-app-init combo-box-01-init (argc argv)
   (declare (ignore argc argv))
   (sdl3:set-app-metadata "Combo-Box Demo" "1.0"
                          "com.mna.sdl3.gui.combo-box.demo")
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
-    (return-from combo-box-demo-init :failure))
+    (return-from combo-box-01-init :failure))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer "Combo-Box Demo" 620 300 0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
-          (return-from combo-box-demo-init :failure))
+          (return-from combo-box-01-init :failure))
         (progn
           (setf *combo-box-window* window
                 *combo-box-renderer* renderer
@@ -61,14 +61,14 @@
                 *combo-box-status* "Use mouse, arrows, PgUp/PgDown, Return and Escape.")
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
-          (create-combo-box-demo-widgets)
+          (create-combo-box-01-widgets)
           (mnas-sdl3-gui/widgets:set-widget-focus *combo-box-widgets*
                                                   (second (cdr *combo-box-widgets*))))))
   :continue)
 
-(sdl3:def-app-iterate combo-box-demo-iterate ()
+(sdl3:def-app-iterate combo-box-01-iterate ()
   (unless *combo-box-open*
-    (return-from combo-box-demo-iterate :success))
+    (return-from combo-box-01-iterate :success))
   (sdl3:set-render-draw-color *combo-box-renderer* 240 240 240 255)
   (sdl3:render-clear *combo-box-renderer*)
   (mnas-sdl3-gui/widgets:render-text *combo-box-renderer*
@@ -78,7 +78,7 @@
   (sdl3:render-present *combo-box-renderer*)
   :continue)
 
-(sdl3:def-app-event combo-box-demo-event (type event)
+(sdl3:def-app-event combo-box-01-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
@@ -120,7 +120,7 @@
        :continue)
       (t :continue))))
 
-(sdl3:def-app-quit combo-box-demo-quit (result)
+(sdl3:def-app-quit combo-box-01-quit (result)
   (declare (ignore result))
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *combo-box-renderer*
@@ -131,14 +131,14 @@
   (sdl3:quit-sub-system :video)
   (sdl3:quit))
 
-(defun do-combo-box-demo (&optional (style :windows))
+(defun combo-box-01 (&optional (style :windows))
   "Run combo-box demo with STYLE (:flat, :windows, :motif)."
   (setf *combo-box-style* style)
   (sdl3:enter-app-main-callbacks
-   'combo-box-demo-init
-   'combo-box-demo-iterate
-   'combo-box-demo-event
-   'combo-box-demo-quit))
+   'combo-box-01-init
+   'combo-box-01-iterate
+   'combo-box-01-event
+   'combo-box-01-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (mnas-sdl3-gui/demos/dialog:do-combo-box-demo)
+;;;; (combo-box-01)
