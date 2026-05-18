@@ -281,9 +281,8 @@
            (projected-vertices
              (mapcar #'project-point rotated-vertices))
            (visible-faces
-             (stable-sort (copy-list (remove-if-not (lambda (face)
-                                                      (face-visible-p face rotated-vertices))
-                                                    faces))
+             ;; Draw all faces back-to-front to avoid abrupt culling flicker at silhouette angles.
+             (stable-sort (copy-list faces)
                           #'<
                           :key (lambda (face)
                                  (average-face-z face rotated-vertices)))))
