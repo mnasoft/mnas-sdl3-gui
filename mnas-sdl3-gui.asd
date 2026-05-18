@@ -80,6 +80,7 @@
                "mnas-sdl3-gui/demos/dialog/polyhedron-01"
                "mnas-sdl3-gui/demos/dialog/polyhedron-02"
                "mnas-sdl3-gui/demos/dialog/polyhedron-03"
+               "mnas-sdl3-gui/demos/dialog/polyhedron-04"
                "mnas-sdl3-gui/demos/dialog/window-01"
                "mnas-sdl3-gui/demos/dialog/widget-01"
                "mnas-sdl3-gui/demos/dialog/toggle-01"
@@ -172,6 +173,15 @@
                 :serial t
                 :components ((:file "package")
                              (:file "polyhedron-03")))))
+
+(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-04
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on (#:mnas-sdl3-gui)
+  :serial t
+  :components ((:module "demos/dialog/polyhedron/polyhedron-04"
+                :serial t
+                :components ((:file "package")
+                             (:file "polyhedron-04")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-01
   :description "Demos for mnas-sdl3-gui"

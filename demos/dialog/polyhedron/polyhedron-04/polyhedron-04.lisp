@@ -1,6 +1,6 @@
-;;;; ./demos/dialog/polyhedron/polyhedron-vulkan-solid-01/polyhedron-vulkan-solid-01.lisp
+;;;; ./demos/dialog/polyhedron/polyhedron-04/polyhedron-04.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog/polyhedron-03)
+(in-package :mnas-sdl3-gui/demos/dialog/polyhedron-04)
 
 
 (defparameter *polyhedron-solid-window* nil)
@@ -128,14 +128,13 @@
 
 (defun compute-dodecahedron-vertices ()
     (loop for face in *icosahedron-faces*
-          collect (vec-normalize
-                   (vec-scale
-                    (reduce #'vec-add
-                            (mapcar (lambda (index)
-                                      (nth index *icosahedron-vertices*))
-                                    face)
-                            :initial-value '(0.0 0.0 0.0))
-                    (/ 1.0 3.0)))))
+    collect (vec-scale
+       (reduce #'vec-add
+         (mapcar (lambda (index)
+             (nth index *icosahedron-vertices*))
+           face)
+         :initial-value '(0.0 0.0 0.0))
+       (/ 1.0 3.0))))
 
 (defun vertex-face-indices (vertex-index)
     (loop for face-index from 0 below (length *icosahedron-faces*)
@@ -195,6 +194,38 @@
                 :color '(135 255 145)
                 :scale 1.25)))
 
+(defun canonical-edge (a b)
+  (if (< a b)
+      (list a b)
+      (list b a)))
+
+(defun face-edges (face)
+  (loop for i from 0 below (length face)
+        for a = (nth i face)
+        for b = (nth (mod (1+ i) (length face)) face)
+        collect (canonical-edge a b)))
+
+(defun shape-edge-lengths (vertices faces)
+  (let ((edges (remove-duplicates (loop for face in faces append (face-edges face))
+                                  :test #'equal)))
+    (loop for (a b) in edges
+          for p = (nth a vertices)
+          for q = (nth b vertices)
+          collect (vec-length (vec-sub p q)))))
+
+(defun regular-shape-p (vertices faces &key (tolerance 1.0e-5))
+  (let* ((lengths (shape-edge-lengths vertices faces))
+         (min-len (reduce #'min lengths))
+         (max-len (reduce #'max lengths)))
+    (<= (- max-len min-len) tolerance)))
+
+(defun assert-regular-shapes ()
+  (dolist (shape *shape-specs*)
+    (unless (regular-shape-p (getf shape :vertices) (getf shape :faces))
+      (error "Shape ~A is not regular" (getf shape :name)))))
+
+(assert-regular-shapes)
+
 (defun current-shape-spec ()
     (nth *polyhedron-solid-shape-index* *shape-specs*))
 
@@ -206,7 +237,7 @@
           (setf *polyhedron-solid-window-width* width
                 *polyhedron-solid-window-height* height)))))
 
-(defun project-point (point &key (distance 50) (scale 30.0))
+(defun project-point (point &key (distance 1000.0) (scale (* distance 0.5)))
     (destructuring-bind (x y z) point
   (let* ((depth (- distance z))
              (factor (/ (* 0.42 (min *polyhedron-solid-window-width* *polyhedron-solid-window-height*) scale)
@@ -257,6 +288,23 @@
                               (coerce (nth (1- (length xs)) xs) 'single-float)
                               (coerce y 'single-float)))))))
 
+(defun lerp-point (a b alpha)
+  (list (+ (* (- 1.0 alpha) (first a)) (* alpha (first b)))
+        (+ (* (- 1.0 alpha) (second a)) (* alpha (second b)))
+        (+ (* (- 1.0 alpha) (third a)) (* alpha (third b)))))
+
+(defun draw-triangle-texture (renderer p1 p2 p3 stripe-count phase)
+  ;; Stripes are generated in triangle-local coordinates, so they rotate with the face.
+  (loop for i from 1 below stripe-count do
+    (let* ((alpha (mod (+ (/ i stripe-count) phase) 1.0))
+           (a (lerp-point p1 p2 alpha))
+           (b (lerp-point p1 p3 alpha)))
+      (sdl3:render-line renderer
+                        (coerce (first a) 'single-float)
+                        (coerce (second a) 'single-float)
+                        (coerce (first b) 'single-float)
+                        (coerce (second b) 'single-float)))))
+
 (defun face-visible-p (face rotated-vertices)
     (let* ((a (nth (first face) rotated-vertices))
            (b (nth (second face) rotated-vertices))
@@ -288,7 +336,8 @@
                                  (average-face-z face rotated-vertices)))))
       (dolist (face visible-faces)
         (let* ((avg-z (average-face-z face rotated-vertices))
-               (face-color (face-brightness-color base-color avg-z)))
+               (face-color (face-brightness-color base-color avg-z))
+               (texture-color (mapcar (lambda (v) (clamp-byte (* v 0.72))) face-color)))
           (sdl3:set-render-draw-color *polyhedron-solid-renderer*
                                       (first face-color)
                                       (second face-color)
@@ -299,10 +348,22 @@
               (fill-triangle *polyhedron-solid-renderer*
                              (nth first-index projected-vertices)
                              (nth (nth i face) projected-vertices)
-                             (nth (nth (1+ i) face) projected-vertices))))
-             (let* ((depth-t (max 0.0 (min 1.0 (/ (+ avg-z 2.5) 5.0))))
-               (edge-factor (+ 0.22 (* 0.38 depth-t)))
-               (edge-color (mapcar (lambda (v) (clamp-byte (* v edge-factor))) base-color)))
+                             (nth (nth (1+ i) face) projected-vertices)))
+            (sdl3:set-render-draw-color *polyhedron-solid-renderer*
+                                        (first texture-color)
+                                        (second texture-color)
+                                        (third texture-color)
+                                        255)
+            (loop for i from 1 below (- (length face) 1) do
+              (draw-triangle-texture *polyhedron-solid-renderer*
+                                     (nth first-index projected-vertices)
+                                     (nth (nth i face) projected-vertices)
+                                     (nth (nth (1+ i) face) projected-vertices)
+                                     8
+                                     (/ (mod first-index 5) 5.0))))
+          (let* ((depth-t (max 0.0 (min 1.0 (/ (+ avg-z 2.5) 5.0))))
+                 (edge-factor (+ 0.22 (* 0.38 depth-t)))
+                 (edge-color (mapcar (lambda (v) (clamp-byte (* v edge-factor))) base-color)))
             (sdl3:set-render-draw-color *polyhedron-solid-renderer*
                                         (first edge-color)
                                         (second edge-color)
@@ -411,7 +472,7 @@
     (sdl3:quit-sub-system :video)
     (sdl3:quit))
 
-(defun polyhedron-03 ()
+(defun polyhedron-04 ()
     "Run the solid polyhedron Vulkan demo. Press Space to switch shapes."
     (sdl3:enter-app-main-callbacks
      'p-vulkan-demo-init
@@ -419,6 +480,6 @@
      'polyhedron-vulkan-solid-demo-event
      'polyhedron-vulkan-solid-demo-quit))
   
-;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron-03)
-;;;; (polyhedron-03)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron-04)
+;;;; (polyhedron-04)
 
