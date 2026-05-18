@@ -329,6 +329,17 @@
            (z2 (- (* z1 cy) (* x sy))))
       (list x2 y1 z2))))
 
+(defun render-polyhedron-solid-overlay ()
+  (mnas-sdl3-gui/widgets:render-text *polyhedron-solid-renderer*
+                                     "Polyhedron Vulkan Solid Demo"
+                                     24.0 20.0 '(235 235 235 255))
+  (mnas-sdl3-gui/widgets:render-text *polyhedron-solid-renderer*
+                                     (format nil "Shape: ~A" (getf (current-shape-spec) :name))
+                                     24.0 50.0 '(180 190 205 255))
+  (mnas-sdl3-gui/widgets:render-text *polyhedron-solid-renderer*
+                                     "Space: next shape, Escape: exit"
+                                     24.0 80.0 '(145 155 170 255)))
+
 (sdl3:def-app-init p-vulkan-demo-init (argc argv)
     (declare (ignore argc argv))
     (sdl3:set-app-metadata "Polyhedron Vulkan Solid Demo" "1.0"
