@@ -35,6 +35,8 @@
   #:password-entry
   #:integer-entry
   #:real-entry
+  #:tree-node
+  #:tree-view
    #:list-box
    #:combo-box
    #:editable-combo-box
@@ -61,6 +63,37 @@
    #:entry-validate
    #:entry-selection-start
    #:entry-selection-end
+  ;; tree-node accessors
+  #:tree-node-id
+  #:tree-node-text
+  #:tree-node-kind
+  #:tree-node-path
+  #:tree-node-children-loaded-p
+  #:tree-node-modified-time
+  #:tree-node-children
+  #:tree-node-expanded-p
+  #:tree-node-data
+  ;; tree-view accessors/helpers
+  #:tree-view-roots
+  #:tree-view-selected-node
+  #:tree-view-root-path
+  #:tree-view-show-hidden-p
+  #:tree-view-filter-extensions
+  #:tree-view-sort-mode
+  #:tree-view-max-depth
+  #:tree-view-row-height
+  #:tree-view-indent-width
+  #:make-tree-node
+  #:tree-node-directory-p
+  #:tree-node-file-p
+  #:tree-node-children-sorted
+  #:make-filesystem-tree-node
+  #:tree-view-normalize-extensions
+  #:build-filesystem-tree
+  #:tree-view-load-node-children
+  #:tree-view-expand-node
+  #:tree-view-toggle-node-expanded
+  #:tree-view-load-directory
    ;; entry selection and clipboard utilities
    #:clear-entry-selection
    #:get-entry-selected-text

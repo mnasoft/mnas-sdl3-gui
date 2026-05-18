@@ -41,6 +41,10 @@
     (values (max 120 (+ tw 12))
             (max 30 (+ th 10)))))
 
+(defmethod widget-min-size ((widget tree-view))
+  (values (max 160 (widget-width widget))
+          (max 96 (widget-height widget))))
+
 (defmethod widget-min-size ((widget list-box))
   (let* ((longest-item (or (loop for item in (list-box-items widget)
                                  maximize (length (format nil "~a" item)))

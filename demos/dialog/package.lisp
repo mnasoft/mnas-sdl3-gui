@@ -7,7 +7,8 @@
            #:do-pack-layout-demo
            #:do-two-list-boxes-demo
            #:do-combo-box-demo
-           #:do-editable-combo-box-demo))
+           #:do-editable-combo-box-demo
+           #:do-tree-demo))
 
 (in-package :mnas-sdl3-gui/demos/dialog)
 
@@ -22,4 +23,8 @@
 (defun do-entry-dialog-demo (&optional (style :flat))
   "Run the entry demo dialog from the entry-01 package."
   (mnas-sdl3-gui/demos/dialog/entry-01:entry-01 style))
+
+(defun do-tree-demo (&optional (style :flat))
+  "Run the filesystem tree demo dialog."
+  (mnas-sdl3-gui/demos/dialog/tree-01:tree-01 style))
 

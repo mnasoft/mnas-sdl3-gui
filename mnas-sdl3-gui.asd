@@ -81,6 +81,7 @@
                "mnas-sdl3-gui/demos/dialog/polyhedron-02"
                "mnas-sdl3-gui/demos/dialog/polyhedron-03"
                "mnas-sdl3-gui/demos/dialog/polyhedron-04"
+               "mnas-sdl3-gui/demos/dialog/tree-01"
                "mnas-sdl3-gui/demos/dialog/window-01"
                "mnas-sdl3-gui/demos/dialog/widget-01"
                "mnas-sdl3-gui/demos/dialog/toggle-01"
@@ -182,6 +183,15 @@
                 :serial t
                 :components ((:file "package")
                              (:file "polyhedron-04")))))
+
+(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/tree-01
+  :description "Filesystem tree demo for mnas-sdl3-gui"
+  :depends-on (#:mnas-sdl3-gui)
+  :serial t
+  :components ((:module "demos/dialog/tree/tree-01"
+                :serial t
+                :components ((:file "package")
+                             (:file "tree-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-01
   :description "Demos for mnas-sdl3-gui"

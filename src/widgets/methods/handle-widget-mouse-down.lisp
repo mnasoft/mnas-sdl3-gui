@@ -41,6 +41,25 @@
       (entry-ensure-cursor-visible widget))
     inside))
 
+(defmethod handle-widget-mouse-down ((widget tree-view) x y)
+  (let ((inside (contains-point-p widget x y)))
+    (setf (widget-focused widget) inside)
+    (when inside
+      (let* ((rows (tree-view-visible-rows widget))
+             (row-height (max 16 (tree-view-row-height widget)))
+             (row-index (floor (- y (widget-y widget)) row-height)))
+        (when (and (>= row-index 0) (< row-index (length rows)))
+          (destructuring-bind (node depth) (nth row-index rows)
+            (let* ((toggle-x (+ (widget-x widget)
+                                +widget-padding+
+                                (* depth (max 8 (tree-view-indent-width widget)))))
+                   (toggle-hit (and (tree-node-has-children-p node)
+                                    (<= toggle-x x (+ toggle-x 10)))))
+              (when toggle-hit
+                (tree-view-toggle-node-expanded widget node))
+              (tree-view-select-node widget node)))))
+      t)))
+
 (defmethod handle-widget-mouse-down ((widget list-box) x y)
   (let ((inside (contains-point-p widget x y)))
     (when inside

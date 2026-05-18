@@ -114,6 +114,47 @@
       (stroke-rect renderer (+ x 3) (+ y 3) (- w 6) (- h 6) +color-focus-border+ 1)))
   (render-entry-text-and-cursor renderer widget))
 
+(defmethod render (renderer (widget tree-view) (style widget-style))
+  (declare (ignore style))
+  (let* ((x (widget-x widget))
+         (y (widget-y widget))
+         (w (widget-width widget))
+         (h (widget-height widget))
+         (row-height (max 16 (tree-view-row-height widget)))
+         (indent (max 8 (tree-view-indent-width widget)))
+         (rows (tree-view-visible-rows widget))
+         (visible-count (max 1 (floor h row-height)))
+         (selected (tree-view-selected-node widget)))
+    (fill-rect renderer x y w h +color-bg+)
+    (stroke-rect renderer x y w h
+                 (if (widget-focused widget) +color-focus-border+ +color-border+)
+                 (if (widget-focused widget) 2 1))
+    (loop for (node depth) in rows
+          for index from 0
+          while (< index visible-count)
+          for row-y = (+ y (* index row-height))
+          for content-y = (+ row-y (max 0 (floor (- row-height +font-text-height+) 2)))
+          for row-x = (+ x +widget-padding+ (* depth indent))
+          for tree-marker = (if (tree-node-has-children-p node)
+                                (if (tree-node-expanded-p node) "v" ">")
+                                " ")
+          for kind-marker = (cond ((tree-node-directory-p node) "[D]")
+                                  ((tree-node-file-p node) "[F]")
+                                  (t "[ ]"))
+          do (progn
+               (when (eq node selected)
+                 (fill-rect renderer (+ x 1) row-y (- w 2) row-height +color-highlight+))
+               (render-text renderer
+                            tree-marker
+                            row-x
+                            content-y
+                            +color-text+)
+               (render-text renderer
+                            (format nil "~A ~A" kind-marker (tree-node-text node))
+                            (+ row-x 12)
+                            content-y
+                            (if (widget-enabled widget) +color-text+ +color-disabled+))))))
+
 (defmethod render (renderer (widget list-box) style)
   (declare (ignore style))
   (normalize-list-box-scroll-offset widget)

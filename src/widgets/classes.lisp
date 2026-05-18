@@ -92,6 +92,48 @@
   ()
   (:documentation "Entry widget specialized for real number input."))
 
+(defclass tree-node ()
+  ((id :initarg :id :initform nil :accessor tree-node-id
+       :documentation "Optional node identifier.")
+   (text :initarg :text :initform "" :accessor tree-node-text
+         :documentation "Display label for the node.")
+   (kind :initarg :kind :initform :item :accessor tree-node-kind
+     :documentation "Node kind keyword, e.g. :directory or :file.")
+   (path :initarg :path :initform nil :accessor tree-node-path
+     :documentation "Optional filesystem path associated with node.")
+   (children-loaded-p :initarg :children-loaded-p :initform nil :accessor tree-node-children-loaded-p
+                      :documentation "Whether children are already loaded for this node.")
+   (modified-time :initarg :modified-time :initform nil :accessor tree-node-modified-time
+                  :documentation "Optional filesystem write timestamp.")
+   (children :initarg :children :initform nil :accessor tree-node-children
+             :documentation "Child nodes list.")
+   (expanded-p :initarg :expanded-p :initform nil :accessor tree-node-expanded-p
+               :documentation "Whether children are visible.")
+   (data :initarg :data :initform nil :accessor tree-node-data
+         :documentation "Optional user payload for the node."))
+  (:documentation "Node model used by tree-view widget."))
+
+(defclass tree-view (widget)
+  ((roots :initarg :roots :initform nil :accessor tree-view-roots
+          :documentation "Top-level tree-node list.")
+   (selected-node :initarg :selected-node :initform nil :accessor tree-view-selected-node
+                  :documentation "Currently selected node object.")
+   (root-path :initarg :root-path :initform nil :accessor tree-view-root-path
+              :documentation "Filesystem root path used to build tree roots.")
+   (show-hidden-p :initarg :show-hidden-p :initform nil :accessor tree-view-show-hidden-p
+                  :documentation "Whether to show hidden filesystem entries.")
+  (filter-extensions :initarg :filter-extensions :initform nil :accessor tree-view-filter-extensions
+               :documentation "List of allowed file extensions (e.g. '(\"lisp\" \"asd\")); NIL means all.")
+  (sort-mode :initarg :sort-mode :initform :name :accessor tree-view-sort-mode
+          :documentation "Filesystem sort mode: :name, :type, or :date.")
+  (max-depth :initarg :max-depth :initform nil :accessor tree-view-max-depth
+          :documentation "Optional depth limit for filesystem tree expansion.")
+   (row-height :initarg :row-height :initform 22 :accessor tree-view-row-height
+               :documentation "Single visible row height in pixels.")
+   (indent-width :initarg :indent-width :initform 16 :accessor tree-view-indent-width
+                 :documentation "Indent width per depth level."))
+  (:documentation "Tree widget with expandable/collapsible nodes."))
+
 (defclass list-box (widget)
   ((items :initarg :items :initform nil :accessor list-box-items
           :documentation "List of items in the box")

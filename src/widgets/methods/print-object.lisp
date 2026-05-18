@@ -56,6 +56,32 @@
             (entry-selection-end obj)
             (entry-max-length obj))))
 
+(defmethod print-object ((obj tree-node) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (format stream "id=~S text=~S kind=~S path=~S loaded=~A mtime=~S children=~A expanded=~A"
+            (tree-node-id obj)
+            (tree-node-text obj)
+            (tree-node-kind obj)
+            (tree-node-path obj)
+            (tree-node-children-loaded-p obj)
+            (tree-node-modified-time obj)
+            (length (tree-node-children obj))
+            (tree-node-expanded-p obj))))
+
+(defmethod print-object ((obj tree-view) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (%print-widget-core obj stream)
+    (format stream " roots=~A selected=~S root-path=~S hidden=~A filter=~S sort=~S max-depth=~S row-height=~A indent=~A"
+            (length (tree-view-roots obj))
+            (tree-view-selected-node obj)
+            (tree-view-root-path obj)
+            (tree-view-show-hidden-p obj)
+            (tree-view-filter-extensions obj)
+            (tree-view-sort-mode obj)
+            (tree-view-max-depth obj)
+            (tree-view-row-height obj)
+            (tree-view-indent-width obj))))
+
 (defmethod print-object ((obj password-entry) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)

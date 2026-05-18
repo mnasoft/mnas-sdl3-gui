@@ -91,6 +91,57 @@
      t)
     (t nil)))
 
+(defmethod handle-widget-key-press ((widget tree-view) key char)
+  (declare (ignore char))
+  (let* ((rows (tree-view-visible-rows widget))
+         (selected (tree-view-selected-node widget))
+         (current-index (position selected rows :key #'first :test #'eq)))
+    (cond
+      ((or (eq key :up) (eq key :down))
+       (when (and (null current-index) rows)
+         (setf current-index 0)
+         (tree-view-select-node widget (first (first rows))))
+       (when current-index
+         (let* ((step (if (eq key :up) -1 1))
+                (new-index (max 0 (min (1- (length rows)) (+ current-index step)))))
+           (tree-view-select-node widget (first (nth new-index rows)))))
+       t)
+      ((eq key :left)
+       (when selected
+         (if (and (tree-node-has-children-p selected)
+                  (tree-node-expanded-p selected))
+             (setf (tree-node-expanded-p selected) nil)
+             (let ((parent (tree-view-parent-node widget selected)))
+               (when parent
+                 (tree-view-select-node widget parent)))))
+       t)
+      ((eq key :right)
+       (when selected
+         (cond
+           ((and (tree-node-has-children-p selected)
+                 (not (tree-node-expanded-p selected)))
+          (tree-view-expand-node widget selected))
+           ((and (tree-node-has-children-p selected)
+                 (tree-node-expanded-p selected))
+          (when (and (tree-node-directory-p selected)
+               (not (tree-node-children-loaded-p selected)))
+            (tree-view-load-node-children widget selected))
+            (tree-view-select-node widget (first (tree-node-children selected))))))
+       t)
+      ((eq key :home)
+       (when rows
+         (tree-view-select-node widget (first (first rows))))
+       t)
+      ((eq key :end)
+       (when rows
+         (tree-view-select-node widget (first (car (last rows)))))
+       t)
+      ((or (eq key :space) (eq key :return))
+       (when (and selected (tree-node-has-children-p selected))
+         (tree-view-toggle-node-expanded widget selected))
+       t)
+      (t nil)))
+
 (defmethod handle-widget-key-press ((widget list-box) key char)
   (declare (ignore char))
   (let ((visible-count (list-box-visible-item-count widget)))
@@ -205,4 +256,4 @@
        (when (combo-box-expanded-p widget)
          (sync-combo-box-expanded-state widget nil))
        t)
-      (t nil))))
+      (t nil)))))
