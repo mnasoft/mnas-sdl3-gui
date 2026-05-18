@@ -47,3 +47,10 @@
      (entry-select-next-char widget))
     (t
      (handle-widget-key-press widget key char))))
+
+(defmethod handle-widget-key-event ((widget password-entry) key char &key ctrl shift alt)
+  (cond
+    ((and ctrl (member key '(:c :x)))
+     t)
+    (t
+     (call-next-method))))

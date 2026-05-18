@@ -8,11 +8,12 @@
 (defparameter *entry-02-result* nil)
 (defparameter *entry-02-active-modifiers* nil)
 (defparameter *entry-02-style* :flat)
-(defparameter *entry-02-status* "Entry demo: name, password, number, path, command.")
+(defparameter *entry-02-status* "Entry demo: name, password, integer, real, path, command.")
 (defparameter *entry-02-widgets* nil)
 (defparameter *entry-02-name* nil)
 (defparameter *entry-02-password* nil)
-(defparameter *entry-02-number* nil)
+(defparameter *entry-02-integer* nil)
+(defparameter *entry-02-real* nil)
 (defparameter *entry-02-path* nil)
 (defparameter *entry-02-command* nil)
 
@@ -43,7 +44,8 @@
   "Return focus-traversable widgets in entry dialog."
   (list *entry-02-name*
         *entry-02-password*
-        *entry-02-number*
+      *entry-02-integer*
+      *entry-02-real*
         *entry-02-path*
         *entry-02-command*))
 
@@ -55,7 +57,8 @@
                 (if (typep widget 'mnas-sdl3-gui/widgets:entry)
                     (cond ((eq widget *entry-02-name*) "Name")
                           ((eq widget *entry-02-password*) "Password")
-                          ((eq widget *entry-02-number*) "Number")
+                        ((eq widget *entry-02-integer*) "Integer")
+                        ((eq widget *entry-02-real*) "Real")
                           ((eq widget *entry-02-path*) "Path")
                           ((eq widget *entry-02-command*) "Command")
                           (t "Entry"))
@@ -69,34 +72,35 @@
                                :text "Entry Widget Scenarios"))
          (hint (make-instance 'mnas-sdl3-gui/widgets:label
                               :x 40 :y 48 :width 420 :height 22
-                              :text "Name, password, numeric, path, command, and filters."))
+                              :text "Name, password, integer, real, path, command, and filters."))
          (name (make-instance 'mnas-sdl3-gui/widgets:entry
                                :x 40 :y 90 :width 320 :height 32
                                :text "Alice"
                                :max-length 64
                                :on-change #'entry-02-on-change))
-         (password (make-instance 'mnas-sdl3-gui/widgets:entry
+         (password (make-instance 'mnas-sdl3-gui/widgets:password-entry
                                    :x 40 :y 140 :width 320 :height 32
                                    :text ""
                                    :cursor 0
                                    :max-length 32
-                                   :show #\*
                                    :on-change #'entry-02-on-change))
-         (number (make-instance 'mnas-sdl3-gui/widgets:entry
-                                 :x 40 :y 190 :width 320 :height 32
-                                 :text "123"
-                                 :max-length 6
-                                 :validate (lambda (text)
-                                             (or (string= text "")
-                                                 (every #'digit-char-p text)))
-                                 :on-change #'entry-02-on-change))
+         (integer (make-instance 'mnas-sdl3-gui/widgets:integer-entry
+                :x 40 :y 190 :width 320 :height 32
+                :text "123"
+                :max-length 12
+                :on-change #'entry-02-on-change))
+         (real (make-instance 'mnas-sdl3-gui/widgets:real-entry
+                  :x 40 :y 240 :width 320 :height 32
+                  :text "3.14"
+                  :max-length 20
+                  :on-change #'entry-02-on-change))
          (path (make-instance 'mnas-sdl3-gui/widgets:entry
-                               :x 40 :y 240 :width 280 :height 32
+                   :x 40 :y 290 :width 280 :height 32
                                :text "/tmp/output"
                                :max-length 120
                                :on-change #'entry-02-on-change))
          (browse (make-instance 'mnas-sdl3-gui/widgets:button
-                                 :x 330 :y 240 :width 100 :height 32
+               :x 330 :y 290 :width 100 :height 32
                                  :text "Browse..."
                                  :on-click (lambda (widget)
                                              (declare (ignore widget))
@@ -104,32 +108,41 @@
                                                    (format nil "Browse: ~A"
                                                            (mnas-sdl3-gui/widgets:entry-text *entry-02-path*))))))
          (command (make-instance 'mnas-sdl3-gui/widgets:entry
-                                  :x 40 :y 290 :width 320 :height 32
+                :x 40 :y 340 :width 320 :height 32
                                   :text "ls -la"
                                   :max-length 128
                                   :on-change #'entry-02-on-change))
          (show-values (make-instance 'mnas-sdl3-gui/widgets:button
-                                      :x 40 :y 340 :width 150 :height 32
+                    :x 40 :y 390 :width 150 :height 32
                                       :text "Show values"
                                       :on-click (lambda (widget)
                                                   (declare (ignore widget))
+                    (format t "[entry-02] Name=~A Password=~A Integer=~A Real=~A Path=~A Cmd=~A~%"
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-name*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-password*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-integer*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-real*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-path*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-command*))
                                                   (setf *entry-02-status*
-                                                        (format nil "Name=~A Password=~A Number=~A Path=~A Cmd=~A"
+                    (format nil "Name=~A Password=~A Integer=~A Real=~A Path=~A Cmd=~A"
                                                                 (mnas-sdl3-gui/widgets:entry-text *entry-02-name*)
                                                                 (mnas-sdl3-gui/widgets:entry-text *entry-02-password*)
-                                                                (mnas-sdl3-gui/widgets:entry-text *entry-02-number*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-integer*)
+                      (mnas-sdl3-gui/widgets:entry-text *entry-02-real*)
                                                                 (mnas-sdl3-gui/widgets:entry-text *entry-02-path*)
                                                                 (mnas-sdl3-gui/widgets:entry-text *entry-02-command*))))))
          (status-label (make-instance 'mnas-sdl3-gui/widgets:label
-                                      :x 40 :y 390 :width 420 :height 22
+                    :x 40 :y 440 :width 420 :height 22
                                       :text *entry-02-status*)))
     (setf *entry-02-name* name
           *entry-02-password* password
-          *entry-02-number* number
+          *entry-02-integer* integer
+          *entry-02-real* real
           *entry-02-path* path
           *entry-02-command* command
           *entry-02-widgets*
-          (list title hint name password number path browse command show-values status-label))))
+          (list title hint name password integer real path browse command show-values status-label))))
 
 (sdl3:def-app-init entry-02-init (argc argv)
   (declare (ignore argc argv))
@@ -139,7 +152,7 @@
     (format t "~A~%" (sdl3:get-error))
     (return-from entry-02-init :failure))
   (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Entry Widget Demo" 500 460 0)
+      (sdl3:create-window-and-renderer "Entry Widget Demo" 500 520 0)
     (if (not ok)
         (progn
           (format t "~A~%" (sdl3:get-error))
@@ -152,10 +165,11 @@
                 *entry-02-active-modifiers* nil)
           (mnas-sdl3-gui/widgets:set-widget-style *entry-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
+          (mnas-sdl3-gui/widgets:start-widget-text-input window)
           (create-entry-02-widgets)
           (mnas-sdl3-gui/widgets:set-widget-focus (entry-02-widgets)
-                                                  *entry-02-widgets*))))
-    :continue)
+                                                  *entry-02-name*))))
+  :continue)
 
 (sdl3:def-app-iterate entry-02-iterate ()
   (unless *entry-02-open*

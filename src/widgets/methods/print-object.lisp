@@ -56,6 +56,17 @@
             (entry-selection-end obj)
             (entry-max-length obj))))
 
+(defmethod print-object ((obj password-entry) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (%print-widget-core obj stream)
+    (format stream "text=~S cursor=~A scroll=~A sel=~A..~A max=~A"
+            "***"
+            (entry-cursor obj)
+            (entry-scroll-offset obj)
+            (entry-selection-start obj)
+            (entry-selection-end obj)
+            (entry-max-length obj))))
+
 (defmethod print-object ((obj list-box) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)

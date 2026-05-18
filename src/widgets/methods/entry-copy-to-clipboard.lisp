@@ -6,3 +6,8 @@
   (let ((selected (get-entry-selected-text widget)))
     (when (plusp (length selected))
       (sdl3:set-clipboard-text selected))))
+
+(defmethod entry-copy-to-clipboard ((widget password-entry))
+  ;; Do not place password text into the system clipboard.
+  (declare (ignore widget))
+  nil)

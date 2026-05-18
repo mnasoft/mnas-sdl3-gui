@@ -32,6 +32,9 @@
    #:toggle
    #:check-box
    #:entry
+  #:password-entry
+  #:integer-entry
+  #:real-entry
    #:list-box
    #:combo-box
    #:editable-combo-box

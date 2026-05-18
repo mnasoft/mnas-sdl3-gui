@@ -79,6 +79,19 @@
    )
   (:documentation "Text input box widget"))
 
+(defclass password-entry (entry)
+  ()
+  (:default-initargs :show #\*)
+  (:documentation "Entry widget specialized for password input with masked display."))
+
+(defclass integer-entry (entry)
+  ()
+  (:documentation "Entry widget specialized for integer input."))
+
+(defclass real-entry (entry)
+  ()
+  (:documentation "Entry widget specialized for real number input."))
+
 (defclass list-box (widget)
   ((items :initarg :items :initform nil :accessor list-box-items
           :documentation "List of items in the box")
