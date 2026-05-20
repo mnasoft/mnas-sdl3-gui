@@ -125,5 +125,6 @@
    'window-03-quit)
   :done)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-03)
 ;;;; (mnas-sdl3-gui/demos/dialog/window-03:window-03)

@@ -215,6 +215,7 @@
   :components ((:module "demos/dialog/window/window-02"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "window-02")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-03
@@ -224,6 +225,7 @@
   :components ((:module "demos/dialog/window/window-03"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "window-03")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/widget-01
