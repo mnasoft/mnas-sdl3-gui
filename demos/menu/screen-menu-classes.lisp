@@ -7,8 +7,9 @@
 (defparameter *window-screen-menu* nil)
 (defparameter *renderer-screen-menu* nil)
 (defparameter *menu-bar-demo* nil)
+(defparameter *toolbar-demo* nil)
 (defparameter *status-message*
-  "Class-based menu demo. Click File/Edit/Help.")
+  "Class-based menu demo. Click File/Edit/Help or toolbar buttons.")
 (defparameter *menu-demo-request-quit* nil)
 
 (defconstant +mouse-button-left+ 1)
@@ -124,6 +125,21 @@
     (mnas-sdl3-gui/menu/model:layout-menu-bar bar)
     bar))
 
+(defun make-demo-toolbar ()
+  "Create toolbar with common command buttons."
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+                  :layout :horizontal
+                  :height 40)))
+    ;; Add buttons for common commands
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :new :label "New" :width 50)
+           (mnas-sdl3-gui/toolbar:make-button-spec :open :label "Open" :width 50)
+           (mnas-sdl3-gui/toolbar:make-button-spec :undo :label "Undo" :width 50)
+           (mnas-sdl3-gui/toolbar:make-button-spec :redo :label "Redo" :width 50)
+           (mnas-sdl3-gui/toolbar:make-button-spec :preferences :label "Prefs" :width 50)))
+    toolbar))
+
 (defun execute-command-action (command-id label)
   (let ((ok (mnas-sdl3-gui/commands:execute-command
              command-id
@@ -149,8 +165,9 @@
           (setf *window-screen-menu* window
                 *renderer-screen-menu* renderer
                 *menu-bar-demo* (make-demo-menu-bar)
+                *toolbar-demo* (make-demo-toolbar)
               *menu-demo-request-quit* nil
-                *status-message* "Class-based menu demo. Click File/Edit/Help.")
+                *status-message* "Class-based menu demo. Click File/Edit/Help or toolbar buttons.")
           (register-menu-demo-commands))))
   :continue)
 
@@ -176,6 +193,13 @@
    *renderer-screen-menu*
    *menu-bar-demo*)
 
+  ;; Render toolbar below menu bar
+  (mnas-sdl3-gui/toolbar:render-toolbar
+   *toolbar-demo*
+   *renderer-screen-menu*
+   0.0
+   (float mnas-sdl3-gui/menu/model:+menu-bar-height+ 1.0))
+
   (sdl3:render-present *renderer-screen-menu*)
   :continue)
 
@@ -194,14 +218,33 @@
       (sdl3:mouse-button-event
        (if (and (slot-value ev 'sdl3:%down)
                 (= (slot-value ev 'sdl3:%button) +mouse-button-left+))
-           (multiple-value-bind (kind action label)
-               (mnas-sdl3-gui/menu/controller:handle-left-click
-                *menu-bar-demo*
-                (round (slot-value ev 'sdl3:%x))
-                (round (slot-value ev 'sdl3:%y)))
-             (if (eq kind :command)
-                 (execute-command-action action label)
-                 :continue))
+           (let ((x (round (slot-value ev 'sdl3:%x)))
+                 (y (round (slot-value ev 'sdl3:%y))))
+             ;; Check toolbar first (below menu bar)
+             (if (and *toolbar-demo*
+                      (>= y mnas-sdl3-gui/menu/model:+menu-bar-height+)
+                      (< y (+ mnas-sdl3-gui/menu/model:+menu-bar-height+
+                               (mnas-sdl3-gui/toolbar:toolbar-height *toolbar-demo*))))
+                 (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                               *toolbar-demo*
+                               x
+                               (- y mnas-sdl3-gui/menu/model:+menu-bar-height+))))
+                   (if button
+                       (progn
+                         (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                          button
+                          (list :label (mnas-sdl3-gui/toolbar:button-label button)))
+                         :continue)
+                       :continue))
+                 ;; Otherwise check menu bar
+                 (multiple-value-bind (kind action label)
+                     (mnas-sdl3-gui/menu/controller:handle-left-click
+                      *menu-bar-demo*
+                      x
+                      y)
+                   (if (eq kind :command)
+                       (execute-command-action action label)
+                       :continue))))
            :continue))
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
