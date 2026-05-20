@@ -65,5 +65,4 @@
   (mnas-sdl3-gui/commands:register-shortcut
    :window-02/escape
    :escape
-   :scope :window-02
    :replace t))

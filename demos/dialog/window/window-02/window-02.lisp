@@ -227,7 +227,6 @@
                   (not (slot-value ev 'sdl3:%repeat)))
          (when (mnas-sdl3-gui/commands:dispatch-shortcut
                 (slot-value ev 'sdl3:%key)
-                :scope :window-02
                 :mods (slot-value ev 'sdl3:%mod)
                 :context (list :window-id (slot-value ev 'sdl3:%window-id)))
            (unless *window-02-open*

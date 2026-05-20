@@ -49,15 +49,12 @@
   (mnas-sdl3-gui/commands:register-shortcut
    :window-03/quit
    :escape
-   :scope :window-03
    :replace t)
   (mnas-sdl3-gui/commands:register-shortcut
    :window-03/increase-opacity
    :up
-   :scope :window-03
    :replace t)
   (mnas-sdl3-gui/commands:register-shortcut
    :window-03/decrease-opacity
    :down
-   :scope :window-03
    :replace t))

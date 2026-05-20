@@ -57,7 +57,6 @@
     (mnas-sdl3-gui/commands:register-shortcut
      :menu-demo/escape
      :escape
-     :scope :menu-demo
      :replace t)))
 
 (defun make-demo-menu-bar ()
@@ -209,7 +208,6 @@
                   (not (slot-value ev 'sdl3:%repeat)))
          (mnas-sdl3-gui/commands:dispatch-shortcut
           (slot-value ev 'sdl3:%key)
-          :scope :menu-demo
           :mods (slot-value ev 'sdl3:%mod)
           :context (list :menu-bar *menu-bar-demo*))
          (when *menu-demo-request-quit*
