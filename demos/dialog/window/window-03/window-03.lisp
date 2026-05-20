@@ -4,6 +4,8 @@
 
 (defparameter *window-03-window* nil)
 (defparameter *window-03-renderer* nil)
+(defparameter *window-03-window-id* 0)
+(defparameter *window-03-layer-manager* nil)
 (defparameter *window-03-open* t)
 (defparameter *window-03-opacity* 0.82)
 
@@ -27,6 +29,9 @@
     (format t "~a~%" (sdl3:get-error))
     (return-from window-03-init :failure))
 
+  (setf *window-03-layer-manager*
+        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
+
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer "Transparent Window Demo"
                                        +window-03-width+
@@ -37,7 +42,16 @@
       (return-from window-03-init :failure))
     (setf *window-03-window* window
           *window-03-renderer* renderer
+          *window-03-window-id* (sdl3:get-window-id window)
           *window-03-open* t)
+        (mnas-sdl3-gui/window-manager:register-window
+         *window-03-layer-manager*
+         *window-03-window-id*
+         :main
+         :open-p t)
+        (mnas-sdl3-gui/window-manager:set-focused-window
+         *window-03-layer-manager*
+         *window-03-window-id*)
         (window-03-register-commands)
         (window-03-register-shortcuts)
     (window-03-apply-opacity)
@@ -85,20 +99,41 @@
        :success)
       (sdl3:window-event
        (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
-         (window-03-command :window-03/quit)
-         (return-from window-03-event :success))
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (action (and *window-03-layer-manager*
+                             (mnas-sdl3-gui/window-manager:close-action
+                              *window-03-layer-manager*
+                              window-id))))
+           (case action
+             (:close-root
+              (window-03-command :window-03/quit)
+              (return-from window-03-event :success))
+             (otherwise
+              (window-03-command :window-03/quit)
+              (return-from window-03-event :success)))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (when (mnas-sdl3-gui/commands:dispatch-shortcut
-                (slot-value ev 'sdl3:%key)
-                :mods (slot-value ev 'sdl3:%mod)
-                :context (list :window-id (slot-value ev 'sdl3:%window-id)))
-           (unless *window-03-open*
-             (return-from window-03-event :success))))
-       :continue)
-      (t :continue))))
+         (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
+                (target-window-id (if *window-03-layer-manager*
+                                      (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
+                                           *window-03-layer-manager*
+                                           event-window-id)
+                                          event-window-id)
+                                      event-window-id)))
+           (when *window-03-layer-manager*
+             (mnas-sdl3-gui/window-manager:set-focused-window
+              *window-03-layer-manager*
+              target-window-id))
+           (when (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value ev 'sdl3:%key)
+                  :mods (slot-value ev 'sdl3:%mod)
+                  :context (list :window-id target-window-id))
+             (unless *window-03-open*
+               (return-from window-03-event :success)))))
+         :continue)
+       (t :continue))))
 
 (sdl3:def-app-quit window-03-quit (result)
   (declare (ignore result))
@@ -115,6 +150,8 @@
   "Run dedicated demo for :transparent window flag." 
   (setf *window-03-window* nil
         *window-03-renderer* nil
+    *window-03-window-id* 0
+    *window-03-layer-manager* nil
         *window-03-open* t
         *window-03-opacity* 0.82)
   (sdl3:enter-app-main-callbacks
@@ -124,5 +161,6 @@
    'window-03-quit)
   :done)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-03)
 ;;;; (mnas-sdl3-gui/demos/dialog/window-03:window-03)

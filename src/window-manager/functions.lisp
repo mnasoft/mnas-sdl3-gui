@@ -32,6 +32,26 @@
         (remove window-id (manager-modal-stack manager) :test #'eql))
   (manager-modal-stack manager))
 
+(defun %focus-fallback-candidate (manager closing-window)
+  "Pick focus fallback after CLOSING-WINDOW is closed.
+Priority: active modal -> top sibling -> parent -> top-most open." 
+  (let* ((closing-id (managed-window-id closing-window))
+         (parent-id (managed-window-parent-id closing-window))
+         (modal-id (active-modal-id manager))
+         (open-ids (remove closing-id (top-open-window-ids manager) :test #'eql)))
+    (or modal-id
+        (when parent-id
+          (loop for candidate-id in open-ids
+                for candidate = (find-window manager candidate-id)
+                when (and candidate
+                          (eql (managed-window-parent-id candidate) parent-id))
+                  do (return candidate-id)))
+        (when parent-id
+          (let ((parent-window (find-window manager parent-id)))
+            (when (and parent-window (managed-window-open-p parent-window))
+              parent-id)))
+        (first open-ids))))
+
 (defun active-modal-id (manager)
   "Return current top modal window id, or NIL if none is open."
   (loop for window-id in (manager-modal-stack manager)
@@ -208,8 +228,7 @@ Modal policy always has priority over non-modal targets."
         (dolist (child (window-children manager window-id))
           (close-window manager (managed-window-id child) :close-children t)))
       (when (eql window-id (manager-focused-window-id manager))
-        (let ((fallback (or (active-modal-id manager)
-                            (first (top-open-window-ids manager)))))
+        (let ((fallback (%focus-fallback-candidate manager window)))
           (if fallback
               (set-focused-window manager fallback)
               (clear-focused-window manager))))
