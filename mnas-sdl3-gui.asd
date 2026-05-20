@@ -6,6 +6,8 @@
   :depends-on (#:sdl3 #:sdl3-ttf)
   :serial t
   :components ((:file "src/mnas-sdl3-gui")
+               (:file "src/commands/package")
+               (:file "src/commands/functions")
                (:file "src/menu/model/package")
                (:file "src/menu/model/classes")
                (:file "src/menu/model/functions")
