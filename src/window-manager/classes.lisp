@@ -23,4 +23,7 @@
    (z-counter :initarg :z-counter :initform 0 :accessor manager-z-counter
               :documentation "Monotonic counter for front-most layering.")
    (modal-stack :initarg :modal-stack :initform '() :accessor manager-modal-stack
-                :documentation "Modal window ids from top to bottom.")))
+                :documentation "Modal window ids from top to bottom.")
+   (focused-window-id :initarg :focused-window-id :initform nil
+                      :accessor manager-focused-window-id
+                      :documentation "Currently focused window id for keyboard routing.")))

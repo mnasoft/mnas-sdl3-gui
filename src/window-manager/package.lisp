@@ -13,6 +13,7 @@
    #:managed-window-z-index
    #:managed-window-payload
   #:manager-modal-stack
+  #:manager-focused-window-id
    #:make-window-layer-manager
    #:clear-window-layer-manager
    #:register-window
@@ -28,7 +29,12 @@
   #:close-tooltips
   #:open-modal-window
   #:close-modal-window
+  #:focused-window-id
+  #:focused-window
+  #:set-focused-window
+  #:clear-focused-window
   #:event-target-window-id
+  #:keyboard-target-window-id
    #:close-transients-for-parent
    #:top-open-window-ids
    #:close-action))

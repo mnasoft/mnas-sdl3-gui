@@ -47,6 +47,43 @@
   (let ((window-id (active-modal-id manager)))
     (and window-id (find-window manager window-id))))
 
+(defun focused-window-id (manager)
+  "Return focused window id if it is still registered and open." 
+  (let ((window-id (manager-focused-window-id manager)))
+    (when window-id
+      (let ((window (find-window manager window-id)))
+        (and window
+             (managed-window-open-p window)
+             window-id)))))
+
+(defun focused-window (manager)
+  "Return focused managed window, or NIL." 
+  (let ((window-id (focused-window-id manager)))
+    (and window-id (find-window manager window-id))))
+
+(defun set-focused-window (manager window-id)
+  "Set focused window with modal-aware policy.
+Returns effective focused window id, or NIL if focus cannot be set." 
+  (let* ((window (find-window manager window-id))
+         (modal-id (active-modal-id manager))
+         (effective-id (cond
+                         ((or (null window)
+                              (not (managed-window-open-p window)))
+                          nil)
+                         ((null modal-id)
+                          window-id)
+                         ((or (eql window-id modal-id)
+                              (%window-descends-from-p manager window-id modal-id))
+                          window-id)
+                         (t modal-id))))
+    (setf (manager-focused-window-id manager) effective-id)
+    effective-id))
+
+(defun clear-focused-window (manager)
+  "Clear focused window id." 
+  (setf (manager-focused-window-id manager) nil)
+  nil)
+
 (defun close-tooltips (manager &key parent-id)
   "Close open tooltip windows globally or only for PARENT-ID."
   (maphash (lambda (id window)
@@ -84,6 +121,14 @@ Returns NIL when requested window is unknown or closed."
        requested-window-id)
       (t modal-id))))
 
+(defun keyboard-target-window-id (manager &optional requested-window-id)
+  "Return effective keyboard target window id.
+When REQUESTED-WINDOW-ID is NIL, use focused window.
+Modal policy always has priority over non-modal targets." 
+  (let ((candidate (or requested-window-id
+                       (focused-window-id manager))))
+    (event-target-window-id manager candidate)))
+
 (defun make-window-layer-manager ()
   "Create an empty window/layer manager instance."
   (make-instance 'window-layer-manager))
@@ -92,7 +137,8 @@ Returns NIL when requested window is unknown or closed."
   "Clear all managed windows in MANAGER."
   (clrhash (manager-windows manager))
   (setf (manager-z-counter manager) 0
-        (manager-modal-stack manager) '())
+    (manager-modal-stack manager) '()
+    (manager-focused-window-id manager) nil)
   manager)
 
 (defun find-window (manager window-id)
@@ -110,14 +156,18 @@ Returns NIL when requested window is unknown or closed."
                                 :z-index z
                                 :payload payload)))
     (setf (gethash window-id (manager-windows manager)) window)
-                  (if (and open-p (eq role :modal))
-                    (%modal-stack-push manager window-id)
-                    (%modal-stack-remove manager window-id))
+    (if (and open-p (eq role :modal))
+        (%modal-stack-push manager window-id)
+        (%modal-stack-remove manager window-id))
+    (when open-p
+      (set-focused-window manager window-id))
     window))
 
 (defun unregister-window (manager window-id)
   "Remove WINDOW-ID from manager registry."
   (%modal-stack-remove manager window-id)
+  (when (eql window-id (manager-focused-window-id manager))
+    (clear-focused-window manager))
   (remhash window-id (manager-windows manager)))
 
 (defun window-open-p (manager window-id)
@@ -133,6 +183,7 @@ Returns NIL when requested window is unknown or closed."
             (managed-window-z-index window) (incf (manager-z-counter manager)))
       (when (eq (managed-window-role window) :modal)
         (%modal-stack-push manager window-id))
+      (set-focused-window manager window-id)
       window)))
 
 (defun window-children (manager parent-id &key only-open)
@@ -156,6 +207,12 @@ Returns NIL when requested window is unknown or closed."
       (when close-children
         (dolist (child (window-children manager window-id))
           (close-window manager (managed-window-id child) :close-children t)))
+      (when (eql window-id (manager-focused-window-id manager))
+        (let ((fallback (or (active-modal-id manager)
+                            (first (top-open-window-ids manager)))))
+          (if fallback
+              (set-focused-window manager fallback)
+              (clear-focused-window manager))))
       window)))
 
 (defun close-transients-for-parent (manager parent-id)

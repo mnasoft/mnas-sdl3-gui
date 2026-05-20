@@ -55,7 +55,10 @@
     (mnas-sdl3-gui/window-manager:close-window
      *window-02-layer-manager*
      *window-02-popup-id*
-     :close-children t)))
+     :close-children t)
+    (mnas-sdl3-gui/window-manager:set-focused-window
+     *window-02-layer-manager*
+     *window-02-main-id)))
 
 (defun window-02-show-popup-at (local-x local-y)
   (when *window-02-main-window*
