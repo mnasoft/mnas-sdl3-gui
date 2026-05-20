@@ -12,6 +12,11 @@
 (defparameter *window-01-demo-title* "Resizable Window Demo")
 (defparameter *window-01-demo-flags* :resizable)
 
+(defparameter +window-01-modal-1-id+ 10001)
+(defparameter +window-01-modal-2-id+ 10002)
+(defparameter *window-01-modal-1-open* nil)
+(defparameter *window-01-modal-2-open* nil)
+
 (defparameter *window-01-all-flags*
   '(:fullscreen
     :opengl
@@ -51,8 +56,10 @@
         *window-01-demo-flags* flags
         *window-01-window* nil
         *window-01-renderer* nil
-  *window-01-window-id* 0
-  *window-01-layer-manager* nil
+    *window-01-window-id* 0
+    *window-01-layer-manager* nil
+    *window-01-modal-1-open* nil
+    *window-01-modal-2-open* nil
         *window-01-open* t
         *window-01-width* 640
         *window-01-height* 360)
@@ -80,6 +87,57 @@
         (setf *window-01-width* width
               *window-01-height* height)))))
 
+(defun window-01-open-modal-1 ()
+  "Open first modal layer for runtime focus-trap demo." 
+  (when (and *window-01-layer-manager*
+             (not *window-01-modal-1-open*))
+    (mnas-sdl3-gui/window-manager:register-window
+     *window-01-layer-manager*
+     +window-01-modal-1-id+
+     :modal
+     :parent-id *window-01-window-id*
+     :open-p t)
+    (setf *window-01-modal-1-open* t)
+    (mnas-sdl3-gui/window-manager:set-focused-window
+     *window-01-layer-manager*
+     +window-01-modal-1-id+)
+    t))
+
+(defun window-01-open-modal-2 ()
+  "Open second nested modal layer for runtime focus-trap demo." 
+  (when (and *window-01-layer-manager*
+             *window-01-modal-1-open*
+             (not *window-01-modal-2-open*))
+    (mnas-sdl3-gui/window-manager:register-window
+     *window-01-layer-manager*
+     +window-01-modal-2-id+
+     :modal
+     :parent-id +window-01-modal-1-id+
+     :open-p t)
+    (setf *window-01-modal-2-open* t)
+    (mnas-sdl3-gui/window-manager:set-focused-window
+     *window-01-layer-manager*
+     +window-01-modal-2-id+)
+    t))
+
+(defun window-01-close-top-modal ()
+  "Close top-most modal layer if any was opened in runtime demo." 
+  (cond
+    (*window-01-modal-2-open*
+     (mnas-sdl3-gui/window-manager:close-window
+      *window-01-layer-manager*
+      +window-01-modal-2-id+)
+     (setf *window-01-modal-2-open* nil)
+     t)
+    (*window-01-modal-1-open*
+     (mnas-sdl3-gui/window-manager:close-window
+      *window-01-layer-manager*
+      +window-01-modal-1-id+)
+     (setf *window-01-modal-1-open* nil
+           *window-01-modal-2-open* nil)
+     t)
+    (t nil)))
+
 (sdl3:def-app-init window-01-window-demo-init (argc argv)
   (declare (ignore argc argv))
   (sdl3:set-app-metadata *window-01-demo-title* "1.0"
@@ -103,16 +161,16 @@
         (progn
           (setf *window-01-window* window
                 *window-01-renderer* renderer
-              *window-01-window-id* (sdl3:get-window-id window)
+                *window-01-window-id* (sdl3:get-window-id window)
                 *window-01-open* t)
-            (mnas-sdl3-gui/window-manager:register-window
-             *window-01-layer-manager*
-             *window-01-window-id*
-             :main
-             :open-p t)
-            (mnas-sdl3-gui/window-manager:set-focused-window
-             *window-01-layer-manager*
-             *window-01-window-id*)
+          (mnas-sdl3-gui/window-manager:register-window
+           *window-01-layer-manager*
+           *window-01-window-id*
+           :main
+           :open-p t)
+          (mnas-sdl3-gui/window-manager:set-focused-window
+           *window-01-layer-manager*
+           *window-01-window-id*)
           (mnas-sdl3-gui/widgets:init-ttf-font))))
   :continue)
 
@@ -135,8 +193,37 @@
                  (window-01-flags-as-list))
                24.0 96.0 '(160 160 160 255))
     (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-               "Press Escape or close the window to exit."
+               "M: open modal-1  N: open modal-2  Backspace/Escape: close top modal"
                24.0 128.0 '(160 160 160 255))
+    (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
+               "Escape with empty stack exits demo."
+               24.0 152.0 '(160 160 160 255))
+
+    (when *window-01-layer-manager*
+      (mnas-sdl3-gui/widgets:render-text
+       *window-01-renderer*
+       (format nil "Focused: ~A  Active modal: ~A  Trap: ~A"
+         (or (mnas-sdl3-gui/window-manager:focused-window-id *window-01-layer-manager*) :none)
+         (or (mnas-sdl3-gui/window-manager:active-modal-id *window-01-layer-manager*) :none)
+         (if (mnas-sdl3-gui/window-manager:modal-trap-active-p *window-01-layer-manager*) :on :off))
+       24.0 184.0 '(246 214 102 255)))
+
+    (when *window-01-modal-1-open*
+      (sdl3:set-render-draw-color *window-01-renderer* 48 62 96 255)
+      (sdl3:render-fill-rect *window-01-renderer*
+           (make-instance 'sdl3:frect :%x 120.0 :%y 210.0 :%w 380.0 :%h 100.0))
+      (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
+                 "Modal-1 active"
+                 140.0 236.0 '(232 240 255 255)))
+
+    (when *window-01-modal-2-open*
+      (sdl3:set-render-draw-color *window-01-renderer* 86 52 98 255)
+      (sdl3:render-fill-rect *window-01-renderer*
+           (make-instance 'sdl3:frect :%x 190.0 :%y 236.0 :%w 260.0 :%h 86.0))
+      (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
+                 "Modal-2 active (nested)"
+                 208.0 262.0 '(255 238 255 255)))
+
   (sdl3:render-present *window-01-renderer*)
   :continue)
 
@@ -155,8 +242,9 @@
                               *window-01-layer-manager*
                               window-id))))
            (declare (ignore action))
-           (setf *window-01-open* nil)
-           (return-from window-01-window-demo-event :success)))
+           (unless (window-01-close-top-modal)
+             (setf *window-01-open* nil)
+             (return-from window-01-window-demo-event :success))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
@@ -172,9 +260,18 @@
              (mnas-sdl3-gui/window-manager:set-focused-window
               *window-01-layer-manager*
               target-window-id))
-           (when (eq (slot-value ev 'sdl3:%key) :escape)
-           (setf *window-01-open* nil)
-             :success)))
+           (case (slot-value ev 'sdl3:%key)
+             (:m
+              (window-01-open-modal-1))
+             (:n
+              (window-01-open-modal-2))
+             (:backspace
+              (window-01-close-top-modal))
+             (:escape
+              (unless (window-01-close-top-modal)
+                (setf *window-01-open* nil)
+                (return-from window-01-window-demo-event :success)))
+             (otherwise nil))))
        :continue)
       (t :continue))))
 
@@ -228,6 +325,10 @@
 (defun window-01-all-flags ()
   "Run demo with all available window flags combined." 
   (run-window-01-demo "Window Flag Demo: ALL" *window-01-all-flags*))
+
+(defun window-01-modal-stack-runtime ()
+  "Run visual runtime demo for nested modal focus-trap policy." 
+  (run-window-01-demo "Window Modal Stack Runtime Demo" :resizable))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-01)
 ;;;; (window-01)

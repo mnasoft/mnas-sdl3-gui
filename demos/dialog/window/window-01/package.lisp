@@ -28,6 +28,7 @@
            #:window-01-metal
            #:window-01-transparent
            #:window-01-not-focusable
-           #:window-01-all-flags))
+           #:window-01-all-flags
+           #:window-01-modal-stack-runtime))
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-01)
