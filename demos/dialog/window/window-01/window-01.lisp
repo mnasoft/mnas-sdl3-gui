@@ -4,6 +4,8 @@
 
 (defparameter *window-01-window* nil)
 (defparameter *window-01-renderer* nil)
+(defparameter *window-01-window-id* 0)
+(defparameter *window-01-layer-manager* nil)
 (defparameter *window-01-open* t)
 (defparameter *window-01-width* 640)
 (defparameter *window-01-height* 360)
@@ -49,6 +51,8 @@
         *window-01-demo-flags* flags
         *window-01-window* nil
         *window-01-renderer* nil
+  *window-01-window-id* 0
+  *window-01-layer-manager* nil
         *window-01-open* t
         *window-01-width* 640
         *window-01-height* 360)
@@ -83,6 +87,10 @@
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
     (return-from window-01-window-demo-init :failure))
+
+  (setf *window-01-layer-manager*
+        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
+
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer *window-01-demo-title*
                                        *window-01-width*
@@ -95,7 +103,16 @@
         (progn
           (setf *window-01-window* window
                 *window-01-renderer* renderer
+              *window-01-window-id* (sdl3:get-window-id window)
                 *window-01-open* t)
+            (mnas-sdl3-gui/window-manager:register-window
+             *window-01-layer-manager*
+             *window-01-window-id*
+             :main
+             :open-p t)
+            (mnas-sdl3-gui/window-manager:set-focused-window
+             *window-01-layer-manager*
+             *window-01-window-id*)
           (mnas-sdl3-gui/widgets:init-ttf-font))))
   :continue)
 
@@ -130,12 +147,34 @@
       (sdl3:quit-event
        (setf *window-01-open* nil)
        :success)
+      (sdl3:window-event
+       (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (action (and *window-01-layer-manager*
+                             (mnas-sdl3-gui/window-manager:close-action
+                              *window-01-layer-manager*
+                              window-id))))
+           (declare (ignore action))
+           (setf *window-01-open* nil)
+           (return-from window-01-window-demo-event :success)))
+       :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (when (eq (slot-value ev 'sdl3:%key) :escape)
+         (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
+                (target-window-id (if *window-01-layer-manager*
+                                      (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
+                                           *window-01-layer-manager*
+                                           event-window-id)
+                                          event-window-id)
+                                      event-window-id)))
+           (when *window-01-layer-manager*
+             (mnas-sdl3-gui/window-manager:set-focused-window
+              *window-01-layer-manager*
+              target-window-id))
+           (when (eq (slot-value ev 'sdl3:%key) :escape)
            (setf *window-01-open* nil)
-           :success))
+             :success)))
        :continue)
       (t :continue))))
 

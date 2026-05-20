@@ -35,5 +35,23 @@
     (close-window manager 22)
     (is (= 21 (focused-window-id manager)))))
 
+(test window-manager-modal-trap-runtime-mode
+  (let ((manager (make-window-layer-manager)))
+    (register-window manager 31 :main :open-p t)
+    (register-window manager 32 :modal :parent-id 31 :open-p t)
+    (register-window manager 33 :modal :parent-id 32 :open-p t)
+    (is (modal-trap-active-p manager))
+    (is (= 33 (active-modal-id manager)))
+    (is (= 33 (keyboard-target-window-id manager 31)))))
+
+(test window-manager-event-routing-modal-blocking
+  (let ((manager (make-window-layer-manager)))
+    (register-window manager 41 :main :open-p t)
+    (register-window manager 42 :popup-menu :parent-id 41 :open-p t)
+    (register-window manager 43 :modal :parent-id 41 :open-p t)
+    (is (= 43 (event-target-window-id manager 41)))
+    (is (= 43 (event-target-window-id manager 42)))
+    (is (= 43 (event-target-window-id manager 43)))))
+
 (defun run-tests ()
   (run! :mnas-sdl3-gui-tests))
