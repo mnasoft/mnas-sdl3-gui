@@ -28,6 +28,51 @@
 (defparameter +window-02-mouse-left+ 1)
 (defparameter +window-02-mouse-right+ 3)
 
+(defun window-02-command (id &rest context-plist)
+  "Execute demo command ID with plist CONTEXT-PLIST." 
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun window-02-register-commands ()
+  "Register window-02 demo commands in shared command registry." 
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-02/quit
+    "Quit popup demo"
+    :group :window-02
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *window-02-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-02/toggle-popup
+    "Toggle popup"
+    :group :window-02
+    :execute (lambda (context)
+               (if *window-02-popup-visible*
+                   (window-02-hide-popup)
+                   (window-02-show-popup-at (getf context :x 40)
+                                            (getf context :y 40)))
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-02/select-popup-item
+    "Select popup item"
+    :group :window-02
+    :execute (lambda (context)
+               (let ((index (getf context :index)))
+                 (if (and (integerp index)
+                          (>= index 0)
+                          (< index (length *window-02-popup-items*)))
+                     (setf *window-02-selected-item* (nth index *window-02-popup-items*))
+                     (setf *window-02-selected-item* "No item selected"))
+                 (window-02-hide-popup)
+                 t)))
+   :replace t))
+
 (defun window-02-null-pointer-p (ptr)
   "Check whether PTR is a CFFI null pointer." 
   (or (null ptr)
@@ -162,6 +207,7 @@
             *window-02-popup-id* (sdl3:get-window-id popup-window))))
 
   (mnas-sdl3-gui/widgets:init-ttf-font)
+  (window-02-register-commands)
   (window-02-hide-popup)
   (setf *window-02-open* t
         *window-02-selected-item* "No item selected")
@@ -179,13 +225,13 @@
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event
-       (setf *window-02-open* nil)
+        (window-02-command :window-02/quit)
        :success)
       (sdl3:window-event
        (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
          (cond
            ((= (slot-value ev 'sdl3:%window-id) *window-02-main-id*)
-            (setf *window-02-open* nil)
+            (window-02-command :window-02/quit)
             (return-from window-02-event :success))
            ((= (slot-value ev 'sdl3:%window-id) *window-02-popup-id*)
             (window-02-hide-popup))))
@@ -207,31 +253,27 @@
            ((and down
                  (= button +window-02-mouse-right+)
                  (= window-id *window-02-main-id*))
-            (window-02-show-popup-at x y))
+            (window-02-command :window-02/toggle-popup :x x :y y))
            ((and down
                  (= button +window-02-mouse-left+)
                  (= window-id *window-02-popup-id*)
                  *window-02-popup-visible*)
             (let ((index (window-02-item-index-at y)))
-              (if index
-                  (setf *window-02-selected-item*
-                        (nth index *window-02-popup-items*))
-                  (setf *window-02-selected-item* "No item selected"))
-              (window-02-hide-popup)))
+              (window-02-command :window-02/select-popup-item :index index)))
            ((and down
                  (= button +window-02-mouse-left+)
                  (= window-id *window-02-main-id*)
                  *window-02-popup-visible*)
-            (window-02-hide-popup))))
+            (window-02-command :window-02/toggle-popup))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat))
                   (eq (slot-value ev 'sdl3:%key) :escape))
          (if *window-02-popup-visible*
-             (window-02-hide-popup)
+             (window-02-command :window-02/toggle-popup)
              (progn
-               (setf *window-02-open* nil)
+               (window-02-command :window-02/quit)
                (return-from window-02-event :success))))
        :continue)
       (t :continue))))

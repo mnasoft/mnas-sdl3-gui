@@ -11,6 +11,48 @@
 (defparameter +window-03-height+ 360)
 (defparameter +window-03-opacity-step+ 0.05)
 
+(defun window-03-command (id &rest context-plist)
+  "Execute demo command ID with plist CONTEXT-PLIST." 
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun window-03-register-commands ()
+  "Register window-03 demo commands in shared command registry." 
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-03/quit
+    "Quit transparent demo"
+    :group :window-03
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *window-03-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-03/increase-opacity
+    "Increase window opacity"
+    :group :window-03
+    :shortcut :up
+    :execute (lambda (context)
+               (declare (ignore context))
+               (incf *window-03-opacity* +window-03-opacity-step+)
+               (window-03-apply-opacity)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-03/decrease-opacity
+    "Decrease window opacity"
+    :group :window-03
+    :shortcut :down
+    :execute (lambda (context)
+               (declare (ignore context))
+               (decf *window-03-opacity* +window-03-opacity-step+)
+               (window-03-apply-opacity)
+               t))
+   :replace t))
+
 (defun window-03-clamp-opacity (value)
   (min 1.0 (max 0.15 value)))
 
@@ -38,6 +80,7 @@
     (setf *window-03-window* window
           *window-03-renderer* renderer
           *window-03-open* t)
+        (window-03-register-commands)
     (window-03-apply-opacity)
     (mnas-sdl3-gui/widgets:init-ttf-font))
 
@@ -79,11 +122,11 @@
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event
-       (setf *window-03-open* nil)
+       (window-03-command :window-03/quit)
        :success)
       (sdl3:window-event
        (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
-         (setf *window-03-open* nil)
+         (window-03-command :window-03/quit)
          (return-from window-03-event :success))
        :continue)
       (sdl3:keyboard-event
@@ -91,14 +134,12 @@
                   (not (slot-value ev 'sdl3:%repeat)))
          (case (slot-value ev 'sdl3:%key)
            (:escape
-            (setf *window-03-open* nil)
+            (window-03-command :window-03/quit)
             (return-from window-03-event :success))
            (:up
-            (incf *window-03-opacity* +window-03-opacity-step+)
-            (window-03-apply-opacity))
+            (window-03-command :window-03/increase-opacity))
            (:down
-            (decf *window-03-opacity* +window-03-opacity-step+)
-            (window-03-apply-opacity))))
+            (window-03-command :window-03/decrease-opacity))))
        :continue)
       (t :continue))))
 
