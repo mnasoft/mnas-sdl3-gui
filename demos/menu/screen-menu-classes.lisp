@@ -6,6 +6,8 @@
 
 (defparameter *window-screen-menu* nil)
 (defparameter *renderer-screen-menu* nil)
+(defparameter *screen-menu-window-id* 0)
+(defparameter *screen-menu-layer-manager* nil)
 (defparameter *menu-bar-demo* nil)
 (defparameter *toolbar-demo* nil)
 (defparameter *status-message*
@@ -130,14 +132,14 @@
   (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
                   :layout :horizontal
                   :height 40)))
-    ;; Add buttons for common commands
+    ;; Mixed push/toggle/radio buttons bound to the same Command Model.
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
            (mnas-sdl3-gui/toolbar:make-button-spec :new :label "New" :width 50)
            (mnas-sdl3-gui/toolbar:make-button-spec :open :label "Open" :width 50)
-           (mnas-sdl3-gui/toolbar:make-button-spec :undo :label "Undo" :width 50)
-           (mnas-sdl3-gui/toolbar:make-button-spec :redo :label "Redo" :width 50)
-           (mnas-sdl3-gui/toolbar:make-button-spec :preferences :label "Prefs" :width 50)))
+      (mnas-sdl3-gui/toolbar:make-button-spec :preferences :label "Prefs" :width 56 :type :toggle)
+      (mnas-sdl3-gui/toolbar:make-button-spec :undo :label "Undo" :width 50 :type :radio :group :edit-history)
+      (mnas-sdl3-gui/toolbar:make-button-spec :redo :label "Redo" :width 50 :type :radio :group :edit-history)))
     toolbar))
 
 (defun execute-command-action (command-id label)
@@ -155,6 +157,8 @@
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
     (return-from screen-menu-init :failure))
+  (setf *screen-menu-layer-manager*
+        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer "Screen Menu Demo" 760 520 0)
     (if (not ok)
@@ -164,10 +168,19 @@
         (progn
           (setf *window-screen-menu* window
                 *renderer-screen-menu* renderer
+                *screen-menu-window-id* (sdl3:get-window-id window)
                 *menu-bar-demo* (make-demo-menu-bar)
                 *toolbar-demo* (make-demo-toolbar)
-              *menu-demo-request-quit* nil
+                *menu-demo-request-quit* nil
                 *status-message* "Class-based menu demo. Click File/Edit/Help or toolbar buttons.")
+          (mnas-sdl3-gui/window-manager:register-window
+           *screen-menu-layer-manager*
+           *screen-menu-window-id*
+           :main
+           :open-p t)
+          (mnas-sdl3-gui/window-manager:set-focused-window
+           *screen-menu-layer-manager*
+           *screen-menu-window-id*)
           (register-menu-demo-commands))))
   :continue)
 
@@ -209,19 +222,49 @@
     (typecase ev
       (sdl3:quit-event
        :success)
+      (sdl3:window-event
+       (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (action (and *screen-menu-layer-manager*
+                             (mnas-sdl3-gui/window-manager:close-action
+                              *screen-menu-layer-manager*
+                              window-id))))
+           (declare (ignore action))
+           (return-from screen-menu-event :success)))
+       :continue)
       (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/menu/controller:handle-mouse-motion
-        *menu-bar-demo*
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+       (let* ((window-id (slot-value ev 'sdl3:%window-id))
+              (target-id (if *screen-menu-layer-manager*
+                             (or (mnas-sdl3-gui/window-manager:event-target-window-id
+                                  *screen-menu-layer-manager*
+                                  window-id)
+                                 window-id)
+                             window-id)))
+         (when (= target-id *screen-menu-window-id*)
+           (mnas-sdl3-gui/menu/controller:handle-mouse-motion
+            *menu-bar-demo*
+            (round (slot-value ev 'sdl3:%x))
+            (round (slot-value ev 'sdl3:%y)))))
        :continue)
       (sdl3:mouse-button-event
        (if (and (slot-value ev 'sdl3:%down)
                 (= (slot-value ev 'sdl3:%button) +mouse-button-left+))
-           (let ((x (round (slot-value ev 'sdl3:%x)))
-                 (y (round (slot-value ev 'sdl3:%y))))
+           (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                  (target-window-id (if *screen-menu-layer-manager*
+                                        (or (mnas-sdl3-gui/window-manager:event-target-window-id
+                                             *screen-menu-layer-manager*
+                                             window-id)
+                                            window-id)
+                                        window-id))
+                  (x (round (slot-value ev 'sdl3:%x)))
+                  (y (round (slot-value ev 'sdl3:%y))))
+             (when *screen-menu-layer-manager*
+               (mnas-sdl3-gui/window-manager:set-focused-window
+                *screen-menu-layer-manager*
+                target-window-id))
              ;; Check toolbar first (below menu bar)
              (if (and *toolbar-demo*
+                      (= target-window-id *screen-menu-window-id*)
                       (>= y mnas-sdl3-gui/menu/model:+menu-bar-height+)
                       (< y (+ mnas-sdl3-gui/menu/model:+menu-bar-height+
                                (mnas-sdl3-gui/toolbar:toolbar-height *toolbar-demo*))))
@@ -232,6 +275,7 @@
                    (if button
                        (progn
                          (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                          *toolbar-demo*
                           button
                           (list :label (mnas-sdl3-gui/toolbar:button-label button)))
                          :continue)
@@ -249,10 +293,22 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/commands:dispatch-shortcut
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :context (list :menu-bar *menu-bar-demo*))
+         (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
+                (target-window-id (if *screen-menu-layer-manager*
+                                      (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
+                                           *screen-menu-layer-manager*
+                                           event-window-id)
+                                          event-window-id)
+                                      event-window-id)))
+           (when *screen-menu-layer-manager*
+             (mnas-sdl3-gui/window-manager:set-focused-window
+              *screen-menu-layer-manager*
+              target-window-id))
+           (mnas-sdl3-gui/commands:dispatch-shortcut
+            (slot-value ev 'sdl3:%key)
+            :mods (slot-value ev 'sdl3:%mod)
+            :context (list :menu-bar *menu-bar-demo*
+                           :window-id target-window-id)))
          (when *menu-demo-request-quit*
            (return-from screen-menu-event :success)))
        :continue)

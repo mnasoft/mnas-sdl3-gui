@@ -26,6 +26,7 @@
   #:transient-role-p
   #:active-modal-id
   #:active-modal-window
+  #:modal-trap-active-p
   #:close-tooltips
   #:open-modal-window
   #:close-modal-window

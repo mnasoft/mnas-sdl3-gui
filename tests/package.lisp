@@ -5,6 +5,13 @@
   (:import-from #:mnas-sdl3-gui
                 #:project-name
                 #:hello)
+  (:import-from #:mnas-sdl3-gui/window-manager
+                #:make-window-layer-manager
+                #:register-window
+                #:set-focused-window
+                #:focused-window-id
+                #:keyboard-target-window-id
+                #:close-window)
   (:export #:run-tests))
 
 (in-package #:mnas-sdl3-gui/tests)

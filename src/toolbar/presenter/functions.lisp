@@ -2,17 +2,28 @@
 
 (in-package :mnas-sdl3-gui/toolbar)
 
+(defun toolbar-button-visible-p (button)
+  "Return T when BUTTON should be visible according to command state." 
+  (let ((cmd (mnas-sdl3-gui/commands:find-command (button-command-id button))))
+    (if cmd
+        (mnas-sdl3-gui/commands:command-visible cmd)
+        t)))
+
+(defun toolbar-visible-buttons (toolbar)
+  "Return buttons that are currently visible." 
+  (remove-if-not #'toolbar-button-visible-p (toolbar-buttons toolbar)))
+
 (defun toolbar-layout-horizontal (toolbar)
   "Recalculate button positions in horizontal layout."
   (let ((x-pos (toolbar-padding toolbar))
         (y-pos (toolbar-padding toolbar)))
-    (dolist (button (toolbar-buttons toolbar))
+    (dolist (button (toolbar-visible-buttons toolbar))
       (setf (button-x button) x-pos)
       (setf (button-y button) y-pos)
       (incf x-pos (+ (button-width button) (toolbar-padding toolbar))))
     ;; Update toolbar width
     (setf (toolbar-width toolbar)
-          (if (toolbar-buttons toolbar)
+          (if (toolbar-visible-buttons toolbar)
               (+ x-pos (toolbar-padding toolbar))
               0))))
 
@@ -20,13 +31,13 @@
   "Recalculate button positions in vertical layout."
   (let ((x-pos (toolbar-padding toolbar))
         (y-pos (toolbar-padding toolbar)))
-    (dolist (button (toolbar-buttons toolbar))
+    (dolist (button (toolbar-visible-buttons toolbar))
       (setf (button-x button) x-pos)
       (setf (button-y button) y-pos)
       (incf y-pos (+ (button-height button) (toolbar-padding toolbar))))
     ;; Update toolbar height
     (setf (toolbar-height toolbar)
-          (if (toolbar-buttons toolbar)
+          (if (toolbar-visible-buttons toolbar)
               (+ y-pos (toolbar-padding toolbar))
               40))))
 
@@ -51,7 +62,7 @@
                                           :%h (float (toolbar-height toolbar) 1.0))))
   
   ;; Render each button
-  (dolist (button (toolbar-buttons toolbar))
+  (dolist (button (toolbar-visible-buttons toolbar))
     (render-toolbar-button button renderer 
                           (+ offset-x (button-x button))
                           (+ offset-y (button-y button)))))
@@ -109,26 +120,44 @@
 
 (defun toolbar-buttons-at-position (toolbar x y)
   "Return button at position (X, Y) or NIL."
-  (dolist (button (toolbar-buttons toolbar))
+  (dolist (button (toolbar-visible-buttons toolbar))
     (when (and (>= x (button-x button))
                (<  x (+ (button-x button) (button-width button)))
                (>= y (button-y button))
                (<  y (+ (button-y button) (button-height button))))
       (return button))))
 
-(defun toolbar-button-clicked (button context)
-  "Execute command for BUTTON. Toggle state if :toggle or :radio type."
-  (let ((cmd-id (button-command-id button)))
-    (when (mnas-sdl3-gui/commands:command-enabled-p 
-           (mnas-sdl3-gui/commands:find-command cmd-id))
-      ;; Handle toggle state
-      (when (eq (button-type button) :toggle)
-        (let ((cmd (mnas-sdl3-gui/commands:find-command cmd-id)))
+(defun toolbar-button-enabled-p (button)
+  "Return T when button command can execute." 
+  (let ((cmd (mnas-sdl3-gui/commands:find-command (button-command-id button))))
+    (and cmd (mnas-sdl3-gui/commands:command-enabled-p cmd))))
+
+(defun toolbar-clear-radio-group (toolbar group-id except-command-id)
+  "Clear checked state for all radio commands in GROUP-ID except EXCEPT-COMMAND-ID." 
+  (when group-id
+    (dolist (candidate (toolbar-buttons toolbar))
+      (when (and (eq (button-type candidate) :radio)
+                 (equal (button-group candidate) group-id)
+                 (not (equal (button-command-id candidate) except-command-id)))
+        (let ((cmd (mnas-sdl3-gui/commands:find-command (button-command-id candidate))))
           (when cmd
-            (let ((current (mnas-sdl3-gui/commands:command-checked cmd)))
-              (setf (mnas-sdl3-gui/commands:command-checked cmd)
-                    (not current))))))
-      ;; Execute command
+            (setf (mnas-sdl3-gui/commands:command-checked cmd) nil)))))))
+
+(defun toolbar-button-clicked (toolbar button context)
+  "Execute command for BUTTON with push/toggle/radio behavior." 
+  (let ((cmd-id (button-command-id button)))
+    (when (and (toolbar-button-visible-p button)
+               (toolbar-button-enabled-p button))
+      (let ((cmd (mnas-sdl3-gui/commands:find-command cmd-id)))
+        (when cmd
+          (case (button-type button)
+            (:toggle
+             (setf (mnas-sdl3-gui/commands:command-checked cmd)
+                   (not (mnas-sdl3-gui/commands:command-checked cmd))))
+            (:radio
+             (toolbar-clear-radio-group toolbar (button-group button) cmd-id)
+             (setf (mnas-sdl3-gui/commands:command-checked cmd) t))
+            (otherwise nil))))
       (mnas-sdl3-gui/commands:execute-command cmd-id :context context))))
 
 (defun toolbar-from-command-group (group-name &key (type :push))

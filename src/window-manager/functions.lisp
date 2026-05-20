@@ -52,6 +52,17 @@ Priority: active modal -> top sibling -> parent -> top-most open."
               parent-id)))
         (first open-ids))))
 
+(defun modal-trap-active-p (manager)
+  "Return T when modal stack has more than one open modal." 
+  (> (length
+      (loop for window-id in (manager-modal-stack manager)
+            for window = (find-window manager window-id)
+            when (and window
+                      (managed-window-open-p window)
+                      (eq (managed-window-role window) :modal))
+              collect window-id))
+     1))
+
 (defun active-modal-id (manager)
   "Return current top modal window id, or NIL if none is open."
   (loop for window-id in (manager-modal-stack manager)
@@ -147,7 +158,12 @@ When REQUESTED-WINDOW-ID is NIL, use focused window.
 Modal policy always has priority over non-modal targets." 
   (let ((candidate (or requested-window-id
                        (focused-window-id manager))))
-    (event-target-window-id manager candidate)))
+    (cond
+      ((and (null candidate)
+            (modal-trap-active-p manager))
+       (active-modal-id manager))
+      (t
+       (event-target-window-id manager candidate)))))
 
 (defun make-window-layer-manager ()
   "Create an empty window/layer manager instance."
