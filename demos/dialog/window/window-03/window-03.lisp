@@ -39,6 +39,7 @@
           *window-03-renderer* renderer
           *window-03-open* t)
         (window-03-register-commands)
+        (window-03-register-shortcuts)
     (window-03-apply-opacity)
     (mnas-sdl3-gui/widgets:init-ttf-font))
 
@@ -90,14 +91,13 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (case (slot-value ev 'sdl3:%key)
-           (:escape
-            (window-03-command :window-03/quit)
-            (return-from window-03-event :success))
-           (:up
-            (window-03-command :window-03/increase-opacity))
-           (:down
-            (window-03-command :window-03/decrease-opacity))))
+         (when (mnas-sdl3-gui/commands:dispatch-shortcut
+                (slot-value ev 'sdl3:%key)
+                :scope :window-03
+                :mods (slot-value ev 'sdl3:%mod)
+                :context (list :window-id (slot-value ev 'sdl3:%window-id)))
+           (unless *window-03-open*
+             (return-from window-03-event :success))))
        :continue)
       (t :continue))))
 

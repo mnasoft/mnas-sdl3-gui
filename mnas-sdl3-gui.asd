@@ -8,6 +8,7 @@
   :components ((:file "src/mnas-sdl3-gui")
                (:file "src/commands/package")
                (:file "src/commands/functions")
+               (:file "src/commands/shortcuts")
                (:file "src/menu/model/package")
                (:file "src/menu/model/classes")
                (:file "src/menu/model/functions")

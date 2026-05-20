@@ -21,6 +21,11 @@
    #:find-command
    #:list-commands
    #:command-enabled-p
-   #:execute-command))
+  #:execute-command
+  #:*shortcut-registry*
+  #:clear-shortcut-registry
+  #:register-shortcut
+  #:find-shortcut-command
+  #:dispatch-shortcut))
 
 (in-package :mnas-sdl3-gui/commands)

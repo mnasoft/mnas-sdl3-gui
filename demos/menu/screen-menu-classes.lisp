@@ -9,6 +9,7 @@
 (defparameter *menu-bar-demo* nil)
 (defparameter *status-message*
   "Class-based menu demo. Click File/Edit/Help.")
+(defparameter *menu-demo-request-quit* nil)
 
 (defconstant +mouse-button-left+ 1)
 
@@ -39,7 +40,25 @@
     (register :preferences "Preferences")
     (register :docs "Documentation")
     (register :about "About")
-    (register :quit "Quit")))
+    (register :quit "Quit")
+    (mnas-sdl3-gui/commands:register-command
+     (mnas-sdl3-gui/commands:make-command
+      :menu-demo/escape
+      "Escape in menu demo"
+      :group :menu-demo
+      :shortcut :escape
+      :execute (lambda (context)
+           (let ((bar (getf context :menu-bar)))
+             (if (and bar (mnas-sdl3-gui/menu/model:bar-open-menu-index bar))
+               (mnas-sdl3-gui/menu/model:close-menu bar)
+               (setf *menu-demo-request-quit* t))
+             t)))
+     :replace t)
+    (mnas-sdl3-gui/commands:register-shortcut
+     :menu-demo/escape
+     :escape
+     :scope :menu-demo
+     :replace t)))
 
 (defun make-demo-menu-bar ()
   (let* ((recent-submenu
@@ -131,6 +150,7 @@
           (setf *window-screen-menu* window
                 *renderer-screen-menu* renderer
                 *menu-bar-demo* (make-demo-menu-bar)
+              *menu-demo-request-quit* nil
                 *status-message* "Class-based menu demo. Click File/Edit/Help.")
           (register-menu-demo-commands))))
   :continue)
@@ -186,11 +206,14 @@
            :continue))
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat))
-                  (eq (slot-value ev 'sdl3:%key) :escape))
-         (if (mnas-sdl3-gui/menu/model:bar-open-menu-index *menu-bar-demo*)
-             (mnas-sdl3-gui/menu/model:close-menu *menu-bar-demo*)
-             (return-from screen-menu-event :success)))
+                  (not (slot-value ev 'sdl3:%repeat)))
+         (mnas-sdl3-gui/commands:dispatch-shortcut
+          (slot-value ev 'sdl3:%key)
+          :scope :menu-demo
+          :mods (slot-value ev 'sdl3:%mod)
+          :context (list :menu-bar *menu-bar-demo*))
+         (when *menu-demo-request-quit*
+           (return-from screen-menu-event :success)))
        :continue)
       (t
        :continue))))

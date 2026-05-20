@@ -43,3 +43,21 @@
                (window-03-apply-opacity)
                t))
    :replace t))
+
+(defun window-03-register-shortcuts ()
+  "Register keyboard shortcut routes for window-03 demo." 
+  (mnas-sdl3-gui/commands:register-shortcut
+   :window-03/quit
+   :escape
+   :scope :window-03
+   :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut
+   :window-03/increase-opacity
+   :up
+   :scope :window-03
+   :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut
+   :window-03/decrease-opacity
+   :down
+   :scope :window-03
+   :replace t))

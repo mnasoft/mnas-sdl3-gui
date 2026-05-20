@@ -163,6 +163,7 @@
 
   (mnas-sdl3-gui/widgets:init-ttf-font)
   (window-02-register-commands)
+  (window-02-register-shortcuts)
   (window-02-hide-popup)
   (setf *window-02-open* t
         *window-02-selected-item* "No item selected")
@@ -223,13 +224,14 @@
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat))
-                  (eq (slot-value ev 'sdl3:%key) :escape))
-         (if *window-02-popup-visible*
-             (window-02-command :window-02/toggle-popup)
-             (progn
-               (window-02-command :window-02/quit)
-               (return-from window-02-event :success))))
+                  (not (slot-value ev 'sdl3:%repeat)))
+         (when (mnas-sdl3-gui/commands:dispatch-shortcut
+                (slot-value ev 'sdl3:%key)
+                :scope :window-02
+                :mods (slot-value ev 'sdl3:%mod)
+                :context (list :window-id (slot-value ev 'sdl3:%window-id)))
+           (unless *window-02-open*
+             (return-from window-02-event :success))))
        :continue)
       (t :continue))))
 

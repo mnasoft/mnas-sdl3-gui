@@ -21,6 +21,19 @@
    :replace t)
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
+    :window-02/escape
+    "Context-aware escape for popup demo"
+    :group :window-02
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (if *window-02-popup-visible*
+                   (window-02-hide-popup)
+                   (setf *window-02-open* nil))
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
     :window-02/toggle-popup
     "Toggle popup"
     :group :window-02
@@ -45,4 +58,12 @@
                      (setf *window-02-selected-item* "No item selected"))
                  (window-02-hide-popup)
                  t)))
+   :replace t))
+
+(defun window-02-register-shortcuts ()
+  "Register keyboard shortcut routes for window-02 demo." 
+  (mnas-sdl3-gui/commands:register-shortcut
+   :window-02/escape
+   :escape
+   :scope :window-02
    :replace t))
