@@ -21,10 +21,13 @@
                    (mnas-sdl3-gui/menu/model:bar-hover-sub-item-index bar) nil)
              (values :continue nil nil))
             ((typep entry 'mnas-sdl3-gui/menu/model:command-entry)
-             (mnas-sdl3-gui/menu/model:close-menu bar)
-             (values :command
-                     (mnas-sdl3-gui/menu/model:entry-action entry)
-                     (mnas-sdl3-gui/menu/model:entry-label entry)))
+                 (if (mnas-sdl3-gui/menu/model:command-entry-enabled-p entry)
+               (progn
+                 (mnas-sdl3-gui/menu/model:close-menu bar)
+                 (values :command
+                   (mnas-sdl3-gui/menu/model:command-entry-id entry)
+                   (mnas-sdl3-gui/menu/model:entry-label entry)))
+               (values :continue nil nil)))
             (t
              (values :continue nil nil)))))))
 
@@ -51,11 +54,13 @@
                         (let ((sub-entry (nth sub-index
                                               (mnas-sdl3-gui/menu/model:menu-entries sub-menu))))
                           (if (typep sub-entry 'mnas-sdl3-gui/menu/model:command-entry)
+                                (if (mnas-sdl3-gui/menu/model:command-entry-enabled-p sub-entry)
                               (progn
                                 (mnas-sdl3-gui/menu/model:close-menu bar)
                                 (values :command
-                                        (mnas-sdl3-gui/menu/model:entry-action sub-entry)
-                                        (mnas-sdl3-gui/menu/model:entry-label sub-entry)))
+                                  (mnas-sdl3-gui/menu/model:command-entry-id sub-entry)
+                                  (mnas-sdl3-gui/menu/model:entry-label sub-entry)))
+                              (values :continue nil nil))
                               (values :continue nil nil))))))))))))
 
 (defun handle-left-click (bar x y)

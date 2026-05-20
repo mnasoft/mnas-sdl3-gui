@@ -19,7 +19,10 @@
 
 (defclass command-entry (menu-entry)
   ((hotkey :initarg :hotkey :initform "" :accessor entry-hotkey)
-   (action :initarg :action :initform :none :accessor entry-action)))
+   ;; Legacy action id, kept for backward compatibility.
+   (action :initarg :action :initform :none :accessor entry-action)
+   ;; Preferred command id used by command dispatcher.
+   (command-id :initarg :command-id :initform nil :accessor entry-command-id)))
 
 (defclass separator-entry (menu-entry) ())
 

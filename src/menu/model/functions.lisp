@@ -17,6 +17,26 @@
          (gap-w    (if (> hotkey-w 0) +menu-item-gap-label-hotkey+ 0)))
     (+ label-w gap-w hotkey-w)))
 
+(defun command-entry-id (entry)
+  "Return command id for ENTRY, preferring explicit command-id over legacy action." 
+  (or (entry-command-id entry)
+   (entry-action entry)))
+
+(defun command-entry-enabled-p (entry &optional context)
+  "Return whether command ENTRY is currently enabled in CONTEXT." 
+  (let* ((id (command-entry-id entry))
+      (cmd (and id (mnas-sdl3-gui/commands:find-command id))))
+    (if cmd
+     (and (mnas-sdl3-gui/commands:command-visible cmd)
+       (mnas-sdl3-gui/commands:command-enabled-p cmd context))
+     t)))
+
+(defun command-entry-checked-p (entry)
+  "Return checked state for command ENTRY." 
+  (let* ((id (command-entry-id entry))
+      (cmd (and id (mnas-sdl3-gui/commands:find-command id))))
+    (and cmd (mnas-sdl3-gui/commands:command-checked cmd))))
+
 (defun submenu-entry-content-width (entry)
   (+ (text-width (entry-label entry)) +submenu-arrow-width+))
 

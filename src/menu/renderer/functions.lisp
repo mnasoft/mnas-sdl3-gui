@@ -53,20 +53,33 @@
                                     panel-left cursor-y
                                     (mnas-sdl3-gui/menu/model:menu-panel-width menu) row-h
                                     186 221 198))
-                  (sdl3:set-render-draw-color renderer 35 35 35 255)
+                    (let* ((is-command (typep entry 'mnas-sdl3-gui/menu/model:command-entry))
+                         (enabled (or (not is-command)
+                                  (mnas-sdl3-gui/menu/model:command-entry-enabled-p entry))))
+                      (if enabled
+                        (sdl3:set-render-draw-color renderer 35 35 35 255)
+                        (sdl3:set-render-draw-color renderer 135 135 135 255)))
                   (render-debug-text renderer
                                      (+ panel-left mnas-sdl3-gui/menu/model:+menu-item-pad-x+)
                                      (+ cursor-y mnas-sdl3-gui/menu/model:+menu-item-pad-y+)
                                      (mnas-sdl3-gui/menu/model:entry-label entry))
                   (cond
                     ((typep entry 'mnas-sdl3-gui/menu/model:command-entry)
+                      (when (mnas-sdl3-gui/menu/model:command-entry-checked-p entry)
+                        (sdl3:set-render-draw-color renderer 35 35 35 255)
+                        (render-debug-text renderer
+                                    (+ panel-left 2)
+                                    (+ cursor-y mnas-sdl3-gui/menu/model:+menu-item-pad-y+)
+                                    "*"))
                      (let* ((hotkey   (mnas-sdl3-gui/menu/model:entry-hotkey entry))
                             (hotkey-w (mnas-sdl3-gui/menu/model:text-width hotkey))
                             (hotkey-x (- (+ panel-left (mnas-sdl3-gui/menu/model:menu-panel-width menu))
                                          mnas-sdl3-gui/menu/model:+menu-item-pad-x+
                                          hotkey-w)))
                        (when (plusp (length hotkey))
-                         (sdl3:set-render-draw-color renderer 102 102 102 255)
+                         (if (mnas-sdl3-gui/menu/model:command-entry-enabled-p entry)
+                            (sdl3:set-render-draw-color renderer 102 102 102 255)
+                            (sdl3:set-render-draw-color renderer 155 155 155 255))
                          (render-debug-text renderer
                                             hotkey-x
                                             (+ cursor-y mnas-sdl3-gui/menu/model:+menu-item-pad-y+)

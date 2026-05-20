@@ -17,6 +17,7 @@
    #:entry-label
    #:entry-hotkey
    #:entry-action
+  #:entry-command-id
    #:entry-submenu
    ;; dropdown-menu accessors
    #:menu-title
@@ -53,6 +54,9 @@
    #:text-width
    #:entry-row-height
    #:entry-content-width
+  #:command-entry-id
+  #:command-entry-enabled-p
+  #:command-entry-checked-p
    #:layout-menu-bar
    #:title-menu-index-at
    #:dropdown-item-index-at
