@@ -25,6 +25,9 @@
     "Increase window opacity"
     :group :window-03
     :shortcut :up
+    :can-execute (lambda (context)
+                   (declare (ignore context))
+                   (< *window-03-opacity* 0.999))
     :execute (lambda (context)
                (declare (ignore context))
                (incf *window-03-opacity* +window-03-opacity-step+)
@@ -37,10 +40,42 @@
     "Decrease window opacity"
     :group :window-03
     :shortcut :down
+    :can-execute (lambda (context)
+                   (declare (ignore context))
+                   (> *window-03-opacity* 0.151))
     :execute (lambda (context)
                (declare (ignore context))
                (decf *window-03-opacity* +window-03-opacity-step+)
                (window-03-apply-opacity)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-03/reset-opacity
+    "Reset window opacity"
+    :group :window-03
+    :shortcut :r
+    :visible nil
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *window-03-opacity* +window-03-default-opacity+)
+               (window-03-apply-opacity)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :window-03/toggle-frost
+    "Toggle frosted panel style"
+    :group :window-03
+    :shortcut :f
+    :checked t
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *window-03-frost* (not *window-03-frost*))
+               (let ((cmd (mnas-sdl3-gui/commands:find-command :window-03/toggle-frost)))
+                 (when cmd
+                   (setf (mnas-sdl3-gui/commands:command-checked cmd)
+                         *window-03-frost*)))
                t))
    :replace t))
 
@@ -57,4 +92,12 @@
   (mnas-sdl3-gui/commands:register-shortcut
    :window-03/decrease-opacity
    :down
+    :replace t)
+    (mnas-sdl3-gui/commands:register-shortcut
+    :window-03/reset-opacity
+    :r
+    :replace t)
+    (mnas-sdl3-gui/commands:register-shortcut
+    :window-03/toggle-frost
+    :f
    :replace t))
