@@ -6,6 +6,8 @@
 (defparameter *window-02-main-renderer* nil)
 (defparameter *window-02-main-id* 0)
 
+(defparameter *window-02-layer-manager* nil)
+
 (defparameter *window-02-popup-window* nil)
 (defparameter *window-02-popup-renderer* nil)
 (defparameter *window-02-popup-id* 0)
@@ -48,7 +50,12 @@
   (setf *window-02-popup-visible* nil
         *window-02-hover-index* nil)
   (when *window-02-popup-window*
-    (sdl3:hide-window *window-02-popup-window*)))
+    (sdl3:hide-window *window-02-popup-window*))
+  (when *window-02-layer-manager*
+    (mnas-sdl3-gui/window-manager:close-window
+     *window-02-layer-manager*
+     *window-02-popup-id*
+     :close-children t)))
 
 (defun window-02-show-popup-at (local-x local-y)
   (when *window-02-main-window*
@@ -60,6 +67,10 @@
           (sdl3:set-window-position *window-02-popup-window* global-x global-y)
           (sdl3:show-window *window-02-popup-window*)
           (sdl3:raise-window *window-02-popup-window*)
+          (when *window-02-layer-manager*
+            (mnas-sdl3-gui/window-manager:open-window
+             *window-02-layer-manager*
+             *window-02-popup-id*))
           (setf *window-02-popup-visible* t
                 *window-02-hover-index* nil))))))
 
@@ -131,6 +142,9 @@
     (format t "~a~%" (sdl3:get-error))
     (return-from window-02-init :failure))
 
+  (setf *window-02-layer-manager*
+        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
+
   (multiple-value-bind (ok-main main-window main-renderer)
       (sdl3:create-window-and-renderer "Popup Menu Host Window"
                                        +window-02-main-width+
@@ -141,7 +155,12 @@
       (return-from window-02-init :failure))
     (setf *window-02-main-window* main-window
           *window-02-main-renderer* main-renderer
-          *window-02-main-id* (sdl3:get-window-id main-window)))
+          *window-02-main-id* (sdl3:get-window-id main-window))
+    (mnas-sdl3-gui/window-manager:register-window
+     *window-02-layer-manager*
+     *window-02-main-id*
+     :main
+     :open-p t))
 
   (let ((popup-window (sdl3:create-popup-window
                        *window-02-main-window*
@@ -159,7 +178,13 @@
         (return-from window-02-init :failure))
       (setf *window-02-popup-window* popup-window
             *window-02-popup-renderer* popup-renderer
-            *window-02-popup-id* (sdl3:get-window-id popup-window))))
+        *window-02-popup-id* (sdl3:get-window-id popup-window))
+      (mnas-sdl3-gui/window-manager:register-window
+       *window-02-layer-manager*
+       *window-02-popup-id*
+       :popup-menu
+       :parent-id *window-02-main-id*
+       :open-p nil)))
 
   (mnas-sdl3-gui/widgets:init-ttf-font)
   (window-02-register-commands)
@@ -185,19 +210,39 @@
        :success)
       (sdl3:window-event
        (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
-         (cond
-           ((= (slot-value ev 'sdl3:%window-id) *window-02-main-id*)
-            (window-02-command :window-02/quit)
-            (return-from window-02-event :success))
-           ((= (slot-value ev 'sdl3:%window-id) *window-02-popup-id*)
-            (window-02-hide-popup))))
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (action (and *window-02-layer-manager*
+                             (mnas-sdl3-gui/window-manager:close-action
+                              *window-02-layer-manager*
+                              window-id))))
+           (case action
+             (:close-root
+              (window-02-command :window-02/quit)
+              (return-from window-02-event :success))
+             (:close-transient
+              (when (= window-id *window-02-popup-id*)
+                (window-02-hide-popup)))
+             (otherwise
+              (cond
+                ((= window-id *window-02-main-id*)
+                 (window-02-command :window-02/quit)
+                 (return-from window-02-event :success))
+                ((= window-id *window-02-popup-id*)
+                 (window-02-hide-popup)))))))
        :continue)
       (sdl3:mouse-motion-event
-       (when (and *window-02-popup-visible*
-                  (= (slot-value ev 'sdl3:%window-id) *window-02-popup-id*))
+       (let* ((window-id (slot-value ev 'sdl3:%window-id))
+          (target-id (if *window-02-layer-manager*
+                 (mnas-sdl3-gui/window-manager:event-target-window-id
+              *window-02-layer-manager*
+              window-id)
+                 window-id)))
+         (when (and *window-02-popup-visible*
+            target-id
+            (= target-id *window-02-popup-id*))
          (setf *window-02-hover-index*
                (window-02-item-index-at
-                (round (slot-value ev 'sdl3:%y)))))
+            (round (slot-value ev 'sdl3:%y))))))
        :continue)
       (sdl3:mouse-button-event
        (let ((button (slot-value ev 'sdl3:%button))
@@ -205,6 +250,12 @@
              (window-id (slot-value ev 'sdl3:%window-id))
              (x (round (slot-value ev 'sdl3:%x)))
              (y (round (slot-value ev 'sdl3:%y))))
+         (when *window-02-layer-manager*
+           (setf window-id
+             (or (mnas-sdl3-gui/window-manager:event-target-window-id
+              *window-02-layer-manager*
+              window-id)
+             window-id)))
          (cond
            ((and down
                  (= button +window-02-mouse-right+)
@@ -254,6 +305,7 @@
   (setf *window-02-main-window* nil
         *window-02-main-renderer* nil
         *window-02-main-id* 0
+  *window-02-layer-manager* nil
         *window-02-popup-window* nil
         *window-02-popup-renderer* nil
         *window-02-popup-id* 0

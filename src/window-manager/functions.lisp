@@ -1,0 +1,189 @@
+;;;; ./src/window-manager/functions.lisp
+
+(in-package :mnas-sdl3-gui/window-manager)
+
+(defun transient-role-p (role)
+  "Return T if ROLE is transient (popup/tooltip/modal)."
+  (member role '(:popup-menu :tooltip :modal) :test #'eq))
+
+(defun %window-descends-from-p (manager window-id ancestor-id)
+  "Return T if WINDOW-ID is descendant of ANCESTOR-ID via parent-id chain."
+  (loop with current = (find-window manager window-id)
+        while current
+        for parent-id = (managed-window-parent-id current)
+        do (cond
+             ((null parent-id)
+              (return nil))
+             ((eql parent-id ancestor-id)
+              (return t))
+             (t
+              (setf current (find-window manager parent-id))))))
+
+(defun %modal-stack-push (manager window-id)
+  "Push WINDOW-ID to top of modal stack, ensuring uniqueness."
+  (setf (manager-modal-stack manager)
+        (cons window-id
+              (remove window-id (manager-modal-stack manager) :test #'eql)))
+  (manager-modal-stack manager))
+
+(defun %modal-stack-remove (manager window-id)
+  "Remove WINDOW-ID from modal stack if present."
+  (setf (manager-modal-stack manager)
+        (remove window-id (manager-modal-stack manager) :test #'eql))
+  (manager-modal-stack manager))
+
+(defun active-modal-id (manager)
+  "Return current top modal window id, or NIL if none is open."
+  (loop for window-id in (manager-modal-stack manager)
+        for window = (find-window manager window-id)
+        when (and window
+                  (managed-window-open-p window)
+                  (eq (managed-window-role window) :modal))
+          do (return window-id)
+        finally (return nil)))
+
+(defun active-modal-window (manager)
+  "Return current top modal managed window, or NIL."
+  (let ((window-id (active-modal-id manager)))
+    (and window-id (find-window manager window-id))))
+
+(defun close-tooltips (manager &key parent-id)
+  "Close open tooltip windows globally or only for PARENT-ID."
+  (maphash (lambda (id window)
+             (when (and (managed-window-open-p window)
+                        (eq (managed-window-role window) :tooltip)
+                        (or (null parent-id)
+                            (eql (managed-window-parent-id window) parent-id)))
+               (close-window manager id :close-children t)))
+           (manager-windows manager))
+  t)
+
+(defun open-modal-window (manager window-id)
+  "Open modal WINDOW-ID and enforce tooltip policy." 
+  (close-tooltips manager)
+  (open-window manager window-id))
+
+(defun close-modal-window (manager window-id)
+  "Close modal WINDOW-ID and update modal stack." 
+  (close-window manager window-id :close-children t))
+
+(defun event-target-window-id (manager requested-window-id)
+  "Return effective target window id considering active modal blocking.
+If REQUESTED-WINDOW-ID is blocked by active modal, route to active modal.
+Returns NIL when requested window is unknown or closed." 
+  (let* ((requested (find-window manager requested-window-id))
+         (modal-id (active-modal-id manager)))
+    (cond
+      ((or (null requested)
+           (not (managed-window-open-p requested)))
+       nil)
+      ((null modal-id)
+       requested-window-id)
+      ((or (eql requested-window-id modal-id)
+           (%window-descends-from-p manager requested-window-id modal-id))
+       requested-window-id)
+      (t modal-id))))
+
+(defun make-window-layer-manager ()
+  "Create an empty window/layer manager instance."
+  (make-instance 'window-layer-manager))
+
+(defun clear-window-layer-manager (manager)
+  "Clear all managed windows in MANAGER."
+  (clrhash (manager-windows manager))
+  (setf (manager-z-counter manager) 0
+        (manager-modal-stack manager) '())
+  manager)
+
+(defun find-window (manager window-id)
+  "Return managed window for WINDOW-ID, or NIL."
+  (gethash window-id (manager-windows manager)))
+
+(defun register-window (manager window-id role &key parent-id (open-p t) payload)
+  "Register or replace managed window metadata."
+  (let* ((z (incf (manager-z-counter manager)))
+         (window (make-instance 'managed-window
+                                :id window-id
+                                :role role
+                                :parent-id parent-id
+                                :open-p open-p
+                                :z-index z
+                                :payload payload)))
+    (setf (gethash window-id (manager-windows manager)) window)
+                  (if (and open-p (eq role :modal))
+                    (%modal-stack-push manager window-id)
+                    (%modal-stack-remove manager window-id))
+    window))
+
+(defun unregister-window (manager window-id)
+  "Remove WINDOW-ID from manager registry."
+  (%modal-stack-remove manager window-id)
+  (remhash window-id (manager-windows manager)))
+
+(defun window-open-p (manager window-id)
+  "Return T if window exists and is marked open."
+  (let ((window (find-window manager window-id)))
+    (and window (managed-window-open-p window))))
+
+(defun open-window (manager window-id)
+  "Mark window as open and bring it to front."
+  (let ((window (find-window manager window-id)))
+    (when window
+      (setf (managed-window-open-p window) t
+            (managed-window-z-index window) (incf (manager-z-counter manager)))
+      (when (eq (managed-window-role window) :modal)
+        (%modal-stack-push manager window-id))
+      window)))
+
+(defun window-children (manager parent-id &key only-open)
+  "Return managed children for PARENT-ID."
+  (let (result)
+    (maphash (lambda (id window)
+               (declare (ignore id))
+               (when (eql (managed-window-parent-id window) parent-id)
+                 (when (or (not only-open)
+                           (managed-window-open-p window))
+                   (push window result))))
+             (manager-windows manager))
+    (nreverse result)))
+
+(defun close-window (manager window-id &key (close-children t))
+  "Mark window as closed. Optionally close direct/recursive children."
+  (let ((window (find-window manager window-id)))
+    (when window
+      (setf (managed-window-open-p window) nil)
+      (%modal-stack-remove manager window-id)
+      (when close-children
+        (dolist (child (window-children manager window-id))
+          (close-window manager (managed-window-id child) :close-children t)))
+      window)))
+
+(defun close-transients-for-parent (manager parent-id)
+  "Close all open transient windows attached to PARENT-ID."
+  (dolist (child (window-children manager parent-id :only-open t))
+    (when (or (transient-role-p (managed-window-role child))
+              (eq (managed-window-role child) :modeless))
+      (close-window manager (managed-window-id child) :close-children t)))
+  t)
+
+(defun top-open-window-ids (manager)
+  "Return open window ids sorted from top-most to bottom-most."
+  (mapcar #'managed-window-id
+          (sort (loop for window being the hash-values of (manager-windows manager)
+                      when (managed-window-open-p window)
+                        collect window)
+                #'>
+                :key #'managed-window-z-index)))
+
+(defun close-action (manager window-id)
+  "Classify close behavior for WINDOW-ID based on role and parenting." 
+  (let ((window (find-window manager window-id)))
+    (cond
+      ((null window) :unknown-window)
+      ((eq (managed-window-role window) :main) :close-root)
+      ((or (managed-window-parent-id window)
+           (member (managed-window-role window)
+                   '(:popup-menu :tooltip :modal)
+                   :test #'eq))
+       :close-transient)
+      (t :close-window))))
