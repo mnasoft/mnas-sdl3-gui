@@ -1,0 +1,340 @@
+#+TITLE: mnas-sdl3-gui: архитектурный набросок
+#+AUTHOR: mna
+#+DATE: 2026-05-20
+
+* Контекст
+
+Сейчас часть иерархии виджетов фактически задается через непосредственную отрисовку.
+Для демо это работает, но с ростом функциональности (popup, tooltip, modal, focus,
+input capture, z-order) приводит к смешению ответственности.
+
+* Цели
+
+- Разделить логическую иерархию UI и механизм отрисовки.
+- Сделать поведение popup/modal предсказуемым и расширяемым.
+- Упростить обработку событий, фокус, hit-testing и layout.
+- Сохранить текущие демо рабочими во время миграции.
+
+* Проблемы текущего подхода
+
+- Состояние и рендер сцеплены в одном слое.
+- Popup/tooltip труднее выразить как обычные дочерние виджеты.
+- Сложно централизованно контролировать порядок окон и фокус.
+- Сложнее тестировать: много логики завязано на draw loop.
+
+* Текущие виджеты (черновой, архитектурно неустойчивый слой)
+
+Ниже фиксируем фактически существующие типы, чтобы план миграции опирался на
+реальную базу, а не на абстрактную модель.
+
+** Базовые интерактивные
+
+- widget (базовый класс)
+- label
+- button
+- toggle
+- check-box
+
+** Поля ввода
+
+- entry
+- password-entry
+- integer-entry
+- real-entry
+
+** Списки и выбор
+
+- list-box
+- combo-box
+- editable-combo-box
+
+** Иерархические данные
+
+- tree-node (модель узла)
+- tree-view
+
+** Уже поддерживаемые оконные режимы в demo-слое
+
+- popup-menu (через отдельное transient окно)
+- transparent (через отдельное окно с opacity)
+
+** Важное замечание
+
+Текущий набор функционален, но часть поведения still coupled к отрисовке и
+конкретному event-loop demo. Это и есть основной объект архитектурной стабилизации.
+
+* Целевой набор виджетов (куда движемся)
+
+** Уровень 1: must-have (ядро)
+
+- label
+- button
+- toggle / radio
+- check-box
+- entry (включая password/integer/real как specialization)
+- list-box
+- combo-box (обычный + editable)
+- tree-view
+
+** Уровень 2: контейнеры и компоновка
+
+- panel/container
+- row/column stack
+- grid
+- split-pane
+- scroll-container (универсальный, не только для list-box)
+
+** Уровень 3: системные и popup-элементы
+
+- context-menu / popup-menu
+- tooltip
+- modal dialog
+- modeless dialog
+- dropdown-host как отдельный transient surface/window role
+
+** Уровень 4: расширенные элементы
+
+- tabs
+- table/tree-grid
+- slider
+- progress-bar
+- status-bar
+
+** Нефункциональные требования для каждого целевого виджета
+
+- единый контракт: measure/arrange/paint/handle-event/hit-test
+- корректный focus lifecycle
+- keyboard navigation + accessibility hooks
+- отсутствие прямой зависимости бизнес-логики от renderer API
+- тестируемость без открытия реального окна (state + event semantics)
+
+* Меню и панели команд
+
+Целевой принцип: меню, popup-меню и панели кнопок должны быть разными
+представлениями одной и той же модели команд.
+
+** Command Model (единый источник истины)
+
+Для каждой команды хранится:
+
+- id
+- title
+- group/category
+- enabled
+- visible
+- checked (для toggle/radio-команд)
+- shortcut
+- execute
+- can-execute
+
+** Представления команд
+
+- menu bar (верхнее меню)
+- context/popup menu (контекстные команды)
+- toolbar/panel (кнопки частых действий)
+- command palette (опционально, поиск и запуск команд)
+
+Все представления используют один и тот же command dispatcher.
+
+** Роутинг действий
+
+- горячие клавиши -> command dispatcher
+- click по пункту меню -> command dispatcher
+- click по кнопке toolbar -> command dispatcher
+
+UI-слой не содержит бизнес-решения по допустимости действий,
+а только отображает состояние команды.
+
+** Меню: базовая политика
+
+- Menu bar: глобальные команды приложения/документа.
+- Context menu: команды текущего контекста (виджет, выделение, узел дерева).
+- Submenu: transient popup-цепочка с parent/child окнами.
+
+** Панели команд (toolbar)
+
+- Поддержать push/toggle/radio кнопки.
+- Поддержать группировку команд по сценариям.
+- Поддержать overflow при узком окне.
+- Состояние кнопок синхронно с Command Model (enabled/checked).
+
+** Минимальный roadmap по внедрению
+
+1. Ввести command registry + dispatcher.
+2. Подключить существующие shortcuts к dispatcher.
+3. Перевести menu demo на Command Model.
+4. Добавить toolbar как второе представление тех же команд.
+5. Подключить context menu к тем же command id.
+6. Добавить тесты на enable/disable и checked-state без рендера.
+
+* Canvas для 2D и 3D графики
+
+Да, для развития toolkit почти наверняка нужны специализированные виджеты
+canvas, а не попытка реализовать графику через базовые control-виджеты.
+
+** Зачем отдельный canvas-слой
+
+- Отдельная модель обновления кадра (frame loop), отличная от обычных форм.
+- Работа с большим количеством draw-операций и интерактивной навигацией.
+- Изоляция графического backend от остального UI.
+- Поддержка разных режимов: 2D scene и 3D scene.
+
+** Целевые типы
+
+- canvas-2d-widget
+- canvas-3d-widget
+
+Оба типа должны наследовать общий контракт widget lifecycle,
+но иметь расширения под рендер-пайплайн.
+
+** Минимальный контракт canvas-виджета
+
+- set-scene(model)
+- request-redraw()
+- world-to-screen(x, y, z?)
+- screen-to-world(x, y)
+- handle-viewport-resize(width, height)
+- render-frame(render-context, delta-time)
+
+** Интеграция с текущей архитектурой
+
+- Canvas участвует в обычных фазах measure/arrange/hit-test.
+- Внутренний draw выполняется в своей фазе render-frame.
+- Event routing остается общим через window manager.
+- Focus/keyboard/mouse-capture для canvas должен быть явным и управляемым.
+
+** 2D canvas: что включить в первую очередь
+
+- Примитивы (line, rect, polyline, text, image/sprite).
+- Pan/zoom.
+- Selection/hover hit-testing.
+- Слои и порядок отрисовки.
+- Dirty-region invalidation.
+
+** 3D canvas: базовый набор
+
+- Camera (orbit/pan/zoom).
+- Scene graph или объектный список с transform.
+- Базовые источники света и материалы (минимальный профиль).
+- Picking (выбор объекта курсором).
+- Overlay 2D (подписи, оси, gizmo) поверх 3D сцены.
+
+** Backend-стратегия
+
+- 2D: SDL renderer как базовый backend.
+- 3D: отдельный backend (Vulkan/OpenGL/Metal в зависимости от платформы).
+- UI-логика не должна зависеть от конкретного 3D API.
+- Переключение backend управляется через capability layer.
+
+** Этапы внедрения
+
+1. Ввести canvas-2d-widget с собственным render-frame.
+2. Добавить pan/zoom + hit-testing + минимальный scene model.
+3. Интегрировать canvas-команды в общую Command Model.
+4. Добавить canvas-3d-widget с базовой камерой и wireframe/solid demo.
+5. Добавить picking и 2D overlay.
+6. Вынести backend capability matrix в отдельный документ.
+
+* Целевая модель
+
+** 1) Логическое дерево (Retained UI Tree)
+
+- Виджеты хранят состояние и связи parent/children.
+- Дерево не зависит от конкретного renderer.
+- Узлы имеют stable-id, bounds, visibility, enabled, focusable.
+
+** 2) Window/Layer Manager
+
+- Управляет top-level окнами и transient-окнами.
+- Поддерживает роли окна:
+  - main
+  - popup-menu
+  - tooltip
+  - modal
+- Хранит стек модальностей и z-order.
+- Определяет маршрутизацию событий между окнами.
+
+** 3) Event Pipeline
+
+Фазы обработки события:
+1. Normalize (SDL event -> internal event)
+2. Route (window manager выбирает целевое окно/слой)
+3. Hit-test (по геометрии дерева)
+4. Dispatch (capture/target/bubble)
+5. State update (focus, selection, open/close popup)
+
+** 4) Layout Pipeline
+
+Фазы layout:
+1. Measure (минимальные/предпочтительные размеры)
+2. Arrange (назначение итоговых bounds)
+3. Invalidate region (dirty-rect tracking)
+
+** 5) Render Backend
+
+- Отдельный слой отрисовки (SDL renderer + text backend).
+- Вход: snapshot дерева + список dirty regions.
+- Выход: кадр конкретного окна.
+
+* Popup/Menu как отдельный тип окна
+
+- Popup создается как transient-окно с parent = owning window.
+- Правила закрытия popup:
+  - клик вне popup
+  - Escape
+  - потеря релевантного фокуса (по политике)
+- Поддержка каскадных submenu как цепочки transient-окон.
+- Popup не должен ломать focus ring основного окна.
+
+* Modal стратегия
+
+- Modal окно блокирует input для нижележащих top-level.
+- Window manager держит modal stack.
+- Все события сначала проверяются относительно вершины modal stack.
+
+* Минимальные интерфейсы (контракты)
+
+** Widget API
+
+- handle-event(widget, event)
+- measure(widget, constraints)
+- arrange(widget, bounds)
+- paint(widget, render-context)
+- hit-test(widget, x, y)
+
+** Window Manager API
+
+- open-window(role, params)
+- close-window(window-id)
+- open-popup(parent-window-id, anchor, model)
+- close-popup-tree(root-popup-id)
+- dispatch-event(event)
+
+* План миграции (инкрементально)
+
+1. Ввести internal event model и единый route layer.
+2. Вынести popup/menu lifecycle в window manager.
+3. Разделить update/layout/paint хотя бы для новых demo.
+4. Добавить dirty-region invalidation.
+5. Перенести существующие виджеты на единый widget API.
+6. Убрать остаточную зависимость логики от непосредственной отрисовки.
+
+* Практические правила
+
+- Один источник истины для focus state.
+- Popup и tooltip не живут как обычные children main-widget-tree.
+- Любой direct draw допустим только в renderer-слое.
+- Для сложных виджетов вводить state-machine, а не ad-hoc flags.
+
+* Риски и компромиссы
+
+- Усложнение инфраструктуры на раннем этапе.
+- Потребуется переходный период с гибридной моделью.
+- Нужны тесты на event routing и focus, иначе регрессии неизбежны.
+
+* Критерии готовности архитектуры
+
+- Popup/menu/modal работают без специальных обходов в demo-коде.
+- Переключение renderer backend не меняет widget logic.
+- Добавление нового виджета не требует правок в глобальном event-loop.
+- Появляется возможность локально тестировать widget behavior без реального окна.

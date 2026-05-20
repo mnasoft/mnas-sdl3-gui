@@ -83,6 +83,8 @@
                "mnas-sdl3-gui/demos/dialog/polyhedron-04"
                "mnas-sdl3-gui/demos/dialog/tree-01"
                "mnas-sdl3-gui/demos/dialog/window-01"
+               "mnas-sdl3-gui/demos/dialog/window-02"
+               "mnas-sdl3-gui/demos/dialog/window-03"
                "mnas-sdl3-gui/demos/dialog/widget-01"
                "mnas-sdl3-gui/demos/dialog/toggle-01"
                "mnas-sdl3-gui/demos/dialog/font-01"
@@ -195,12 +197,32 @@
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-01
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on (#:mnas-sdl3-gui
+               #:mnas-sdl3-gui/demos/dialog/window-02
+               #:mnas-sdl3-gui/demos/dialog/window-03)
   :serial t
   :components ((:module "demos/dialog/window/window-01"
                 :serial t
                 :components ((:file "package")
                              (:file "window-01")))))
+
+(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-02
+  :description "Popup-menu window demo for mnas-sdl3-gui"
+  :depends-on (#:mnas-sdl3-gui)
+  :serial t
+  :components ((:module "demos/dialog/window/window-02"
+                :serial t
+                :components ((:file "package")
+                             (:file "window-02")))))
+
+(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-03
+  :description "Transparent window demo for mnas-sdl3-gui"
+  :depends-on (#:mnas-sdl3-gui)
+  :serial t
+  :components ((:module "demos/dialog/window/window-03"
+                :serial t
+                :components ((:file "package")
+                             (:file "window-03")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/widget-01
   :description "Demos for mnas-sdl3-gui"

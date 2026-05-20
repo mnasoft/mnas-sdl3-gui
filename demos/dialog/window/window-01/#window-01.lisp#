@@ -173,18 +173,12 @@
 (define-window-01-flag-demo window-01-always-on-top :always-on-top)
 (define-window-01-flag-demo window-01-utility :utility)
 (define-window-01-flag-demo window-01-tooltip :tooltip)
+(define-window-01-flag-demo window-01-popup-menu :popup-menu)
 (define-window-01-flag-demo window-01-keyboard-grabbed :keyboard-grabbed)
 (define-window-01-flag-demo window-01-vulkan :vulkan)
 (define-window-01-flag-demo window-01-metal :metal)
+(define-window-01-flag-demo window-01-transparent :transparent)
 (define-window-01-flag-demo window-01-not-focusable :not-focusable)
-
-(defun window-01-transparent ()
-  "Run dedicated transparent-window demo from window-03."
-  (mnas-sdl3-gui/demos/dialog/window-03:window-03))
-
-(defun window-01-popup-menu ()
-  "Run dedicated popup-menu demo from window-02."
-  (mnas-sdl3-gui/demos/dialog/window-02:window-02))
 
 (defun window-01-all-flags ()
   "Run demo with all available window flags combined." 
@@ -192,3 +186,4 @@
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-01)
 ;;;; (window-01)
+;;;; (window-01-popup-menu)
