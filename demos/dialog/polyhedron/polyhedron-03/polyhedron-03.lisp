@@ -206,8 +206,8 @@
           (setf *polyhedron-solid-window-width* width
                 *polyhedron-solid-window-height* height)))))
 
-(defun project-point (point &key (distance 50) (scale 30.0))
-    (destructuring-bind (x y z) point
+(defun project-point (point &key (distance 20.5) (scale 1.0))
+    (destructuring-bind (x y z) point 
   (let* ((depth (- distance z))
              (factor (/ (* 0.42 (min *polyhedron-solid-window-width* *polyhedron-solid-window-height*) scale)
                         (max 0.4 depth)))
