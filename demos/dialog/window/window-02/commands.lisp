@@ -46,9 +46,24 @@
    :replace t)
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
+    :window-02/toggle-pin
+    "Toggle sticky popup mode"
+    :group :window-02
+    :shortcut :p
+    :checked nil
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *window-02-pin-popup* (not *window-02-pin-popup*))
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
     :window-02/select-popup-item
     "Select popup item"
     :group :window-02
+    :can-execute (lambda (context)
+                   (declare (ignore context))
+                   *window-02-popup-visible*)
     :execute (lambda (context)
                (let ((index (getf context :index)))
                  (if (and (integerp index)
@@ -58,6 +73,18 @@
                      (setf *window-02-selected-item* "No item selected"))
                  (window-02-hide-popup)
                  t)))
+        :replace t)
+        (mnas-sdl3-gui/commands:register-command
+        (mnas-sdl3-gui/commands:make-command
+         :window-02/reset-selection
+         "Reset selected popup item"
+         :group :window-02
+         :shortcut :r
+         :visible nil
+         :execute (lambda (context)
+                (declare (ignore context))
+                (setf *window-02-selected-item* "No item selected")
+                t))
    :replace t))
 
 (defun window-02-register-shortcuts ()
@@ -65,4 +92,12 @@
   (mnas-sdl3-gui/commands:register-shortcut
    :window-02/escape
    :escape
+        :replace t)
+        (mnas-sdl3-gui/commands:register-shortcut
+        :window-02/reset-selection
+        :r
+        :replace t)
+        (mnas-sdl3-gui/commands:register-shortcut
+        :window-02/toggle-pin
+        :p
    :replace t))

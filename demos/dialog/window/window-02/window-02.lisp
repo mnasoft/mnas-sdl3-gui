@@ -7,11 +7,13 @@
 (defparameter *window-02-main-id* 0)
 
 (defparameter *window-02-layer-manager* nil)
+(defparameter *window-02-toolbar* nil)
 
 (defparameter *window-02-popup-window* nil)
 (defparameter *window-02-popup-renderer* nil)
 (defparameter *window-02-popup-id* 0)
 (defparameter *window-02-popup-visible* nil)
+(defparameter *window-02-pin-popup* nil)
 
 (defparameter *window-02-open* t)
 (defparameter *window-02-hover-index* nil)
@@ -29,6 +31,40 @@
 (defparameter +window-02-popup-padding+ 6)
 (defparameter +window-02-mouse-left+ 1)
 (defparameter +window-02-mouse-right+ 3)
+(defparameter +window-02-toolbar-x+ 28.0)
+(defparameter +window-02-toolbar-y+ 208.0)
+(defparameter +window-02-toolbar-width+ 420.0)
+(defparameter +window-02-toolbar-height+ 40.0)
+
+(defun make-window-02-toolbar ()
+  "Create toolbar that mirrors window-02 command model state." 
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height 40)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :window-02/toggle-popup :label "Popup" :width 70 :type :toggle)
+           (mnas-sdl3-gui/toolbar:make-button-spec :window-02/toggle-pin :label "Pin" :width 56 :type :toggle)
+           (mnas-sdl3-gui/toolbar:make-button-spec :window-02/reset-selection :label "Reset" :width 62)
+           (mnas-sdl3-gui/toolbar:make-button-spec :window-02/quit :label "Quit" :width 52)))
+    toolbar))
+
+(defun window-02-sync-command-state ()
+  "Sync dynamic enabled/visible/checked states for toolbar and shortcuts." 
+  (let ((popup-cmd (mnas-sdl3-gui/commands:find-command :window-02/toggle-popup))
+        (pin-cmd (mnas-sdl3-gui/commands:find-command :window-02/toggle-pin))
+        (select-cmd (mnas-sdl3-gui/commands:find-command :window-02/select-popup-item))
+        (reset-cmd (mnas-sdl3-gui/commands:find-command :window-02/reset-selection)))
+    (when popup-cmd
+      (setf (mnas-sdl3-gui/commands:command-checked popup-cmd)
+            *window-02-popup-visible*))
+    (when pin-cmd
+      (setf (mnas-sdl3-gui/commands:command-checked pin-cmd)
+            *window-02-pin-popup*))
+    (when select-cmd
+      (setf (mnas-sdl3-gui/commands:command-enabled select-cmd)
+            *window-02-popup-visible*))
+    (when reset-cmd
+      (setf (mnas-sdl3-gui/commands:command-visible reset-cmd)
+            (not (string= *window-02-selected-item* "No item selected"))))))
 
 (defun window-02-null-pointer-p (ptr)
   "Check whether PTR is a CFFI null pointer." 
@@ -97,6 +133,16 @@
                                          "Popup state: visible"
                                          "Popup state: hidden")
                                      28.0 178.0 '(150 205 230 255))
+    (mnas-sdl3-gui/widgets:render-text *window-02-main-renderer*
+                     (if *window-02-pin-popup*
+                       "Pin mode: on (click outside does not close popup)"
+                       "Pin mode: off")
+                     28.0 204.0 '(164 196 216 255))
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *window-02-toolbar*
+     *window-02-main-renderer*
+     +window-02-toolbar-x+
+     +window-02-toolbar-y+)
   (sdl3:render-present *window-02-main-renderer*))
 
 (defun window-02-render-popup ()
@@ -192,14 +238,18 @@
   (mnas-sdl3-gui/widgets:init-ttf-font)
   (window-02-register-commands)
   (window-02-register-shortcuts)
+    (setf *window-02-toolbar* (make-window-02-toolbar))
   (window-02-hide-popup)
   (setf *window-02-open* t
+      *window-02-pin-popup* nil
         *window-02-selected-item* "No item selected")
+    (window-02-sync-command-state)
   :continue)
 
 (sdl3:def-app-iterate window-02-iterate ()
   (unless *window-02-open*
     (return-from window-02-iterate :success))
+  (window-02-sync-command-state)
   (window-02-render-main)
   (window-02-render-popup)
   :continue)
@@ -261,6 +311,23 @@
              window-id)))
          (cond
            ((and down
+                 (= button +window-02-mouse-left+)
+                 (= window-id *window-02-main-id*)
+                 (>= x (round +window-02-toolbar-x+))
+                 (<= x (+ (round +window-02-toolbar-x+) (round +window-02-toolbar-width+)))
+                 (>= y (round +window-02-toolbar-y+))
+                 (<= y (+ (round +window-02-toolbar-y+) (round +window-02-toolbar-height+))))
+            (let ((toolbar-button
+                    (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                     *window-02-toolbar*
+                     (- x (round +window-02-toolbar-x+))
+                     (- y (round +window-02-toolbar-y+)))))
+              (when toolbar-button
+                (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                 *window-02-toolbar*
+                 toolbar-button
+                 (list :window-id window-id :x x :y y)))))
+           ((and down
                  (= button +window-02-mouse-right+)
                  (= window-id *window-02-main-id*))
             (window-02-command :window-02/toggle-popup :x x :y y))
@@ -273,18 +340,30 @@
            ((and down
                  (= button +window-02-mouse-left+)
                  (= window-id *window-02-main-id*)
-                 *window-02-popup-visible*)
+              *window-02-popup-visible*
+              (not *window-02-pin-popup*))
             (window-02-command :window-02/toggle-popup))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (when (mnas-sdl3-gui/commands:dispatch-shortcut
-                (slot-value ev 'sdl3:%key)
-                :mods (slot-value ev 'sdl3:%mod)
-                :context (list :window-id (slot-value ev 'sdl3:%window-id)))
-           (unless *window-02-open*
-             (return-from window-02-event :success))))
+            (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
+             (target-window-id (if *window-02-layer-manager*
+                       (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
+                         *window-02-layer-manager*
+                         event-window-id)
+                        event-window-id)
+                       event-window-id)))
+           (when *window-02-layer-manager*
+             (mnas-sdl3-gui/window-manager:set-focused-window
+              *window-02-layer-manager*
+              target-window-id))
+           (when (mnas-sdl3-gui/commands:dispatch-shortcut
+               (slot-value ev 'sdl3:%key)
+               :mods (slot-value ev 'sdl3:%mod)
+               :context (list :window-id target-window-id))
+             (unless *window-02-open*
+            (return-from window-02-event :success)))))
        :continue)
       (t :continue))))
 
@@ -308,11 +387,13 @@
   (setf *window-02-main-window* nil
         *window-02-main-renderer* nil
         *window-02-main-id* 0
-  *window-02-layer-manager* nil
+      *window-02-layer-manager* nil
+      *window-02-toolbar* nil
         *window-02-popup-window* nil
         *window-02-popup-renderer* nil
         *window-02-popup-id* 0
         *window-02-popup-visible* nil
+      *window-02-pin-popup* nil
         *window-02-open* t
         *window-02-hover-index* nil
         *window-02-selected-item* "No item selected")
