@@ -53,5 +53,20 @@
     (is (= 43 (event-target-window-id manager 42)))
     (is (= 43 (event-target-window-id manager 43)))))
 
+(test window-02-hide-popup-focus-regression
+  (let ((manager (make-window-layer-manager)))
+    (register-window manager 500 :main :open-p t)
+    (register-window manager 501 :popup-menu :parent-id 500 :open-p t)
+    (let ((mnas-sdl3-gui/demos/dialog/window-02::*window-02-layer-manager* manager)
+          (mnas-sdl3-gui/demos/dialog/window-02::*window-02-main-id* 500)
+          (mnas-sdl3-gui/demos/dialog/window-02::*window-02-popup-id* 501)
+          (mnas-sdl3-gui/demos/dialog/window-02::*window-02-popup-window* nil)
+          (mnas-sdl3-gui/demos/dialog/window-02::*window-02-popup-visible* t)
+          (mnas-sdl3-gui/demos/dialog/window-02::*window-02-hover-index* 2))
+      (is-true (mnas-sdl3-gui/demos/dialog/window-02::window-02-hide-popup))
+      (is (= 500 (focused-window-id manager)))
+      (is (null mnas-sdl3-gui/demos/dialog/window-02::*window-02-popup-visible*))
+      (is (null mnas-sdl3-gui/demos/dialog/window-02::*window-02-hover-index*)))))
+
 (defun run-tests ()
   (run! :mnas-sdl3-gui-tests))

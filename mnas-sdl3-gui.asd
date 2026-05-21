@@ -244,6 +244,7 @@
   :components ((:module "demos/dialog/widget/widget-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "widget-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/toggle-01
@@ -253,6 +254,7 @@
   :components ((:module "demos/dialog/toggle/toggle-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "toggle-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/font-01

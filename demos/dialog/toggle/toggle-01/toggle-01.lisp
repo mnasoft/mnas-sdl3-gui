@@ -9,6 +9,26 @@
 (defparameter *toggle-01-widgets* nil)
 (defparameter *toggle-01-status* "Выберите переключатель в любой группе.")
 
+(defun toggle-01-select (group label)
+  "Select LABEL in GROUP and clear other toggles in the same group." 
+  (dolist (widget *toggle-01-widgets*)
+    (when (and (typep widget 'mnas-sdl3-gui/widgets:toggle)
+               (eql (mnas-sdl3-gui/widgets:toggle-group widget) group))
+      (let ((selected-p (string= (mnas-sdl3-gui/widgets:toggle-label widget) label)))
+        (setf (mnas-sdl3-gui/widgets:toggle-state widget) selected-p
+              (mnas-sdl3-gui/widgets:widget-value widget) selected-p))))
+  (refresh-toggle-01-status))
+
+(defun toggle-01-sync-command-state ()
+  "Mirror grouped toggle checked-state into command model." 
+  (dolist (spec +toggle-01-command-map+)
+    (destructuring-bind (id group label shortcut) spec
+      (declare (ignore shortcut))
+      (let ((cmd (mnas-sdl3-gui/commands:find-command id)))
+        (when cmd
+          (setf (mnas-sdl3-gui/commands:command-checked cmd)
+                (string= (or (selected-toggle-label group) "") label)))))))
+
 (defun selected-toggle-label (group)
   "Return label of the selected toggle in GROUP, or NIL."
   (let ((toggle
@@ -84,9 +104,12 @@
           (setf *toggle-01-window* window
                 *toggle-01-renderer* renderer
                 *toggle-01-open* t)
+              (toggle-01-register-commands)
+              (toggle-01-register-shortcuts)
           (mnas-sdl3-gui/widgets:set-widget-style *toggle-01-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-toggle-01-widgets)
+              (toggle-01-sync-command-state)
           (mnas-sdl3-gui/widgets:move-widget-focus *toggle-01-widgets*))))
   :continue)
 
@@ -98,6 +121,8 @@
   (sdl3:render-clear *toggle-01-renderer*)
 
   (mnas-sdl3-gui/widgets:render-widgets *toggle-01-renderer* *toggle-01-widgets*)
+
+  (toggle-01-sync-command-state)
 
   (mnas-sdl3-gui/widgets:render-text *toggle-01-renderer*
                                      *toggle-01-status*
@@ -115,7 +140,7 @@
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event
-       (setf *toggle-01-open* nil)
+       (toggle-01-command :toggle-01/quit)
        :success)
       (sdl3:mouse-motion-event
        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
@@ -134,13 +159,19 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *toggle-01-widgets*
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda ()
-                       (setf *toggle-01-open* nil)
-                       :success)))
+         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value ev 'sdl3:%key)
+                  :mods (slot-value ev 'sdl3:%mod)
+                  :context nil)
+           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+            *toggle-01-widgets*
+            (slot-value ev 'sdl3:%key)
+            :mods (slot-value ev 'sdl3:%mod)
+            :on-escape (lambda ()
+                         (toggle-01-command :toggle-01/quit)
+                         :success)))
+         (unless *toggle-01-open*
+           (return-from toggle-01-demo-event :success)))
        :continue)
       (t :continue))))
 
