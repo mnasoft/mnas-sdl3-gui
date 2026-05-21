@@ -16,15 +16,22 @@
 (defun toolbar-layout-horizontal (toolbar)
   "Recalculate button positions in horizontal layout."
   (let ((x-pos (toolbar-padding toolbar))
-        (y-pos (toolbar-padding toolbar)))
+        (y-pos (toolbar-padding toolbar))
+        (max-button-height 0))
     (dolist (button (toolbar-visible-buttons toolbar))
       (setf (button-x button) x-pos)
       (setf (button-y button) y-pos)
-      (incf x-pos (+ (button-width button) (toolbar-padding toolbar))))
-    ;; Update toolbar width
+      (incf x-pos (+ (button-width button) (toolbar-padding toolbar)))
+      (setf max-button-height (max max-button-height (button-height button))))
+    ;; Update toolbar width and height
     (setf (toolbar-width toolbar)
           (if (toolbar-visible-buttons toolbar)
               (+ x-pos (toolbar-padding toolbar))
+              0)
+          (toolbar-height toolbar)
+          (if (toolbar-visible-buttons toolbar)
+              (+ max-button-height
+                 (* 2 (toolbar-padding toolbar)))
               0))))
 
 (defun toolbar-layout-vertical (toolbar)
@@ -67,6 +74,15 @@
                           (+ offset-x (button-x button))
                           (+ offset-y (button-y button)))))
 
+(defun toolbar-text-pixel-size (text)
+  "Return TEXT width and height in pixels for toolbar rendering." 
+  (handler-case
+      (multiple-value-bind (width height)
+          (sdl3-ttf:ttf-get-string-size mnas-sdl3-gui/widgets:*ttf-font* text)
+        (values width height))
+    (error ()
+      (values (* (length text) 8) 16))))
+
 (defun render-toolbar-button (button renderer x y)
   "Render a single toolbar button."
   (let* ((cmd-id (button-command-id button))
@@ -99,13 +115,17 @@
                                      :%w (float (button-width button) 1.0)
                                      :%h (float (button-height button) 1.0)))
     
-    ;; Draw button label and indicator
+    ;; Draw button label centered in button
     (when (> (length (button-label button)) 0)
-      (mnas-sdl3-gui/widgets:render-text renderer
-                                         (button-label button)
-                                         (+ x 6)
-                                         (+ y 8)
-                                         text-color))
+      (multiple-value-bind (text-w text-h)
+          (toolbar-text-pixel-size (button-label button))
+        (let ((text-x (+ x (max 0 (floor (/ (- (button-width button) text-w) 2)))))
+              (text-y (+ y (max 0 (floor (/ (- (button-height button) text-h) 2))))))
+          (mnas-sdl3-gui/widgets:render-text renderer
+                                             (button-label button)
+                                             text-x
+                                             text-y
+                                             text-color))))
     
     ;; For toggle/radio, show indicator
     (when (member (button-type button) '(:toggle :radio))

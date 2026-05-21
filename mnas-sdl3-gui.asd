@@ -266,6 +266,7 @@
   :components ((:module "demos/dialog/font/font-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "font-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/pack-01
