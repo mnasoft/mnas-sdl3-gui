@@ -29,6 +29,11 @@
            #:window-01-transparent
            #:window-01-not-focusable
            #:window-01-all-flags
-           #:window-01-modal-stack-runtime))
+           #:window-01-modal-stack-runtime
+           #:window-01-open-modal-1
+           #:window-01-open-modal-2
+           #:window-01-close-top-modal
+           #:window-01-register-commands
+           #:window-01-register-shortcuts))
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-01)
