@@ -8,8 +8,62 @@
 (defparameter *polyhedron-last-time* nil)
 (defparameter *polyhedron-rotation* 0.0)
 (defparameter *polyhedron-shape-index* 0)
+(defparameter *polyhedron-window-id* 0)
+(defparameter *polyhedron-toolbar* nil)
+(defparameter +polyhedron-toolbar-height+ 32)
 (defparameter *polyhedron-window-width* 900)
 (defparameter *polyhedron-window-height* 700)
+
+(defun polyhedron-command (id &rest context-plist)
+  "Execute command ID with CONTEXT-PLIST."
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun polyhedron-register-commands ()
+  "Register commands for polyhedron-01 demo."
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :polyhedron-01/quit
+    "Quit polyhedron demo"
+    :group :polyhedron-01
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *polyhedron-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :polyhedron-01/next-shape
+    "Switch to next polyhedron"
+    :group :polyhedron-01
+    :shortcut :space
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *polyhedron-shape-index*
+                     (mod (1+ *polyhedron-shape-index*) (length *shape-specs*)))
+               t))
+   :replace t))
+
+(defun polyhedron-register-shortcuts ()
+  "Register keyboard shortcuts for polyhedron-01 demo."
+  (mnas-sdl3-gui/commands:register-shortcut :polyhedron-01/quit :escape :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut :polyhedron-01/next-shape :space :replace t)
+  t)
+
+(defun polyhedron-create-toolbar ()
+  "Create toolbar for polyhedron-01 demo."
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+                  :layout :horizontal
+                  :height +polyhedron-toolbar-height+)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :polyhedron-01/next-shape
+                                                   :label "Next"
+                                                   :width 72)
+           (mnas-sdl3-gui/toolbar:make-button-spec :polyhedron-01/quit
+                                                   :label "Quit"
+                                                   :width 64)))
+    toolbar))
 
 (defparameter *icosahedron-vertices*
   (let ((phi (/ (+ 1.0 (sqrt 5.0)) 2.0)))
@@ -301,11 +355,15 @@
       (format t "~a~%" (sdl3:get-error))
       (return-from polyhedron-demo-init :failure))
     (setf *polyhedron-window* window
+          *polyhedron-window-id* (sdl3:get-window-id window)
           *polyhedron-renderer* renderer
           *polyhedron-open* t
           *polyhedron-last-time* (polyhedron-seconds-now)
           *polyhedron-rotation* 0.0
           *polyhedron-shape-index* 0)
+    (polyhedron-register-commands)
+    (polyhedron-register-shortcuts)
+    (setf *polyhedron-toolbar* (polyhedron-create-toolbar))
     (mnas-sdl3-gui/widgets:init-ttf-font))
   :continue)
 
@@ -319,6 +377,12 @@
   (update-polyhedron-window-size)
   (sdl3:set-render-draw-color *polyhedron-renderer* 15 18 24 255)
   (sdl3:render-clear *polyhedron-renderer*)
+  (when *polyhedron-toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *polyhedron-toolbar*
+     *polyhedron-renderer*
+     0.0
+     0.0))
   (draw-polyhedron-shape)
   (render-polyhedron-overlay)
   (sdl3:render-present *polyhedron-renderer*)
@@ -331,16 +395,34 @@
       (sdl3:quit-event
        (setf *polyhedron-open* nil)
        :success)
+      (sdl3:mouse-button-event
+       (when (= (slot-value parsed 'sdl3:%button) 1)
+         (when (slot-value parsed 'sdl3:%down)
+           (let* ((mx (round (slot-value parsed 'sdl3:%x)))
+                  (my (round (slot-value parsed 'sdl3:%y)))
+                  (button (and *polyhedron-toolbar*
+                               (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                *polyhedron-toolbar* mx my))))
+             (when button
+               (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                *polyhedron-toolbar*
+                button
+                (list :window-id *polyhedron-window-id*)))))
+       :continue)
       (sdl3:keyboard-event
        (when (and (slot-value parsed 'sdl3:%down)
                   (not (slot-value parsed 'sdl3:%repeat)))
-         (case (slot-value parsed 'sdl3:%key)
-           (:escape
-            (setf *polyhedron-open* nil)
-            (return-from polyhedron-demo-event :success))
-           (:space
-            (setf *polyhedron-shape-index*
-                  (mod (1+ *polyhedron-shape-index*) (length *shape-specs*))))))
+         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value parsed 'sdl3:%key)
+                  :mods nil
+                  :context (list :window-id *polyhedron-window-id*))
+           (case (slot-value parsed 'sdl3:%key)
+             (:escape
+              (setf *polyhedron-open* nil)
+              (return-from polyhedron-demo-event :success))
+             (:space
+              (setf *polyhedron-shape-index*
+                    (mod (1+ *polyhedron-shape-index*) (length *shape-specs*)))))))
        :continue)
       (t :continue))))
 
