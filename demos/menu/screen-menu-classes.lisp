@@ -142,6 +142,11 @@
       (mnas-sdl3-gui/toolbar:make-button-spec :redo :label "Redo" :width 50 :type :radio :group :edit-history)))
     toolbar))
 
+(defun screen-menu-sync-command-state ()
+  "Synchronize toolbar state from the current menu demo commands."
+  (when *toolbar-demo*
+    (mnas-sdl3-gui/toolbar:update-toolbar-command-state *toolbar-demo*)))
+
 (defun execute-command-action (command-id label)
   (let ((ok (mnas-sdl3-gui/commands:execute-command
              command-id
@@ -205,6 +210,8 @@
   (mnas-sdl3-gui/menu/renderer:draw-menu-bar
    *renderer-screen-menu*
    *menu-bar-demo*)
+
+  (screen-menu-sync-command-state)
 
   ;; Render toolbar below menu bar
   (mnas-sdl3-gui/toolbar:render-toolbar

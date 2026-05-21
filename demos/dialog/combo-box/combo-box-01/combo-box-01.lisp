@@ -71,6 +71,17 @@
                                                    :width 64)))
     toolbar))
 
+(defun combo-box-01-sync-command-state ()
+  "Sync command state for combo-box-01 toolbar." 
+  (let ((report-cmd (mnas-sdl3-gui/commands:find-command :combo-box-01/report))
+        (enabled (and *combo-box-01-small*
+                      *combo-box-01-large*
+                      (mnas-sdl3-gui/widgets:widget-value *combo-box-01-small*)
+                      (mnas-sdl3-gui/widgets:widget-value *combo-box-01-large*))))
+    (when report-cmd
+      (setf (mnas-sdl3-gui/commands:command-enabled report-cmd)
+            (boolean enabled)))))
+
 (defun combo-box-01-items (prefix count)
   (loop for index from 1 to count
         collect (format nil "~A ~D" prefix index)))
@@ -139,6 +150,7 @@
     (return-from combo-box-01-iterate :success))
   (sdl3:set-render-draw-color *combo-box-renderer* 240 240 240 255)
   (sdl3:render-clear *combo-box-renderer*)
+  (combo-box-01-sync-command-state)
   (when *combo-box-toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *combo-box-toolbar*

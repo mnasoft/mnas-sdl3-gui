@@ -88,6 +88,18 @@
                                                    :width 64)))
     toolbar))
 
+(defun list-box-01-sync-command-state ()
+  "Sync command state for list-box-01 toolbar." 
+  (let* ((ok-cmd (mnas-sdl3-gui/commands:find-command :list-box-01/ok))
+         (left-index (and *list-box-01-left*
+                          (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)))
+         (right-index (and *list-box-01-right*
+                           (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*))))
+    (when ok-cmd
+      (setf (mnas-sdl3-gui/commands:command-enabled ok-cmd)
+            (and (integerp left-index) (<= 0 left-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*)))))
+            (integerp right-index) (<= 0 right-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*))))))))
+
 (defun list-box-01-items (count prefix)
   "Create COUNT demo strings prefixed by PREFIX."
   (loop for index from 1 to count
@@ -177,6 +189,7 @@
 
   (sdl3:set-render-draw-color *list-box-01-renderer* 236 236 236 255)
   (sdl3:render-clear *list-box-01-renderer*)
+  (list-box-01-sync-command-state)
   (when *list-box-01-toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *list-box-01-toolbar*

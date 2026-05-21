@@ -65,6 +65,11 @@
                                                    :width 64)))
     toolbar))
 
+(defun polyhedron-02-sync-command-state ()
+  "Sync toolbar button state with polyhedron-02 commands."
+  (when *polyhedron-toolbar*
+    (mnas-sdl3-gui/toolbar:update-toolbar-command-state *polyhedron-toolbar*)))
+
 (defparameter *icosahedron-vertices*
   (let ((phi (/ (+ 1.0 (sqrt 5.0)) 2.0)))
     (list (list 0.0 1.0 phi)
@@ -382,6 +387,7 @@
   (update-polyhedron-window-size)
   (sdl3:set-render-draw-color *polyhedron-renderer* 15 18 24 255)
   (sdl3:render-clear *polyhedron-renderer*)
+  (polyhedron-02-sync-command-state)
   (when *polyhedron-toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *polyhedron-toolbar*

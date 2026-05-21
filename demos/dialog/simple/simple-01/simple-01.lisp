@@ -86,6 +86,13 @@
                                                    :width 64)))
     toolbar))
 
+(defun simple-01-sync-command-state ()
+  "Sync command state for simple-01 toolbar." 
+  (dolist (id '(:simple-01/ok :simple-01/cancel :simple-01/quit))
+    (let ((cmd (mnas-sdl3-gui/commands:find-command id)))
+      (when cmd
+        (setf (mnas-sdl3-gui/commands:command-enabled cmd) t)))))
+
 (defun dialog-widgets ()
   "Return focus-traversable widgets in the simple dialog."
   (list *ok-button* *cancel-button* *extra-button*))
@@ -192,6 +199,7 @@
   (sdl3:set-render-draw-color *renderer* 220 220 220 255)
   (sdl3:render-clear *renderer*)
   
+  (simple-01-sync-command-state)
   (when *toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *toolbar*

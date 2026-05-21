@@ -13,6 +13,14 @@
   "Return buttons that are currently visible." 
   (remove-if-not #'toolbar-button-visible-p (toolbar-buttons toolbar)))
 
+(defun update-toolbar-command-state (toolbar)
+  "Refresh toolbar layout state from current command visibility rules."
+  (when toolbar
+    (ecase (toolbar-layout toolbar)
+      (:horizontal (toolbar-layout-horizontal toolbar))
+      (:vertical (toolbar-layout-vertical toolbar)))
+    toolbar))
+
 (defun toolbar-layout-horizontal (toolbar)
   "Recalculate button positions in horizontal layout."
   (let ((x-pos (toolbar-padding toolbar))

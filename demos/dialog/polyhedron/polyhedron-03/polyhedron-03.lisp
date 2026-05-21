@@ -66,6 +66,11 @@
                                                    :width 64)))
     toolbar))
 
+(defun polyhedron-03-sync-command-state ()
+  "Sync toolbar button state with polyhedron-03 commands."
+  (when *polyhedron-solid-toolbar*
+    (mnas-sdl3-gui/toolbar:update-toolbar-command-state *polyhedron-solid-toolbar*)))
+
 (defparameter *icosahedron-vertices*
   (let ((phi (/ (+ 1.0 (sqrt 5.0)) 2.0)))
     (list (list 0.0 1.0 phi)
@@ -424,22 +429,17 @@
       :continue))
 
 (sdl3:def-app-iterate polyhedron-vulkan-solid-demo-iterate ()
-    (unless *polyhedron-solid-open*
-      (return-from polyhedron-vulkan-solid-demo-iterate :success))
-    (let* ((now (polyhedron-solid-seconds-now))
-           (delta (- now *polyhedron-solid-last-time*)))
-      (setf *polyhedron-solid-last-time* now)
-      (incf *polyhedron-solid-rotation* (* 0.85 delta)))
-    (update-polyhedron-solid-window-size)
-    (sdl3:set-render-draw-color *polyhedron-solid-renderer* 15 18 24 255)
-    (sdl3:render-clear *polyhedron-solid-renderer*)
-  (when *polyhedron-solid-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
-     *polyhedron-solid-toolbar*
-     *polyhedron-solid-renderer*
-     0.0
-     0.0))
-    :continue)
+  (unless *polyhedron-solid-open*
+    (return-from polyhedron-vulkan-solid-demo-iterate :success))
+  (let* ((now (polyhedron-solid-seconds-now))
+         (delta (- now *polyhedron-solid-last-time*)))
+    (setf *polyhedron-solid-last-time* now)
+    (incf *polyhedron-solid-rotation* (* 0.85 delta)))
+  (update-polyhedron-solid-window-size)
+  (sdl3:set-render-draw-color *polyhedron-solid-renderer* 15 18 24 255)
+  (sdl3:render-clear *polyhedron-solid-renderer*)
+  (polyhedron-03-sync-command-state)
+  :continue)
 
 (sdl3:def-app-event polyhedron-vulkan-solid-demo-event (type event)
     (declare (ignore type))

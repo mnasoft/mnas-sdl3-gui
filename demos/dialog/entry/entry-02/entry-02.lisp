@@ -72,6 +72,15 @@
                                                    :width 64)))
     toolbar))
 
+(defun entry-02-sync-command-state ()
+  "Sync command state for entry-02 toolbar." 
+  (let* ((run-cmd (mnas-sdl3-gui/commands:find-command :entry-02/run))
+         (text (and *entry-02-command*
+                    (mnas-sdl3-gui/widgets:entry-text *entry-02-command*))))
+    (when run-cmd
+      (setf (mnas-sdl3-gui/commands:command-enabled run-cmd)
+            (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
+
 (defun entry-02-key->modifier (key)
   "Return modifier keyword for KEY, or NIL when KEY is not a modifier key."
   (case key
@@ -235,6 +244,7 @@
     (return-from entry-02-iterate :success))
   (sdl3:set-render-draw-color *entry-02-renderer* 245 245 245 255)
   (sdl3:render-clear *entry-02-renderer*)
+  (entry-02-sync-command-state)
   (when *entry-02-toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *entry-02-toolbar*

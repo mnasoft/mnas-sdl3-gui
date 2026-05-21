@@ -34,4 +34,5 @@
    #:toolbar-layout-vertical
    #:render-toolbar
    #:toolbar-buttons-at-position
-   #:toolbar-button-clicked))
+   #:toolbar-button-clicked
+   #:update-toolbar-command-state))

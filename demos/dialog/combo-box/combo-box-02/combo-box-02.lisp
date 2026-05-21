@@ -68,6 +68,15 @@
                                                    :width 64)))
     toolbar))
 
+(defun combo-box-02-sync-command-state ()
+  "Sync command state for combo-box-02 toolbar." 
+  (let ((add-cmd (mnas-sdl3-gui/commands:find-command :combo-box-02/add-current))
+        (text (and *combo-box-02-editable*
+                   (mnas-sdl3-gui/widgets:entry-text *combo-box-02-editable*))))
+    (when add-cmd
+      (setf (mnas-sdl3-gui/commands:command-enabled add-cmd)
+            (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
+
 (defun create-combo-box-02-demo-widgets ()
   (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
                                :x 20 :y 18 :width 560 :height 24
@@ -145,6 +154,7 @@
     (return-from combo-box-02-demo-iterate :success))
   (sdl3:set-render-draw-color *combo-box-02-renderer* 240 240 240 255)
   (sdl3:render-clear *combo-box-02-renderer*)
+  (combo-box-02-sync-command-state)
   (when *combo-box-02-toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *combo-box-02-toolbar*
