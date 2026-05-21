@@ -149,6 +149,7 @@
   :components ((:module "demos/dialog/entry/entry-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "entry-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-02

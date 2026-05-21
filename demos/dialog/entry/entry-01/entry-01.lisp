@@ -4,6 +4,9 @@
 
 (defparameter *entry-01-window* nil)
 (defparameter *entry-01-renderer* nil)
+(defparameter *entry-01-window-id* 0)
+(defparameter *entry-01-layer-manager* nil)
+(defparameter *entry-01-toolbar* nil)
 (defparameter *entry-01-open* t)
 (defparameter *entry-01-result* nil)
 (defparameter *entry-01-input* nil)
@@ -28,6 +31,24 @@
           (setf *entry-01-active-modifiers*
                 (remove modifier *entry-01-active-modifiers*)))))
   *entry-01-active-modifiers*)
+
+(defun entry-01-create-toolbar ()
+  "Create toolbar for entry-01 command presenter."
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height 32)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :entry-01/ok
+                                                   :label "OK"
+                                                   :width 64)
+           (mnas-sdl3-gui/toolbar:make-button-spec :entry-01/cancel
+                                                   :label "Cancel"
+                                                   :width 90)))
+    toolbar))
+
+(defun entry-01-sync-command-state ()
+  "Sync dynamic toolbar state for entry-01 demo."
+  (declare (ignore t))
+  nil)
 
 (defun entry-01-key-modifiers (ev)
   "Return a list of active keyboard modifiers for EV."
@@ -66,12 +87,10 @@
   (setf *entry-01-ok-button*
         (make-instance 'mnas-sdl3-gui/widgets:button
                        :x 150 :y 150 :width 100 :height 34
-             :text "ОК"
+                       :text "ОК"
                        :on-click (lambda (widget)
                                    (declare (ignore widget))
-                                   (setf *entry-01-result*
-                                         (mnas-sdl3-gui/widgets:entry-text *entry-01-input*)
-                                         *entry-01-open* nil))))
+                                   (entry-01-command :entry-01/ok))))
   (values))
 
 (sdl3:def-app-init entry-01-init (argc argv)
@@ -81,6 +100,8 @@
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
     (return-from entry-01-init :failure))
+  (setf *entry-01-layer-manager*
+        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer "Entry Dialog + OK" 400 240 0)
     (if (not ok)
@@ -90,14 +111,27 @@
         (progn
           (setf *entry-01-window* window
                 *entry-01-renderer* renderer
+                *entry-01-window-id* (sdl3:get-window-id window)
                 *entry-01-open* t
                 *entry-01-result* nil
                 *entry-01-active-modifiers* nil)
+          (mnas-sdl3-gui/window-manager:register-window
+           *entry-01-layer-manager*
+           *entry-01-window-id*
+           :main
+           :open-p t)
+          (mnas-sdl3-gui/window-manager:set-focused-window
+           *entry-01-layer-manager*
+           *entry-01-window-id*)
+          (entry-01-register-commands)
+          (entry-01-register-shortcuts)
+          (setf *entry-01-toolbar* (entry-01-create-toolbar))
           (mnas-sdl3-gui/widgets:set-widget-style *entry-01-style*)
           ;; TTF must be initialized after SDL video subsystem is ready.
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)
           (create-entry-01-widgets)
+          (entry-01-sync-command-state)
           (mnas-sdl3-gui/widgets:set-widget-focus (entry-01-widgets)
                                                   *entry-01-input*))))
   :continue)
@@ -114,6 +148,14 @@
   (mnas-sdl3-gui/widgets:render-text *entry-01-renderer*
                                      *entry-01-hint* 40.0 62.0 '(70 70 70 255))
 
+  (entry-01-sync-command-state)
+  (when *entry-01-toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *entry-01-toolbar*
+     *entry-01-renderer*
+     0.0
+     0.0))
+
   (mnas-sdl3-gui/widgets:render-widgets *entry-01-renderer* (entry-01-widgets))
 
   (sdl3:render-present *entry-01-renderer*)
@@ -128,36 +170,62 @@
        :success)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
-         (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y))))
-           (if (slot-value ev 'sdl3:%down)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                (entry-01-widgets) mx my)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                (entry-01-widgets) mx my))))
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (target-window-id (if *entry-01-layer-manager*
+                                      (or (mnas-sdl3-gui/window-manager:event-target-window-id
+                                           *entry-01-layer-manager*
+                                           window-id)
+                                          window-id)
+                                      window-id))
+                (mx (round (slot-value ev 'sdl3:%x)))
+                (my (round (slot-value ev 'sdl3:%y))))
+           (when *entry-01-layer-manager*
+             (mnas-sdl3-gui/window-manager:set-focused-window
+              *entry-01-layer-manager*
+              target-window-id))
+           (when (= target-window-id *entry-01-window-id*)
+             (if (slot-value ev 'sdl3:%down)
+                 (let ((button (and *entry-01-toolbar*
+                                    (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                     *entry-01-toolbar*
+                                     mx
+                                     my))))
+                   (if button
+                       (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                        *entry-01-toolbar*
+                        button
+                        (list :window-id target-window-id))
+                       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                        (entry-01-widgets) mx my)))
+                 (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
+                  (entry-01-widgets) mx my)))))
        :continue)
       (sdl3:keyboard-event
        (entry-01-update-modifier-state ev)
        (if (slot-value ev 'sdl3:%down)
            (if (slot-value ev 'sdl3:%repeat)
                :continue
-               (let* ((key (slot-value ev 'sdl3:%key))
-              (result
-               (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-            (entry-01-widgets)
-            key
-            :mods (entry-01-key-modifiers ev)
-            :on-escape (lambda ()
-                 (setf *entry-01-result* nil
-                   *entry-01-open* nil)
-                 :success)
-            :on-return (lambda ()
-                 (setf *entry-01-result*
-                   (mnas-sdl3-gui/widgets:entry-text *entry-01-input*)
-                   *entry-01-open* nil)
-                 :success))))
-                 (entry-01-log-key-event ev :action :down)
-                 result))
+               (let ((key (slot-value ev 'sdl3:%key)))
+                 (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                          key
+                          :mods (entry-01-key-modifiers ev)
+                          :context (list :window-id *entry-01-window-id*))
+                   (let ((result
+                          (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+                           (entry-01-widgets)
+                           key
+                           :mods (entry-01-key-modifiers ev)
+                           :on-escape (lambda ()
+                                        (setf *entry-01-result* nil
+                                              *entry-01-open* nil)
+                                        :success)
+                           :on-return (lambda ()
+                                        (setf *entry-01-result*
+                                              (mnas-sdl3-gui/widgets:entry-text *entry-01-input*)
+                                              *entry-01-open* nil)
+                                        :success))))
+                     (entry-01-log-key-event ev :action :down)
+                     result))))
            (progn
              (when (entry-01-key->modifier (slot-value ev 'sdl3:%key))
                (entry-01-log-key-event ev :action :up))
