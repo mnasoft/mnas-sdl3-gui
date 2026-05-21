@@ -4,10 +4,55 @@
 
 (defparameter *toggle-01-window* nil)
 (defparameter *toggle-01-renderer* nil)
+(defparameter *toggle-01-window-id* 0)
+(defparameter *toggle-01-layer-manager* nil)
+(defparameter *toggle-01-toolbar* nil)
 (defparameter *toggle-01-open* t)
 (defparameter *toggle-01-style* :windows)
 (defparameter *toggle-01-widgets* nil)
 (defparameter *toggle-01-status* "Выберите переключатель в любой группе.")
+(defparameter *toggle-01-status-y* 0)
+(defparameter +toggle-01-toolbar-height+ 32)
+(defparameter +toggle-01-margin+ 16)
+(defparameter +toggle-01-status-band+ 26)
+(defparameter +toggle-01-section-gap+ 8)
+
+(defun toggle-01-create-toolbar ()
+  "Create toolbar for toggle-01 demo." 
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+                  :layout :horizontal
+                  :height +toggle-01-toolbar-height+)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec
+            :toggle-01/group-1-option-1
+            :label "1"
+            :width 40
+            :type :radio
+            :group :group-1)
+           (mnas-sdl3-gui/toolbar:make-button-spec
+            :toggle-01/group-1-option-2
+            :label "2"
+            :width 40
+            :type :radio
+            :group :group-1)
+           (mnas-sdl3-gui/toolbar:make-button-spec
+            :toggle-01/group-1-option-3
+            :label "3"
+            :width 40
+            :type :radio
+            :group :group-1)
+           (mnas-sdl3-gui/toolbar:make-button-spec
+            :toggle-01/group-1-option-4
+            :label "4"
+            :width 40
+            :type :radio
+            :group :group-1)
+           (mnas-sdl3-gui/toolbar:make-button-spec
+            :toggle-01/quit
+            :label "Quit"
+            :width 64)))
+    toolbar))
 
 (defun toggle-01-select (group label)
   "Select LABEL in GROUP and clear other toggles in the same group." 
@@ -64,28 +109,106 @@
     toggle))
 
 (defun create-toggle-01-widgets ()
-  "Create demo widgets for two grouped toggle columns."
+  "Create demo widgets for two grouped toggle columns using pack layout."
+  (mnas-sdl3-gui/widgets:clear-pack-layout)
   (mnas-sdl3-gui/widgets:clear-toggle-group-registry)
-  (setf *toggle-01-widgets*
-        (list
-         (make-instance 'mnas-sdl3-gui/widgets:label
-                        :x 20 :y 16 :width 420 :height 28
-                        :text "Toggle groups demo")
-         (make-instance 'mnas-sdl3-gui/widgets:label
-                        :x 40 :y 56 :width 180 :height 22
-                        :text "Группа 1")
-         (make-instance 'mnas-sdl3-gui/widgets:label
-                        :x 250 :y 56 :width 180 :height 22
-                        :text "Группа 2")
-         (make-group-toggle 40 90 "Вариант 1" :group-1 t)
-         (make-group-toggle 40 124 "Вариант 2" :group-1 nil)
-         (make-group-toggle 40 158 "Вариант 3" :group-1 nil)
-         (make-group-toggle 40 192 "Вариант 4" :group-1 nil)
-         (make-group-toggle 250 90 "Опция 1" :group-2 t)
-         (make-group-toggle 250 124 "Опция 2" :group-2 nil)
-         (make-group-toggle 250 158 "Опция 3" :group-2 nil)
-         (make-group-toggle 250 192 "Опция 4" :group-2 nil)))
-  (refresh-toggle-01-status))
+  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
+                               :text "Toggle groups demo"))
+         (group-1-label (make-instance 'mnas-sdl3-gui/widgets:label
+                                       :text "Группа 1"))
+         (group-2-label (make-instance 'mnas-sdl3-gui/widgets:label
+                                       :text "Группа 2"))
+         (toggle-1 (make-group-toggle nil nil "Вариант 1" :group-1 t))
+         (toggle-2 (make-group-toggle nil nil "Вариант 2" :group-1 nil))
+         (toggle-3 (make-group-toggle nil nil "Вариант 3" :group-1 nil))
+         (toggle-4 (make-group-toggle nil nil "Вариант 4" :group-1 nil))
+         (toggle-a (make-group-toggle nil nil "Опция 1" :group-2 t))
+         (toggle-b (make-group-toggle nil nil "Опция 2" :group-2 nil))
+         (toggle-c (make-group-toggle nil nil "Опция 3" :group-2 nil))
+         (toggle-d (make-group-toggle nil nil "Опция 4" :group-2 nil))
+         (widgets (list title
+                        group-1-label group-2-label
+                        toggle-1 toggle-a
+                        toggle-2 toggle-b
+                        toggle-3 toggle-c
+                        toggle-4 toggle-d))
+         (rows `((,title)
+                 (,group-1-label ,group-2-label)
+                 (,toggle-1 ,toggle-a)
+                 (,toggle-2 ,toggle-b)
+                 (,toggle-3 ,toggle-c)
+                 (,toggle-4 ,toggle-d))))
+    (setf *toggle-01-widgets* widgets)
+
+    (mnas-sdl3-gui/widgets:pack-widget title
+                                       :side :top
+                                       :fill :x
+                                       :padx 8
+                                       :pady 6
+                                       :use-content-size t)
+
+    (mnas-sdl3-gui/widgets:pack-widget group-1-label
+                                       :side :left
+                                       :fill :x
+                                       :expand t
+                                       :padx 8
+                                       :pady 4
+                                       :use-content-size t)
+    (mnas-sdl3-gui/widgets:pack-widget group-2-label
+                                       :side :left
+                                       :fill :x
+                                       :expand t
+                                       :padx 8
+                                       :pady 4
+                                       :use-content-size t)
+
+    (dolist (row (list (list toggle-1 toggle-a)
+                       (list toggle-2 toggle-b)
+                       (list toggle-3 toggle-c)
+                       (list toggle-4 toggle-d)))
+      (dolist (widget row)
+        (mnas-sdl3-gui/widgets:pack-widget widget
+                                           :side :left
+                                           :fill :x
+                                           :expand t
+                                           :padx 8
+                                           :pady 4
+                                           :use-content-size t)))
+
+    ;; Calculate required size and apply pack layout.
+    (let ((content-width 0)
+          (content-height 0)
+          (section-w 0)
+          (section-h 0))
+      (dolist (row rows)
+        (multiple-value-bind (req-w req-h)
+            (mnas-sdl3-gui/widgets:pack-layout-required-size row)
+          (setf content-width (max content-width req-w))
+          (incf content-height req-h)))
+      (incf content-height (* +toggle-01-section-gap+ (1- (length rows))))
+      (let* ((window-width (+ (* 2 +toggle-01-margin+) content-width))
+             (window-height (+ (* 2 +toggle-01-margin+)
+                               +toggle-01-toolbar-height+
+                               content-height
+                               +toggle-01-status-band+))
+             (usable-width (- window-width (* 2 +toggle-01-margin+)))
+             (top-y (+ +toggle-01-margin+ +toggle-01-toolbar-height+ +toggle-01-section-gap+))
+             (current-y top-y))
+        (dolist (row rows)
+          (multiple-value-bind (req-w req-h)
+              (mnas-sdl3-gui/widgets:pack-layout-required-size row)
+            (mnas-sdl3-gui/widgets:pack-layout-widgets row
+                                                       +toggle-01-margin+
+                                                       current-y
+                                                       usable-width
+                                                       req-h)
+            (incf current-y (+ req-h +toggle-01-section-gap+))))
+        (setf *toggle-01-status-y*
+              (+ current-y 4))
+        (refresh-toggle-01-status)
+        (values *toggle-01-widgets*
+                (round window-width)
+                (round window-height))))))
 
 (sdl3:def-app-init toggle-01-demo-init (argc argv)
   (declare (ignore argc argv))
@@ -94,24 +217,38 @@
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
     (return-from toggle-01-demo-init :failure))
-  (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Toggle Groups" 470 280 0)
-    (if (not ok)
-        (progn
-          (format t "~a~%" (sdl3:get-error))
-          (return-from toggle-01-demo-init :failure))
-        (progn
-          (setf *toggle-01-window* window
-                *toggle-01-renderer* renderer
-                *toggle-01-open* t)
-              (toggle-01-register-commands)
-              (toggle-01-register-shortcuts)
-          (mnas-sdl3-gui/widgets:set-widget-style *toggle-01-style*)
-          (mnas-sdl3-gui/widgets:init-ttf-font)
-          (create-toggle-01-widgets)
-              (toggle-01-sync-command-state)
-          (mnas-sdl3-gui/widgets:move-widget-focus *toggle-01-widgets*))))
-  :continue)
+  (mnas-sdl3-gui/widgets:set-widget-style *toggle-01-style*)
+  (mnas-sdl3-gui/widgets:init-ttf-font)
+  (multiple-value-bind (widgets window-width window-height)
+      (create-toggle-01-widgets)
+    (multiple-value-bind (ok window renderer)
+        (sdl3:create-window-and-renderer "Toggle Groups" window-width window-height 0)
+      (if (not ok)
+          (progn
+            (format t "~a~%" (sdl3:get-error))
+            (return-from toggle-01-demo-init :failure))
+          (progn
+            (setf *toggle-01-window* window
+                  *toggle-01-renderer* renderer
+                  *toggle-01-window-id* (sdl3:get-window-id window)
+                  *toggle-01-open* t)
+            (setf *toggle-01-layer-manager*
+                  (mnas-sdl3-gui/window-manager:make-window-layer-manager))
+            (mnas-sdl3-gui/window-manager:register-window
+             *toggle-01-layer-manager*
+             *toggle-01-window-id*
+             :main
+             :open-p t)
+            (mnas-sdl3-gui/window-manager:set-focused-window
+             *toggle-01-layer-manager*
+             *toggle-01-window-id*)
+            (toggle-01-register-commands)
+            (toggle-01-register-shortcuts)
+            (setf *toggle-01-toolbar* (toggle-01-create-toolbar))
+            (setf *toggle-01-widgets* widgets)
+            (toggle-01-sync-command-state)
+            (mnas-sdl3-gui/widgets:move-widget-focus *toggle-01-widgets*))))
+    :continue))
 
 (sdl3:def-app-iterate toggle-01-demo-iterate ()
   (unless *toggle-01-open*
@@ -120,17 +257,23 @@
   (sdl3:set-render-draw-color *toggle-01-renderer* 240 240 240 255)
   (sdl3:render-clear *toggle-01-renderer*)
 
-  (mnas-sdl3-gui/widgets:render-widgets *toggle-01-renderer* *toggle-01-widgets*)
-
   (toggle-01-sync-command-state)
+  (when *toggle-01-toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *toggle-01-toolbar*
+     *toggle-01-renderer*
+     0.0
+     0.0))
+
+  (mnas-sdl3-gui/widgets:render-widgets *toggle-01-renderer* *toggle-01-widgets*)
 
   (mnas-sdl3-gui/widgets:render-text *toggle-01-renderer*
                                      *toggle-01-status*
-                                     20.0 238.0 '(40 40 40 255))
+                                     20.0 *toggle-01-status-y* '(40 40 40 255))
 
   (mnas-sdl3-gui/widgets:render-text *toggle-01-renderer*
                                      "Click one toggle in each group to switch selection."
-                                     20.0 258.0 '(90 90 90 255))
+                                     20.0 (+ *toggle-01-status-y* 18.0) '(90 90 90 255))
 
   (sdl3:render-present *toggle-01-renderer*)
   :continue)
@@ -140,8 +283,23 @@
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event
-       (toggle-01-command :toggle-01/quit)
+       (setf *toggle-01-open* nil)
        :success)
+      (sdl3:window-event
+       (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
+         (let ((window-id (slot-value ev 'sdl3:%window-id))
+               (action (and *toggle-01-layer-manager*
+                            (mnas-sdl3-gui/window-manager:close-action
+                             *toggle-01-layer-manager*
+                             window-id))))
+           (case action
+             (:close-root
+              (setf *toggle-01-open* nil)
+              (return-from toggle-01-demo-event :success))
+             (otherwise
+              (setf *toggle-01-open* nil)
+              (return-from toggle-01-demo-event :success)))))
+       :continue)
       (sdl3:mouse-motion-event
        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
         *toggle-01-widgets*
@@ -153,7 +311,18 @@
          (let ((mx (round (slot-value ev 'sdl3:%x)))
                (my (round (slot-value ev 'sdl3:%y))))
            (if (slot-value ev 'sdl3:%down)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *toggle-01-widgets* mx my)
+               (let ((button (and *toggle-01-toolbar*
+                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                   *toggle-01-toolbar*
+                                   mx
+                                   my))))
+                 (if button
+                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                      *toggle-01-toolbar*
+                      button
+                      (list :window-id *toggle-01-window-id*))
+                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                      *toggle-01-widgets* mx my)))
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *toggle-01-widgets* mx my))))
        :continue)
       (sdl3:keyboard-event
@@ -162,7 +331,7 @@
          (unless (mnas-sdl3-gui/commands:dispatch-shortcut
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
-                  :context nil)
+                  :context (list :window-id *toggle-01-window-id*))
            (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
             *toggle-01-widgets*
             (slot-value ev 'sdl3:%key)
