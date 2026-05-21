@@ -240,6 +240,7 @@
           (tree-view-filter-extensions widget) normalized-exts
           (tree-view-sort-mode widget) sort-mode
           (tree-view-max-depth widget) max-depth
+          (tree-view-scroll-offset widget) 0
           (tree-view-roots widget) roots
           (tree-view-selected-node widget) nil)
     (when (and expanded-root-p roots)
@@ -280,6 +281,76 @@
                                nil))))))
     (collect-visible (tree-view-roots widget) 0)))
 
+(defun tree-view-visible-row-count (widget)
+  "Return number of tree rows that fit in WIDGET viewport." 
+  (max 1
+       (floor (max 1 (- (widget-height widget) 2))
+              (max 1 (tree-view-row-height widget)))))
+
+(defun tree-view-max-scroll-offset (widget)
+  "Return maximum valid first-visible row index for TREE-VIEW WIDGET." 
+  (max 0
+       (- (length (tree-view-visible-rows widget))
+          (tree-view-visible-row-count widget))))
+
+(defun tree-view-scrollbar-needed-p (widget)
+  "Return true when TREE-VIEW needs a vertical scrollbar." 
+  (> (length (tree-view-visible-rows widget))
+     (tree-view-visible-row-count widget)))
+
+(defun tree-view-scrollbar-geometry (widget)
+  "Return geometry values for the TREE-VIEW scrollbar.
+Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max-offset."
+  (let ((needed-p (tree-view-scrollbar-needed-p widget)))
+    (if (not needed-p)
+        (values nil nil nil nil nil nil 0)
+        (let* ((visible-count (tree-view-visible-row-count widget))
+               (row-height (max 16 (tree-view-row-height widget)))
+               (track-x (+ (widget-x widget) (- (widget-width widget) +list-box-scrollbar-width+)))
+               (track-y (1+ (widget-y widget)))
+               (track-height (max 1 (- (widget-height widget) 2)))
+               (max-offset (tree-view-max-scroll-offset widget))
+               (thumb-height (max 18 (floor (* track-height (/ visible-count (float (length (tree-view-visible-rows widget))))))))
+               (thumb-travel (max 0 (- track-height thumb-height)))
+               (thumb-y (+ track-y
+                           (if (zerop max-offset)
+                               0
+                               (round (* thumb-travel
+                                         (/ (tree-view-scroll-offset widget) max-offset)))))))
+          (values t track-x track-y track-height thumb-y thumb-height max-offset)))))
+
+(defun normalize-tree-view-scroll-offset (widget)
+  "Clamp tree-view scroll offset to valid row range." 
+  (setf (tree-view-scroll-offset widget)
+        (max 0
+             (min (tree-view-scroll-offset widget)
+                  (tree-view-max-scroll-offset widget)))))
+
+(defun ensure-tree-view-selection-visible (widget)
+  "Adjust tree-view scroll so selected node is within visible viewport." 
+  (let* ((rows (tree-view-visible-rows widget))
+         (selected (tree-view-selected-node widget))
+         (selected-index (position selected rows :key #'first :test #'eq))
+         (visible-count (tree-view-visible-row-count widget))
+         (max-offset (tree-view-max-scroll-offset widget))
+         (scroll-offset (max 0 (min (tree-view-scroll-offset widget) max-offset))))
+    (when selected-index
+      (cond
+        ((< selected-index scroll-offset)
+         (setf scroll-offset selected-index))
+        ((>= selected-index (+ scroll-offset visible-count))
+         (setf scroll-offset (1+ (- selected-index visible-count))))))
+    (setf (tree-view-scroll-offset widget)
+          (max 0 (min scroll-offset max-offset)))))
+
+(defun tree-view-scroll-by (widget delta)
+  "Scroll TREE-VIEW WIDGET by DELTA rows. Returns true when offset changed." 
+  (let ((old-offset (tree-view-scroll-offset widget)))
+    (setf (tree-view-scroll-offset widget)
+          (+ old-offset delta))
+    (normalize-tree-view-scroll-offset widget)
+    (/= old-offset (tree-view-scroll-offset widget))))
+
 (defun tree-view-parent-node (widget target)
   "Return parent node of TARGET inside TREE-VIEW WIDGET, or NIL." 
   (labels ((find-parent (nodes parent)
@@ -296,6 +367,7 @@
 (defun tree-view-select-node (widget node)
   "Select NODE in TREE-VIEW WIDGET and trigger update callback." 
   (setf (tree-view-selected-node widget) node)
+  (ensure-tree-view-selection-visible widget)
   (update-widget-value widget node)
   node)
 

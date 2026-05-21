@@ -95,6 +95,7 @@
   (declare (ignore char))
   (let* ((rows (tree-view-visible-rows widget))
          (selected (tree-view-selected-node widget))
+         (visible-count (tree-view-visible-row-count widget))
          (current-index (position selected rows :key #'first :test #'eq)))
     (cond
       ((or (eq key :up) (eq key :down))
@@ -105,6 +106,15 @@
          (let* ((step (if (eq key :up) -1 1))
                 (new-index (max 0 (min (1- (length rows)) (+ current-index step)))))
            (tree-view-select-node widget (first (nth new-index rows)))))
+       (ensure-tree-view-selection-visible widget)
+       t)
+      ((or (eq key :pageup) (eq key :pagedown))
+       (when rows
+         (let* ((step (if (eq key :pageup) (- visible-count) visible-count))
+                (start-index (or current-index 0))
+                (new-index (max 0 (min (1- (length rows)) (+ start-index step)))))
+           (tree-view-select-node widget (first (nth new-index rows)))))
+       (ensure-tree-view-selection-visible widget)
        t)
       ((eq key :left)
        (when selected
@@ -114,6 +124,7 @@
              (let ((parent (tree-view-parent-node widget selected)))
                (when parent
                  (tree-view-select-node widget parent)))))
+       (ensure-tree-view-selection-visible widget)
        t)
       ((eq key :right)
        (when selected
@@ -127,18 +138,22 @@
                (not (tree-node-children-loaded-p selected)))
             (tree-view-load-node-children widget selected))
             (tree-view-select-node widget (first (tree-node-children selected))))))
+         (ensure-tree-view-selection-visible widget)
        t)
       ((eq key :home)
        (when rows
          (tree-view-select-node widget (first (first rows))))
+         (ensure-tree-view-selection-visible widget)
        t)
       ((eq key :end)
        (when rows
          (tree-view-select-node widget (first (car (last rows)))))
+         (ensure-tree-view-selection-visible widget)
        t)
       ((or (eq key :space) (eq key :return))
        (when (and selected (tree-node-has-children-p selected))
          (tree-view-toggle-node-expanded widget selected))
+         (ensure-tree-view-selection-visible widget)
        t)
       (t nil)))
 

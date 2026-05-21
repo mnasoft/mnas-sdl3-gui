@@ -203,6 +203,7 @@
   :components ((:module "demos/dialog/tree/tree-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "tree-01")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-01
@@ -273,6 +274,7 @@
   :components ((:module "demos/dialog/pack/pack-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "commands")
                              (:file "pack-01")))))
 
 

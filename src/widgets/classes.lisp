@@ -128,6 +128,8 @@
           :documentation "Filesystem sort mode: :name, :type, or :date.")
   (max-depth :initarg :max-depth :initform nil :accessor tree-view-max-depth
           :documentation "Optional depth limit for filesystem tree expansion.")
+     (scroll-offset :initarg :scroll-offset :initform 0 :accessor tree-view-scroll-offset
+        :documentation "Index of the first visible tree row.")
    (row-height :initarg :row-height :initform 22 :accessor tree-view-row-height
                :documentation "Single visible row height in pixels.")
    (indent-width :initarg :indent-width :initform 16 :accessor tree-view-indent-width

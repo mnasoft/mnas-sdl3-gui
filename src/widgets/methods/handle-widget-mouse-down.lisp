@@ -47,7 +47,8 @@
     (when inside
       (let* ((rows (tree-view-visible-rows widget))
              (row-height (max 16 (tree-view-row-height widget)))
-             (row-index (floor (- y (widget-y widget)) row-height)))
+             (row-index (+ (tree-view-scroll-offset widget)
+                           (floor (- y (widget-y widget)) row-height))))
         (when (and (>= row-index 0) (< row-index (length rows)))
           (destructuring-bind (node depth) (nth row-index rows)
             (let* ((toggle-x (+ (widget-x widget)

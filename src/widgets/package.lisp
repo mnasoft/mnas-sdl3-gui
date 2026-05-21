@@ -81,6 +81,7 @@
   #:tree-view-filter-extensions
   #:tree-view-sort-mode
   #:tree-view-max-depth
+  #:tree-view-scroll-offset
   #:tree-view-row-height
   #:tree-view-indent-width
   #:make-tree-node
@@ -94,6 +95,11 @@
   #:tree-view-expand-node
   #:tree-view-toggle-node-expanded
   #:tree-view-load-directory
+  #:tree-view-visible-row-count
+  #:tree-view-max-scroll-offset
+  #:normalize-tree-view-scroll-offset
+  #:ensure-tree-view-selection-visible
+  #:tree-view-scroll-by
    ;; entry selection and clipboard utilities
    #:clear-entry-selection
    #:get-entry-selected-text

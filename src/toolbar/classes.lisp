@@ -44,12 +44,13 @@
                  :height height
                  :layout layout))
 
-(defun make-button-spec (command-id &key (type :push) (label "") (hotkey "")
+(defun make-button-spec (command-id &key (type :push) (group nil) (label "") (hotkey "")
                                          (width 40) (height 32))
   "Create a button specification."
   (make-instance 'toolbar-button-spec
                  :command-id command-id
                  :type type
+                 :group group
                  :label label
                  :hotkey hotkey
                  :width width
