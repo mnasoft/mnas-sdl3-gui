@@ -408,21 +408,21 @@
                 *polyhedron-toolbar*
                 button
                 (list :window-id *polyhedron-window-id*)))))
-       :continue)
-      (sdl3:keyboard-event
-       (when (and (slot-value parsed 'sdl3:%down)
-                  (not (slot-value parsed 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value parsed 'sdl3:%key)
-                  :mods nil
-                  :context (list :window-id *polyhedron-window-id*))
-           (case (slot-value parsed 'sdl3:%key)
-             (:escape
-              (setf *polyhedron-open* nil)
-              (return-from polyhedron-demo-event :success))
-             (:space
-              (setf *polyhedron-shape-index*
-                    (mod (1+ *polyhedron-shape-index*) (length *shape-specs*)))))))
+         :continue)
+       (sdl3:keyboard-event
+        (when (and (slot-value parsed 'sdl3:%down)
+                   (not (slot-value parsed 'sdl3:%repeat)))
+          (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                   (slot-value parsed 'sdl3:%key)
+                   :mods nil
+                   :context (list :window-id *polyhedron-window-id*))
+            (case (slot-value parsed 'sdl3:%key)
+              (:escape
+               (setf *polyhedron-open* nil)
+               (return-from polyhedron-demo-event :success))
+              (:space
+               (setf *polyhedron-shape-index*
+                     (mod (1+ *polyhedron-shape-index*) (length *shape-specs*))))))))
        :continue)
       (t :continue))))
 

@@ -3,11 +3,73 @@
 (in-package :mnas-sdl3-gui/demos/dialog/combo-box-01)
 
 (defparameter *combo-box-window* nil)
-(defparameter *combo-box-renderer* nil)
+(defparameter *combo-box-window-id* 0)
+(defparameter *combo-box-toolbar* nil)
 (defparameter *combo-box-open* t)
 (defparameter *combo-box-style* :windows)
 (defparameter *combo-box-widgets* nil)
+(defparameter *combo-box-01-small* nil)
+(defparameter *combo-box-01-large* nil)
 (defparameter *combo-box-status* "Use mouse, arrows, PgUp/PgDown, Return and Escape.")
+(defparameter +combo-box-01-window-height+ 332)
+(defparameter +combo-box-01-toolbar-height+ 32)
+
+(defun combo-box-01-command (id &rest context-plist)
+  "Execute command ID with CONTEXT-PLIST."
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun combo-box-01-report-value ()
+  "Update status line from current combo box selections."
+  (setf *combo-box-status*
+        (format nil "Selected: ~A / ~A"
+                (mnas-sdl3-gui/widgets:widget-value *combo-box-01-small*)
+                (mnas-sdl3-gui/widgets:widget-value *combo-box-01-large*))))
+
+(defun combo-box-01-register-commands ()
+  "Register commands for the combo-box-01 demo."
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :combo-box-01/quit
+    "Quit combo-box demo"
+    :group :combo-box-01
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *combo-box-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :combo-box-01/report
+    "Report combo-box values"
+    :group :combo-box-01
+    :shortcut :enter
+    :execute (lambda (context)
+               (declare (ignore context))
+               (combo-box-01-report-value)
+               t))
+   :replace t))
+
+(defun combo-box-01-register-shortcuts ()
+  "Register keyboard shortcuts for the combo-box-01 demo."
+  (mnas-sdl3-gui/commands:register-shortcut :combo-box-01/quit :escape :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut :combo-box-01/report :enter :replace t)
+  t)
+
+(defun combo-box-01-create-toolbar ()
+  "Create toolbar for the combo-box-01 demo." 
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+                  :layout :horizontal
+                  :height +combo-box-01-toolbar-height+)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :combo-box-01/report
+                                                   :label "Report"
+                                                   :width 72)
+           (mnas-sdl3-gui/toolbar:make-button-spec :combo-box-01/quit
+                                                   :label "Quit"
+                                                   :width 64)))
+    toolbar))
 
 (defun combo-box-01-items (prefix count)
   (loop for index from 1 to count
@@ -38,7 +100,9 @@
                                                   (format nil "Selected: ~A / ~A"
                                                           (mnas-sdl3-gui/widgets:widget-value small)
                                                           (mnas-sdl3-gui/widgets:widget-value large)))))))
-    (setf *combo-box-widgets* (list title hint small large action))
+    (setf *combo-box-01-small* small
+          *combo-box-01-large* large
+          *combo-box-widgets* (list title hint small large action))
     *combo-box-widgets*))
 
 (sdl3:def-app-init combo-box-01-init (argc argv)
@@ -49,16 +113,20 @@
     (format t "~a~%" (sdl3:get-error))
     (return-from combo-box-01-init :failure))
   (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Combo-Box Demo" 620 300 0)
+      (sdl3:create-window-and-renderer "Combo-Box Demo" 620 +combo-box-01-window-height+ 0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
           (return-from combo-box-01-init :failure))
         (progn
           (setf *combo-box-window* window
+                *combo-box-window-id* (sdl3:get-window-id window)
                 *combo-box-renderer* renderer
                 *combo-box-open* t
                 *combo-box-status* "Use mouse, arrows, PgUp/PgDown, Return and Escape.")
+          (combo-box-01-register-commands)
+          (combo-box-01-register-shortcuts)
+          (setf *combo-box-toolbar* (combo-box-01-create-toolbar))
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-01-widgets)
@@ -71,10 +139,16 @@
     (return-from combo-box-01-iterate :success))
   (sdl3:set-render-draw-color *combo-box-renderer* 240 240 240 255)
   (sdl3:render-clear *combo-box-renderer*)
+  (when *combo-box-toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *combo-box-toolbar*
+     *combo-box-renderer*
+     0.0
+     (- +combo-box-01-window-height+ +combo-box-01-toolbar-height+)))
   (mnas-sdl3-gui/widgets:render-text *combo-box-renderer*
                                      *combo-box-status*
                                      20.0 252.0 '(40 40 40 255))
-    (mnas-sdl3-gui/widgets:render-widgets *combo-box-renderer* *combo-box-widgets*)
+  (mnas-sdl3-gui/widgets:render-widgets *combo-box-renderer* *combo-box-widgets*)
   (sdl3:render-present *combo-box-renderer*)
   :continue)
 
@@ -94,9 +168,20 @@
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y))))
+               (my (round (slot-value ev 'sdl3:%y)))
+               (toolbar-y-offset (- +combo-box-01-window-height+ +combo-box-01-toolbar-height+)))
            (if (slot-value ev 'sdl3:%down)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-widgets* mx my)
+               (let ((button (and *combo-box-toolbar*
+                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                   *combo-box-toolbar*
+                                   mx
+                                   (- my toolbar-y-offset)))))
+                 (if button
+                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                      *combo-box-toolbar*
+                      button
+                      (list :window-id *combo-box-window-id*))
+                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-widgets* mx my)))
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *combo-box-widgets* mx my))))
        :continue)
       (sdl3:mouse-wheel-event
@@ -110,13 +195,17 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *combo-box-widgets*
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda ()
-                       (setf *combo-box-open* nil)
-                       :success)))
+         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value ev 'sdl3:%key)
+                  :mods (slot-value ev 'sdl3:%mod)
+                  :context (list :window-id *combo-box-window-id*))
+           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+            *combo-box-widgets*
+            (slot-value ev 'sdl3:%key)
+            :mods (slot-value ev 'sdl3:%mod)
+            :on-escape (lambda ()
+                         (setf *combo-box-open* nil)
+                         :success))))
        :continue)
       (t :continue))))
 

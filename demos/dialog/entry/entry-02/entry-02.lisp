@@ -16,6 +16,61 @@
 (defparameter *entry-02-real* nil)
 (defparameter *entry-02-path* nil)
 (defparameter *entry-02-command* nil)
+(defparameter *entry-02-window-id* 0)
+(defparameter *entry-02-toolbar* nil)
+(defparameter +entry-02-toolbar-height+ 32)
+
+(defun entry-02-command (id &rest context-plist)
+  "Execute command ID with CONTEXT-PLIST."
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun entry-02-register-commands ()
+  "Register commands for entry-02 demo."
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :entry-02/quit
+    "Quit entry-02 demo"
+    :group :entry-02
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *entry-02-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :entry-02/run
+    "Run command from entry"
+    :group :entry-02
+    :shortcut :return
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *entry-02-status*
+                     (format nil "Command executed: ~A"
+                             (mnas-sdl3-gui/widgets:entry-text *entry-02-command*)))
+               t))
+   :replace t))
+
+(defun entry-02-register-shortcuts ()
+  "Register keyboard shortcuts for entry-02 demo."
+  (mnas-sdl3-gui/commands:register-shortcut :entry-02/quit :escape :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut :entry-02/run :return :replace t)
+  t)
+
+(defun entry-02-create-toolbar ()
+  "Create toolbar for entry-02 demo."
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+                  :layout :horizontal
+                  :height +entry-02-toolbar-height+)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :entry-02/run
+                                                   :label "Run"
+                                                   :width 72)
+           (mnas-sdl3-gui/toolbar:make-button-spec :entry-02/quit
+                                                   :label "Quit"
+                                                   :width 64)))
+    toolbar))
 
 (defun entry-02-key->modifier (key)
   "Return modifier keyword for KEY, or NIL when KEY is not a modifier key."
@@ -159,10 +214,14 @@
           (return-from entry-02-init :failure))
         (progn
           (setf *entry-02-window* window
+                *entry-02-window-id* (sdl3:get-window-id window)
                 *entry-02-renderer* renderer
                 *entry-02-open* t
                 *entry-02-result* nil
                 *entry-02-active-modifiers* nil)
+          (entry-02-register-commands)
+          (entry-02-register-shortcuts)
+          (setf *entry-02-toolbar* (entry-02-create-toolbar))
           (mnas-sdl3-gui/widgets:set-widget-style *entry-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)
@@ -176,6 +235,12 @@
     (return-from entry-02-iterate :success))
   (sdl3:set-render-draw-color *entry-02-renderer* 245 245 245 255)
   (sdl3:render-clear *entry-02-renderer*)
+  (when *entry-02-toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *entry-02-toolbar*
+     *entry-02-renderer*
+     0.0
+     0.0))
   (mnas-sdl3-gui/widgets:render-widgets *entry-02-renderer* *entry-02-widgets*)
   (sdl3:render-present *entry-02-renderer*)
   :continue)
@@ -197,26 +262,40 @@
        (when (= (slot-value ev 'sdl3:%button) 1)
          (let ((mx (round (slot-value ev 'sdl3:%x)))
                (my (round (slot-value ev 'sdl3:%y))))
-           (if (slot-value ev 'sdl3:%down)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                *entry-02-widgets* mx my)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                *entry-02-widgets* mx my))))
+           (when (slot-value ev 'sdl3:%down)
+             (let ((button (and *entry-02-toolbar*
+                                (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                 *entry-02-toolbar*
+                                 mx
+                                 my))))
+               (if button
+                   (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                    *entry-02-toolbar*
+                    button
+                    (list :window-id *entry-02-window-id*))
+                   (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                    *entry-02-widgets* mx my))))))
        :continue)
       (sdl3:keyboard-event
        (entry-02-update-modifier-state ev)
-       (when (slot-value ev 'sdl3:%down)
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *entry-02-widgets*
-          (slot-value ev 'sdl3:%key)
-          :mods (entry-02-key-modifiers ev)
-          :on-escape (lambda ()
-                       (setf *entry-02-open* nil)
-                       :success)
-          :on-return (lambda ()
-                       (setf *entry-02-status*
-                             (format nil "Command executed: ~A" (mnas-sdl3-gui/widgets:entry-text *entry-02-command*)))
-                       :success)))
+       (when (and (slot-value ev 'sdl3:%down)
+                  (not (slot-value ev 'sdl3:%repeat)))
+         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value ev 'sdl3:%key)
+                  :mods (entry-02-key-modifiers ev)
+                  :context (list :window-id *entry-02-window-id*))
+           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+            *entry-02-widgets*
+            (slot-value ev 'sdl3:%key)
+            :mods (entry-02-key-modifiers ev)
+            :on-escape (lambda ()
+                         (setf *entry-02-open* nil)
+                         :success)
+            :on-return (lambda ()
+                         (setf *entry-02-status*
+                               (format nil "Command executed: ~A"
+                                       (mnas-sdl3-gui/widgets:entry-text *entry-02-command*)))
+                         :success))))
       :continue)
     (sdl3:text-input-event
      (mnas-sdl3-gui/widgets:dispatch-focused-text-input

@@ -524,7 +524,7 @@
                  (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                   *polyhedron-solid-toolbar*
                   button
-                  (list :window-id *polyhedron-solid-window-id*)))))
+                  (list :window-id *polyhedron-solid-window-id*))))))
          :continue)
         (sdl3:keyboard-event
          (when (and (slot-value parsed 'sdl3:%down)

@@ -3,7 +3,9 @@
 (in-package :mnas-sdl3-gui/demos/dialog/simple-01)
 
 (defparameter *window* nil)
+(defparameter *window-id* 0)
 (defparameter *renderer* nil)
+(defparameter *toolbar* nil)
 (defparameter *dialog-result* nil)
 (defparameter *dialog-open* t)
 (defparameter *dialog-style* :windows)
@@ -13,6 +15,76 @@
 (defparameter *cancel-button* nil)
 (defparameter *extra-button* nil)
 (defparameter *message* "Are you sure you want to continue?")
+(defparameter +simple-dialog-window-height+ 532)
+(defparameter +simple-dialog-toolbar-height+ 32)
+
+(defun simple-01-command (id &rest context-plist)
+  "Execute command ID with CONTEXT-PLIST." 
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun simple-01-register-commands ()
+  "Register commands for simple-01 demo." 
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :simple-01/quit
+    "Quit simple dialog"
+    :group :simple-01
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *dialog-result* :cancel
+                     *dialog-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :simple-01/ok
+    "Confirm simple dialog"
+    :group :simple-01
+    :shortcut :return
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *dialog-result* :ok
+                     *dialog-open* nil)
+               t))
+   :replace t)
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :simple-01/cancel
+    "Cancel simple dialog"
+    :group :simple-01
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *dialog-result* :cancel
+                     *dialog-open* nil)
+               t))
+   :replace t))
+
+(defun simple-01-register-shortcuts ()
+  "Register keyboard shortcuts for simple-01 demo." 
+  (mnas-sdl3-gui/commands:register-shortcut :simple-01/quit :escape :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut :simple-01/ok :return :replace t)
+  (mnas-sdl3-gui/commands:register-shortcut :simple-01/cancel :escape :replace t)
+  t)
+
+(defun simple-01-create-toolbar ()
+  "Create toolbar for simple-01 demo." 
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+                  :layout :horizontal
+                  :height +simple-dialog-toolbar-height+)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :simple-01/ok
+                                                   :label "OK"
+                                                   :width 56)
+           (mnas-sdl3-gui/toolbar:make-button-spec :simple-01/cancel
+                                                   :label "Cancel"
+                                                   :width 72)
+           (mnas-sdl3-gui/toolbar:make-button-spec :simple-01/quit
+                                                   :label "Quit"
+                                                   :width 64)))
+    toolbar))
 
 (defun dialog-widgets ()
   "Return focus-traversable widgets in the simple dialog."
@@ -91,16 +163,20 @@
     (format t "Failed to initialize SDL3: ~a~%" (sdl3:get-error))
     (return-from simple-dialog-init :failure))
   (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Simple Dialog Demo" 400 500 0)
+      (sdl3:create-window-and-renderer "Simple Dialog Demo" 400 +simple-dialog-window-height+ 0)
     (if (not ok)
         (progn
           (format t "Failed to create window/renderer: ~a~%" (sdl3:get-error))
           (return-from simple-dialog-init :failure))
         (progn
           (setf *window*        window
+                *window-id*     (sdl3:get-window-id window)
                 *renderer*      renderer
                 *dialog-result* nil
                 *dialog-open*   t)
+          (simple-01-register-commands)
+          (simple-01-register-shortcuts)
+          (setf *toolbar* (simple-01-create-toolbar))
           (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-dialog-buttons)
@@ -115,6 +191,13 @@
   ;; Render
   (sdl3:set-render-draw-color *renderer* 220 220 220 255)
   (sdl3:render-clear *renderer*)
+  
+  (when *toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *toolbar*
+     *renderer*
+     0.0
+     (- +simple-dialog-window-height+ +simple-dialog-toolbar-height+)))
   
   (render-dialog-background *renderer*)
   (render-dialog-content *renderer*)
@@ -131,26 +214,43 @@
        :success)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
-         (if (slot-value ev 'sdl3:%down)
-             (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-              (dialog-widgets)
-              (float (round (slot-value ev 'sdl3:%x)) 1.0)
-              (float (round (slot-value ev 'sdl3:%y)) 1.0))
-             (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-              (dialog-widgets)
-              (float (round (slot-value ev 'sdl3:%x)) 1.0)
-              (float (round (slot-value ev 'sdl3:%y)) 1.0))))
+         (let ((mx (round (slot-value ev 'sdl3:%x)))
+               (my (round (slot-value ev 'sdl3:%y)))
+               (toolbar-y-offset (- +simple-dialog-window-height+ +simple-dialog-toolbar-height+)))
+           (if (slot-value ev 'sdl3:%down)
+               (let ((button (and *toolbar*
+                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                   *toolbar*
+                                   mx
+                                   (- my toolbar-y-offset)))))
+                 (if button
+                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                      *toolbar*
+                      button
+                      (list :window-id *window-id*))
+                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                      (dialog-widgets)
+                      mx
+                      my)))
+               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
+                (dialog-widgets)
+                mx
+                my))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          (dialog-widgets)
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda ()
-                       (setf *dialog-open* nil)
-                       :success)))
+         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value ev 'sdl3:%key)
+                  :mods (slot-value ev 'sdl3:%mod)
+                  :context (list :window-id *window-id*))
+           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+            (dialog-widgets)
+            (slot-value ev 'sdl3:%key)
+            :mods (slot-value ev 'sdl3:%mod)
+            :on-escape (lambda ()
+                         (setf *dialog-open* nil)
+                         :success))))
        :continue)
       (t :continue))))
 

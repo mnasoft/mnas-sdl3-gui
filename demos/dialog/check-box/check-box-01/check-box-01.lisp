@@ -4,10 +4,48 @@
 
 (defparameter *check-box-window* nil)
 (defparameter *check-box-renderer* nil)
+(defparameter *check-box-window-id* 0)
+(defparameter *check-box-toolbar* nil)
 (defparameter *check-box-open* t)
 (defparameter *check-box-style* :windows)
 (defparameter *check-box-widgets* nil)
 (defparameter *check-box-status* "Отмечайте и снимайте check-box элементы.")
+(defparameter +check-box-window-height+ 322)
+(defparameter +check-box-toolbar-height+ 32)
+
+(defun check-box-command (id &rest context-plist)
+  "Execute command ID with CONTEXT-PLIST." 
+  (mnas-sdl3-gui/commands:execute-command id :context context-plist))
+
+(defun check-box-register-commands ()
+  "Register commands for the check-box demo." 
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :check-box-01/quit
+    "Quit check-box demo"
+    :group :check-box-01
+    :shortcut :escape
+    :execute (lambda (context)
+               (declare (ignore context))
+               (setf *check-box-open* nil)
+               t))
+   :replace t))
+
+(defun check-box-register-shortcuts ()
+  "Register keyboard shortcuts for the check-box demo." 
+  (mnas-sdl3-gui/commands:register-shortcut :check-box-01/quit :escape :replace t)
+  t)
+
+(defun check-box-create-toolbar ()
+  "Create toolbar for the check-box demo." 
+  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal
+                                                    :height +check-box-toolbar-height+)))
+    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+          (list
+           (mnas-sdl3-gui/toolbar:make-button-spec :check-box-01/quit
+                                                   :label "Quit"
+                                                   :width 64)))
+    toolbar))
 
 (defun check-box-labels-in-column (prefix)
   "Return labels of checked check-box widgets whose label starts with PREFIX."
@@ -76,7 +114,7 @@
     (format t "~a~%" (sdl3:get-error))
     (return-from check-box-demo-init :failure))
   (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Check-Box Demo" 500 290 0)
+      (sdl3:create-window-and-renderer "Check-Box Demo" 500 +check-box-window-height+ 0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
@@ -84,7 +122,11 @@
         (progn
           (setf *check-box-window* window
                 *check-box-renderer* renderer
+                *check-box-window-id* (sdl3:get-window-id window)
                 *check-box-open* t)
+          (check-box-register-commands)
+          (check-box-register-shortcuts)
+          (setf *check-box-toolbar* (check-box-create-toolbar))
           (mnas-sdl3-gui/widgets:set-widget-style *check-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-check-box-widgets)
@@ -97,6 +139,13 @@
 
   (sdl3:set-render-draw-color *check-box-renderer* 240 240 240 255)
   (sdl3:render-clear *check-box-renderer*)
+
+  (when *check-box-toolbar*
+    (mnas-sdl3-gui/toolbar:render-toolbar
+     *check-box-toolbar*
+     *check-box-renderer*
+     0.0
+     (- +check-box-window-height+ +check-box-toolbar-height+)))
 
   (mnas-sdl3-gui/widgets:render-widgets *check-box-renderer* *check-box-widgets*)
 
@@ -126,21 +175,36 @@
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y))))
+               (my (round (slot-value ev 'sdl3:%y)))
+               (toolbar-y-offset (- +check-box-window-height+ +check-box-toolbar-height+)))
            (if (slot-value ev 'sdl3:%down)
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *check-box-widgets* mx my)
+               (let ((button (and *check-box-toolbar*
+                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                   *check-box-toolbar*
+                                   mx
+                                   (- my toolbar-y-offset)))))
+                 (if button
+                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                      *check-box-toolbar*
+                      button
+                      (list :window-id *check-box-window-id*))
+                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *check-box-widgets* mx my)))
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *check-box-widgets* mx my))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *check-box-widgets*
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda ()
-                       (setf *check-box-open* nil)
-                       :success)))
+         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (slot-value ev 'sdl3:%key)
+                  :mods (slot-value ev 'sdl3:%mod)
+                  :context (list :window-id *check-box-window-id*))
+           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+            *check-box-widgets*
+            (slot-value ev 'sdl3:%key)
+            :mods (slot-value ev 'sdl3:%mod)
+            :on-escape (lambda ()
+                         (setf *check-box-open* nil)
+                         :success))))
        :continue)
       (t :continue))))
 
