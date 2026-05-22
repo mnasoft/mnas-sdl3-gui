@@ -95,5 +95,31 @@
       (is (null mnas-sdl3-gui/demos/dialog/window-02::*window-02-popup-visible*))
       (is (null mnas-sdl3-gui/demos/dialog/window-02::*window-02-hover-index*)))))
 
+(test window-manager-transient-chain-focus-closure
+  (let ((manager (make-window-layer-manager)))
+    (register-window manager 600 :main :open-p t)
+    (register-window manager 601 :popup-menu :parent-id 600 :open-p t)
+    (register-window manager 602 :popup-menu :parent-id 601 :open-p t)
+    (register-window manager 603 :popup-menu :parent-id 602 :open-p t)
+    (set-focused-window manager 603)
+    (close-window manager 603)
+    (is (= 602 (focused-window-id manager)))
+    (close-window manager 602)
+    (is (= 601 (focused-window-id manager)))
+    (close-window manager 601)
+    (is (= 600 (focused-window-id manager)))))
+
+(test window-manager-transient-chain-event-routing
+  (let ((manager (make-window-layer-manager)))
+    (register-window manager 700 :main :open-p t)
+    (register-window manager 701 :popup-menu :parent-id 700 :open-p t)
+    (register-window manager 702 :popup-menu :parent-id 701 :open-p t)
+    (register-window manager 703 :popup-menu :parent-id 702 :open-p t)
+    (is (= 703 (event-target-window-id manager 703)))
+    (close-window manager 703)
+    (is (= 702 (event-target-window-id manager 702)))
+    (close-window manager 702)
+    (is (= 701 (event-target-window-id manager 701)))))
+
 (defun run-tests ()
   (run! :mnas-sdl3-gui-tests))
