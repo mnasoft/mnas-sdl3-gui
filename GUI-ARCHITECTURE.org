@@ -350,11 +350,13 @@ canvas, а не попытка реализовать графику через 
 
 ** Widget API
 
-- handle-event(widget, event)
-- measure(widget, constraints)
-- arrange(widget, bounds)
-- paint(widget, render-context)
-- hit-test(widget, x, y)
+- widget-measure(widget, constraints)
+- widget-arrange(widget, x, y, width, height)
+- widget-paint(renderer, widget, style)
+- widget-hit-test(widget, x, y)
+- handle-widget-mouse-down(widget, x, y)
+- handle-widget-mouse-up(widget, x, y)
+- handle-widget-key-event(widget, key, char, &key ctrl shift alt)
 
 ** Window Manager API
 
@@ -392,3 +394,12 @@ canvas, а не попытка реализовать графику через 
 - Переключение renderer backend не меняет widget logic.
 - Добавление нового виджета не требует правок в глобальном event-loop.
 - Появляется возможность локально тестировать widget behavior без реального окна.
+
+* Ближайшие задачи
+
+- [ ] Зафиксировать базовый контракт виджета как прямоугольной области: bounds, visible, enabled, focusable, measure, arrange, paint, hit-test, handle-event.
+- [ ] Разделить роли host window и widget root/container, чтобы top-level окно оставалось только поверхностью и точкой входа событий.
+- [ ] Ввести первый набор контейнеров: panel/container, row/column stack, scroll-container.
+- [ ] Описать popup, tooltip, modal и dropdown-host как transient surfaces, управляемые Window/Layer Manager.
+- [ ] Зафиксировать roadmap для canvas-виджетов отдельно: canvas-2d-widget и canvas-3d-widget.
+- [ ] Перенести один базовый demo на новый widget contract и добавить регрессионные тесты на hit-test и focus lifecycle.
