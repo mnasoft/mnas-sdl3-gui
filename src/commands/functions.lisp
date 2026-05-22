@@ -91,3 +91,44 @@ ID-OR-COMMAND may be a command id or a COMMAND object."
          (runner (and cmd (command-execute cmd))))
     (when (and cmd runner (command-enabled-p cmd context))
       (funcall runner context))))
+
+;; Hooks for command state change notifications
+(defparameter *command-change-hooks* nil
+  "List of functions called when a command's state changes.
+Each hook is called as (funcall hook command property old-value new-value).")
+
+(defun register-command-change-hook (hook)
+  "Register HOOK to be called on command state changes.
+HOOK should be a function of four args: (command property old new)."
+  (pushnew hook *command-change-hooks*))
+
+(defun run-command-change-hooks (cmd property old new)
+  (dolist (h *command-change-hooks*)
+    (handler-case
+        (funcall h cmd property old new)
+      (error (e)
+        (format *error-output* "Command hook error: ~S~%" e)))))
+
+(defun set-command-enabled (cmd value &optional context)
+  "Set enabled state for CMD and notify hooks when it changes."
+  (let ((old (command-enabled cmd)))
+    (setf (command-enabled cmd) value)
+    (when (not (eql old value))
+      (run-command-change-hooks cmd :enabled old value))
+    value))
+
+(defun set-command-visible (cmd value)
+  "Set visible state for CMD and notify hooks when it changes."
+  (let ((old (command-visible cmd)))
+    (setf (command-visible cmd) value)
+    (when (not (eql old value))
+      (run-command-change-hooks cmd :visible old value))
+    value))
+
+(defun set-command-checked (cmd value)
+  "Set checked state for CMD and notify hooks when it changes."
+  (let ((old (command-checked cmd)))
+    (setf (command-checked cmd) value)
+    (when (not (eql old value))
+      (run-command-change-hooks cmd :checked old value))
+    value))

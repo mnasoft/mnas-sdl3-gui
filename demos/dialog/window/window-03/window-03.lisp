@@ -36,10 +36,10 @@
   (let ((reset-cmd (mnas-sdl3-gui/commands:find-command :window-03/reset-opacity))
         (frost-cmd (mnas-sdl3-gui/commands:find-command :window-03/toggle-frost)))
     (when reset-cmd
-      (setf (mnas-sdl3-gui/commands:command-visible reset-cmd)
-            (> (abs (- *window-03-opacity* +window-03-default-opacity+)) 0.001)))
+      (mnas-sdl3-gui/commands:set-command-visible reset-cmd
+                                                  (> (abs (- *window-03-opacity* +window-03-default-opacity+)) 0.001)))
     (when frost-cmd
-      (setf (mnas-sdl3-gui/commands:command-checked frost-cmd) *window-03-frost*))))
+      (mnas-sdl3-gui/commands:set-command-checked frost-cmd *window-03-frost*))))
 
 (defun window-03-clamp-opacity (value)
   (min 1.0 (max 0.15 value)))
@@ -83,6 +83,7 @@
         (window-03-register-commands)
         (window-03-register-shortcuts)
         (setf *window-03-toolbar* (make-window-03-toolbar))
+        (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-03-toolbar*)
     (window-03-apply-opacity)
         (window-03-sync-command-state)
     (mnas-sdl3-gui/widgets:init-ttf-font))

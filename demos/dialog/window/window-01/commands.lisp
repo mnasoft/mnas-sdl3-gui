@@ -88,8 +88,7 @@
                (setf *window-01-show-grid* (not *window-01-show-grid*))
                (let ((cmd (mnas-sdl3-gui/commands:find-command :window-01/toggle-grid)))
                  (when cmd
-                   (setf (mnas-sdl3-gui/commands:command-checked cmd)
-                         *window-01-show-grid*)))
+                   (mnas-sdl3-gui/commands:set-command-checked cmd *window-01-show-grid*)))
                t))
    :replace t))
 

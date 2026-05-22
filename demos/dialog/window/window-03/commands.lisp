@@ -74,9 +74,8 @@
                (setf *window-03-frost* (not *window-03-frost*))
                (let ((cmd (mnas-sdl3-gui/commands:find-command :window-03/toggle-frost)))
                  (when cmd
-                   (setf (mnas-sdl3-gui/commands:command-checked cmd)
-                         *window-03-frost*)))
-               t))
+                   (mnas-sdl3-gui/commands:set-command-checked cmd *window-03-frost*))))
+    t)
    :replace t))
 
 (defun window-03-register-shortcuts ()

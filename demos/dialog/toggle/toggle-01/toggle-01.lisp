@@ -71,8 +71,8 @@
       (declare (ignore shortcut))
       (let ((cmd (mnas-sdl3-gui/commands:find-command id)))
         (when cmd
-          (setf (mnas-sdl3-gui/commands:command-checked cmd)
-                (string= (or (selected-toggle-label group) "") label)))))))
+          (mnas-sdl3-gui/commands:set-command-checked cmd
+                                                      (string= (or (selected-toggle-label group) "") label)))))))
 
 (defun selected-toggle-label (group)
   "Return label of the selected toggle in GROUP, or NIL."
@@ -245,6 +245,7 @@
             (toggle-01-register-commands)
             (toggle-01-register-shortcuts)
             (setf *toggle-01-toolbar* (toggle-01-create-toolbar))
+            (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toggle-01-toolbar*)
             (setf *toggle-01-widgets* widgets)
             (toggle-01-sync-command-state)
             (mnas-sdl3-gui/widgets:move-widget-focus *toggle-01-widgets*))))

@@ -54,17 +54,14 @@
         (select-cmd (mnas-sdl3-gui/commands:find-command :window-02/select-popup-item))
         (reset-cmd (mnas-sdl3-gui/commands:find-command :window-02/reset-selection)))
     (when popup-cmd
-      (setf (mnas-sdl3-gui/commands:command-checked popup-cmd)
-            *window-02-popup-visible*))
+      (mnas-sdl3-gui/commands:set-command-checked popup-cmd *window-02-popup-visible*))
     (when pin-cmd
-      (setf (mnas-sdl3-gui/commands:command-checked pin-cmd)
-            *window-02-pin-popup*))
+      (mnas-sdl3-gui/commands:set-command-checked pin-cmd *window-02-pin-popup*))
     (when select-cmd
-      (setf (mnas-sdl3-gui/commands:command-enabled select-cmd)
-            *window-02-popup-visible*))
+      (mnas-sdl3-gui/commands:set-command-enabled select-cmd *window-02-popup-visible*))
     (when reset-cmd
-      (setf (mnas-sdl3-gui/commands:command-visible reset-cmd)
-            (not (string= *window-02-selected-item* "No item selected"))))))
+      (mnas-sdl3-gui/commands:set-command-visible reset-cmd
+                                                  (not (string= *window-02-selected-item* "No item selected"))))))
 
 (defun window-02-null-pointer-p (ptr)
   "Check whether PTR is a CFFI null pointer." 
@@ -227,23 +224,24 @@
         (return-from window-02-init :failure))
       (setf *window-02-popup-window* popup-window
             *window-02-popup-renderer* popup-renderer
-        *window-02-popup-id* (sdl3:get-window-id popup-window))
-      (mnas-sdl3-gui/window-manager:register-window
-       *window-02-layer-manager*
-       *window-02-popup-id*
-       :popup-menu
-       :parent-id *window-02-main-id*
-       :open-p nil)))
+            *window-02-popup-id* (sdl3:get-window-id popup-window)))
+    (mnas-sdl3-gui/window-manager:register-window
+     *window-02-layer-manager*
+     *window-02-popup-id*
+     :popup-menu
+     :parent-id *window-02-main-id*
+     :open-p nil))
 
   (mnas-sdl3-gui/widgets:init-ttf-font)
   (window-02-register-commands)
   (window-02-register-shortcuts)
-    (setf *window-02-toolbar* (make-window-02-toolbar))
+  (setf *window-02-toolbar* (make-window-02-toolbar))
+  (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-02-toolbar*)
   (window-02-hide-popup)
   (setf *window-02-open* t
-      *window-02-pin-popup* nil
+        *window-02-pin-popup* nil
         *window-02-selected-item* "No item selected")
-    (window-02-sync-command-state)
+  (window-02-sync-command-state)
   :continue)
 
 (sdl3:def-app-iterate window-02-iterate ()

@@ -21,6 +21,12 @@
    #:find-command
    #:list-commands
    #:command-enabled-p
+  #:*command-change-hooks*
+  #:register-command-change-hook
+  #:run-command-change-hooks
+  #:set-command-enabled
+  #:set-command-visible
+  #:set-command-checked
   #:execute-command
   #:*shortcut-registry*
   #:clear-shortcut-registry

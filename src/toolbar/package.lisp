@@ -35,4 +35,6 @@
    #:render-toolbar
    #:toolbar-buttons-at-position
    #:toolbar-button-clicked
-   #:update-toolbar-command-state))
+   #:update-toolbar-command-state
+   #:register-toolbar-for-command-updates
+   #:unregister-toolbar-for-command-updates))

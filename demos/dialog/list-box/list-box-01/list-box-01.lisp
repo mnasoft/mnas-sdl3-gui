@@ -95,10 +95,12 @@
                           (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)))
          (right-index (and *list-box-01-right*
                            (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*))))
-    (when ok-cmd
-      (setf (mnas-sdl3-gui/commands:command-enabled ok-cmd)
-            (and (integerp left-index) (<= 0 left-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*)))))
-            (integerp right-index) (<= 0 right-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*))))))))
+        (when ok-cmd
+       (mnas-sdl3-gui/commands:set-command-enabled ok-cmd
+                        (and (integerp left-index)
+                          (<= 0 left-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))))
+                          (integerp right-index)
+                          (<= 0 right-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*))))))))
 
 (defun list-box-01-items (count prefix)
   "Create COUNT demo strings prefixed by PREFIX."
@@ -175,6 +177,7 @@
           (list-box-01-register-commands)
           (list-box-01-register-shortcuts)
           (setf *list-box-01-toolbar* (list-box-01-create-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *list-box-01-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *list-box-01-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)

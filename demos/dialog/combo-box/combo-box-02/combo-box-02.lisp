@@ -74,8 +74,9 @@
         (text (and *combo-box-02-editable*
                    (mnas-sdl3-gui/widgets:entry-text *combo-box-02-editable*))))
     (when add-cmd
-      (setf (mnas-sdl3-gui/commands:command-enabled add-cmd)
-            (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
+      (mnas-sdl3-gui/commands:set-command-enabled
+       add-cmd
+       (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
 
 (defun create-combo-box-02-demo-widgets ()
   (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
@@ -141,6 +142,7 @@
           (combo-box-02-register-commands)
           (combo-box-02-register-shortcuts)
           (setf *combo-box-02-toolbar* (combo-box-02-create-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *combo-box-02-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-02-demo-widgets)

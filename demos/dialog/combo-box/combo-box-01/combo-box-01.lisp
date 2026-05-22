@@ -79,8 +79,7 @@
                       (mnas-sdl3-gui/widgets:widget-value *combo-box-01-small*)
                       (mnas-sdl3-gui/widgets:widget-value *combo-box-01-large*))))
     (when report-cmd
-      (setf (mnas-sdl3-gui/commands:command-enabled report-cmd)
-            (boolean enabled)))))
+      (mnas-sdl3-gui/commands:set-command-enabled report-cmd (boolean enabled)))))
 
 (defun combo-box-01-items (prefix count)
   (loop for index from 1 to count
@@ -138,6 +137,7 @@
           (combo-box-01-register-commands)
           (combo-box-01-register-shortcuts)
           (setf *combo-box-toolbar* (combo-box-01-create-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *combo-box-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-01-widgets)

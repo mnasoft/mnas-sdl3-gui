@@ -2,6 +2,30 @@
 
 (in-package :mnas-sdl3-gui/toolbar)
 
+;; Registry of toolbar instances that should react to command state changes.
+(defparameter *registered-toolbars* nil "List of toolbar instances registered for command change updates.")
+
+(defun register-toolbar-for-command-updates (toolbar)
+  "Register TOOLBAR to receive command change-driven layout updates." 
+  (pushnew toolbar *registered-toolbars*))
+
+(defun unregister-toolbar-for-command-updates (toolbar)
+  "Unregister TOOLBAR from command change-driven updates." 
+  (setf *registered-toolbars* (remove toolbar *registered-toolbars*)))
+
+(defun toolbar-command-change-hook (cmd property old new)
+  "Hook called on command state change; refresh registered toolbars when relevant properties change." 
+  (declare (ignore cmd old new))
+  (when (member property '(:enabled :visible :checked))
+    (dolist (tb *registered-toolbars*)
+      (handler-case
+          (update-toolbar-command-state tb)
+        (error (e)
+          (format *error-output* "Toolbar update error: ~S~%" e))))))
+
+;; Register hook once so all registered toolbars update automatically.
+(mnas-sdl3-gui/commands:register-command-change-hook #'toolbar-command-change-hook)
+
 (defun toolbar-button-visible-p (button)
   "Return T when BUTTON should be visible according to command state." 
   (let ((cmd (mnas-sdl3-gui/commands:find-command (button-command-id button))))
@@ -169,7 +193,7 @@
                  (not (equal (button-command-id candidate) except-command-id)))
         (let ((cmd (mnas-sdl3-gui/commands:find-command (button-command-id candidate))))
           (when cmd
-            (setf (mnas-sdl3-gui/commands:command-checked cmd) nil)))))))
+            (mnas-sdl3-gui/commands:set-command-checked cmd nil)))))))
 
 (defun toolbar-button-clicked (toolbar button context)
   "Execute command for BUTTON with push/toggle/radio behavior." 
@@ -180,11 +204,11 @@
         (when cmd
           (case (button-type button)
             (:toggle
-             (setf (mnas-sdl3-gui/commands:command-checked cmd)
-                   (not (mnas-sdl3-gui/commands:command-checked cmd))))
+             (mnas-sdl3-gui/commands:set-command-checked cmd
+                         (not (mnas-sdl3-gui/commands:command-checked cmd))))
             (:radio
              (toolbar-clear-radio-group toolbar (button-group button) cmd-id)
-             (setf (mnas-sdl3-gui/commands:command-checked cmd) t))
+             (mnas-sdl3-gui/commands:set-command-checked cmd t))
             (otherwise nil))))
       (mnas-sdl3-gui/commands:execute-command cmd-id :context context))))
 

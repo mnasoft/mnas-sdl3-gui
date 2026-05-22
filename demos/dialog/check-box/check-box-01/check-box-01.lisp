@@ -51,7 +51,7 @@
   "Sync command state for check-box demo toolbar." 
   (let ((quit-cmd (mnas-sdl3-gui/commands:find-command :check-box-01/quit)))
     (when quit-cmd
-      (setf (mnas-sdl3-gui/commands:command-enabled quit-cmd) t))))
+      (mnas-sdl3-gui/commands:set-command-enabled quit-cmd t))))
 
 (defun check-box-labels-in-column (prefix)
   "Return labels of checked check-box widgets whose label starts with PREFIX."
@@ -133,6 +133,7 @@
           (check-box-register-commands)
           (check-box-register-shortcuts)
           (setf *check-box-toolbar* (check-box-create-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *check-box-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *check-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-check-box-widgets)

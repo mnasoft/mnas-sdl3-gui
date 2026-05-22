@@ -93,7 +93,7 @@
   (dolist (id '(:simple-01/ok :simple-01/cancel :simple-01/quit))
     (let ((cmd (mnas-sdl3-gui/commands:find-command id)))
       (when cmd
-        (setf (mnas-sdl3-gui/commands:command-enabled cmd) t)))))
+          (mnas-sdl3-gui/commands:set-command-enabled cmd t))))
 
 (defun dialog-widgets ()
   "Return focus-traversable widgets in the simple dialog."

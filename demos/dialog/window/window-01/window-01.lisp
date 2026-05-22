@@ -117,12 +117,11 @@
   (let ((reset-cmd (mnas-sdl3-gui/commands:find-command :window-01/reset-size))
         (grid-cmd (mnas-sdl3-gui/commands:find-command :window-01/toggle-grid)))
     (when reset-cmd
-      (setf (mnas-sdl3-gui/commands:command-visible reset-cmd)
-            (or (/= *window-01-width* +window-01-default-width+)
-                (/= *window-01-height* +window-01-default-height+))))
+      (mnas-sdl3-gui/commands:set-command-visible reset-cmd
+                                                  (or (/= *window-01-width* +window-01-default-width+)
+                                                      (/= *window-01-height* +window-01-default-height+))))
     (when grid-cmd
-      (setf (mnas-sdl3-gui/commands:command-checked grid-cmd)
-            *window-01-show-grid*))))
+      (mnas-sdl3-gui/commands:set-command-checked grid-cmd *window-01-show-grid*))))
 
 (defun window-01-open-modal-1 ()
   "Open first modal layer for runtime focus-trap demo." 
@@ -211,6 +210,7 @@
             (window-01-register-commands)
             (window-01-register-shortcuts)
             (setf *window-01-toolbar* (make-window-01-toolbar))
+            (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-01-toolbar*)
             (window-01-sync-command-state)
           (mnas-sdl3-gui/widgets:init-ttf-font))))
   :continue)

@@ -78,8 +78,8 @@
          (text (and *entry-02-command*
                     (mnas-sdl3-gui/widgets:entry-text *entry-02-command*))))
     (when run-cmd
-      (setf (mnas-sdl3-gui/commands:command-enabled run-cmd)
-            (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
+      (mnas-sdl3-gui/commands:set-command-enabled run-cmd
+                                                  (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
 
 (defun entry-02-key->modifier (key)
   "Return modifier keyword for KEY, or NIL when KEY is not a modifier key."
@@ -231,6 +231,7 @@
           (entry-02-register-commands)
           (entry-02-register-shortcuts)
           (setf *entry-02-toolbar* (entry-02-create-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *entry-02-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *entry-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)

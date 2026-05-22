@@ -49,17 +49,13 @@
         (clear (mnas-sdl3-gui/commands:find-command :widget-01/clear-entry))
         (entry (widget-01-entry-widget)))
     (when flat
-      (setf (mnas-sdl3-gui/commands:command-checked flat)
-            (eq *dialog-style* :flat)))
+      (mnas-sdl3-gui/commands:set-command-checked flat (eq *dialog-style* :flat)))
     (when windows
-      (setf (mnas-sdl3-gui/commands:command-checked windows)
-            (eq *dialog-style* :windows)))
+      (mnas-sdl3-gui/commands:set-command-checked windows (eq *dialog-style* :windows)))
     (when motif
-      (setf (mnas-sdl3-gui/commands:command-checked motif)
-            (eq *dialog-style* :motif)))
+      (mnas-sdl3-gui/commands:set-command-checked motif (eq *dialog-style* :motif)))
     (when clear
-      (setf (mnas-sdl3-gui/commands:command-visible clear)
-            (and entry (> (length (mnas-sdl3-gui/widgets:entry-text entry)) 0))))))
+      (mnas-sdl3-gui/commands:set-command-visible clear (and entry (> (length (mnas-sdl3-gui/widgets:entry-text entry)) 0))))))
 
 ;;; Create demo widgets
 
@@ -157,6 +153,7 @@
           (widget-01-register-commands)
           (widget-01-register-shortcuts)
           (setf *widget-01-toolbar* (make-widget-01-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *widget-01-toolbar*)
           (widget-01-apply-style *dialog-style*)
           (widget-01-sync-command-state)
           (mnas-sdl3-gui/widgets:set-widget-focus (list *widget-root*) *widget-root*)

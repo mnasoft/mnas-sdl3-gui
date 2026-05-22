@@ -374,6 +374,7 @@
     (polyhedron-02-register-commands)
     (polyhedron-02-register-shortcuts)
     (setf *polyhedron-toolbar* (polyhedron-02-create-toolbar))
+    (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *polyhedron-toolbar*)
     (mnas-sdl3-gui/widgets:init-ttf-font)
     :continue))
 

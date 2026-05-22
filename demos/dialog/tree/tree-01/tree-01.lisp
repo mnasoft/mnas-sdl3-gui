@@ -78,9 +78,9 @@
                                                            filter-text))
                                      0))))
     (when toggle-hidden-cmd
-      (setf (mnas-sdl3-gui/commands:command-checked toggle-hidden-cmd) show-hidden))
+      (mnas-sdl3-gui/commands:set-command-checked toggle-hidden-cmd show-hidden))
     (when clear-filter-cmd
-      (setf (mnas-sdl3-gui/commands:command-visible clear-filter-cmd) filter-non-empty-p))))
+      (mnas-sdl3-gui/commands:set-command-visible clear-filter-cmd filter-non-empty-p))))
 
 (defun tree-01-load-tree ()
   "Load tree-view from current controls." 
@@ -226,6 +226,7 @@
           (tree-01-register-commands)
           (tree-01-register-shortcuts)
           (setf *tree-01-toolbar* (make-tree-01-toolbar))
+          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *tree-01-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *tree-01-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)
