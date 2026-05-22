@@ -17,6 +17,16 @@
    #:widget-value
    #:widget-on-change
   #:widget-min-size
+  #:widget-measure
+  #:widget-arrange
+  #:widget-paint
+  #:widget-hit-test
+  #:widget-container
+  #:widget-children
+  #:make-widget-container
+  #:widget-add-child
+  #:widget-remove-child
+  #:widget-clear-children
   ;; style classes and helpers
   #:widget-style
   #:flat-widget-style

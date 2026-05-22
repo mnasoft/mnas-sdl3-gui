@@ -11,6 +11,13 @@
   (declare (ignore ctrl shift alt))
   (handle-widget-key-press widget key char))
 
+(defmethod handle-widget-key-event ((widget widget-container) key char &key ctrl shift alt)
+  (declare (ignore ctrl shift alt))
+  (let ((focused-child (find-if #'widget-focused (widget-children widget))))
+    (when focused-child
+      (handle-widget-key-event focused-child key char
+                               :ctrl ctrl :shift shift :alt alt))))
+
 (defmethod handle-widget-key-event ((widget entry) key char &key ctrl shift alt)
   (declare (ignore alt))
   (cond

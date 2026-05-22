@@ -107,6 +107,33 @@
 (defgeneric render-entry-text-and-cursor (renderer widget)
   (:documentation "Render entry text, selection highlight, and cursor."))
 
+(defgeneric widget-measure (widget &optional constraints)
+  (:documentation "Return preferred or minimal size for WIDGET.
+Optional CONSTRAINTS can influence measurement behavior."))
+
+(defgeneric widget-arrange (widget x y width height)
+  (:documentation "Arrange WIDGET inside the rectangle defined by X/Y/WIDTH/HEIGHT."))
+
+(defgeneric widget-paint (renderer widget style)
+  (:documentation "Paint WIDGET using RENDERER and STYLE."))
+
+(defgeneric widget-hit-test (widget x y)
+  (:documentation "Return T when point X/Y hits WIDGET.
+Default behavior is based on widget bounds."))
+
+(defmethod widget-measure ((widget widget) &optional constraints)
+  (declare (ignore constraints))
+  (widget-min-size widget))
+
+(defmethod widget-arrange ((widget widget) x y width height)
+  (place-widget widget :x x :y y :width width :height height))
+
+(defmethod widget-paint ((renderer t) (widget widget) style)
+  (render renderer widget style))
+
+(defmethod widget-hit-test ((widget widget) x y)
+  (contains-point-p widget x y))
+
 (defgeneric render (renderer widget style)
   (:documentation "Render WIDGET on RENDERER using STYLE for widget-specific dispatch."))
 

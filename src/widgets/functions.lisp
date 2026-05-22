@@ -25,6 +25,31 @@
                  :expanded-p expanded-p
                  :data data))
 
+(defun make-widget-container (&key (x 0) (y 0) (width 100) (height 100) (children nil))
+  "Create a new widget container that holds child widgets." 
+  (make-instance 'mnas-sdl3-gui/widgets:widget-container
+                 :x x
+                 :y y
+                 :width width
+                 :height height
+                 :children (or children nil)))
+
+(defun widget-add-child (container child)
+  "Add CHILD to CONTAINER's child widget list." 
+  (push child (widget-children container))
+  container)
+
+(defun widget-remove-child (container child)
+  "Remove CHILD from CONTAINER's child widget list." 
+  (setf (widget-children container)
+        (remove child (widget-children container) :test #'eq))
+  container)
+
+(defun widget-clear-children (container)
+  "Remove all children from CONTAINER." 
+  (setf (widget-children container) nil)
+  container)
+
 (defun tree-node-directory-p (node)
   "Return true when NODE represents a directory." 
   (and node (eq (tree-node-kind node) :directory)))

@@ -108,9 +108,9 @@
   (render-text-with-ttf renderer text x y color))
 
 (defun render-widget (renderer widget)
-  "Render a widget using appropriate method based on widget type."
+  "Render a widget using the widget paint contract."
   (when (widget-visible widget)
-    (render renderer widget *widget-style*)))
+    (widget-paint renderer widget *widget-style*)))
 
 (defun render-widgets (renderer widgets)
   "Render WIDGETS, keeping expanded combo-box popups on the topmost pass."

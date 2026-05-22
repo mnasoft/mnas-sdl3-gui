@@ -27,6 +27,11 @@
               :documentation "Callback function called when value changes"))
   (:documentation "Base class for all widgets"))
 
+(defclass widget-container (widget)
+  ((children :initarg :children :initform nil :accessor widget-children
+             :documentation "Child widgets contained by this container."))
+  (:documentation "Widget that groups child widgets and delegates rendering/events."))
+
 (defclass label (widget)
   ((text :initarg :text :initform "" :accessor label-text
          :documentation "Text content of label"))

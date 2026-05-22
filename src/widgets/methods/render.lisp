@@ -15,6 +15,11 @@
                (+ (widget-y widget) +widget-padding+)
                (if (widget-enabled widget) +color-text+ +color-disabled+)))
 
+(defmethod render (renderer (widget widget-container) style)
+  (declare (ignore style))
+  (dolist (child (widget-children widget))
+    (render-widget renderer child)))
+
 (defmethod render (renderer (widget button) (style widget-style))
   (declare (ignore style))
   (let ((color (cond

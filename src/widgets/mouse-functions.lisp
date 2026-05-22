@@ -40,7 +40,11 @@
                   (widget-enabled widget)
                   (contains-point-p widget x y)
                   (not (zerop dy))
-                  (or (and (typep widget 'combo-box)
+                  (or (and (typep widget 'widget-container)
+                           (dispatch-widget-mouse-wheel
+                            (widget-children widget)
+                            x y dx dy))
+                      (and (typep widget 'combo-box)
                            (combo-box-expanded-p widget)
                            (list-box-scroll-by widget (- dy)))
                       (and (typep widget 'tree-view)
@@ -72,6 +76,9 @@
          (list-box-set-scroll-offset-from-thumb-top
           widget
           (- y (list-box-scrollbar-drag-offset widget)))))
+      ((typep widget 'widget-container)
+       (dolist (child (widgets-in-hit-test-order (widget-children widget)))
+         (handle-widget-mouse-motion child x y)))
       (t
        (let ((inside (contains-point-p widget x y)))
          (when (typep widget 'button)

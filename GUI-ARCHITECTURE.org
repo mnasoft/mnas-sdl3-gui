@@ -397,7 +397,7 @@ canvas, а не попытка реализовать графику через 
 
 * Ближайшие задачи
 
-- [ ] Зафиксировать базовый контракт виджета как прямоугольной области: bounds, visible, enabled, focusable, measure, arrange, paint, hit-test, handle-event.
+- [X] Зафиксировать базовый контракт виджета как прямоугольной области: bounds, visible, enabled, focusable, widget-measure/widget-arrange/widget-paint/widget-hit-test и handle-widget-* event handlers.
 - [ ] Разделить роли host window и widget root/container, чтобы top-level окно оставалось только поверхностью и точкой входа событий.
 - [ ] Ввести первый набор контейнеров: panel/container, row/column stack, scroll-container.
 - [ ] Описать popup, tooltip, modal и dropdown-host как transient surfaces, управляемые Window/Layer Manager.

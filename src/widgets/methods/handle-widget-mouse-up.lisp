@@ -10,6 +10,13 @@
   (declare (ignore x y))
   nil)
 
+(defmethod handle-widget-mouse-up ((widget widget-container) x y)
+  (when (contains-point-p widget x y)
+    (dolist (child (widgets-in-hit-test-order (widget-children widget)))
+      (when (handle-widget-mouse-up child x y)
+        (return t)))
+    nil))
+
 (defmethod handle-widget-mouse-up ((widget button) x y)
   (let* ((inside (contains-point-p widget x y))
          (armed (button-armed-p widget))
