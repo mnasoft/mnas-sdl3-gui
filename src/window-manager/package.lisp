@@ -12,6 +12,9 @@
    #:managed-window-open-p
    #:managed-window-z-index
    #:managed-window-payload
+   #:host-window-p
+   #:window-root-widget
+   #:window-root-widgets
   #:manager-modal-stack
   #:manager-focused-window-id
    #:make-window-layer-manager
@@ -21,6 +24,10 @@
    #:find-window
    #:window-open-p
    #:open-window
+   #:open-popup
+   #:open-tooltip
+   #:open-dropdown-host
+   #:close-popup-tree
    #:close-window
    #:window-children
   #:transient-role-p

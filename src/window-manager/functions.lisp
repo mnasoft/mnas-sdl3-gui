@@ -3,8 +3,8 @@
 (in-package :mnas-sdl3-gui/window-manager)
 
 (defun transient-role-p (role)
-  "Return T if ROLE is transient (popup/tooltip/modal)."
-  (member role '(:popup-menu :tooltip :modal) :test #'eq))
+  "Return T if ROLE is transient (popup/tooltip/modal/dropdown-host)."
+  (member role '(:popup-menu :tooltip :modal :dropdown-host) :test #'eq))
 
 (defun %window-descends-from-p (manager window-id ancestor-id)
   "Return T if WINDOW-ID is descendant of ANCESTOR-ID via parent-id chain."
@@ -126,6 +126,27 @@ Returns effective focused window id, or NIL if focus cannot be set."
            (manager-windows manager))
   t)
 
+(defun open-transient-window (manager window-id role parent-id &key payload)
+  "Register and open a transient window of ROLE attached to PARENT-ID." 
+  (register-window manager window-id role :parent-id parent-id :payload payload)
+  (open-window manager window-id))
+
+(defun open-popup (manager window-id parent-id &key payload)
+  "Open a popup-menu transient window attached to PARENT-ID." 
+  (open-transient-window manager window-id :popup-menu parent-id :payload payload))
+
+(defun open-tooltip (manager window-id parent-id &key payload)
+  "Open a tooltip transient window attached to PARENT-ID." 
+  (open-transient-window manager window-id :tooltip parent-id :payload payload))
+
+(defun open-dropdown-host (manager window-id parent-id &key payload)
+  "Open a dropdown-host transient window attached to PARENT-ID." 
+  (open-transient-window manager window-id :dropdown-host parent-id :payload payload))
+
+(defun close-popup-tree (manager root-popup-id)
+  "Close transient popup tree rooted at ROOT-POPUP-ID." 
+  (close-window manager root-popup-id :close-children t))
+
 (defun open-modal-window (manager window-id)
   "Open modal WINDOW-ID and enforce tooltip policy." 
   (close-tooltips manager)
@@ -206,6 +227,30 @@ Modal policy always has priority over non-modal targets."
     (clear-focused-window manager))
   (remhash window-id (manager-windows manager)))
 
+(defun host-window-p (manager window-id)
+  "Return T when WINDOW-ID is a host or main window surface." 
+  (let ((window (find-window manager window-id)))
+    (and window
+         (member (managed-window-role window) '(:main :host) :test #'eq))))
+
+(defun window-root-widget (manager window-id)
+  "Return the widget root payload for WINDOW-ID, or NIL." 
+  (let ((window (find-window manager window-id)))
+    (and window (managed-window-payload window))))
+
+(defun window-root-widgets (manager window-id)
+  "Return the root widget list for WINDOW-ID.
+If payload is a single widget, wrap it in a list." 
+  (let ((root (window-root-widget manager window-id)))
+    (cond
+      ((null root) nil)
+      ((listp root) root)
+      (t (list root)))))
+
+(defun window-root-container (manager window-id)
+  "Return the root container widget payload for WINDOW-ID, or NIL." 
+  (window-root-widget manager window-id))
+
 (defun window-open-p (manager window-id)
   "Return T if window exists and is marked open."
   (let ((window (find-window manager window-id)))
@@ -272,7 +317,7 @@ Modal policy always has priority over non-modal targets."
   (let ((window (find-window manager window-id)))
     (cond
       ((null window) :unknown-window)
-      ((eq (managed-window-role window) :main) :close-root)
+      ((member (managed-window-role window) '(:main :host) :test #'eq) :close-root)
       ((or (managed-window-parent-id window)
            (member (managed-window-role window)
                    '(:popup-menu :tooltip :modal)

@@ -14,6 +14,7 @@
    #:widget-enabled
    #:widget-focused
    #:widget-visible
+   #:widget-focusable
    #:widget-value
    #:widget-on-change
   #:widget-min-size
@@ -22,11 +23,39 @@
   #:widget-paint
   #:widget-hit-test
   #:widget-container
+  #:scroll-container
+  #:row-stack
+  #:column-stack
+  #:canvas-2d-widget
   #:widget-children
+  #:scroll-container-scroll-offset
+  #:row-stack-spacing
+  #:row-stack-padding
+  #:column-stack-spacing
+  #:column-stack-padding
+  #:canvas-2d-widget-scene
+  #:canvas-2d-widget-viewport-scale
+  #:canvas-2d-widget-viewport-offset-x
+  #:canvas-2d-widget-viewport-offset-y
+  #:canvas-2d-widget-pan-enabled
+  #:canvas-2d-widget-zoom-enabled
   #:make-widget-container
+  #:make-scroll-container
+  #:make-row-stack
+  #:make-column-stack
+  #:make-canvas-2d-widget
+  #:set-scene
+  #:request-redraw
+  #:world-to-screen
+  #:screen-to-world
+  #:handle-viewport-resize
   #:widget-add-child
   #:widget-remove-child
   #:widget-clear-children
+  #:normalize-scroll-container-scroll-offset
+  #:scroll-container-scroll-by
+  #:scroll-container-max-scroll-offset
+  #:scroll-container-content-height
   ;; style classes and helpers
   #:widget-style
   #:flat-widget-style

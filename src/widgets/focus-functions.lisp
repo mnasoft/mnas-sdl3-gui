@@ -8,7 +8,8 @@
   "Return true when WIDGET participates in keyboard focus traversal."
   (and (widget-enabled widget)
        (widget-visible widget)
-  (typep widget '(or button toggle check-box entry list-box combo-box))))
+       (widget-focusable widget)
+       (typep widget '(or button toggle check-box entry list-box combo-box))))
 
 (defun focused-widget (widgets)
   "Return the currently focused widget from WIDGETS, or NIL."

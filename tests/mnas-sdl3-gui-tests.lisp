@@ -53,6 +53,33 @@
     (is (= 43 (event-target-window-id manager 42)))
     (is (= 43 (event-target-window-id manager 43)))))
 
+(test widget-root-hit-test-and-focus-lifecycle
+  (let* ((button (make-instance 'mnas-sdl3-gui/widgets:button
+                                :x 60 :y 60 :width 80 :height 40
+                                :text "Button"))
+         (entry (make-instance 'mnas-sdl3-gui/widgets:entry
+                               :x 160 :y 60 :width 100 :height 30
+                               :text ""))
+         (root (mnas-sdl3-gui/widgets:make-widget-container
+                :x 0 :y 0 :width 400 :height 300
+                :children (list button entry)))
+         (manager (make-window-layer-manager)))
+    (register-window manager 100 :host :payload root :open-p t)
+    (let ((root-widgets (mnas-sdl3-gui/window-manager:window-root-widgets manager 100)))
+      (is (not (null root-widgets)))
+      (is (eq root (first root-widgets)))
+      (let ((hit (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down root-widgets 70 70)))
+        (is (not (null hit)))
+        (is (mnas-sdl3-gui/widgets:widget-focused button)))
+      (let ((hit2 (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down root-widgets 170 70)))
+        (is (not (null hit2)))
+        (is (mnas-sdl3-gui/widgets:widget-focused entry)))
+      (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) entry))
+      (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+       (list button entry)
+       :tab)
+      (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) button)))))
+
 (test window-02-hide-popup-focus-regression
   (let ((manager (make-window-layer-manager)))
     (register-window manager 500 :main :open-p t)

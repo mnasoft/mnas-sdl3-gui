@@ -40,7 +40,12 @@
                   (widget-enabled widget)
                   (contains-point-p widget x y)
                   (not (zerop dy))
-                  (or (and (typep widget 'widget-container)
+                  (or (and (typep widget 'scroll-container)
+                           (or (dispatch-widget-mouse-wheel
+                                (widget-children widget)
+                                x y dx dy)
+                               (scroll-container-scroll-by widget (- dy))))
+                      (and (typep widget 'widget-container)
                            (dispatch-widget-mouse-wheel
                             (widget-children widget)
                             x y dx dy))

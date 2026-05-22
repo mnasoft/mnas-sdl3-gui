@@ -21,6 +21,8 @@
             :documentation "Whether widget has keyboard focus")
    (visible :initarg :visible :initform t :accessor widget-visible
             :documentation "Whether widget is visible")
+   (focusable :initarg :focusable :initform t :accessor widget-focusable
+              :documentation "Whether widget can receive keyboard focus.")
    (value :initarg :value :initform nil :accessor widget-value
           :documentation "Current value of widget")
    (on-change :initarg :on-change :initform nil :accessor widget-on-change
@@ -31,6 +33,44 @@
   ((children :initarg :children :initform nil :accessor widget-children
              :documentation "Child widgets contained by this container."))
   (:documentation "Widget that groups child widgets and delegates rendering/events."))
+
+(defclass scroll-container (widget-container)
+  ((scroll-offset :initarg :scroll-offset :initform 0 :accessor scroll-container-scroll-offset
+                  :documentation "Vertical scroll offset for child content.")
+   (auto-hide-scrollbar :initarg :auto-hide-scrollbar :initform t :accessor scroll-container-auto-hide-scrollbar
+                        :documentation "Hide scroll bar when content fits inside the container."))
+  (:documentation "Scrollable container widget for vertically stacked child widgets."))
+
+(defclass row-stack (widget-container)
+  ((spacing :initarg :spacing :initform 4 :accessor row-stack-spacing
+            :documentation "Horizontal spacing between child widgets.")
+   (padding :initarg :padding :initform 4 :accessor row-stack-padding
+            :documentation "Padding inside the row stack bounds."))
+  (:documentation "Container widget that arranges children in a horizontal row."))
+
+(defclass column-stack (widget-container)
+  ((spacing :initarg :spacing :initform 4 :accessor column-stack-spacing
+            :documentation "Vertical spacing between child widgets.")
+   (padding :initarg :padding :initform 4 :accessor column-stack-padding
+            :documentation "Padding inside the column stack bounds."))
+  (:documentation "Container widget that arranges children in a vertical column."))
+
+(defclass canvas-2d-widget (widget)
+  ((scene :initarg :scene :initform nil :accessor canvas-2d-widget-scene
+          :documentation "Scene model for 2D canvas rendering.")
+   (viewport-scale :initarg :viewport-scale :initform 1.0 :accessor canvas-2d-widget-viewport-scale
+                   :documentation "Zoom scale for the 2D viewport.")
+   (viewport-offset-x :initarg :viewport-offset-x :initform 0 :accessor canvas-2d-widget-viewport-offset-x
+                      :documentation "Horizontal viewport offset in pixels.")
+   (viewport-offset-y :initarg :viewport-offset-y :initform 0 :accessor canvas-2d-widget-viewport-offset-y
+                      :documentation "Vertical viewport offset in pixels.")
+   (redraw-requested :initarg :redraw-requested :initform nil :accessor canvas-2d-widget-redraw-requested
+                     :documentation "Flag requesting redraw on next frame.")
+   (pan-enabled :initarg :pan-enabled :initform t :accessor canvas-2d-widget-pan-enabled
+                :documentation "Enable panning for the canvas viewport.")
+   (zoom-enabled :initarg :zoom-enabled :initform t :accessor canvas-2d-widget-zoom-enabled
+                 :documentation "Enable zooming for the canvas viewport."))
+  (:documentation "Canvas widget specialized for 2D scene rendering and interaction."))
 
 (defclass label (widget)
   ((text :initarg :text :initform "" :accessor label-text

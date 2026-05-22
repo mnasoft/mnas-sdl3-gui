@@ -12,11 +12,17 @@
 
 (defmethod handle-widget-mouse-down ((widget widget-container) x y)
   (when (contains-point-p widget x y)
-    (dolist (child (widgets-in-hit-test-order (widget-children widget)))
-      (when (handle-widget-mouse-down child x y)
-        (setf (widget-focused widget) t)
-        (return t)))
-    nil))
+    (loop for child in (widgets-in-hit-test-order (widget-children widget))
+          when (handle-widget-mouse-down child x y)
+            do (setf (widget-focused widget) t)
+               (return t)
+          finally (return nil))))
+
+(defmethod handle-widget-mouse-down ((widget canvas-2d-widget) x y)
+  (let ((inside (contains-point-p widget x y)))
+    (when inside
+      (setf (widget-focused widget) t)
+      t)))
 
 (defmethod handle-widget-mouse-down ((widget button) x y)
   (let ((inside (contains-point-p widget x y)))

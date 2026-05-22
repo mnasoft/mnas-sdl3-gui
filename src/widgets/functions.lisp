@@ -34,6 +34,153 @@
                  :height height
                  :children (or children nil)))
 
+(defun make-scroll-container (&key (x 0) (y 0) (width 100) (height 100) (children nil))
+  "Create a new scroll-container for vertically stacked child widgets." 
+  (make-instance 'mnas-sdl3-gui/widgets:scroll-container
+                 :x x
+                 :y y
+                 :width width
+                 :height height
+                 :children (or children nil)
+                 :scroll-offset 0))
+
+(defun make-row-stack (&key (x 0) (y 0) (width 100) (height 40)
+                        (children nil)
+                        (spacing 4)
+                        (padding 4))
+  "Create a row-stack container that arranges child widgets horizontally." 
+  (make-instance 'mnas-sdl3-gui/widgets:row-stack
+                 :x x
+                 :y y
+                 :width width
+                 :height height
+                 :children (or children nil)
+                 :spacing spacing
+                 :padding padding))
+
+(defun make-column-stack (&key (x 0) (y 0) (width 100) (height 100)
+                           (children nil)
+                           (spacing 4)
+                           (padding 4))
+  "Create a column-stack container that arranges child widgets vertically." 
+  (make-instance 'mnas-sdl3-gui/widgets:column-stack
+                 :x x
+                 :y y
+                 :width width
+                 :height height
+                 :children (or children nil)
+                 :spacing spacing
+                 :padding padding))
+
+(defun make-canvas-2d-widget (&key (x 0) (y 0) (width 300) (height 200)
+                                 (scene nil)
+                                 (viewport-scale 1.0)
+                                 (viewport-offset-x 0)
+                                 (viewport-offset-y 0)
+                                 (pan-enabled t)
+                                 (zoom-enabled t))
+  "Create a new canvas-2d-widget with viewport state and optional scene model." 
+  (make-instance 'mnas-sdl3-gui/widgets:canvas-2d-widget
+                 :x x
+                 :y y
+                 :width width
+                 :height height
+                 :scene scene
+                 :viewport-scale viewport-scale
+                 :viewport-offset-x viewport-offset-x
+                 :viewport-offset-y viewport-offset-y
+                 :pan-enabled pan-enabled
+                 :zoom-enabled zoom-enabled
+                 :redraw-requested t))
+
+(defmethod set-scene ((widget canvas-2d-widget) scene)
+  (setf (canvas-2d-widget-scene widget) scene)
+  (request-redraw widget)
+  widget)
+
+(defmethod request-redraw ((widget canvas-2d-widget))
+  (setf (canvas-2d-widget-redraw-requested widget) t)
+  t)
+
+(defmethod world-to-screen ((widget canvas-2d-widget) x y &optional z)
+  (let ((scale (max 0.01 (canvas-2d-widget-viewport-scale widget)))
+        (offset-x (canvas-2d-widget-viewport-offset-x widget))
+        (offset-y (canvas-2d-widget-viewport-offset-y widget)))
+    (values (+ (widget-x widget)
+               offset-x
+               (* x scale))
+            (+ (widget-y widget)
+               offset-y
+               (* y scale))
+            z)))
+
+(defmethod screen-to-world ((widget canvas-2d-widget) x y &optional z)
+  (let ((scale (max 0.01 (canvas-2d-widget-viewport-scale widget)))
+        (offset-x (canvas-2d-widget-viewport-offset-x widget))
+        (offset-y (canvas-2d-widget-viewport-offset-y widget)))
+    (values (/ (- x (widget-x widget) offset-x) scale)
+            (/ (- y (widget-y widget) offset-y) scale)
+            z)))
+
+(defmethod handle-viewport-resize ((widget canvas-2d-widget) width height)
+  (when (or (/= (widget-width widget) width)
+            (/= (widget-height widget) height))
+    (setf (widget-width widget) width
+          (widget-height widget) height)
+    (request-redraw widget)))
+
+(defun render-canvas-2d-grid (renderer widget)
+  "Render a faint background grid for a canvas-2d-widget." 
+  (let ((x (widget-x widget))
+        (y (widget-y widget))
+        (w (widget-width widget))
+        (h (widget-height widget))
+        (grid-step 32)
+        (grid-color '(220 220 220 255)))
+    (loop for gx from 0 below w by grid-step
+          do (stroke-rect renderer (+ x gx) y 1 h grid-color))
+    (loop for gy from 0 below h by grid-step
+          do (stroke-rect renderer x (+ y gy) w 1 grid-color))))
+
+(defun render-canvas-2d-placeholder (renderer widget)
+  "Render placeholder content when a 2D scene model is not provided." 
+  (let ((x (widget-x widget))
+        (y (widget-y widget)))
+    (render-text renderer "Canvas-2D" (+ x 8) (+ y 8) +color-text+)
+    (render-text renderer "set-scene to display content" (+ x 8) (+ y 26) +color-text+)))
+
+(defun render-canvas-2d-scene (renderer widget)
+  "Render a very small default canvas scene for 2D canvas widgets." 
+  (let ((x0 (widget-x widget))
+        (y0 (widget-y widget))
+        (scale (max 0.01 (canvas-2d-widget-viewport-scale widget))))
+    (fill-circle renderer (+ x0 80) (+ y0 80) (max 8 (floor (* 8 scale))) '(0 128 255 255))
+    (stroke-rect renderer (+ x0 120) (+ y0 40) (max 24 (floor (* 56 scale))) (max 24 (floor (* 40 scale))) '(0 0 0 255))))
+
+(defun scroll-container-content-height (widget)
+  "Return total height of child widgets inside scroll container." 
+  (loop for child in (widget-children widget)
+        sum (widget-height child)))
+
+(defun scroll-container-max-scroll-offset (widget)
+  "Return maximal vertical scroll offset for SCROLL-CONTAINER." 
+  (max 0 (- (scroll-container-content-height widget)
+            (widget-height widget))))
+
+(defun normalize-scroll-container-scroll-offset (widget)
+  "Clamp SCROLL-CONTAINER scroll offset to valid range." 
+  (setf (scroll-container-scroll-offset widget)
+        (max 0 (min (scroll-container-scroll-offset widget)
+                    (scroll-container-max-scroll-offset widget)))))
+
+(defun scroll-container-scroll-by (widget delta)
+  "Scroll SCROLL-CONTAINER by DELTA pixels if possible." 
+  (let ((old-offset (scroll-container-scroll-offset widget)))
+    (setf (scroll-container-scroll-offset widget)
+          (+ old-offset delta))
+    (normalize-scroll-container-scroll-offset widget)
+    (/= old-offset (scroll-container-scroll-offset widget))))
+
 (defun widget-add-child (container child)
   "Add CHILD to CONTAINER's child widget list." 
   (push child (widget-children container))

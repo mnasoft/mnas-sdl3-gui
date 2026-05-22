@@ -4,6 +4,7 @@
 
 (defparameter *window-dialog* nil)
 (defparameter *renderer-dialog* nil)
+(defparameter *widget-01-layer-manager* nil)
 (defparameter *widgets* nil)
 (defparameter *widget-root* nil)
 (defparameter *widget-01-toolbar* nil)
@@ -140,12 +141,18 @@
         (progn
           (setf *window-dialog* window
                 *renderer-dialog* renderer
+                *widget-01-layer-manager* (mnas-sdl3-gui/window-manager:make-window-layer-manager)
                 *widgets* (create-demo-widgets)
                 *widget-root* (mnas-sdl3-gui/widgets:make-widget-container
                                :x 0 :y 0 :width 400 :height 500
                                :children *widgets*)
                 *widget-01-open* t
                 *status-message* "Widget demo. Click, type, and interact with controls.")
+          (mnas-sdl3-gui/window-manager:register-window
+           *widget-01-layer-manager*
+           (sdl3:get-window-id window)
+           :host
+           :payload *widget-root*)
           ;; Apply selected widget style and initialize TTF for Unicode text rendering.
           (widget-01-register-commands)
           (widget-01-register-shortcuts)
@@ -219,13 +226,22 @@
                         button
                         (list :x x :y y))))
                    (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                    (list *widget-root*) x y))
+                    (or (mnas-sdl3-gui/window-manager:window-root-widgets
+                         *widget-01-layer-manager*
+                         (sdl3:get-window-id *window-dialog*))
+                        (list *widget-root*)) x y))
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                (list *widget-root*) x y))))
+                (or (mnas-sdl3-gui/window-manager:window-root-widgets
+                     *widget-01-layer-manager*
+                     (sdl3:get-window-id *window-dialog*))
+                    (list *widget-root*)) x y))))
        :continue)
           (sdl3:mouse-wheel-event
            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
-            (list *widget-root*)
+            (or (mnas-sdl3-gui/window-manager:window-root-widgets
+                 *widget-01-layer-manager*
+                 (sdl3:get-window-id *window-dialog*))
+                (list *widget-root*))
             (round (slot-value ev 'sdl3:%mouse-x))
             (round (slot-value ev 'sdl3:%mouse-y))
             (round (slot-value ev 'sdl3:%x))
@@ -239,7 +255,10 @@
                   :mods (slot-value ev 'sdl3:%mod)
                   :context nil)
            (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-            (list *widget-root*)
+            (or (mnas-sdl3-gui/window-manager:window-root-widgets
+                 *widget-01-layer-manager*
+                 (sdl3:get-window-id *window-dialog*))
+                (list *widget-root*))
             (slot-value ev 'sdl3:%key)
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
@@ -250,7 +269,10 @@
           (sdl3:text-input-event
            ;; Text input comes from current keyboard layout/IME and is UTF-8 safe.
            (mnas-sdl3-gui/widgets:dispatch-focused-text-input
-            (list *widget-root*)
+            (or (mnas-sdl3-gui/window-manager:window-root-widgets
+                 *widget-01-layer-manager*
+                 (sdl3:get-window-id *window-dialog*))
+                (list *widget-root*))
             (slot-value ev 'sdl3:%text))
            :continue)
       (t

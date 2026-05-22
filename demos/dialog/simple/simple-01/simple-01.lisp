@@ -6,6 +6,8 @@
 (defparameter *window-id* 0)
 (defparameter *renderer* nil)
 (defparameter *toolbar* nil)
+(defparameter *simple-01-layer-manager* nil)
+(defparameter *dialog-root* nil)
 (defparameter *dialog-result* nil)
 (defparameter *dialog-open* t)
 (defparameter *dialog-style* :windows)
@@ -95,7 +97,16 @@
 
 (defun dialog-widgets ()
   "Return focus-traversable widgets in the simple dialog."
-  (list *ok-button* *cancel-button* *extra-button*))
+  (if *dialog-root*
+      (mnas-sdl3-gui/widgets:widget-children *dialog-root*)
+      (list *ok-button* *cancel-button* *extra-button*)))
+
+(defun simple-01-root-widgets ()
+  "Return the current widget root list for the simple dialog demo."
+  (or (and *simple-01-layer-manager*
+           (mnas-sdl3-gui/window-manager:window-root-widgets
+            *simple-01-layer-manager* *window-id*))
+      (list *dialog-root*)))
 
 ;;; Dialog initialization
 
@@ -157,8 +168,10 @@
                                      "Tab/Shift+Tab: focus, Space: activate button"
                                      70.0 252.0 '(0 0 0 255))
   
-  ;; Render buttons
-  (mnas-sdl3-gui/widgets:render-widgets *renderer* (dialog-widgets)))
+  ;; Render buttons through the demo root widget container.
+  (mnas-sdl3-gui/widgets:render-widgets
+   *renderer*
+   (simple-01-root-widgets)))
 
 ;;; SDL3 demo callbacks
 
@@ -187,7 +200,19 @@
           (mnas-sdl3-gui/widgets:set-widget-style *dialog-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-dialog-buttons)
-          (mnas-sdl3-gui/widgets:move-widget-focus (dialog-widgets)))))
+          (setf *dialog-root*
+                (mnas-sdl3-gui/widgets:make-widget-container
+                 :x 0 :y 0 :width 400 :height +simple-dialog-window-height+
+                 :children (dialog-widgets))
+                *simple-01-layer-manager*
+                (mnas-sdl3-gui/window-manager:make-window-layer-manager))
+          (mnas-sdl3-gui/window-manager:register-window
+           *simple-01-layer-manager*
+           *window-id*
+           :host
+           :payload *dialog-root*
+           :open-p t)
+          (mnas-sdl3-gui/widgets:set-widget-focus (dialog-widgets) (first (dialog-widgets)))))
   :continue)
 
 (sdl3:def-app-iterate simple-dialog-iterate ()
@@ -237,11 +262,11 @@
                       button
                       (list :window-id *window-id*))
                      (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                      (dialog-widgets)
+                      (simple-01-root-widgets)
                       mx
                       my)))
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                (dialog-widgets)
+                (simple-01-root-widgets)
                 mx
                 my))))
        :continue)
@@ -253,7 +278,7 @@
                   :mods (slot-value ev 'sdl3:%mod)
                   :context (list :window-id *window-id*))
            (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-            (dialog-widgets)
+            (simple-01-root-widgets)
             (slot-value ev 'sdl3:%key)
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
