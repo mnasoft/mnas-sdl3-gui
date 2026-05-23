@@ -171,6 +171,16 @@
   #:pack-layout-required-size
   #:pack-layout-widgets
   #:place-widget
+  ;; grid layout
+  #:grid-container
+  #:make-grid
+  #:grid-add-child
+  #:grid-rows
+  #:grid-cols
+  #:grid-child-constraints
+  #:grid-row-spacing
+  #:grid-col-spacing
+  #:grid-padding
    ;; rendering
   #:render-text
    #:render-widget

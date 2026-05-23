@@ -79,7 +79,7 @@
                       (mnas-sdl3-gui/widgets:widget-value *combo-box-01-small*)
                       (mnas-sdl3-gui/widgets:widget-value *combo-box-01-large*))))
     (when report-cmd
-      (mnas-sdl3-gui/commands:set-command-enabled report-cmd (boolean enabled)))))
+      (mnas-sdl3-gui/commands:set-command-enabled report-cmd enabled))))
 
 (defun combo-box-01-items (prefix count)
   (loop for index from 1 to count
@@ -242,4 +242,7 @@
    'combo-box-01-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/combo-box-01)
+;;;; (mnas-sdl3-gui/demos/dialog/combo-box-01:combo-box-01)
 ;;;; (combo-box-01)
+

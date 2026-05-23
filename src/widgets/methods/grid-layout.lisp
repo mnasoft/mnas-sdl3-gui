@@ -1,0 +1,72 @@
+;;;; ./src/widgets/methods/grid-layout.lisp
+
+(in-package :mnas-sdl3-gui/widgets)
+
+;; Basic grid layout: two-phase measure -> arrange
+
+(defmethod widget-measure ((grid grid-container) &optional constraints)
+  (declare (ignore constraints))
+  (let* ((rows (max 1 (grid-rows grid)))
+         (cols (max 1 (grid-cols grid)))
+         (col-widths (make-array cols :initial-element 0))
+         (row-heights (make-array rows :initial-element 0))
+         (spacing-x (grid-col-spacing grid))
+         (spacing-y (grid-row-spacing grid))
+         (padding (grid-padding grid)))
+    ;; accumulate minimal requirements
+    (dolist (pair (grid-child-constraints grid))
+      (let* ((child (car pair))
+             (c (cdr pair)))
+        (multiple-value-bind (min-w min-h) (widget-min-size child)
+          (let* ((col (min cols (max 0 (grid-child-col c))))
+                 (row (min rows (max 0 (grid-child-row c))))
+                 (cspan (max 1 (grid-child-col-span c)))
+                 (rspan (max 1 (grid-child-row-span c)))
+                 (per-col (max 1 (floor (+ min-w cspan -1) cspan)))
+                 (per-row (max 1 (floor (+ min-h rspan -1) rspan))))
+            (loop for i from col below (min cols (+ col cspan)) do
+              (setf (aref col-widths i) (max (aref col-widths i) per-col)))
+            (loop for j from row below (min rows (+ row rspan)) do
+              (setf (aref row-heights j) (max (aref row-heights j) per-row)))))))
+    (let ((total-w (+ (* 2 padding) (reduce #'+ col-widths) (* spacing-x (max 0 (1- cols)))))
+          (total-h (+ (* 2 padding) (reduce #'+ row-heights) (* spacing-y (max 0 (1- rows))))))
+      (values (max 1 total-w) (max 1 total-h)))))
+
+(defmethod widget-arrange ((grid grid-container) x y width height)
+  (place-widget grid :x x :y y :width width :height height)
+  (let* ((rows (max 1 (grid-rows grid)))
+         (cols (max 1 (grid-cols grid)))
+         (spacing-x (grid-col-spacing grid))
+         (spacing-y (grid-row-spacing grid))
+         (padding (grid-padding grid))
+         (inner-x (+ (widget-x grid) padding))
+         (inner-y (+ (widget-y grid) padding))
+         (inner-w (max 1 (- (widget-width grid) (* 2 padding))))
+         (inner-h (max 1 (- (widget-height grid) (* 2 padding))))
+         (col-widths (make-array cols :initial-element 0))
+         (row-heights (make-array rows :initial-element 0)))
+    ;; compute preferred sizes using measure phase
+    (multiple-value-bind (pref-w pref-h) (widget-measure grid)
+      ;; naive distribution: initial widths/heights proportionally from measure
+      (let ((avail-w inner-w)
+            (avail-h inner-h))
+        ;; recompute per-column as equal shares if nothing precomputed
+        (fill col-widths (/ avail-w cols))
+        (fill row-heights (/ avail-h rows))))
+    ;; arrange children
+    (dolist (pair (grid-child-constraints grid))
+      (let* ((child (car pair))
+             (c (cdr pair))
+             (col (max 0 (grid-child-col c)))
+             (row (max 0 (grid-child-row c)))
+             (cspan (max 1 (grid-child-col-span c)))
+             (rspan (max 1 (grid-child-row-span c)))
+             (x-off (+ inner-x (reduce #'+ (subseq col-widths 0 col) :initial-value 0)
+                       (* spacing-x col)))
+             (y-off (+ inner-y (reduce #'+ (subseq row-heights 0 row) :initial-value 0)
+                       (* spacing-y row)))
+             (w (max 1 (+ (reduce #'+ (subseq col-widths col (+ col cspan)) :initial-value 0)
+                          (* spacing-x (max 0 (1- cspan))))))
+             (h (max 1 (+ (reduce #'+ (subseq row-heights row (+ row rspan)) :initial-value 0)
+                          (* spacing-y (max 0 (1- rspan)))))))
+        (widget-arrange child x-off y-off w h)))))
