@@ -94,6 +94,6 @@ The loop reads commands from *query-io* until `quit` is entered."
               (t (format t "unknown command: ~A~%" cmd)))))))))
 
 ;;;;(ql:quickload :mnas-sdl3-gui) 
-;;;;(ql:quickload :mnas-sdl3-gui/demos/canvas)    
+;;;;(ql:quickload :mnas-sdl3-gui/demos/canvas)
 ;;;;(demo-canvas-01-run)
 ;;;;(demo-canvas-01)

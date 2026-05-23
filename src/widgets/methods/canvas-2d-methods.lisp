@@ -59,17 +59,22 @@
 (defmethod render (renderer (widget canvas-2d-widget) style)
   "Basic render pass for canvas: clear background and, if a scene is present,
 perform a trivial placeholder draw. Real scene rendering should be implemented
-by higher-level code that inspects `canvas-2d-widget-scene`." 
+by higher-level code that inspects `canvas-2d-widget-scene`."
   ;; clear canvas area
-  (fill-rect renderer (widget-x widget) (widget-y widget) (widget-width widget) (widget-height widget) +color-bg+)
-  ;; placeholder scene rendering: if scene is a simple alist of circles, draw them
-  (when (and (canvas-2d-widget-scene widget) (listp (canvas-2d-widget-scene widget)))
-    (dolist (item (canvas-2d-widget-scene widget))
-      (when (and (consp item) (eq (car item) :circle))
-        (destructuring-bind (_ tag cx cy r color) item
-          (multiple-value-bind (sx sy) (world-to-screen widget cx cy)
-            (fill-circle renderer sx sy r (or color '(64 128 200 255))))))))
+  (fill-rect renderer (widget-x widget) (widget-y widget)
+             (widget-width widget) (widget-height widget) +color-bg+)
+  ;; placeholder scene rendering: if scene is a simple list of items, draw them
+  (let ((scene (canvas-2d-widget-scene widget)))
+    (when (and scene (listp scene))
+      (dolist (item scene)
+        (when (and (consp item) (eq (car item) :circle))
+          (let ((cx (nth 1 item))
+                (cy (nth 2 item))
+                (r  (nth 3 item))
+                (color (nth 4 item)))
+            (multiple-value-bind (sx sy) (world-to-screen widget cx cy)
+              (fill-circle renderer sx sy r (or color '(64 128 200 255))))))))))
 
 (defmethod widget-min-size ((widget canvas-2d-widget))
-  "Minimal size hint for canvas widget - default to current size." 
+  "Minimal size hint for canvas widget - default to current size."
   (values (widget-width widget) (widget-height widget)))

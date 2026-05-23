@@ -98,13 +98,13 @@
         (logs-cmd (mnas-sdl3-gui/commands:find-command :pack-01/toggle-logs))
         (backup-cmd (mnas-sdl3-gui/commands:find-command :pack-01/toggle-backup)))
     (when flat-cmd
-    (mnas-sdl3-gui/commands:set-command-checked flat-cmd (eq *pack-demo-style* :flat)))
+      (mnas-sdl3-gui/commands:set-command-checked flat-cmd (eq *pack-demo-style* :flat)))
     (when windows-cmd
-    (mnas-sdl3-gui/commands:set-command-checked windows-cmd (eq *pack-demo-style* :windows)))
+      (mnas-sdl3-gui/commands:set-command-checked windows-cmd (eq *pack-demo-style* :windows)))
     (when logs-cmd
-    (mnas-sdl3-gui/commands:set-command-checked logs-cmd *pack-demo-check-logs*))
+      (mnas-sdl3-gui/commands:set-command-checked logs-cmd *pack-demo-check-logs*))
     (when backup-cmd
-    (mnas-sdl3-gui/commands:set-command-checked backup-cmd *pack-demo-check-backup*))))
+      (mnas-sdl3-gui/commands:set-command-checked backup-cmd *pack-demo-check-backup*))))
 
 (defun create-pack-demo-widgets ()
   "Create pack-managed widgets and return (values widgets window-width window-height)."

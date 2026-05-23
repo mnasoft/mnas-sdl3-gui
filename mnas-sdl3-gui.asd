@@ -71,6 +71,7 @@
                (:file "src/widgets/methods/entry-move-to-next-word")
                (:file "src/widgets/keyboard-functions")
                (:file "src/widgets/methods/initialize-instance")
+               (:file "src/widgets/methods/canvas-2d-methods")
                (:file "src/widgets/methods/contains-point-p")
                (:file "src/widgets/methods/update-widget-value")
                (:file "src/widgets/methods/widget-min-size")
@@ -105,6 +106,17 @@
                (:file "demos/menu/package")
                (:file "demos/menu/screen-menu-classes")
                (:file "demos/dialog/package")))
+
+
+(asdf:defsystem #:mnas-sdl3-gui/demos/canvas
+      :description "Canvas demos for mnas-sdl3-gui"
+      :depends-on (#:mnas-sdl3-gui)
+      :serial t
+      :components ((:module "demos/canvas"
+                      :serial t
+                      :components ((:file "package")
+                                   (:file "canvas-01")
+                                   (:file "canvas-window-demo")))))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/simple-01
   :description "Demos for mnas-sdl3-gui"

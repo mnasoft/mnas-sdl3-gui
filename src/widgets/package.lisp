@@ -39,6 +39,8 @@
   #:canvas-2d-widget-viewport-offset-y
   #:canvas-2d-widget-pan-enabled
   #:canvas-2d-widget-zoom-enabled
+  #:canvas-2d-pan-by
+  #:canvas-2d-zoom-by
   #:make-widget-container
   #:make-scroll-container
   #:make-row-stack
