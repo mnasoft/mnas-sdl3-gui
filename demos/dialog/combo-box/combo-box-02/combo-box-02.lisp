@@ -198,7 +198,7 @@
                      (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                       *combo-box-02-toolbar*
                       button
-                      (list :window-id *combo-box-window-id*))
+                      (list :window-id *combo-box-02-window-id*))
                      (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
                       *combo-box-02-widgets* mx my)))
                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
@@ -215,10 +215,10 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                  (unless (mnas-sdl3-gui/commands:dispatch-shortcut
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
-                  :context (list :window-id *combo-box-window-id*))
+                  :context (list :window-id *combo-box-02-window-id*))
            (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
             *combo-box-02-widgets*
             (slot-value ev 'sdl3:%key)
@@ -259,3 +259,5 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box-02)
 ;;;; (combo-box-02)
+
+;;;; (mnas-sdl3-gui/demos/dialog/combo-box-02:combo-box-02)
