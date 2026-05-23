@@ -161,6 +161,27 @@
   ;; combo-box accessors
   #:combo-box-expanded-p
   #:combo-box-max-visible-items
+  #:combo-box-visible-item-count
+  #:combo-box-main-height
+  #:combo-box-content-width
+  #:combo-box-popup-mode
+  #:combo-box-popup-host-window
+  #:combo-box-popup-window
+  #:combo-box-popup-renderer
+  #:combo-box-popup-window-id
+  #:combo-box-popup-visible-p
+  #:combo-box-popup-layer-manager
+  #:combo-box-popup-window-enabled-p
+  #:combo-box-enable-popup-window
+  #:combo-box-disable-popup-window
+  #:combo-box-render-popup-window
+  #:combo-box-handle-popup-mouse-down
+  #:combo-box-handle-popup-mouse-up
+  #:combo-box-handle-popup-mouse-motion
+  #:combo-box-handle-popup-mouse-wheel
+  #:update-widget-value
+  #:sync-combo-box-expanded-state
+  #:*combo-box-expanded-callback*
   #:combo-box-add-item
   ;; editable combo-box accessors
   #:editable-combo-box-placeholder

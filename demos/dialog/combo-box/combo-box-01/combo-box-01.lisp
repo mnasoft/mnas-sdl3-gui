@@ -4,6 +4,7 @@
 
 (defparameter *combo-box-window* nil)
 (defparameter *combo-box-window-id* 0)
+(defparameter *combo-box-layer-manager* nil)
 (defparameter *combo-box-toolbar* nil)
 (defparameter *combo-box-open* t)
 (defparameter *combo-box-style* :windows)
@@ -122,6 +123,8 @@
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
     (return-from combo-box-01-init :failure))
+  (setf *combo-box-layer-manager*
+        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer "Combo-Box Demo" 620 +combo-box-01-window-height+ 0)
     (if (not ok)
@@ -134,6 +137,11 @@
                 *combo-box-renderer* renderer
                 *combo-box-open* t
                 *combo-box-status* "Use mouse, arrows, PgUp/PgDown, Return and Escape.")
+              (mnas-sdl3-gui/window-manager:register-window
+               *combo-box-layer-manager*
+               *combo-box-window-id*
+               :main
+               :open-p t)
           (combo-box-01-register-commands)
           (combo-box-01-register-shortcuts)
           (setf *combo-box-toolbar* (combo-box-01-create-toolbar))
@@ -141,6 +149,14 @@
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-01-widgets)
+          (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
+           *combo-box-01-small*
+           *combo-box-window*
+           :layer-manager *combo-box-layer-manager*)
+          (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
+           *combo-box-01-large*
+           *combo-box-window*
+           :layer-manager *combo-box-layer-manager*)
           (mnas-sdl3-gui/widgets:set-widget-focus *combo-box-widgets*
                                                   (second (cdr *combo-box-widgets*))))))
   :continue)
@@ -161,68 +177,110 @@
                                      *combo-box-status*
                                      20.0 252.0 '(40 40 40 255))
   (mnas-sdl3-gui/widgets:render-widgets *combo-box-renderer* *combo-box-widgets*)
+  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo-box-01-small*)
+  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo-box-01-large*)
   (sdl3:render-present *combo-box-renderer*)
   :continue)
 
 (sdl3:def-app-event combo-box-01-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
-    (typecase ev
-      (sdl3:quit-event
-       (setf *combo-box-open* nil)
-       :success)
-      (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
-        *combo-box-widgets*
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
-       :continue)
-      (sdl3:mouse-button-event
-       (when (= (slot-value ev 'sdl3:%button) 1)
-         (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y)))
-               (toolbar-y-offset (- +combo-box-01-window-height+ +combo-box-01-toolbar-height+)))
-           (if (slot-value ev 'sdl3:%down)
-               (let ((button (and *combo-box-toolbar*
-                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                                   *combo-box-toolbar*
-                                   mx
-                                   (- my toolbar-y-offset)))))
-                 (if button
-                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                      *combo-box-toolbar*
-                      button
-                      (list :window-id *combo-box-window-id*))
-                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-widgets* mx my)))
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *combo-box-widgets* mx my))))
-       :continue)
-      (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
-        *combo-box-widgets*
-        (round (slot-value ev 'sdl3:%mouse-x))
-        (round (slot-value ev 'sdl3:%mouse-y))
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
-       :continue)
-      (sdl3:keyboard-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value ev 'sdl3:%key)
-                  :mods (slot-value ev 'sdl3:%mod)
-                  :context (list :window-id *combo-box-window-id*))
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-            *combo-box-widgets*
-            (slot-value ev 'sdl3:%key)
-            :mods (slot-value ev 'sdl3:%mod)
-            :on-escape (lambda ()
-                         (setf *combo-box-open* nil)
-                         :success))))
-       :continue)
-      (t :continue))))
+    (flet ((popup-widget-for-window (window-id)
+             (cond
+               ((= window-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-01-small*))
+                *combo-box-01-small*)
+               ((= window-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-01-large*))
+                *combo-box-01-large*)
+               (t nil))))
+      (typecase ev
+        (sdl3:quit-event
+         (setf *combo-box-open* nil)
+         :success)
+        (sdl3:window-event
+         (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
+           (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                  (popup-widget (popup-widget-for-window window-id)))
+             (when popup-widget
+               (mnas-sdl3-gui/widgets:sync-combo-box-expanded-state popup-widget nil)))))
+        (sdl3:mouse-motion-event
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (popup-widget (popup-widget-for-window window-id)))
+           (cond
+             (popup-widget
+              (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-motion
+               popup-widget
+               (round (slot-value ev 'sdl3:%x))
+               (round (slot-value ev 'sdl3:%y))))
+             ((= window-id *combo-box-window-id*)
+              (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+               *combo-box-widgets*
+               (round (slot-value ev 'sdl3:%x))
+               (round (slot-value ev 'sdl3:%y))))))
+         :continue)
+        (sdl3:mouse-button-event
+         (when (= (slot-value ev 'sdl3:%button) 1)
+           (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                  (popup-widget (popup-widget-for-window window-id))
+                  (mx (round (slot-value ev 'sdl3:%x)))
+                  (my (round (slot-value ev 'sdl3:%y)))
+                  (toolbar-y-offset (- +combo-box-01-window-height+ +combo-box-01-toolbar-height+)))
+             (cond
+               (popup-widget
+                (if (slot-value ev 'sdl3:%down)
+                    (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down popup-widget mx my)
+                    (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up popup-widget mx my)))
+               ((and (slot-value ev 'sdl3:%down) (= window-id *combo-box-window-id*))
+                (let ((button (and *combo-box-toolbar*
+                                   (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                    *combo-box-toolbar*
+                                    mx
+                                    (- my toolbar-y-offset)))))
+                  (if button
+                      (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                       *combo-box-toolbar*
+                       button
+                       (list :window-id *combo-box-window-id*))
+                      (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-widgets* mx my))))
+               ((and (not (slot-value ev 'sdl3:%down)) (= window-id *combo-box-window-id*))
+                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *combo-box-widgets* mx my)))))
+         :continue)
+        (sdl3:mouse-wheel-event
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (popup-widget (popup-widget-for-window window-id)))
+           (cond
+             (popup-widget
+              (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-wheel
+               popup-widget
+               (round (slot-value ev 'sdl3:%y))))
+             ((= window-id *combo-box-window-id*)
+              (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+               *combo-box-widgets*
+               (round (slot-value ev 'sdl3:%mouse-x))
+               (round (slot-value ev 'sdl3:%mouse-y))
+               (round (slot-value ev 'sdl3:%x))
+               (round (slot-value ev 'sdl3:%y))))))
+         :continue)
+        (sdl3:keyboard-event
+         (when (and (slot-value ev 'sdl3:%down)
+                    (not (slot-value ev 'sdl3:%repeat)))
+           (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                    (slot-value ev 'sdl3:%key)
+                    :mods (slot-value ev 'sdl3:%mod)
+                    :context (list :window-id *combo-box-window-id*))
+             (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+              *combo-box-widgets*
+              (slot-value ev 'sdl3:%key)
+              :mods (slot-value ev 'sdl3:%mod)
+              :on-escape (lambda ()
+                           (setf *combo-box-open* nil)
+                           :success))))
+         :continue)
+        (t :continue)))))
 
 (sdl3:def-app-quit combo-box-01-quit (result)
   (declare (ignore result))
+  (mnas-sdl3-gui/widgets:combo-box-disable-popup-window *combo-box-01-small*)
+  (mnas-sdl3-gui/widgets:combo-box-disable-popup-window *combo-box-01-large*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *combo-box-renderer*
     (sdl3:destroy-renderer *combo-box-renderer*))

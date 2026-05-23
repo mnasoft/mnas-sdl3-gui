@@ -233,7 +233,7 @@
         (fill-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height '(180 180 180 255))
         (stroke-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height '(120 120 120 255))))))
 
-(defun %render-combo-box-popup (renderer widget border-color popup-bg track-bg thumb-bg thumb-border)
+(defun %render-combo-box-popup-at (renderer widget popup-x popup-y border-color popup-bg track-bg thumb-bg thumb-border)
   (normalize-combo-box-scroll-offset widget)
   (let* ((scrollbar-width +list-box-scrollbar-width+)
          (visible-count (combo-box-visible-item-count widget))
@@ -241,11 +241,10 @@
          (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
          (content-width (combo-box-content-width widget))
          (scroll-offset (list-box-scroll-offset widget))
-         (popup-y (combo-box-popup-y widget))
          (popup-height (combo-box-popup-height widget)))
-    (fill-rect renderer (widget-x widget) popup-y
+    (fill-rect renderer popup-x popup-y
                (widget-width widget) popup-height popup-bg)
-    (stroke-rect renderer (widget-x widget) popup-y
+    (stroke-rect renderer popup-x popup-y
                  (widget-width widget) popup-height border-color)
     (loop for index from scroll-offset below (min item-count (+ scroll-offset visible-count))
           for item in (nthcdr scroll-offset (list-box-items widget))
@@ -253,21 +252,27 @@
           for item-y = (+ popup-y 1 (* row (list-box-item-height widget)))
           do (progn
                (when (= index (list-box-selected-index widget))
-                 (fill-rect renderer (widget-x widget) item-y
+                 (fill-rect renderer popup-x item-y
                             content-width (list-box-item-height widget)
                             +color-highlight+))
                (render-text renderer (format nil "~a" item)
-                            (+ (widget-x widget) +widget-padding+)
+                            (+ popup-x +widget-padding+)
                             (+ item-y (/ (- (list-box-item-height widget) +font-text-height+) 2))
                             +color-text+)))
     (when scrollbar-needed-p
       (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
-          (combo-box-scrollbar-geometry widget)
+          (combo-box-popup-scrollbar-geometry widget popup-x popup-y)
         (declare (ignore needed-p max-offset))
         (fill-rect renderer track-x track-y scrollbar-width track-height track-bg)
         (stroke-rect renderer track-x track-y scrollbar-width track-height border-color)
         (fill-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height thumb-bg)
         (stroke-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height thumb-border)))))
+
+(defun %render-combo-box-popup (renderer widget border-color popup-bg track-bg thumb-bg thumb-border)
+  (%render-combo-box-popup-at renderer widget
+                              (widget-x widget)
+                              (combo-box-popup-y widget)
+                              border-color popup-bg track-bg thumb-bg thumb-border))
 
 (defun %render-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width)
   (let* ((selected-item (combo-box-selected-item widget))
@@ -318,7 +323,8 @@
                             (if (combo-box-expanded-p widget) "^" "v")
                             6
                             :border-width (if (widget-focused widget) 2 1)))
-  (when (combo-box-expanded-p widget)
+  (when (and (combo-box-expanded-p widget)
+             (not (combo-box-popup-window-enabled-p widget)))
     (%render-combo-box-popup renderer widget +color-border+
                              '(255 255 255 255)
                              '(232 232 232 255)
@@ -346,7 +352,8 @@
                             :border-width 0)
     (when (widget-focused widget)
       (%render-combo-box-focus-outline renderer widget 3)))
-  (when (combo-box-expanded-p widget)
+  (when (and (combo-box-expanded-p widget)
+             (not (combo-box-popup-window-enabled-p widget)))
     (%render-combo-box-popup renderer widget '(128 128 128 255)
                              '(255 255 255 255)
                              '(232 232 232 255)
@@ -392,7 +399,8 @@
                                      arrow-width
                                      (if (combo-box-expanded-p widget) "^" "v")
                                      6)
-    (when (combo-box-expanded-p widget)
+    (when (and (combo-box-expanded-p widget)
+               (not (combo-box-popup-window-enabled-p widget)))
       (%render-combo-box-popup renderer widget +color-border+
                                '(255 255 255 255)
                                '(232 232 232 255)
@@ -420,7 +428,8 @@
                                      :border-width 0)
     (when (widget-focused widget)
       (%render-combo-box-focus-outline renderer widget 3)))
-  (when (combo-box-expanded-p widget)
+  (when (and (combo-box-expanded-p widget)
+             (not (combo-box-popup-window-enabled-p widget)))
     (%render-combo-box-popup renderer widget '(128 128 128 255)
                              '(255 255 255 255)
                              '(232 232 232 255)
@@ -446,12 +455,46 @@
                                      :border-width 0)
     (when (widget-focused widget)
       (%render-combo-box-focus-outline renderer widget 4)))
-  (when (combo-box-expanded-p widget)
+  (when (and (combo-box-expanded-p widget)
+             (not (combo-box-popup-window-enabled-p widget)))
     (%render-combo-box-popup renderer widget '(110 110 110 255)
                              '(250 250 250 255)
                              '(226 226 226 255)
                              '(176 176 176 255)
                              '(96 96 96 255))))
+
+(defun combo-box-render-popup-window (widget &key renderer)
+  "Render WIDGET popup into its popup window renderer." 
+  (let ((popup-renderer (or renderer (combo-box-popup-renderer widget))))
+    (when (and (combo-box-expanded-p widget)
+               (combo-box-popup-window-enabled-p widget)
+               (not (combo-box-popup-visible-p widget)))
+      (combo-box-show-popup-window widget))
+    (when (and popup-renderer (combo-box-popup-visible-p widget))
+      (typecase *widget-style*
+        (windows-widget-style
+         (%render-combo-box-popup-at popup-renderer widget 0 0
+                                     '(128 128 128 255)
+                                     '(255 255 255 255)
+                                     '(232 232 232 255)
+                                     '(180 180 180 255)
+                                     '(96 96 96 255)))
+        (motif-widget-style
+         (%render-combo-box-popup-at popup-renderer widget 0 0
+                                     '(110 110 110 255)
+                                     '(250 250 250 255)
+                                     '(226 226 226 255)
+                                     '(176 176 176 255)
+                                     '(96 96 96 255)))
+        (t
+         (%render-combo-box-popup-at popup-renderer widget 0 0
+                                     +color-border+
+                                     '(255 255 255 255)
+                                     '(232 232 232 255)
+                                     '(180 180 180 255)
+                                     '(120 120 120 255))))
+      (sdl3:render-present popup-renderer)))
+  widget)
 
 (defmethod render (renderer (widget button) (style windows-widget-style))
   (declare (ignore style))

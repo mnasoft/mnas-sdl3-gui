@@ -204,7 +204,23 @@
    (expanded-p :initarg :expanded-p :initform nil :accessor combo-box-expanded-p
                :documentation "Whether combo-box popup list is currently visible")
    (max-visible-items :initarg :max-visible-items :initform 6 :accessor combo-box-max-visible-items
-                      :documentation "Maximum number of visible rows in the popup list"))
+                      :documentation "Maximum number of visible rows in the popup list")
+   (popup-mode :initarg :popup-mode :initform :inline :accessor combo-box-popup-mode
+               :documentation "Popup mode: :inline renders in-window, :window uses a transient popup window.")
+   (popup-host-window :initarg :popup-host-window :initform nil
+                      :accessor combo-box-popup-host-window
+                      :documentation "SDL host window for popup when popup-mode is :window.")
+   (popup-window :initarg :popup-window :initform nil :accessor combo-box-popup-window
+                 :documentation "SDL popup window for dropdown list (when popup-mode is :window).")
+   (popup-renderer :initarg :popup-renderer :initform nil :accessor combo-box-popup-renderer
+                   :documentation "SDL renderer for popup window (when popup-mode is :window).")
+   (popup-window-id :initarg :popup-window-id :initform 0 :accessor combo-box-popup-window-id
+                    :documentation "SDL window id for popup window (when popup-mode is :window).")
+   (popup-visible-p :initarg :popup-visible-p :initform nil :accessor combo-box-popup-visible-p
+                    :documentation "Whether popup window is currently shown.")
+   (popup-layer-manager :initarg :popup-layer-manager :initform nil
+                        :accessor combo-box-popup-layer-manager
+                        :documentation "Optional window-layer-manager for popup focus/z-order."))
   (:documentation "Drop-down selection widget backed by a popup list."))
 
 (defclass editable-combo-box (entry combo-box)

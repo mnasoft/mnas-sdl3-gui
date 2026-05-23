@@ -123,6 +123,14 @@
          (arrow-width 24)
          (popup-y (+ main-y main-height)))
     (when inside
+            (format t "[combo-box] mouse-down x=~D y=~D arrow-hit=~A expanded=~A mode=~A enabled=~A host=~S popup-id=~S~%"
+              x y
+              (>= x (- (+ main-x main-width) arrow-width))
+              (combo-box-expanded-p widget)
+              (combo-box-popup-mode widget)
+              (combo-box-popup-window-enabled-p widget)
+              (combo-box-popup-host-window widget)
+              (combo-box-popup-window-id widget))
       (setf (widget-focused widget) t)
       (cond
         ((and (<= main-y y (+ main-y main-height))
@@ -140,9 +148,10 @@
                (entry-ensure-cursor-visible widget)
                (when (combo-box-expanded-p widget)
                  (sync-combo-box-expanded-state widget nil)))))
-        ((and (combo-box-expanded-p widget)
-              (>= y popup-y)
-              (< y (+ popup-y (combo-box-popup-height widget))))
+          ((and (combo-box-expanded-p widget)
+            (not (combo-box-popup-window-enabled-p widget))
+            (>= y popup-y)
+            (< y (+ popup-y (combo-box-popup-height widget))))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
                 (visible-count (combo-box-visible-item-count widget))
@@ -191,7 +200,8 @@
          (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))
          (when (combo-box-expanded-p widget)
            (ensure-combo-box-selection-visible widget)))
-        ((combo-box-expanded-p widget)
+          ((and (combo-box-expanded-p widget)
+            (not (combo-box-popup-window-enabled-p widget)))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
                 (visible-count (combo-box-visible-item-count widget))

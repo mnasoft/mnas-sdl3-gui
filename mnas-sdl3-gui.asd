@@ -25,13 +25,13 @@
                (:file "src/toolbar/presenter/package")
                (:file "src/toolbar/presenter/functions")
                (:file "src/widgets/classes")
-              (:file "src/widgets/classes-grid")
+               (:file "src/widgets/classes-grid")
                (:file "src/widgets/methods/print-object")
                (:file "src/widgets/generics")
                (:file "src/widgets/functions")
                (:file "src/widgets/layout")
                (:file "src/widgets/ttf-render")
-              (:file "src/widgets/methods/grid-layout")
+               (:file "src/widgets/methods/grid-layout")
                (:file "src/widgets/sdl3-ttf-render")
                (:file "src/widgets/style-functions")
                (:file "src/widgets/rendering-primitives")
@@ -146,7 +146,9 @@
 (asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/combo-box-01"
-               "mnas-sdl3-gui/demos/dialog/combo-box-02"))
+               "mnas-sdl3-gui/demos/dialog/combo-box-02"
+               "mnas-sdl3-gui/demos/dialog/combo-box-03"
+               ))
 
 (asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-01"
   :description "Demos for mnas-sdl3-gui"
@@ -165,6 +167,16 @@
                 :serial t
                 :components ((:file "package")
                              (:file "combo-box-02")))))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-03"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/dialog/combo-box/combo-box-03"
+                :serial t
+                :components ((:file "package")
+                             (:file "combo-box-03")))))
+
 
 (asdf:defsystem "mnas-sdl3-gui/demos/dialog/entry"
   :description "Demos for mnas-sdl3-gui"
