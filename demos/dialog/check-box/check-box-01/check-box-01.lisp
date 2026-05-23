@@ -237,5 +237,7 @@
    'check-box-demo-quit)
   :done)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box-01)
 ;;;; (check-box-01)

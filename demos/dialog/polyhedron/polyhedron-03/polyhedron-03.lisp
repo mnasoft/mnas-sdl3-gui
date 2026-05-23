@@ -499,6 +499,7 @@
      'polyhedron-vulkan-solid-demo-event
      'polyhedron-vulkan-solid-demo-quit))
   
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron-03)
 ;;;; (polyhedron-03)
-

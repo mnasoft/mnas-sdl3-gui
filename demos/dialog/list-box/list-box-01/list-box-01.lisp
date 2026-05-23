@@ -1,4 +1,4 @@
-;;;; ./demos/dialog/two-list-boxes-demo.lisp
+;;;; ./demos/dialog/list-box/list-box-01/list-box-01.lisp
 
 (in-package :mnas-sdl3-gui/demos/dialog/list-box-01)
 
@@ -95,12 +95,12 @@
                           (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)))
          (right-index (and *list-box-01-right*
                            (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*))))
-        (when ok-cmd
-       (mnas-sdl3-gui/commands:set-command-enabled ok-cmd
-                        (and (integerp left-index)
-                          (<= 0 left-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))))
-                          (integerp right-index)
-                          (<= 0 right-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*))))))))
+    (when ok-cmd
+      (mnas-sdl3-gui/commands:set-command-enabled ok-cmd
+                                                  (and (integerp left-index)
+                                                       (<= 0 left-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))))
+                                                       (integerp right-index)
+                                                       (<= 0 right-index (1- (length (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*)))))))))
 
 (defun list-box-01-items (count prefix)
   "Create COUNT demo strings prefixed by PREFIX."
@@ -298,5 +298,7 @@
    'list-box-01-demo-quit)
   *list-box-01-result*)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/list-box)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/list-box-01)
 ;;;; (list-box-01)

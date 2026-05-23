@@ -453,4 +453,6 @@
    'polyhedron-demo-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron-01)
 ;;;; (polyhedron-01)

@@ -337,6 +337,8 @@
    'entry-02-quit)
   *entry-02-result*)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry-02)
 ;;;; (entry-02)
 

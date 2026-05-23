@@ -242,7 +242,7 @@
    'combo-box-01-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (ql:quickload :mnas-sdl3-gui/combo-box-01)
-;;;; (mnas-sdl3-gui/demos/dialog/combo-box-01:combo-box-01)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box-01)
 ;;;; (combo-box-01)
 

@@ -387,5 +387,7 @@
    'tree-01-event
    'tree-01-quit))
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/tree)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/tree-01)
 ;;;; (tree-01)

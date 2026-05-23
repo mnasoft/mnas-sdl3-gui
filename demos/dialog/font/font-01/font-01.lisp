@@ -217,5 +217,6 @@
   :done)
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/font)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/font-01)
 ;;;; (font-01)

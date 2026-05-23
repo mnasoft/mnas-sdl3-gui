@@ -366,4 +366,7 @@
    'toggle-01-demo-quit)
   :done)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toggle)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toggle-01)
 ;;;; (toggle-01)

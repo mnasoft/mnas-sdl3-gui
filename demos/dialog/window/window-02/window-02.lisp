@@ -403,5 +403,6 @@
   :done)
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-02)
-;;;; (mnas-sdl3-gui/demos/dialog/window-02:window-02)
+;;;; (window-02)

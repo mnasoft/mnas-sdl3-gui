@@ -295,5 +295,7 @@
    'dialog-event
    'dialog-quit))
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget-01)
 ;;;; (widget-01)

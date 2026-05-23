@@ -87,7 +87,6 @@
     (window-03-apply-opacity)
         (window-03-sync-command-state)
     (mnas-sdl3-gui/widgets:init-ttf-font))
-
   :continue)
 
 (sdl3:def-app-iterate window-03-iterate ()
@@ -98,38 +97,43 @@
   (sdl3:set-render-draw-color *window-03-renderer* 0 0 0 0)
   (sdl3:render-clear *window-03-renderer*)
 
-    (window-03-sync-command-state)
+  (window-03-sync-command-state)
 
-    (sdl3:set-render-draw-color *window-03-renderer*
-              (if *window-03-frost* 24 34)
-              (if *window-03-frost* 30 44)
-              (if *window-03-frost* 40 58)
-              220)
-  (sdl3:render-fill-rect *window-03-renderer*
-            (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 266.0))
+  (sdl3:set-render-draw-color
+   *window-03-renderer*
+   (if *window-03-frost* 24 34)
+   (if *window-03-frost* 30 44)
+   (if *window-03-frost* 40 58)
+   220)
+  (sdl3:render-fill-rect
+   *window-03-renderer*
+   (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 266.0))
   (sdl3:set-render-draw-color *window-03-renderer* 90 160 245 255)
-  (sdl3:render-rect *window-03-renderer*
-          (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 266.0))
+  (sdl3:render-rect
+   *window-03-renderer*
+   (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 266.0))
+  (mnas-sdl3-gui/toolbar:render-toolbar
+   *window-03-toolbar*
+   *window-03-renderer*
+   +window-03-toolbar-x+
+   +window-03-toolbar-y+)
 
-    (mnas-sdl3-gui/toolbar:render-toolbar
-     *window-03-toolbar*
-     *window-03-renderer*
-     +window-03-toolbar-x+
-     +window-03-toolbar-y+)
-
-  (mnas-sdl3-gui/widgets:render-text *window-03-renderer*
-                                     "Transparent Window Demo (:transparent)"
-                                     48.0 98.0 '(230 240 255 255))
-  (mnas-sdl3-gui/widgets:render-text *window-03-renderer*
-                                     "Toolbar/full-state: + - Reset Frost Quit"
-                                     48.0 126.0 '(182 206 245 255))
-  (mnas-sdl3-gui/widgets:render-text *window-03-renderer*
-                                     (format nil "Window opacity: ~,2f" *window-03-opacity*)
-                                     48.0 154.0 '(255 224 132 255))
-  (mnas-sdl3-gui/widgets:render-text *window-03-renderer*
-                                     "Behind this panel desktop should remain visible."
-                                     48.0 184.0 '(196 210 220 255))
-
+  (mnas-sdl3-gui/widgets:render-text
+   *window-03-renderer*
+   "Transparent Window Demo (:transparent)"
+   48.0 98.0 '(230 240 255 255))
+  (mnas-sdl3-gui/widgets:render-text
+   *window-03-renderer*
+   "Toolbar/full-state: + - Reset Frost Quit"
+   48.0 126.0 '(182 206 245 255))
+  (mnas-sdl3-gui/widgets:render-text
+   *window-03-renderer*
+   (format nil "Window opacity: ~,2f" *window-03-opacity*)
+   48.0 154.0 '(255 224 132 255))
+  (mnas-sdl3-gui/widgets:render-text
+   *window-03-renderer*
+   "Behind this panel desktop should remain visible."
+   48.0 184.0 '(196 210 220 255))
   (sdl3:render-present *window-03-renderer*)
   :continue)
 
@@ -202,8 +206,8 @@
                   :context (list :window-id target-window-id))
              (unless *window-03-open*
                (return-from window-03-event :success)))))
-         :continue)
-       (t :continue))))
+       :continue)
+      (t :continue))))
 
 (sdl3:def-app-quit window-03-quit (result)
   (declare (ignore result))
@@ -220,12 +224,12 @@
   "Run dedicated demo for :transparent window flag." 
   (setf *window-03-window* nil
         *window-03-renderer* nil
-    *window-03-window-id* 0
-    *window-03-layer-manager* nil
-  *window-03-toolbar* nil
+        *window-03-window-id* 0
+        *window-03-layer-manager* nil
+        *window-03-toolbar* nil
         *window-03-open* t
-  *window-03-opacity* +window-03-default-opacity+
-  *window-03-frost* t)
+        *window-03-opacity* +window-03-default-opacity+
+        *window-03-frost* t)
   (sdl3:enter-app-main-callbacks
    'window-03-init
    'window-03-iterate
@@ -234,5 +238,6 @@
   :done)
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-03)
-;;;; (mnas-sdl3-gui/demos/dialog/window-03:window-03)
+;;;; (window-03)

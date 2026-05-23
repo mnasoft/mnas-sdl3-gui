@@ -267,4 +267,6 @@ Returns NIL when dialog is cancelled/closed."
   *entry-01-result*)
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry-01)
 ;;;; (entry-01)

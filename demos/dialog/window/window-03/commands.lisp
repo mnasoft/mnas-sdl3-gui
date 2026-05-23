@@ -64,9 +64,8 @@
    :replace t)
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
-    :window-03/toggle-frost
-    "Toggle frosted panel style"
-    :group :window-03
+    :window-03/toggle-frost "Toggle frosted panel style"
+    :group                  :window-03
     :shortcut :f
     :checked t
     :execute (lambda (context)
@@ -75,7 +74,7 @@
                (let ((cmd (mnas-sdl3-gui/commands:find-command :window-03/toggle-frost)))
                  (when cmd
                    (mnas-sdl3-gui/commands:set-command-checked cmd *window-03-frost*))))
-    t)
+    :can-execute t)
    :replace t))
 
 (defun window-03-register-shortcuts ()

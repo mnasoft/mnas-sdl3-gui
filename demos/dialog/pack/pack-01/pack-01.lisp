@@ -425,6 +425,8 @@
    'pack-layout-demo-quit)
   :done)
 
+
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/pack)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/pack-01)
 ;;;; (pack-01)

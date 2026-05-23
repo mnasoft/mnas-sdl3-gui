@@ -415,5 +415,7 @@
   "Run visual runtime demo for nested modal focus-trap policy." 
   (run-window-01-demo "Window Modal Stack Runtime Demo" :resizable))
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-01)
 ;;;; (window-01)

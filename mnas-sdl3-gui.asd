@@ -85,23 +85,18 @@
 
 (asdf:defsystem #:mnas-sdl3-gui/demos
   :description "Demos for mnas-sdl3-gui"
-  :depends-on ("mnas-sdl3-gui"
-               "mnas-sdl3-gui/demos/dialog/check-box-01"
-               "mnas-sdl3-gui/demos/dialog/combo-box-01"
-               "mnas-sdl3-gui/demos/dialog/combo-box-02"
-               "mnas-sdl3-gui/demos/dialog/entry-01"
-               "mnas-sdl3-gui/demos/dialog/polyhedron-01"
-               "mnas-sdl3-gui/demos/dialog/polyhedron-02"
-               "mnas-sdl3-gui/demos/dialog/polyhedron-03"
-               "mnas-sdl3-gui/demos/dialog/polyhedron-04"
-               "mnas-sdl3-gui/demos/dialog/tree-01"
-               "mnas-sdl3-gui/demos/dialog/window-01"
-               "mnas-sdl3-gui/demos/dialog/window-02"
-               "mnas-sdl3-gui/demos/dialog/window-03"
-               "mnas-sdl3-gui/demos/dialog/widget-01"
-               "mnas-sdl3-gui/demos/dialog/toggle-01"
-               "mnas-sdl3-gui/demos/dialog/font-01"
-               "mnas-sdl3-gui/demos/dialog/pack-01"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/check-box"
+               "mnas-sdl3-gui/demos/dialog/combo-box"
+               "mnas-sdl3-gui/demos/dialog/entry"
+               "mnas-sdl3-gui/demos/dialog/font"
+               "mnas-sdl3-gui/demos/dialog/list-box"
+               "mnas-sdl3-gui/demos/dialog/pack"
+               "mnas-sdl3-gui/demos/dialog/polyhedron"
+               "mnas-sdl3-gui/demos/dialog/simple"
+               "mnas-sdl3-gui/demos/dialog/toggle"
+               "mnas-sdl3-gui/demos/dialog/tree"
+               "mnas-sdl3-gui/demos/dialog/widget"
+               "mnas-sdl3-gui/demos/dialog/window"
                )
   :serial t
   :components ((:file "demos/package")
@@ -109,10 +104,9 @@
                (:file "demos/menu/screen-menu-classes")
                (:file "demos/dialog/package")))
 
-
 (asdf:defsystem #:mnas-sdl3-gui/demos/canvas
       :description "Canvas demos for mnas-sdl3-gui"
-      :depends-on (#:mnas-sdl3-gui)
+      :depends-on ("mnas-sdl3-gui")
       :serial t
       :components ((:module "demos/canvas"
                       :serial t
@@ -120,27 +114,43 @@
                                    (:file "canvas-01")
                                    (:file "canvas-window-demo")))))
 
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/simple"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/simple-01"))
+
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/simple-01
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/simple/simple-01"
                 :serial t
                 :components ((:file "package")
                              (:file "simple-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/check-box-01
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/check-box"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui"
+               "mnas-sdl3-gui/demos/dialog/check-box-01"
+               "mnas-sdl3-gui/demos/dialog/combo-box-02"))
+
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/check-box-01"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/check-box/check-box-01"
                 :serial t
                 :components ((:file "package")
                              (:file "check-box-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/combo-box-01
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui/demos/dialog/combo-box-01"
+               "mnas-sdl3-gui/demos/dialog/combo-box-02"))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-01"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/combo-box/combo-box-01"
                 :serial t
@@ -149,16 +159,21 @@
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/combo-box-02
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/combo-box/combo-box-02"
                 :serial t
                 :components ((:file "package")
                              (:file "combo-box-02")))))
 
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/entry"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/entry-01"
+               "mnas-sdl3-gui/demos/dialog/entry-02"))
+
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-01
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/entry/entry-01"
                 :serial t
@@ -168,58 +183,75 @@
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-02
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/entry/entry-02"
                 :serial t
                 :components ((:file "package")
                              (:file "entry-02")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-01
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui/demos/dialog/polyhedron-01"
+               "mnas-sdl3-gui/demos/dialog/polyhedron-02"
+               "mnas-sdl3-gui/demos/dialog/polyhedron-03"
+               "mnas-sdl3-gui/demos/dialog/polyhedron-04"))
+
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-01"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/polyhedron/polyhedron-01"
                 :serial t
                 :components ((:file "package")
                              (:file "polyhedron-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-02
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-02"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/polyhedron/polyhedron-02"
                 :serial t
                 :components ((:file "package")
                              (:file "polyhedron-02")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-03
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-03"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/polyhedron/polyhedron-03"
                 :serial t
                 :components ((:file "package")
                              (:file "polyhedron-03")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/polyhedron-04
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-04"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/polyhedron/polyhedron-04"
                 :serial t
                 :components ((:file "package")
                              (:file "polyhedron-04")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/tree-01
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/tree"
   :description "Filesystem tree demo for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui/demos/dialog/tree-01"))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/tree-01"
+  :description "Filesystem tree demo for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/tree/tree-01"
                 :serial t
                 :components ((:file "package")
                              (:file "commands")
                              (:file "tree-01")))))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/window"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/window-01"
+               "mnas-sdl3-gui/demos/dialog/window-02"))
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-01
   :description "Demos for mnas-sdl3-gui"
@@ -235,7 +267,7 @@
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-02
   :description "Popup-menu window demo for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/window/window-02"
                 :serial t
@@ -245,7 +277,7 @@
 
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-03
   :description "Transparent window demo for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/window/window-03"
                 :serial t
@@ -253,9 +285,13 @@
                              (:file "commands")
                              (:file "window-03")))))
 
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/widget"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/widget-01"))
+
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/widget-01
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/widget/widget-01"
                 :serial t
@@ -263,9 +299,13 @@
                              (:file "commands")
                              (:file "widget-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/toggle-01
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/toggle"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui/demos/dialog/toggle-01"))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/toggle-01"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/toggle/toggle-01"
                 :serial t
@@ -273,9 +313,14 @@
                              (:file "commands")
                              (:file "toggle-01")))))
 
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/font"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/font-01"))
+
+
 (asdf:defsystem #:mnas-sdl3-gui/demos/dialog/font-01
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/font/font-01"
                 :serial t
@@ -283,9 +328,13 @@
                              (:file "commands")
                              (:file "font-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/pack-01
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/pack"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui)
+  :depends-on ("mnas-sdl3-gui/demos/dialog/pack-01"))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/pack-01"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/pack/pack-01"
                 :serial t
@@ -293,4 +342,16 @@
                              (:file "commands")
                              (:file "pack-01")))))
 
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/list-box"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui/demos/dialog/list-box-01"))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/list-box-01"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/dialog/list-box/list-box-01"
+                :serial t
+                :components ((:file "package")
+                             (:file "list-box-01")))))
 

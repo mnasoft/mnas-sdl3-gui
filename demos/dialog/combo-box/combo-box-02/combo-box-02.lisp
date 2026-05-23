@@ -256,4 +256,6 @@
    'combo-box-02-demo-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box)
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box-02)
 ;;;; (combo-box-02)
