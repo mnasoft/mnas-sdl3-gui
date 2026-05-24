@@ -98,7 +98,7 @@
 (defun dialog-widgets ()
   "Return focus-traversable widgets in the simple dialog."
   (if *dialog-root*
-      (mnas-sdl3-gui/widgets:widget-children *dialog-root*)
+      (mnas-sdl3-gui/widgets:children *dialog-root*)
       (list *ok-button* *cancel-button* *extra-button*)))
 
 (defun simple-01-root-widgets ()

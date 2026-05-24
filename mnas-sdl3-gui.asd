@@ -6,6 +6,7 @@
   :depends-on (#:sdl3 #:sdl3-ttf)
   :serial t
   :components ((:file "src/mnas-sdl3-gui")
+               (:file "src/debug")
                (:file "src/commands/package")
                (:file "src/commands/functions")
                (:file "src/commands/shortcuts")
@@ -38,6 +39,7 @@
                (:file "src/widgets/methods/render")
                (:file "src/widgets/toggle-functions")
                (:file "src/widgets/focus-functions")
+               (:file "src/widgets/methods/handle-widget-mouse-wheel")
                (:file "src/widgets/mouse-functions")
                (:file "src/widgets/entry-functions")
                (:file "src/widgets/methods/entry-cursor-pixel-offset")
