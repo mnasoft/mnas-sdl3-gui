@@ -4,7 +4,7 @@
 
 (defmethod handle-widget-key-event :around ((widget widget) key char &key ctrl shift alt)
   (declare (ignore key char ctrl shift alt))
-  (when (and (widget-enabled widget) (visible-p widget))
+  (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod handle-widget-key-event ((widget widget) key char &key ctrl shift alt)

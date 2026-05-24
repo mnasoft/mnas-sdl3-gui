@@ -7,7 +7,7 @@
 ;; migration completes.
 
 (defmethod children :around ((widget widget))
-  (when (and (widget-enabled widget) (visible-p widget))
+  (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod children ((widget widget))

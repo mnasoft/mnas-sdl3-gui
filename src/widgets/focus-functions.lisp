@@ -6,7 +6,7 @@
 
 (defun focusable-widget-p (widget)
   "Return true when WIDGET participates in keyboard focus traversal."
-  (and (widget-enabled widget)
+    (and (enabled-p widget)
       (visible-p widget)
        (widget-focusable widget)
        (typep widget '(or button toggle check-box entry list-box combo-box))))

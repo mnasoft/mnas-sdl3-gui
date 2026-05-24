@@ -4,7 +4,7 @@
 
 ;; Ensure only enabled/visible widgets handle motion.
 (defmethod handle-widget-mouse-motion :around ((widget widget) x y)
-  (when (and (widget-enabled widget) (visible-p widget))
+  (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod handle-widget-mouse-motion ((widget widget) x y)

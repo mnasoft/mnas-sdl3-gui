@@ -14,6 +14,9 @@
 (defgeneric visible-p (widget)
   (:documentation "Return non-NIL when WIDGET should be considered visible."))
 
+(defgeneric enabled-p (widget)
+  (:documentation "Return non-NIL when WIDGET is enabled for interaction."))
+
 (defgeneric update-widget-value (widget new-value)
   (:documentation "Update WIDGET with NEW-VALUE and trigger change callbacks when needed."))
 

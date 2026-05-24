@@ -8,7 +8,7 @@
           (widget-y obj)
           (widget-width obj)
           (widget-height obj)
-          (widget-enabled obj)
+          (enabled-p obj)
           (widget-focused obj)
           (visible-p obj)
           (widget-value obj)))

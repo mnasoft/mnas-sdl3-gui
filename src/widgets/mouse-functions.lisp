@@ -37,7 +37,7 @@
   "Dispatch mouse-wheel input to widgets under X/Y and return the widget that consumes it."
   (loop for widget in (widgets-in-hit-test-order widgets)
         when (and (visible-p widget)
-            (widget-enabled widget)
+          (enabled-p widget)
                   (contains-point-p widget x y)
                   (not (zerop dy))
                   (or (and (typep widget 'scroll-container)

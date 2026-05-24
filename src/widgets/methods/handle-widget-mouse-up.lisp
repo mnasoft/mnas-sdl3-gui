@@ -3,7 +3,7 @@
 (in-package :mnas-sdl3-gui/widgets)
 
 (defmethod handle-widget-mouse-up :around ((widget widget) x y)
-  (when (and (widget-enabled widget) (visible-p widget))
+  (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod handle-widget-mouse-up ((widget widget) x y)

@@ -76,6 +76,7 @@
                (:file "src/widgets/methods/canvas-2d-methods")
                (:file "src/widgets/methods/contains-point-p")
                (:file "src/widgets/methods/visible-p")
+               (:file "src/widgets/methods/enabled-p")
                (:file "src/widgets/methods/children")
                (:file "src/widgets/methods/update-widget-value")
                (:file "src/widgets/methods/widget-min-size")

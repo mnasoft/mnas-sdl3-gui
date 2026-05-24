@@ -4,7 +4,7 @@
 
 (defmethod handle-widget-key-press :around ((widget widget) key char)
   (declare (ignore key char))
-  (when (and (widget-enabled widget) (visible-p widget))
+  (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod handle-widget-key-press ((widget widget) key char)

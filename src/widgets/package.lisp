@@ -12,6 +12,7 @@
    #:widget-height
   #:widget-z-order
    #:widget-enabled
+    #:enabled-p
    #:widget-focused
    #:widget-visible
   #:visible-p

@@ -13,7 +13,7 @@
   (render-text renderer (label-text widget)
                (+ (widget-x widget) +widget-padding+)
                (+ (widget-y widget) +widget-padding+)
-               (if (widget-enabled widget) +color-text+ +color-disabled+)))
+               (if (enabled-p widget) +color-text+ +color-disabled+)))
 
 (defmethod render (renderer (widget widget-container) style)
   (declare (ignore style))
@@ -48,7 +48,7 @@
 (defmethod render (renderer (widget button) (style widget-style))
   (declare (ignore style))
   (let ((color (cond
-                 ((not (widget-enabled widget)) +color-disabled+)
+                 ((not (enabled-p widget)) +color-disabled+)
                  ((button-pressed-p widget) +color-button-active+)
                  (t +color-bg+))))
     (fill-rect renderer (widget-x widget) (widget-y widget)
@@ -61,7 +61,7 @@
     (when (widget-focused widget)
       (render-button-focus-outline renderer widget)))
   (render-button-label renderer widget
-                       (if (widget-enabled widget) +color-text+ +color-disabled+)
+                            (if (enabled-p widget) +color-text+ +color-disabled+)
                        :offset-y (if (button-pressed-p widget) 1 0)))
 
 (defmethod render (renderer (widget toggle) style)
@@ -186,7 +186,7 @@
                             (format nil "~A ~A" kind-marker (tree-node-text node))
                             (+ row-x 12)
                             content-y
-                            (if (widget-enabled widget) +color-text+ +color-disabled+))))
+                            (if (enabled-p widget) +color-text+ +color-disabled+))))
     (when (tree-view-scrollbar-needed-p widget)
       (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
           (tree-view-scrollbar-geometry widget)
@@ -293,11 +293,11 @@
                  arrow-width
                  main-height
                  border-color)
-    (render-text renderer label
-                 (+ (widget-x widget) +widget-padding+)
-                 (+ (widget-y widget)
-                    (max 0 (floor (- main-height text-height) 2)))
-                 (if (widget-enabled widget) +color-text+ +color-disabled+))
+      (render-text renderer label
+            (+ (widget-x widget) +widget-padding+)
+            (+ (widget-y widget)
+              (max 0 (floor (- main-height text-height) 2)))
+            (if (enabled-p widget) +color-text+ +color-disabled+))
     (render-text renderer arrow-text
                  (+ (- (+ (widget-x widget) (widget-width widget)) arrow-width) 8)
                  (+ (widget-y widget) offset-y)
@@ -317,7 +317,7 @@
   (let* ((arrow-width 24)
          (border-color (if (widget-focused widget) +color-focus-border+ +color-border+)))
     (%render-combo-box-main renderer widget
-                            (if (widget-enabled widget) '(255 255 255 255) '(245 245 245 255))
+                            (if (enabled-p widget) '(255 255 255 255) '(245 245 245 255))
                             border-color
                             arrow-width
                             (if (combo-box-expanded-p widget) "^" "v")
@@ -338,7 +338,7 @@
          (w (widget-width widget))
          (h (combo-box-main-height widget))
          (arrow-width 24)
-         (face (if (widget-enabled widget) '(255 255 255 255) '(236 236 236 255))))
+         (face (if (enabled-p widget) '(255 255 255 255) '(236 236 236 255))))
     (fill-rect renderer x y w h face)
     (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
     (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
@@ -394,7 +394,7 @@
   (let ((arrow-width 24)
         (border-color (if (widget-focused widget) +color-focus-border+ +color-border+)))
     (%render-editable-combo-box-main renderer widget
-                                     (if (widget-enabled widget) '(255 255 255 255) '(245 245 245 255))
+                                    (if (enabled-p widget) '(255 255 255 255) '(245 245 245 255))
                                      border-color
                                      arrow-width
                                      (if (combo-box-expanded-p widget) "^" "v")
@@ -414,7 +414,7 @@
         (w (widget-width widget))
         (h (combo-box-main-height widget))
         (arrow-width 24)
-        (face (if (widget-enabled widget) '(255 255 255 255) '(236 236 236 255))))
+        (face (if (enabled-p widget) '(255 255 255 255) '(236 236 236 255))))
     (fill-rect renderer x y w h face)
     (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
     (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
@@ -443,7 +443,7 @@
         (w (widget-width widget))
         (h (combo-box-main-height widget))
         (arrow-width 24)
-        (face (if (widget-enabled widget) '(244 244 244 255) '(224 224 224 255))))
+        (face (if (enabled-p widget) '(244 244 244 255) '(224 224 224 255))))
     (fill-rect renderer x y w h face)
     (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2)
     (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(110 110 110 255))
@@ -503,7 +503,7 @@
          (w (widget-width widget))
          (h (combo-box-main-height widget))
          (arrow-width 24)
-         (face (if (widget-enabled widget) '(244 244 244 255) '(224 224 224 255))))
+         (face (if (enabled-p widget) '(244 244 244 255) '(224 224 224 255))))
     (fill-rect renderer x y w h face)
     (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2)
     (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(110 110 110 255))
@@ -529,7 +529,7 @@
         (w (widget-width widget))
         (h (widget-height widget))
         (pressed (button-pressed-p widget))
-        (face (if (widget-enabled widget) '(212 208 200 255) '(190 190 190 255))))
+        (face (if (enabled-p widget) '(212 208 200 255) '(190 190 190 255))))
     (fill-rect renderer x y w h face)
     (if pressed
         (progn
@@ -543,7 +543,7 @@
     (when (widget-focused widget)
       (render-button-focus-outline renderer widget :inset 2)))
   (render-button-label renderer widget
-                       (if (widget-enabled widget) +color-text+ +color-disabled+)
+                       (if (enabled-p widget) +color-text+ +color-disabled+)
                        :offset-x (if (button-pressed-p widget) 1 0)
                        :offset-y (if (button-pressed-p widget) 1 0)))
 
@@ -554,7 +554,7 @@
         (w (widget-width widget))
         (h (widget-height widget))
         (pressed (button-pressed-p widget))
-        (face (if (widget-enabled widget) '(196 196 196 255) '(170 170 170 255))))
+        (face (if (enabled-p widget) '(196 196 196 255) '(170 170 170 255))))
     (fill-rect renderer x y w h face)
     (if pressed
         (render-bevel-rect renderer x y w h '(90 90 90 255) '(238 238 238 255) 2)
@@ -562,6 +562,6 @@
     (when (widget-focused widget)
       (render-button-focus-outline renderer widget :inset 4)))
   (render-button-label renderer widget
-                       (if (widget-enabled widget) +color-text+ +color-disabled+)
+                       (if (enabled-p widget) +color-text+ +color-disabled+)
                        :offset-x (if (button-pressed-p widget) 1 0)
                        :offset-y (if (button-pressed-p widget) 1 0)))
