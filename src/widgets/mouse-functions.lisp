@@ -49,14 +49,14 @@
                            (dispatch-widget-mouse-wheel
                             (widget-children widget)
                             x y dx dy))
-                      (and (typep widget 'combo-box)
-                           (combo-box-expanded-p widget)
-                           (list-box-scroll-by widget (- dy)))
+                        (and (typep widget 'combo-box)
+                          (combo-box-expanded-p widget)
+                          (scroll-by widget (- dy)))
                       (and (typep widget 'tree-view)
                         (tree-view-scroll-by widget (- dy)))
-                      (and (typep widget 'list-box)
-                           (not (typep widget 'combo-box))
-                           (list-box-scroll-by widget (- dy)))))
+                        (and (typep widget 'list-box)
+                          (not (typep widget 'combo-box))
+                          (scroll-by widget (- dy)))))
           return widget
         finally (return nil)))
 

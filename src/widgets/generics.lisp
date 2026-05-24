@@ -249,3 +249,6 @@ Default behavior is based on widget bounds."))
 
 (defgeneric handle-widget-key-event (widget key char &key ctrl shift alt)
   (:documentation "Handle keyboard input for WIDGET including modifier-aware bindings."))
+
+(defgeneric scroll-by (widget delta)
+  (:documentation "Scroll a scrollable WIDGET by DELTA units. Returns T when offset changed."))

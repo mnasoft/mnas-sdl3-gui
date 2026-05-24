@@ -645,13 +645,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                   (round (* max-offset (/ relative-top thumb-travel))))))
       (normalize-list-box-scroll-offset widget))))
 
-(defun list-box-scroll-by (widget delta)
-  "Scroll WIDGET by DELTA rows. Returns true when offset changed." 
-  (let ((old-offset (list-box-scroll-offset widget)))
-    (setf (list-box-scroll-offset widget)
-          (+ old-offset delta))
-    (normalize-list-box-scroll-offset widget)
-    (/= old-offset (list-box-scroll-offset widget))))
+;; `scroll-by` implementation moved to methods/scroll-by.lisp (defgeneric + defmethods).
 
 (defun combo-box-selected-item (widget)
   "Return currently selected item of combo-box WIDGET, or NIL when unavailable."
@@ -1051,4 +1045,4 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 (defun combo-box-handle-popup-mouse-wheel (widget dy)
   "Handle mouse-wheel inside popup window for WIDGET." 
   (when (not (zerop dy))
-    (list-box-scroll-by widget (- dy))))
+    (scroll-by widget (- dy))))
