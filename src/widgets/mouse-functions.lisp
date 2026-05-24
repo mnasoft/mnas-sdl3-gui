@@ -60,32 +60,3 @@
           return widget
         finally (return nil)))
 
-(defun handle-widget-click (widget x y)
-  "Compatibility helper: emulate click as mouse-down followed by mouse-up."
-  (let ((down (handle-widget-mouse-down widget x y))
-        (up (handle-widget-mouse-up widget x y)))
-    (or down up)))
-
-(defun handle-widget-mouse-motion (widget x y)
-  "Handle mouse motion over a widget."
-  (when (widget-visible widget)
-    (cond
-      ((typep widget 'combo-box)
-       (when (and (combo-box-expanded-p widget)
-                  (list-box-scrollbar-dragging-p widget))
-         (combo-box-set-scroll-offset-from-thumb-top
-          widget
-          (- y (list-box-scrollbar-drag-offset widget)))))
-      ((typep widget 'list-box)
-       (when (list-box-scrollbar-dragging-p widget)
-         (list-box-set-scroll-offset-from-thumb-top
-          widget
-          (- y (list-box-scrollbar-drag-offset widget)))))
-      ((typep widget 'widget-container)
-       (dolist (child (widgets-in-hit-test-order (widget-children widget)))
-         (handle-widget-mouse-motion child x y)))
-      (t
-       (let ((inside (contains-point-p widget x y)))
-         (when (typep widget 'button)
-           (when (button-armed-p widget)
-             (setf (button-pressed-p widget) inside))))))))

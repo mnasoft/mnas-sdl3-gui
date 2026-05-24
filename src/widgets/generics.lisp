@@ -238,6 +238,12 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-widget-mouse-up (widget x y)
   (:documentation "Handle mouse button release. Returns T if event was consumed."))
 
+(defgeneric handle-widget-click (widget x y)
+  (:documentation "Compatibility helper: emulate click as mouse-down followed by mouse-up."))
+
+(defgeneric handle-widget-mouse-motion (widget x y)
+  (:documentation "Handle mouse motion over a widget."))
+
 (defgeneric handle-widget-key-press (widget key char)
   (:documentation "Handle keyboard input for a widget. Returns T if key was handled."))
 
