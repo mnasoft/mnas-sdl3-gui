@@ -19,23 +19,7 @@
                   (enabled-p widget)
                   (contains-point-p widget x y)
                   (not (zerop dy))
-                  (or (and (typep widget 'scroll-container)
-                           (or (handle-widget-mouse-wheel
-                                (children widget)
-                                x y dx dy)
-                              (scroll-by widget (- dy))))
-                      (and (typep widget 'widget-container)
-                           (handle-widget-mouse-wheel
-                            (children widget)
-                            x y dx dy))
-                      (and (typep widget 'combo-box)
-                           (combo-box-expanded-p widget)
-                           (scroll-by widget (- dy)))
-                      (and (typep widget 'tree-view)
-                           (scroll-by widget (- dy)))
-                      (and (typep widget 'list-box)
-                           (not (typep widget 'combo-box))
-                           (scroll-by widget (- dy)))))
+                  (handle-widget-mouse-wheel widget x y dx dy))
           return widget
         finally (return nil)))
 
