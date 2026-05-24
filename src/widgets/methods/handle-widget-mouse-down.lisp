@@ -12,7 +12,7 @@
 
 (defmethod handle-widget-mouse-down ((widget widget-container) x y)
   (when (contains-point-p widget x y)
-    (loop for child in (widgets-in-hit-test-order (widget-children widget))
+    (loop for child in (widgets-in-hit-test-order (children widget))
           when (handle-widget-mouse-down child x y)
             do (setf (widget-focused widget) t)
                (return t)

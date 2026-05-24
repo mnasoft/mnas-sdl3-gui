@@ -12,7 +12,7 @@
 
 (defmethod handle-widget-mouse-up ((widget widget-container) x y)
   (when (contains-point-p widget x y)
-    (dolist (child (widgets-in-hit-test-order (widget-children widget)))
+    (dolist (child (widgets-in-hit-test-order (children widget)))
       (when (handle-widget-mouse-up child x y)
         (return t)))
     nil))

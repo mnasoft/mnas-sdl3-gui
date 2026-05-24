@@ -41,14 +41,14 @@
                   (contains-point-p widget x y)
                   (not (zerop dy))
                   (or (and (typep widget 'scroll-container)
-                           (or (dispatch-widget-mouse-wheel
-                                (widget-children widget)
+                            (or (dispatch-widget-mouse-wheel
+                              (children widget)
                                 x y dx dy)
                              (scroll-by widget (- dy))))
                       (and (typep widget 'widget-container)
-                           (dispatch-widget-mouse-wheel
-                            (widget-children widget)
-                            x y dx dy))
+                        (dispatch-widget-mouse-wheel
+                         (children widget)
+                         x y dx dy))
                         (and (typep widget 'combo-box)
                           (combo-box-expanded-p widget)
                           (scroll-by widget (- dy)))

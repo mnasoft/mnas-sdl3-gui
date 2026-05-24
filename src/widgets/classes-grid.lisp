@@ -34,7 +34,7 @@
 (defun grid-add-child (grid child &key (row 0) (col 0) (row-span 1) (col-span 1)
                                  (halign :fill) (valign :fill) (weight-x 0) (weight-y 0))
   "Add CHILD to GRID with cell constraints. Returns CHILD."
-  (push child (widget-children grid))
+  (push child (children grid))
   (let ((c (make-instance 'grid-child-constraint :row row :col col :row-span row-span :col-span col-span
                           :halign halign :valign valign :weight-x weight-x :weight-y weight-y)))
     (setf (grid-child-constraints grid)

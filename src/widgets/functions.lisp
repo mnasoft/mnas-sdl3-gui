@@ -159,8 +159,8 @@
 
 (defun scroll-container-content-height (widget)
   "Return total height of child widgets inside scroll container." 
-  (loop for child in (widget-children widget)
-        sum (widget-height child)))
+    (loop for child in (children widget)
+      sum (widget-height child)))
 
 (defun scroll-container-max-scroll-offset (widget)
   "Return maximal vertical scroll offset for SCROLL-CONTAINER." 
@@ -177,18 +177,18 @@
 
 (defun widget-add-child (container child)
   "Add CHILD to CONTAINER's child widget list." 
-  (push child (widget-children container))
+  (push child (children container))
   container)
 
 (defun widget-remove-child (container child)
   "Remove CHILD from CONTAINER's child widget list." 
-  (setf (widget-children container)
-        (remove child (widget-children container) :test #'eq))
+    (setf (children container)
+      (remove child (children container) :test #'eq))
   container)
 
 (defun widget-clear-children (container)
   "Remove all children from CONTAINER." 
-  (setf (widget-children container) nil)
+  (setf (children container) nil)
   container)
 
 (defun tree-node-directory-p (node)

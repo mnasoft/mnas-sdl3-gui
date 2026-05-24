@@ -17,7 +17,7 @@
 
 (defmethod render (renderer (widget widget-container) style)
   (declare (ignore style))
-  (dolist (child (widget-children widget))
+  (dolist (child (children widget))
     (render-widget renderer child)))
 
 (defmethod render (renderer (widget scroll-container) style)
@@ -28,7 +28,7 @@
   (stroke-rect renderer (widget-x widget) (widget-y widget)
                (widget-width widget) (widget-height widget)
                +color-border+)
-  (dolist (child (widget-children widget))
+  (dolist (child (children widget))
     (render-widget renderer child)))
 
 (defmethod render (renderer (widget canvas-2d-widget) style)

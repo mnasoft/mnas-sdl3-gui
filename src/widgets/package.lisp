@@ -28,6 +28,7 @@
   #:column-stack
   #:canvas-2d-widget
   #:widget-children
+  #:children
   #:scroll-container-scroll-offset
   #:row-stack-spacing
   #:row-stack-padding

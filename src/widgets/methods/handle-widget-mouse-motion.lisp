@@ -14,7 +14,7 @@
 
 (defmethod handle-widget-mouse-motion ((widget widget-container) x y)
   "Propagate mouse-motion to children in hit-test order."
-  (dolist (child (widgets-in-hit-test-order (widget-children widget)))
+  (dolist (child (widgets-in-hit-test-order (children widget)))
     (handle-widget-mouse-motion child x y))
   nil)
 
