@@ -327,7 +327,7 @@
               (return-from pack-layout-demo-event :success)))))
        :continue)
       (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
         *pack-demo-widgets*
         (round (slot-value ev 'sdl3:%x))
         (round (slot-value ev 'sdl3:%y)))

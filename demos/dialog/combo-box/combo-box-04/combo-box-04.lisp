@@ -116,7 +116,7 @@
              (round (slot-value ev 'sdl3:%y))))
            
            ((= win-id (sdl3:get-window-id *window*))
-            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
              *widgets*
              (round (slot-value ev 'sdl3:%x))
              (round (slot-value ev 'sdl3:%y)))))

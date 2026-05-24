@@ -7,6 +7,15 @@
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
+(defmethod handle-widget-mouse-motion ((widgets cons) x y)
+  "Handle mouse-motion when a list (cons) of widgets is provided.
+This replaces the old `dispatch-widget-mouse-motion` free function and
+forwards the motion event to each widget in the list in order. Returns
+nil." 
+  (dolist (w widgets)
+    (handle-widget-mouse-motion w x y))
+  nil)
+
 (defmethod handle-widget-mouse-motion ((widget widget) x y)
   "Default no-op for generic widgets."
   (declare (ignore x y))

@@ -102,19 +102,17 @@
                                :items (combo-box-01-items "Preset" 18)
                                :selected-index 4
                                :max-visible-items 7))
-         (action (make-instance 'mnas-sdl3-gui/widgets:button
-                                :x 20 :y 196 :width 140 :height 34
-                                :text "Report Value"
-                                :on-click (lambda (widget)
-                                            (declare (ignore widget))
-                                            (setf *combo-box-status*
-                                                  (format nil "Selected: ~A / ~A"
-                                                          (mnas-sdl3-gui/widgets:widget-value small)
-                                                          (mnas-sdl3-gui/widgets:widget-value large)))))))
-    (setf *combo-box-01-small* small
-          *combo-box-01-large* large
-          *combo-box-widgets* (list title hint small large action))
-    *combo-box-widgets*))
+           (action (make-instance 'mnas-sdl3-gui/widgets:button
+                  :x 20 :y 196 :width 140 :height 34
+                  :text "Report Value"
+                  :on-click (lambda (widget)
+                      (declare (ignore widget))
+                      (setf *combo-box-status*
+                        (format nil "Selected: ~A / ~A"
+                            (mnas-sdl3-gui/widgets:widget-value small)
+                            (mnas-sdl3-gui/widgets:widget-value large))))))
+          (setf *combo-box-widgets* (list title hint small large action))
+          *combo-box-widgets*)
 
 (sdl3:def-app-init combo-box-01-init (argc argv)
   (declare (ignore argc argv))
@@ -212,7 +210,7 @@
                (round (slot-value ev 'sdl3:%x))
                (round (slot-value ev 'sdl3:%y))))
              ((= window-id *combo-box-window-id*)
-              (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
                *combo-box-widgets*
                (round (slot-value ev 'sdl3:%x))
                (round (slot-value ev 'sdl3:%y))))))

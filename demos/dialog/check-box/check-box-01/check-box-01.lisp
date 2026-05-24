@@ -175,7 +175,7 @@
        (setf *check-box-open* nil)
        :success)
       (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
         *check-box-widgets*
         (round (slot-value ev 'sdl3:%x))
         (round (slot-value ev 'sdl3:%y)))

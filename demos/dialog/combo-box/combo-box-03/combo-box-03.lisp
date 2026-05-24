@@ -90,10 +90,10 @@
              (round (slot-value ev 'sdl3:%x))
              (round (slot-value ev 'sdl3:%y))))
            ((= win-id (sdl3:get-window-id *combo-box-03-window*))
-            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
-             *combo-box-03-widgets*
-             (round (slot-value ev 'sdl3:%x))
-             (round (slot-value ev 'sdl3:%y))))))
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+               (list *combo-box-03-widgets*)
+               (round (slot-value ev 'sdl3:%x))
+               (round (slot-value ev 'sdl3:%y))))))
        :continue)
       (sdl3:mouse-wheel-event
        (let ((win-id (slot-value ev 'sdl3:%window-id)))

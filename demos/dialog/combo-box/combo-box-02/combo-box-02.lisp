@@ -203,8 +203,8 @@
            ((= win-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-02-editable*))
             (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-motion *combo-box-02-editable* mx my))
            ((= win-id *combo-box-02-window-id*)
-            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
-             *combo-box-02-widgets* mx my))))
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+               (list *combo-box-02-widgets*) mx my))))
        :continue)
       (sdl3:mouse-button-event
        (let ((button (slot-value ev 'sdl3:%button))

@@ -199,7 +199,7 @@
        (widget-01-command :widget-01/quit)
        :success)
       (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-motion
+         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
         (list *widget-root*)
         (round (slot-value ev 'sdl3:%x))
         (round (slot-value ev 'sdl3:%y)))
