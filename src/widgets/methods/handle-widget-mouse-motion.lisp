@@ -7,7 +7,7 @@
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
-defmethod handle-widget-mouse-motion ((widgets cons) x y)
+(defmethod handle-widget-mouse-motion ((widgets cons) x y)
   "Handle mouse-motion when a list (cons) of widgets is provided.
 This replaces the old `dispatch-widget-mouse-motion` free function and
 forwards the motion event to each widget in the list in order. Returns
@@ -23,6 +23,13 @@ nil."
 (defmethod handle-widget-mouse-motion ((widget widget) x y)
   "Default no-op for generic widgets."
   (declare (ignore x y))
+  nil)
+
+(defmethod handle-widget-mouse-motion ((w label) x y)
+  "Handle mouse-motion for `label` widgets (no interactive behaviour).
+Temporary debug logging to help track motion events over labels." 
+  (format t "[mouse-motion:label] text=~S x=~D y=~D~%" (label-text w) x y)
+  (finish-output)
   nil)
 
 (defmethod handle-widget-mouse-motion ((widget widget-container) x y)
