@@ -47,7 +47,6 @@
                (:file "src/widgets/methods/compute-text-offset-to-position")
                (:file "src/widgets/methods/entry-visible-text-width")
                (:file "src/widgets/methods/entry-visible-range")
-               (:file "src/widgets/methods/render-entry-text-and-cursor")
                (:file "src/widgets/methods/clear-entry-selection")
                (:file "src/widgets/methods/get-entry-selected-text")
                (:file "src/widgets/methods/set-entry-selection")

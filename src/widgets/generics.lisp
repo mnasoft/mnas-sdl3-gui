@@ -110,8 +110,7 @@
 (defgeneric entry-visible-range (widget)
   (:documentation "Return visible character range for entry WIDGET."))
 
-(defgeneric render-entry-text-and-cursor (renderer widget)
-  (:documentation "Render entry text, selection highlight, and cursor."))
+;; `render-entry-text-and-cursor` removed: logic is inlined into `render` methods.
 
 (defgeneric widget-measure (widget &optional constraints)
   (:documentation "Return preferred or minimal size for WIDGET.
