@@ -20,6 +20,14 @@
     (normalize-list-box-scroll-offset widget)
     (/= old-offset (list-box-scroll-offset widget))))
 
+(defmethod scroll-by ((widget scroll-container) delta)
+  "Scroll SCROLL-CONTAINER by DELTA pixels. Returns T when offset changed."
+  (let ((old-offset (scroll-container-scroll-offset widget)))
+    (setf (scroll-container-scroll-offset widget)
+          (+ old-offset delta))
+    (normalize-scroll-container-scroll-offset widget)
+    (/= old-offset (scroll-container-scroll-offset widget))))
+
 (defmethod scroll-by ((widget tree-view) delta)
   "Scroll TREE-VIEW by DELTA rows. Returns T when offset changed."
   (let ((old-offset (tree-view-scroll-offset widget)))

@@ -44,7 +44,7 @@
                            (or (dispatch-widget-mouse-wheel
                                 (widget-children widget)
                                 x y dx dy)
-                               (scroll-container-scroll-by widget (- dy))))
+                             (scroll-by widget (- dy))))
                       (and (typep widget 'widget-container)
                            (dispatch-widget-mouse-wheel
                             (widget-children widget)

@@ -55,7 +55,7 @@
   #:widget-remove-child
   #:widget-clear-children
   #:normalize-scroll-container-scroll-offset
-  #:scroll-container-scroll-by
+  #:scroll-by
   #:scroll-container-max-scroll-offset
   #:scroll-container-content-height
   ;; style classes and helpers

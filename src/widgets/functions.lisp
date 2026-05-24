@@ -173,13 +173,7 @@
         (max 0 (min (scroll-container-scroll-offset widget)
                     (scroll-container-max-scroll-offset widget)))))
 
-(defun scroll-container-scroll-by (widget delta)
-  "Scroll SCROLL-CONTAINER by DELTA pixels if possible." 
-  (let ((old-offset (scroll-container-scroll-offset widget)))
-    (setf (scroll-container-scroll-offset widget)
-          (+ old-offset delta))
-    (normalize-scroll-container-scroll-offset widget)
-    (/= old-offset (scroll-container-scroll-offset widget))))
+;; `scroll-container-scroll-by` moved to methods/scroll-by.lisp (defgeneric `scroll-by` and per-type methods).
 
 (defun widget-add-child (container child)
   "Add CHILD to CONTAINER's child widget list." 
