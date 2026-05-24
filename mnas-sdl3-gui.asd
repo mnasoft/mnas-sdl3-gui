@@ -83,6 +83,7 @@
                (:file "src/widgets/methods/activate-widget")
                (:file "src/widgets/methods/handle-widget-mouse-down")
                (:file "src/widgets/methods/handle-widget-mouse-up")
+               (:file "src/widgets/methods/handle-widget-mouse-motion")
                (:file "src/widgets/methods/handle-widget-key-press")
                (:file "src/widgets/methods/handle-widget-key-event")))
 
