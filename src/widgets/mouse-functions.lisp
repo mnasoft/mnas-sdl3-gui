@@ -53,7 +53,7 @@
                           (combo-box-expanded-p widget)
                           (scroll-by widget (- dy)))
                       (and (typep widget 'tree-view)
-                        (tree-view-scroll-by widget (- dy)))
+                        (scroll-by widget (- dy)))
                         (and (typep widget 'list-box)
                           (not (typep widget 'combo-box))
                           (scroll-by widget (- dy)))))

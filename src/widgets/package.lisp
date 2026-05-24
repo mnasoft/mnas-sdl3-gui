@@ -140,7 +140,7 @@
   #:tree-view-max-scroll-offset
   #:normalize-tree-view-scroll-offset
   #:ensure-tree-view-selection-visible
-  #:tree-view-scroll-by
+  #:scroll-by
    ;; entry selection and clipboard utilities
    #:clear-entry-selection
    #:get-entry-selected-text

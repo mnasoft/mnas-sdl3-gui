@@ -515,13 +515,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
     (setf (tree-view-scroll-offset widget)
           (max 0 (min scroll-offset max-offset)))))
 
-(defun tree-view-scroll-by (widget delta)
-  "Scroll TREE-VIEW WIDGET by DELTA rows. Returns true when offset changed." 
-  (let ((old-offset (tree-view-scroll-offset widget)))
-    (setf (tree-view-scroll-offset widget)
-          (+ old-offset delta))
-    (normalize-tree-view-scroll-offset widget)
-    (/= old-offset (tree-view-scroll-offset widget))))
+;; `tree-view-scroll-by` moved to methods/scroll-by.lisp (defgeneric `scroll-by` and per-type methods).
 
 (defun tree-view-parent-node (widget target)
   "Return parent node of TARGET inside TREE-VIEW WIDGET, or NIL." 
