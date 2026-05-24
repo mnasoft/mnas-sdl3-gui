@@ -251,7 +251,7 @@
                popup-widget
                (round (slot-value ev 'sdl3:%y))))
              ((= window-id *combo-box-window-id*)
-              (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
                *combo-box-widgets*
                (round (slot-value ev 'sdl3:%mouse-x))
                (round (slot-value ev 'sdl3:%mouse-y))

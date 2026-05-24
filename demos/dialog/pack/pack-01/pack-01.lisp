@@ -363,7 +363,7 @@
                          (mnas-sdl3-gui/widgets:handle-widget-mouse-up *pack-demo-widgets* mx my)))))
        :continue)
       (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+       (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
         *pack-demo-widgets*
         (round (slot-value ev 'sdl3:%mouse-x))
         (round (slot-value ev 'sdl3:%mouse-y))

@@ -233,17 +233,17 @@
                      (sdl3:get-window-id *window-dialog*))
                     (list *widget-root*)) x y))))
        :continue)
-          (sdl3:mouse-wheel-event
-           (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+            (sdl3:mouse-wheel-event
+             (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
             (or (mnas-sdl3-gui/window-manager:window-root-widgets
-                 *widget-01-layer-manager*
-                 (sdl3:get-window-id *window-dialog*))
-                (list *widget-root*))
+               *widget-01-layer-manager*
+               (sdl3:get-window-id *window-dialog*))
+              (list *widget-root*))
             (round (slot-value ev 'sdl3:%mouse-x))
             (round (slot-value ev 'sdl3:%mouse-y))
             (round (slot-value ev 'sdl3:%x))
             (round (slot-value ev 'sdl3:%y)))
-           :continue)
+             :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))

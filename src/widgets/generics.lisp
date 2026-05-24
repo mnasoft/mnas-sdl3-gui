@@ -256,6 +256,9 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-widget-mouse-motion (widget x y)
   (:documentation "Handle mouse motion over a widget."))
 
+(defgeneric handle-widget-mouse-wheel (widget x y dx dy)
+  (:documentation "Handle mouse-wheel input for WIDGET. DX and DY are wheel deltas. Returns T if the event was consumed."))
+
 (defgeneric handle-widget-key-press (widget key char)
   (:documentation "Handle keyboard input for a widget. Returns T if key was handled."))
 

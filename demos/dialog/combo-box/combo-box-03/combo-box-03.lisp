@@ -102,8 +102,8 @@
             (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-wheel
              *combo-box-03-editable*
              (round (slot-value ev 'sdl3:%y))))
-           ((= win-id (sdl3:get-window-id *combo-box-03-window*))
-            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel
+            ((= win-id (sdl3:get-window-id *combo-box-03-window*))
+            (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
              *combo-box-03-widgets*
              (round (slot-value ev 'sdl3:%mouse-x))
              (round (slot-value ev 'sdl3:%mouse-y))
