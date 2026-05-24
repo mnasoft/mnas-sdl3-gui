@@ -6,6 +6,27 @@
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
+(defmethod handle-widget-mouse-down ((widgets cons) x y)
+  "Handle mouse-down when a list (cons) of widgets is provided.
+This replaces the old `dispatch-widget-mouse-down` free function and
+forwards the event to children in hit-test order. Sets focus on the
+widget that consumes the event and returns it, or NIL otherwise."
+  ;; Close expanded combo-box popups that are not under the pointer.
+  (loop for widget in widgets
+        when (and (typep widget 'combo-box)
+                  (combo-box-expanded-p widget)
+                  (not (contains-point-p widget x y)))
+        do (progn
+             (sync-combo-box-expanded-state widget nil)
+             (setf (list-box-scrollbar-dragging-p widget) nil
+                   (list-box-scrollbar-drag-offset widget) 0)))
+  ;; Dispatch to children in hit-test order.
+  (loop for widget in (widgets-in-hit-test-order widgets)
+        when (handle-widget-mouse-down widget x y)
+          do (set-widget-focus widgets widget)
+             (return widget)
+        finally (return nil)))
+
 (defmethod handle-widget-mouse-down ((widget widget) x y)
   (declare (ignore x y))
   nil)

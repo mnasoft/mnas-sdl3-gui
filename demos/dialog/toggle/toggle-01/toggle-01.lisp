@@ -317,13 +317,13 @@
                                    *toggle-01-toolbar*
                                    mx
                                    my))))
-                 (if button
-                    (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                     *toggle-01-toolbar*
-                     button
-                     (list :window-id *toggle-01-window-id*))
-                    (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                     *toggle-01-widgets* mx my)))
+                     (if button
+                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                      *toggle-01-toolbar*
+                      button
+                      (list :window-id *toggle-01-window-id*))
+                     (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+                      *toggle-01-widgets* mx my)))
                    (mnas-sdl3-gui/widgets:handle-widget-mouse-up *toggle-01-widgets* mx my))))
        :continue)
       (sdl3:keyboard-event

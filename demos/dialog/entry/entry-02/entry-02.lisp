@@ -284,7 +284,7 @@
                     *entry-02-toolbar*
                     button
                     (list :window-id *entry-02-window-id*))
-                   (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                    (mnas-sdl3-gui/widgets:handle-widget-mouse-down
                     *entry-02-widgets* mx my))))))
        :continue)
       (sdl3:keyboard-event

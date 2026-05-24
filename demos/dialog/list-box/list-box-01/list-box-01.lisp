@@ -234,7 +234,7 @@
                         *list-box-01-toolbar*
                         button
                         (list :window-id *list-box-01-window-id*))
-                       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *list-box-01-widgets* mx my)))
+                       (mnas-sdl3-gui/widgets:handle-widget-mouse-down *list-box-01-widgets* mx my)))
                      (mnas-sdl3-gui/widgets:handle-widget-mouse-up *list-box-01-widgets* mx my))))
        :continue)
       (sdl3:mouse-wheel-event

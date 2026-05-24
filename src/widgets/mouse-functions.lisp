@@ -4,21 +4,7 @@
 
 ;;; Mouse dispatch helpers
 
-(defun dispatch-widget-mouse-down (widgets x y)
-  "Dispatch mouse-down to WIDGETS and focus the widget that consumes it."
-  (loop for widget in widgets
-        when (and (typep widget 'combo-box)
-                  (combo-box-expanded-p widget)
-                  (not (contains-point-p widget x y)))
-        do (progn
-         (sync-combo-box-expanded-state widget nil)
-         (setf (list-box-scrollbar-dragging-p widget) nil
-           (list-box-scrollbar-drag-offset widget) 0)))
-  (loop for widget in (widgets-in-hit-test-order widgets)
-        when (handle-widget-mouse-down widget x y)
-          do (set-widget-focus widgets widget)
-             (return widget)
-        finally (return nil)))
+;; `dispatch-widget-mouse-down` removed: call `handle-widget-mouse-down` directly.
 
 ;; `dispatch-widget-mouse-up` removed: call `handle-widget-mouse-up` directly.
 

@@ -97,7 +97,7 @@
              *combo-1* x y))
            
            ((and down (= win-id (sdl3:get-window-id *window*)))
-            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-down
              *widgets* x y)))
          :continue))
       (sdl3:mouse-motion-event

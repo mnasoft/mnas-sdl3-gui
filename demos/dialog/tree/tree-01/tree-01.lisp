@@ -300,12 +300,12 @@
                                      *tree-01-toolbar*
                                      (- mx (round +tree-01-toolbar-x+))
                                      (- my (round +tree-01-toolbar-y+))))))
-                   (if button
+                       (if button
                        (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                         *tree-01-toolbar*
                         button
                         (list :window-id target-window-id))
-                           (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *tree-01-widgets* mx my)))
+                       (mnas-sdl3-gui/widgets:handle-widget-mouse-down *tree-01-widgets* mx my)))
                          (mnas-sdl3-gui/widgets:handle-widget-mouse-up *tree-01-widgets* mx my)))))
        :continue)
       (sdl3:mouse-wheel-event

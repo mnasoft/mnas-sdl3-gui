@@ -196,7 +196,7 @@
                       *check-box-toolbar*
                       button
                       (list :window-id *check-box-window-id*))
-                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *check-box-widgets* mx my)))
+                     (mnas-sdl3-gui/widgets:handle-widget-mouse-down *check-box-widgets* mx my)))
                (mnas-sdl3-gui/widgets:handle-widget-mouse-up *check-box-widgets* mx my))))
        :continue)
       (sdl3:keyboard-event

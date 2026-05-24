@@ -256,12 +256,12 @@
                                    *toolbar*
                                    mx
                                    (- my toolbar-y-offset)))))
-                 (if button
+                     (if button
                      (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                       *toolbar*
                       button
                       (list :window-id *window-id*))
-                     (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                     (mnas-sdl3-gui/widgets:handle-widget-mouse-down
                       (simple-01-root-widgets)
                       mx
                       my)))

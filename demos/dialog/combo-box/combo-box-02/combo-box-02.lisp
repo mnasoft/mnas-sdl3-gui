@@ -221,14 +221,14 @@
                 (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up *combo-box-02-editable* x y)))
            ;; toolbar or main window clicks
            ((and down (= button 1) (= win-id *combo-box-02-window-id*))
-            (let ((button-spec (and *combo-box-02-toolbar*
+                (let ((button-spec (and *combo-box-02-toolbar*
                                     (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
                                      *combo-box-02-toolbar*
                                      x
                                      (- y toolbar-y-offset)))))
               (if button-spec
                   (mnas-sdl3-gui/toolbar:toolbar-button-clicked *combo-box-02-toolbar* button-spec (list :window-id *combo-box-02-window-id* :x x :y y))
-                  (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-02-widgets* x y))))
+                  (mnas-sdl3-gui/widgets:handle-widget-mouse-down *combo-box-02-widgets* x y))))
            (t
               (when (and (not down) (= win-id *combo-box-02-window-id*))
               (mnas-sdl3-gui/widgets:handle-widget-mouse-up *combo-box-02-widgets* x y))))

@@ -223,7 +223,6 @@
   #:handle-widget-click
   #:handle-widget-mouse-down
   #:handle-widget-mouse-up
-  #:dispatch-widget-mouse-down
   #:dispatch-widget-mouse-wheel
   #:handle-widget-mouse-motion
   #:handle-widget-key-press

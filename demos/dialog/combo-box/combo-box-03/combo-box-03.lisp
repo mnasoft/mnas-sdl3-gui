@@ -79,7 +79,7 @@
            ((and (not down) (= win-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*)))
             (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up *combo-box-03-editable* x y))
            ((and down (= win-id (sdl3:get-window-id *combo-box-03-window*)))
-            (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-03-widgets* x y))))
+            (mnas-sdl3-gui/widgets:handle-widget-mouse-down *combo-box-03-widgets* x y))))
        :continue)
       (sdl3:mouse-motion-event
        (let ((win-id (slot-value ev 'sdl3:%window-id)))

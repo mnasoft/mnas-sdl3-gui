@@ -192,11 +192,11 @@
                                      my))))
                      (if button
                        (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                      *entry-01-toolbar*
-                      button
-                      (list :window-id target-window-id))
-                       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                      (entry-01-widgets) mx my)))
+                        *entry-01-toolbar*
+                        button
+                        (list :window-id target-window-id))
+                       (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+                        (entry-01-widgets) mx my)))
                    (mnas-sdl3-gui/widgets:handle-widget-mouse-up
                     (entry-01-widgets) mx my)))))
        :continue)
