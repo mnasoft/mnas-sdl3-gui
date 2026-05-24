@@ -220,14 +220,13 @@
    ;; Cyrillic approximation
    #:approximate-cyrillic-text
    ;; event handling
-   #:handle-widget-click
+  #:handle-widget-click
   #:handle-widget-mouse-down
   #:handle-widget-mouse-up
   #:dispatch-widget-mouse-down
   #:dispatch-widget-mouse-up
-  #:dispatch-widget-mouse-motion
   #:dispatch-widget-mouse-wheel
-   #:handle-widget-mouse-motion
+  #:handle-widget-mouse-motion
   #:handle-widget-key-press
   #:handle-widget-key-event
   #:focusable-widget-p

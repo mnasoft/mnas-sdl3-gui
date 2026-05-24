@@ -27,12 +27,7 @@
           return widget
         finally (return nil)))
 
-(defun dispatch-widget-mouse-motion (widgets x y)
-  "Compatibility wrapper: dispatch mouse-motion to WIDGETS using the
-generic `handle-widget-mouse-motion` method. Prefer calling the generic
-directly.
-Deprecated: keep for backward compatibility with older code."
-  (handle-widget-mouse-motion widgets x y))
+;; `dispatch-widget-mouse-motion` removed: call `handle-widget-mouse-motion` directly.
 
 (defun dispatch-widget-mouse-wheel (widgets x y dx dy)
   "Dispatch mouse-wheel input to widgets under X/Y and return the widget that consumes it."
