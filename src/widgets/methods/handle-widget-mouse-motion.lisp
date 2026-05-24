@@ -7,11 +7,15 @@
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
-(defmethod handle-widget-mouse-motion ((widgets cons) x y)
+defmethod handle-widget-mouse-motion ((widgets cons) x y)
   "Handle mouse-motion when a list (cons) of widgets is provided.
 This replaces the old `dispatch-widget-mouse-motion` free function and
 forwards the motion event to each widget in the list in order. Returns
 nil." 
+  ;; Temporary debug output for mouse-motion events.
+  (format t "[mouse-motion] x=~D y=~D count=~D first=~S~%"
+          x y (length widgets) (type-of (car widgets)))
+  (finish-output)
   (dolist (w widgets)
     (handle-widget-mouse-motion w x y))
   nil)
