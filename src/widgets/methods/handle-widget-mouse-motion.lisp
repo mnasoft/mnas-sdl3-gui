@@ -2,6 +2,8 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
+(mnas-sdl3-gui:enable-debug)
+
 ;; Ensure only enabled/visible widgets handle motion.
 (defmethod handle-widget-mouse-motion :around ((widget widget) x y)
   (when (and (enabled-p widget) (visible-p widget))
@@ -12,10 +14,10 @@
 This replaces the old `dispatch-widget-mouse-motion` free function and
 forwards the motion event to each widget in the list in order. Returns
 nil." 
-  ;; Temporary debug output for mouse-motion events.
-  (format t "[mouse-motion] x=~D y=~D count=~D first=~S~%"
-          x y (length widgets) (type-of (car widgets)))
-  (finish-output)
+  ;; Debug output (compile-time gated).
+  (mnas-sdl3-gui:debug-log "[mouse-motion] x=~D y=~D count=~D first=~S~%"
+                           x y (length widgets)
+                           (type-of (car widgets)))
   (dolist (w widgets)
     (handle-widget-mouse-motion w x y))
   nil)
@@ -28,8 +30,7 @@ nil."
 (defmethod handle-widget-mouse-motion ((w label) x y)
   "Handle mouse-motion for `label` widgets (no interactive behaviour).
 Temporary debug logging to help track motion events over labels." 
-  (format t "[mouse-motion:label] text=~S x=~D y=~D~%" (label-text w) x y)
-  (finish-output)
+  (mnas-sdl3-gui:debug-log "[mouse-motion:label] text=~S x=~D y=~D~%" (label-text w) x y)
   nil)
 
 (defmethod handle-widget-mouse-motion ((widget widget-container) x y)
@@ -61,3 +62,5 @@ Temporary debug logging to help track motion events over labels."
     (when (button-armed-p widget)
       (setf (button-pressed-p widget) inside)))
   nil)
+
+(mnas-sdl3-gui:disable-debug)

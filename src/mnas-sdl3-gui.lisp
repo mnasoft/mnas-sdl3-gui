@@ -3,7 +3,13 @@
 (defpackage #:mnas-sdl3-gui
   (:use #:cl)
   (:export #:project-name
-           #:hello))
+           #:hello
+           #:enable-debug
+           #:disable-debug
+           #:toggle-debug
+           #:debug-feature-p
+           #:when-debug
+           #:debug-log))
 
 (in-package #:mnas-sdl3-gui)
 
