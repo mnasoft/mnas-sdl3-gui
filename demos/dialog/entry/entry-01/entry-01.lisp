@@ -190,15 +190,15 @@
                                      *entry-01-toolbar*
                                      mx
                                      my))))
-                   (if button
+                     (if button
                        (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                        *entry-01-toolbar*
-                        button
-                        (list :window-id target-window-id))
+                      *entry-01-toolbar*
+                      button
+                      (list :window-id target-window-id))
                        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
-                        (entry-01-widgets) mx my)))
-                 (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                  (entry-01-widgets) mx my)))))
+                      (entry-01-widgets) mx my)))
+                   (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+                    (entry-01-widgets) mx my)))))
        :continue)
       (sdl3:keyboard-event
        (entry-01-update-modifier-state ev)

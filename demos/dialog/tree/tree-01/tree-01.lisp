@@ -305,8 +305,8 @@
                         *tree-01-toolbar*
                         button
                         (list :window-id target-window-id))
-                       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *tree-01-widgets* mx my)))
-                 (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *tree-01-widgets* mx my)))))
+                           (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *tree-01-widgets* mx my)))
+                         (mnas-sdl3-gui/widgets:handle-widget-mouse-up *tree-01-widgets* mx my)))))
        :continue)
       (sdl3:mouse-wheel-event
        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel

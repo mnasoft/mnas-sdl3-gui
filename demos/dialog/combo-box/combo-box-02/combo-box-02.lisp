@@ -230,8 +230,8 @@
                   (mnas-sdl3-gui/toolbar:toolbar-button-clicked *combo-box-02-toolbar* button-spec (list :window-id *combo-box-02-window-id* :x x :y y))
                   (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-02-widgets* x y))))
            (t
-            (when (and (not down) (= win-id *combo-box-02-window-id*))
-              (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *combo-box-02-widgets* x y))))
+              (when (and (not down) (= win-id *combo-box-02-window-id*))
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-up *combo-box-02-widgets* x y))))
          )
        :continue)
       (sdl3:mouse-wheel-event

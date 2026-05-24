@@ -222,13 +222,13 @@
                         *widget-01-toolbar*
                         button
                         (list :x x :y y))))
-                   (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
+                      (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down
                     (or (mnas-sdl3-gui/window-manager:window-root-widgets
-                         *widget-01-layer-manager*
-                         (sdl3:get-window-id *window-dialog*))
+                      *widget-01-layer-manager*
+                      (sdl3:get-window-id *window-dialog*))
                         (list *widget-root*)) x y))
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
-                (or (mnas-sdl3-gui/window-manager:window-root-widgets
+                  (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+                   (or (mnas-sdl3-gui/window-manager:window-root-widgets
                      *widget-01-layer-manager*
                      (sdl3:get-window-id *window-dialog*))
                     (list *widget-root*)) x y))))

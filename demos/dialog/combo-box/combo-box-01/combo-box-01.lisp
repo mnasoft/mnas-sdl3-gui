@@ -240,7 +240,7 @@
                        (list :window-id *combo-box-window-id*))
                       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *combo-box-widgets* mx my))))
                ((and (not (slot-value ev 'sdl3:%down)) (= window-id *combo-box-window-id*))
-                (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *combo-box-widgets* mx my)))))
+                (mnas-sdl3-gui/widgets:handle-widget-mouse-up *combo-box-widgets* mx my)))))
          :continue)
         (sdl3:mouse-wheel-event
          (let* ((window-id (slot-value ev 'sdl3:%window-id))

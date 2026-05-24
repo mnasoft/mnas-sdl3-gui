@@ -265,7 +265,7 @@
                       (simple-01-root-widgets)
                       mx
                       my)))
-               (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up
+               (mnas-sdl3-gui/widgets:handle-widget-mouse-up
                 (simple-01-root-widgets)
                 mx
                 my))))

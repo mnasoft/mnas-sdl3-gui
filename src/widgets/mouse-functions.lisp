@@ -20,12 +20,7 @@
              (return widget)
         finally (return nil)))
 
-(defun dispatch-widget-mouse-up (widgets x y)
-  "Dispatch mouse-up to WIDGETS and return the widget that consumes it."
-  (loop for widget in (widgets-in-hit-test-order widgets)
-        when (handle-widget-mouse-up widget x y)
-          return widget
-        finally (return nil)))
+;; `dispatch-widget-mouse-up` removed: call `handle-widget-mouse-up` directly.
 
 ;; `dispatch-widget-mouse-motion` removed: call `handle-widget-mouse-motion` directly.
 

@@ -355,12 +355,12 @@
                                      (- mx (round +pack-demo-toolbar-x+))
                                      (- my (round +pack-demo-toolbar-y+))))))
                    (if button
-                       (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                           (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                         *pack-demo-toolbar*
                         button
                         (list :window-id target-window-id))
-                       (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *pack-demo-widgets* mx my)))
-                 (mnas-sdl3-gui/widgets:dispatch-widget-mouse-up *pack-demo-widgets* mx my)))))
+                           (mnas-sdl3-gui/widgets:dispatch-widget-mouse-down *pack-demo-widgets* mx my)))
+                         (mnas-sdl3-gui/widgets:handle-widget-mouse-up *pack-demo-widgets* mx my)))))
        :continue)
       (sdl3:mouse-wheel-event
        (mnas-sdl3-gui/widgets:dispatch-widget-mouse-wheel

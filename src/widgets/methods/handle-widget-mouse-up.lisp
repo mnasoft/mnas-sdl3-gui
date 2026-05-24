@@ -6,6 +6,16 @@
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
+(defmethod handle-widget-mouse-up ((widgets cons) x y)
+  "Handle mouse-up when a list (cons) of widgets is provided.
+This replaces the old `dispatch-widget-mouse-up` free function and
+forwards the mouse-up event to widgets in hit-test order. Returns the
+widget that consumes the event or NIL."
+  (loop for widget in (widgets-in-hit-test-order widgets)
+        when (handle-widget-mouse-up widget x y)
+          return widget
+        finally (return nil)))
+
 (defmethod handle-widget-mouse-up ((widget widget) x y)
   (declare (ignore x y))
   nil)
