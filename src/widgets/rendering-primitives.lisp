@@ -109,7 +109,7 @@
 
 (defun render-widget (renderer widget)
   "Render a widget using the widget paint contract."
-  (when (widget-visible widget)
+  (when (visible-p widget)
     (widget-paint renderer widget *widget-style*)))
 
 (defun render-widgets (renderer widgets)

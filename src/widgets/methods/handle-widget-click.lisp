@@ -4,7 +4,7 @@
 
 ;; Ensure only enabled/visible widgets receive click handling.
 (defmethod handle-widget-click :around ((widget widget) x y)
-  (when (and (widget-enabled widget) (widget-visible widget))
+  (when (and (widget-enabled widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod handle-widget-click ((widget widget) x y)

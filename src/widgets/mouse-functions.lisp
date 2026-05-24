@@ -36,8 +36,8 @@
 (defun dispatch-widget-mouse-wheel (widgets x y dx dy)
   "Dispatch mouse-wheel input to widgets under X/Y and return the widget that consumes it."
   (loop for widget in (widgets-in-hit-test-order widgets)
-        when (and (widget-visible widget)
-                  (widget-enabled widget)
+        when (and (visible-p widget)
+            (widget-enabled widget)
                   (contains-point-p widget x y)
                   (not (zerop dy))
                   (or (and (typep widget 'scroll-container)

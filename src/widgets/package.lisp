@@ -14,6 +14,7 @@
    #:widget-enabled
    #:widget-focused
    #:widget-visible
+  #:visible-p
    #:widget-focusable
    #:widget-value
    #:widget-on-change

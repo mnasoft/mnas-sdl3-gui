@@ -10,7 +10,7 @@
           (widget-height obj)
           (widget-enabled obj)
           (widget-focused obj)
-          (widget-visible obj)
+          (visible-p obj)
           (widget-value obj)))
 
 (defmethod print-object ((obj widget) stream)

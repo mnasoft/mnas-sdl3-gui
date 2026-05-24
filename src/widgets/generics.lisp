@@ -11,6 +11,9 @@
 (defgeneric contains-point-p (widget x y)
   (:documentation "Return true when point X/Y is inside WIDGET bounds."))
 
+(defgeneric visible-p (widget)
+  (:documentation "Return non-NIL when WIDGET should be considered visible."))
+
 (defgeneric update-widget-value (widget new-value)
   (:documentation "Update WIDGET with NEW-VALUE and trigger change callbacks when needed."))
 

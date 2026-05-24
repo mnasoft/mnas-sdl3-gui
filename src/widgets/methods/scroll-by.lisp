@@ -4,7 +4,7 @@
 
 ;; Guard that only enabled and visible widgets handle scroll requests.
 (defmethod scroll-by :around ((widget widget) delta)
-  (when (and (widget-enabled widget) (widget-visible widget))
+  (when (and (widget-enabled widget) (visible-p widget))
     (call-next-method)))
 
 (defmethod scroll-by ((widget widget) delta)
