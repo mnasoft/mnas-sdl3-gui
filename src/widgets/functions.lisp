@@ -675,8 +675,18 @@ If ITEM already exists, it becomes selected instead of duplicated."
   "Optional callback called as (funcall fn widget expanded-p) when a combo-box expands or collapses.")
 
 (defun widgets-in-render-order (widgets)
-  "Return WIDGETS sorted from back to front for painting."
-  (stable-sort (copy-list widgets) #'< :key #'widget-effective-z-order))
+  "Return WIDGETS sorted from back to front for painting.
+If a combo-box uses a separate popup window, append a transient popup-proxy
+object at the end so popup windows are rendered after main widgets.
+The popup proxy's render method will perform popup-window rendering and
+present the popup's renderer."  
+  (let* ((sorted (stable-sort (copy-list widgets) #'< :key #'widget-effective-z-order))
+         (popups '()))
+    (dolist (w sorted)
+      (when (and (typep w 'combo-box)
+                 (combo-box-popup-window-enabled-p w))
+        (push (make-instance 'combo-box-popup :owner w) popups)))
+    (append sorted (nreverse popups))))
 
 (defun widgets-in-hit-test-order (widgets)
   "Return WIDGETS sorted from front to back for hit-testing."

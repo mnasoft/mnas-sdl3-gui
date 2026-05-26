@@ -266,7 +266,8 @@
      0.0
      0.0))
 
-  (mnas-sdl3-gui/widgets:render-widgets *toggle-01-renderer* *toggle-01-widgets*)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *toggle-01-widgets*)
+        do (mnas-sdl3-gui/widgets:render *toggle-01-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (mnas-sdl3-gui/widgets:render-text *toggle-01-renderer*
                                      *toggle-01-status*
@@ -333,9 +334,10 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
                   :context (list :window-id *toggle-01-window-id*))
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+           (mnas-sdl3-gui/widgets:handle-widget-key-event
             *toggle-01-widgets*
             (slot-value ev 'sdl3:%key)
+            nil
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
                          (toggle-01-command :toggle-01/quit)

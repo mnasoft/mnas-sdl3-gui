@@ -18,7 +18,7 @@
 (defmethod render (renderer (widget widget-container) style)
   (declare (ignore style))
   (dolist (child (children widget))
-    (render-widget renderer child)))
+    (render renderer child style)))
 
 (defmethod render (renderer (widget scroll-container) style)
   (declare (ignore style))
@@ -29,7 +29,7 @@
                (widget-width widget) (widget-height widget)
                +color-border+)
   (dolist (child (children widget))
-    (render-widget renderer child)))
+    (render renderer child style)))
 
 (defmethod render (renderer (widget canvas-2d-widget) style)
   (declare (ignore style))
@@ -159,18 +159,20 @@
                              '(0 120 215 255))
                   (render-visible-segment selected-start selected-end
                                           '(255 255 255 255))))
-              (render-visible-segment visible-start visible-end +color-text+))
-            (when (widget-focused widget)
-              (let ((cursor-x (segment-x (entry-cursor widget))))
-                (sdl3:set-render-draw-color renderer 0 0 0 255)
-                (sdl3:render-line renderer
-                                  (float cursor-x 1.0)
-                                  (float (+ (widget-y widget) 2) 1.0)
-                                  (float cursor-x 1.0)
-                                  (float (- (+ (widget-y widget)
-                                               (widget-height widget))
-                                            2)
-                                         1.0)))))))))
+              (render-visible-segment after-start after-end +color-text+))
+            (progn
+              (render-visible-segment visible-start visible-end +color-text+)
+              (when (widget-focused widget)
+                (let ((cursor-x (segment-x (entry-cursor widget))))
+                  (sdl3:set-render-draw-color renderer 0 0 0 255)
+                  (sdl3:render-line renderer
+                                    (float cursor-x 1.0)
+                                    (float (+ (widget-y widget) 2) 1.0)
+                                    (float cursor-x 1.0)
+                                    (float (- (+ (widget-y widget)
+                                                 (widget-height widget))
+                                              2)
+                                           1.0))))))))))
 
 (defmethod render (renderer (widget entry) (style windows-widget-style))
   (declare (ignore style))
@@ -224,18 +226,20 @@
                              '(0 120 215 255))
                   (render-visible-segment selected-start selected-end
                                           '(255 255 255 255))))
-              (render-visible-segment visible-start visible-end +color-text+))
-            (when (widget-focused widget)
-              (let ((cursor-x (segment-x (entry-cursor widget))))
-                (sdl3:set-render-draw-color renderer 0 0 0 255)
-                (sdl3:render-line renderer
-                                  (float cursor-x 1.0)
-                                  (float (+ (widget-y widget) 2) 1.0)
-                                  (float cursor-x 1.0)
-                                  (float (- (+ (widget-y widget)
-                                               (widget-height widget))
-                                            2)
-                                         1.0)))))))))
+              (render-visible-segment after-start after-end +color-text+))
+            (progn
+              (render-visible-segment visible-start visible-end +color-text+)
+              (when (widget-focused widget)
+                (let ((cursor-x (segment-x (entry-cursor widget))))
+                  (sdl3:set-render-draw-color renderer 0 0 0 255)
+                  (sdl3:render-line renderer
+                                    (float cursor-x 1.0)
+                                    (float (+ (widget-y widget) 2) 1.0)
+                                    (float cursor-x 1.0)
+                                    (float (- (+ (widget-y widget)
+                                                 (widget-height widget))
+                                              2)
+                                           1.0))))))))))
     
 
 (defmethod render (renderer (widget entry) (style motif-widget-style))
@@ -288,18 +292,20 @@
                              '(0 120 215 255))
                   (render-visible-segment selected-start selected-end
                                           '(255 255 255 255))))
-              (render-visible-segment visible-start visible-end +color-text+))
-            (when (widget-focused widget)
-              (let ((cursor-x (segment-x (entry-cursor widget))))
-                (sdl3:set-render-draw-color renderer 0 0 0 255)
-                (sdl3:render-line renderer
-                                  (float cursor-x 1.0)
-                                  (float (+ (widget-y widget) 2) 1.0)
-                                  (float cursor-x 1.0)
-                                  (float (- (+ (widget-y widget)
-                                               (widget-height widget))
-                                            2)
-                                         1.0)))))))))
+              (render-visible-segment after-start after-end +color-text+))
+            (progn
+              (render-visible-segment visible-start visible-end +color-text+)
+              (when (widget-focused widget)
+                (let ((cursor-x (segment-x (entry-cursor widget))))
+                  (sdl3:set-render-draw-color renderer 0 0 0 255)
+                  (sdl3:render-line renderer
+                                    (float cursor-x 1.0)
+                                    (float (+ (widget-y widget) 2) 1.0)
+                                    (float cursor-x 1.0)
+                                    (float (- (+ (widget-y widget)
+                                                 (widget-height widget))
+                                              2)
+                                           1.0))))))))))
 
 (defmethod render (renderer (widget tree-view) (style widget-style))
   (declare (ignore style))
@@ -672,38 +678,63 @@
                              '(176 176 176 255)
                              '(96 96 96 255))))
 
-(defun combo-box-render-popup-window (widget &key renderer)
-  "Render WIDGET popup into its popup window renderer." 
-  (let ((popup-renderer (or renderer (combo-box-popup-renderer widget))))
-    (when (and (combo-box-expanded-p widget)
-               (combo-box-popup-window-enabled-p widget)
-               (not (combo-box-popup-visible-p widget)))
-      (combo-box-show-popup-window widget))
-    (when (and popup-renderer (combo-box-popup-visible-p widget))
-      (typecase *widget-style*
-        (windows-widget-style
-         (%render-combo-box-popup-at popup-renderer widget 0 0
-                                     '(128 128 128 255)
-                                     '(255 255 255 255)
-                                     '(232 232 232 255)
-                                     '(180 180 180 255)
-                                     '(96 96 96 255)))
-        (motif-widget-style
-         (%render-combo-box-popup-at popup-renderer widget 0 0
-                                     '(110 110 110 255)
-                                     '(250 250 250 255)
-                                     '(226 226 226 255)
-                                     '(176 176 176 255)
-                                     '(96 96 96 255)))
-        (t
-         (%render-combo-box-popup-at popup-renderer widget 0 0
-                                     +color-border+
-                                     '(255 255 255 255)
-                                     '(232 232 232 255)
-                                     '(180 180 180 255)
-                                     '(120 120 120 255))))
-      (sdl3:render-present popup-renderer)))
-  widget)
+;; popup rendering for combo-boxes that use separate popup windows.
+;; Implemented as `render` methods on a transient `combo-box-popup` proxy
+;; so popup windows are rendered after main widgets in `widgets-in-render-order`.
+
+(defmethod render (renderer (popup combo-box-popup) (style windows-widget-style))
+  (declare (ignore renderer))
+  (let ((owner (combo-box-popup-owner popup)))
+    (when owner
+      (let ((popup-renderer (combo-box-popup-renderer owner)))
+        (when (and (combo-box-expanded-p owner)
+                   (combo-box-popup-window-enabled-p owner)
+                   (not (combo-box-popup-visible-p owner)))
+          (combo-box-show-popup-window owner))
+        (when (and popup-renderer (combo-box-popup-visible-p owner))
+          (%render-combo-box-popup-at popup-renderer owner 0 0
+                                      '(128 128 128 255)
+                                      '(255 255 255 255)
+                                      '(232 232 232 255)
+                                      '(180 180 180 255)
+                                      '(96 96 96 255))
+          (sdl3:render-present popup-renderer))))))
+
+(defmethod render (renderer (popup combo-box-popup) (style motif-widget-style))
+  (declare (ignore renderer))
+  (let ((owner (combo-box-popup-owner popup)))
+    (when owner
+      (let ((popup-renderer (combo-box-popup-renderer owner)))
+        (when (and (combo-box-expanded-p owner)
+                   (combo-box-popup-window-enabled-p owner)
+                   (not (combo-box-popup-visible-p owner)))
+          (combo-box-show-popup-window owner))
+        (when (and popup-renderer (combo-box-popup-visible-p owner))
+          (%render-combo-box-popup-at popup-renderer owner 0 0
+                                      '(110 110 110 255)
+                                      '(250 250 250 255)
+                                      '(226 226 226 255)
+                                      '(176 176 176 255)
+                                      '(96 96 96 255))
+          (sdl3:render-present popup-renderer))))))
+
+(defmethod render (renderer (popup combo-box-popup) style)
+  (declare (ignore renderer style))
+  (let ((owner (combo-box-popup-owner popup)))
+    (when owner
+      (let ((popup-renderer (combo-box-popup-renderer owner)))
+        (when (and (combo-box-expanded-p owner)
+                   (combo-box-popup-window-enabled-p owner)
+                   (not (combo-box-popup-visible-p owner)))
+          (combo-box-show-popup-window owner))
+        (when (and popup-renderer (combo-box-popup-visible-p owner))
+          (%render-combo-box-popup-at popup-renderer owner 0 0
+                                      +color-border+
+                                      '(255 255 255 255)
+                                      '(232 232 232 255)
+                                      '(180 180 180 255)
+                                      '(120 120 120 255))
+          (sdl3:render-present popup-renderer))))))
 
 (defmethod render (renderer (widget button) (style windows-widget-style))
   (declare (ignore style))

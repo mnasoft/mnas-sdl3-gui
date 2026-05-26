@@ -28,9 +28,10 @@
   (let* ((entry *demo-canvas-window*)
          (renderer (getf entry :renderer))
          (canvas (getf entry :canvas)))
-    (sdl3:set-render-draw-color renderer 240 240 240 255)
-    (sdl3:render-clear renderer)
-    (mnas-sdl3-gui/widgets:render-widgets renderer (list canvas))
+        (sdl3:set-render-draw-color renderer 240 240 240 255)
+        (sdl3:render-clear renderer)
+            (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (list canvas))
+              do (mnas-sdl3-gui/widgets:render renderer widget mnas-sdl3-gui/widgets:*widget-style*))
     (sdl3:render-present renderer))
   :continue)
 

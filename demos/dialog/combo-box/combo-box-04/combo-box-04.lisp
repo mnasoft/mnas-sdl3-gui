@@ -17,13 +17,15 @@
                               :items '("Item 01" "Item 02" "Item 03" "Item 04" "Item 05")
                               :selected-index 0
                               :max-visible-items 5
-                              :placeholder "Choose..."))
+                              :placeholder "Choose..."
+                              :popup-host-window *window*))
         (combo-1 (make-instance 'mnas-sdl3-gui/widgets:combo-box
                               :x 20 :y 60 :width 320 :height 34
                               :items '("Atem 01" "Atem 02" "Atem 03" "Atem 04" "Atem 05")
                               :selected-index 0
                               :max-visible-items 5
-                              :placeholder "Choose...")))
+                              :placeholder "Choose..."
+                              :popup-host-window *window*)))
     (setf *combo*   combo
           *combo-1* combo-1 
           *widgets* (list combo combo-1))
@@ -45,23 +47,22 @@
     (mnas-sdl3-gui/widgets:set-widget-style :flat)
     (mnas-sdl3-gui/widgets:init-ttf-font)
     (create-combo-box-04-widgets)
-    (mnas-sdl3-gui/widgets:combo-box-enable-popup-window *combo*   *window*)
-    (mnas-sdl3-gui/widgets:combo-box-enable-popup-window *combo-1* *window*)
     (mnas-sdl3-gui/widgets:set-widget-focus *widgets* *combo*)
     :continue))
 
 (sdl3:def-app-iterate combo-box-04-demo-iterate ()
   (unless *open*
     (return-from combo-box-04-demo-iterate :success))
-  (sdl3:set-render-draw-color *renderer* 240 240 240 255)
-  (sdl3:render-clear *renderer*)
-  (mnas-sdl3-gui/widgets:render-widgets *renderer* *widgets*)
+    (sdl3:set-render-draw-color *renderer* 240 240 240 255)
+    (sdl3:render-clear *renderer*)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *widgets*)
+        do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   #+nil
   (mnas-sdl3-gui/widgets:render-text *renderer*
                                      (format nil "Selection: ~A" (mnas-sdl3-gui/widgets:widget-value *combo*))
                                      20.0 90.0 '(80 80 80 255))
-  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo*)
-  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo-1*)
+  ;; popup windows are rendered via transient popup proxies appended by
+  ;; `widgets-in-render-order', so no explicit popup calls are needed here.
   (sdl3:render-present *renderer*)
   :continue)
 
@@ -137,12 +138,13 @@
              (round (slot-value ev 'sdl3:%y)))))
          :continue))
       (sdl3:keyboard-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *widgets*
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)))
+      (when (and (slot-value ev 'sdl3:%down)
+           (not (slot-value ev 'sdl3:%repeat)))
+        (mnas-sdl3-gui/widgets:handle-widget-key-event
+         *widgets*
+         (slot-value ev 'sdl3:%key)
+         nil
+         :mods (slot-value ev 'sdl3:%mod)))
        :continue)
       (t :continue))))
 

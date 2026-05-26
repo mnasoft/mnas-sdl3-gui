@@ -200,7 +200,8 @@
      0.0
      (- +list-box-01-window-height+ +list-box-01-toolbar-height+)))
 
-  (mnas-sdl3-gui/widgets:render-widgets *list-box-01-renderer* *list-box-01-widgets*)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *list-box-01-widgets*)
+        do (mnas-sdl3-gui/widgets:render *list-box-01-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (sdl3:render-present *list-box-01-renderer*)
   :continue)
@@ -252,22 +253,23 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
                   :context (list :window-id *list-box-01-window-id*))
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+               (mnas-sdl3-gui/widgets:handle-widget-key-event
             *list-box-01-widgets*
             (slot-value ev 'sdl3:%key)
+            nil
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
-                         (setf *list-box-01-result* nil
-                               *list-box-01-open* nil)
-                         :success)
+                 (setf *list-box-01-result* nil
+                   *list-box-01-open* nil)
+                 :success)
             :on-return (lambda ()
-                         (setf *list-box-01-result*
-                               (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)
-                                                (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))
-                                     :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*)
-                                                 (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*)))
-                               *list-box-01-open* nil)
-                         :success))))
+                 (setf *list-box-01-result*
+                   (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-left*)
+                        (mnas-sdl3-gui/widgets:list-box-items *list-box-01-left*))
+                     :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *list-box-01-right*)
+                         (mnas-sdl3-gui/widgets:list-box-items *list-box-01-right*)))
+                   *list-box-01-open* nil)
+                 :success))))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input

@@ -156,7 +156,8 @@
      0.0
      0.0))
 
-  (mnas-sdl3-gui/widgets:render-widgets *entry-01-renderer* (entry-01-widgets))
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (entry-01-widgets))
+        do (mnas-sdl3-gui/widgets:render *entry-01-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (sdl3:render-present *entry-01-renderer*)
   :continue)
@@ -211,19 +212,20 @@
                           :mods (entry-01-key-modifiers ev)
                           :context (list :window-id *entry-01-window-id*))
                    (let ((result
-                          (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-                           (entry-01-widgets)
-                           key
-                           :mods (entry-01-key-modifiers ev)
-                           :on-escape (lambda ()
-                                        (setf *entry-01-result* nil
-                                              *entry-01-open* nil)
-                                        :success)
-                           :on-return (lambda ()
-                                        (setf *entry-01-result*
-                                              (mnas-sdl3-gui/widgets:entry-text *entry-01-input*)
-                                              *entry-01-open* nil)
-                                        :success))))
+                      (mnas-sdl3-gui/widgets:handle-widget-key-event
+                       (entry-01-widgets)
+                       key
+                       nil
+                       :mods (entry-01-key-modifiers ev)
+                       :on-escape (lambda ()
+                            (setf *entry-01-result* nil
+                              *entry-01-open* nil)
+                            :success)
+                       :on-return (lambda ()
+                            (setf *entry-01-result*
+                              (mnas-sdl3-gui/widgets:entry-text *entry-01-input*)
+                              *entry-01-open* nil)
+                            :success))))
                      (entry-01-log-key-event ev :action :down)
                      result))))
            (progn
@@ -270,3 +272,5 @@ Returns NIL when dialog is cancelled/closed."
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry-01)
 ;;;; (entry-01)
+
+;;;; (mnas-sdl3-gui/demos/dialog/entry-01:entry-01)

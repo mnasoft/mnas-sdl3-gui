@@ -22,7 +22,6 @@
   #:widget-min-size
   #:widget-measure
   #:widget-arrange
-  #:widget-paint
   #:widget-hit-test
   #:widget-container
   #:scroll-container
@@ -177,7 +176,6 @@
   #:combo-box-popup-window-enabled-p
   #:combo-box-enable-popup-window
   #:combo-box-disable-popup-window
-  #:combo-box-render-popup-window
   #:combo-box-handle-popup-mouse-down
   #:combo-box-handle-popup-mouse-up
   #:combo-box-handle-popup-mouse-motion
@@ -197,6 +195,7 @@
   #:place-widget
   ;; grid layout
   #:grid-container
+  #:widgets-in-render-order
   #:make-grid
   #:grid-add-child
   #:grid-rows
@@ -206,9 +205,8 @@
   #:grid-col-spacing
   #:grid-padding
    ;; rendering
+  #:render
   #:render-text
-   #:render-widget
-    #:render-widgets
    ;; TTF/font rendering
    #:render-text-with-ttf
    #:*ttf-available-p*
@@ -232,7 +230,6 @@
   #:focused-entry
   #:dispatch-focused-widget-key-event
   #:dispatch-focused-text-input
-  #:dispatch-widget-keyboard-event
   #:tab-navigation-backward-p
   #:start-widget-text-input
   #:stop-widget-text-input

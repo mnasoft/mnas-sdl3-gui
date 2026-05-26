@@ -75,9 +75,10 @@
         (is (not (null hit2)))
         (is (mnas-sdl3-gui/widgets:widget-focused entry)))
       (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) entry))
-      (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+      (mnas-sdl3-gui/widgets:handle-widget-key-event
        (list button entry)
-       :tab)
+       :tab
+       nil)
       (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) button)))))
 
 (test window-02-hide-popup-focus-regression

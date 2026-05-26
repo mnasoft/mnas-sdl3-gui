@@ -48,9 +48,10 @@
 
 (sdl3:def-app-iterate combo-box-03-demo-iterate ()
   (unless *combo-box-03-open* (return-from combo-box-03-demo-iterate :success))
-  (sdl3:set-render-draw-color *combo-box-03-renderer* 240 240 240 255)
-  (sdl3:render-clear *combo-box-03-renderer*)
-  (mnas-sdl3-gui/widgets:render-widgets *combo-box-03-renderer* *combo-box-03-widgets*)
+    (sdl3:set-render-draw-color *combo-box-03-renderer* 240 240 240 255)
+    (sdl3:render-clear *combo-box-03-renderer*)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *combo-box-03-widgets*)
+        do (mnas-sdl3-gui/widgets:render *combo-box-03-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
     (mnas-sdl3-gui/widgets:render-text
      *combo-box-03-renderer*
      (format nil "expanded=~A popup=~A enabled=~A popup-id=~S"
@@ -59,7 +60,8 @@
        (mnas-sdl3-gui/widgets:combo-box-popup-window-enabled-p *combo-box-03-editable*)
        (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*))
      20.0 84.0 '(120 120 120 255))
-  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo-box-03-editable*)
+  ;; popup windows are rendered via transient popup proxies appended by
+  ;; `widgets-in-render-order', so no explicit popup calls are needed here.
   (sdl3:render-present *combo-box-03-renderer*)
   :continue)
 
@@ -112,7 +114,7 @@
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down) (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event *combo-box-03-widgets* (slot-value ev 'sdl3:%key) :mods (slot-value ev 'sdl3:%mod)))
+        (mnas-sdl3-gui/widgets:handle-widget-key-event *combo-box-03-widgets* (slot-value ev 'sdl3:%key) nil :mods (slot-value ev 'sdl3:%mod)))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input *combo-box-03-widgets* (slot-value ev 'sdl3:%text))

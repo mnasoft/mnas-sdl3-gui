@@ -171,8 +171,9 @@
 
   (widget-01-sync-command-state)
   
-  ;; Render all widgets through the root container.
-  (mnas-sdl3-gui/widgets:render-widgets *renderer-dialog* (list *widget-root*))
+    ;; Render all widgets through the root container.
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (list *widget-root*))
+        do (mnas-sdl3-gui/widgets:render *renderer-dialog* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (mnas-sdl3-gui/toolbar:render-toolbar
    *widget-01-toolbar*
@@ -251,15 +252,16 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
                   :context nil)
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+             (mnas-sdl3-gui/widgets:handle-widget-key-event
             (or (mnas-sdl3-gui/window-manager:window-root-widgets
-                 *widget-01-layer-manager*
-                 (sdl3:get-window-id *window-dialog*))
-                (list *widget-root*))
+               *widget-01-layer-manager*
+               (sdl3:get-window-id *window-dialog*))
+              (list *widget-root*))
             (slot-value ev 'sdl3:%key)
+            nil
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
-                         (widget-01-command :widget-01/quit))))
+                   (widget-01-command :widget-01/quit))))
          (unless *widget-01-open*
            (return-from dialog-event :success)))
        :continue)

@@ -174,9 +174,10 @@
   (mnas-sdl3-gui/widgets:render-text *combo-box-renderer*
                                      *combo-box-status*
                                      20.0 252.0 '(40 40 40 255))
-  (mnas-sdl3-gui/widgets:render-widgets *combo-box-renderer* *combo-box-widgets*)
-  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo-box-01-small*)
-  (mnas-sdl3-gui/widgets:combo-box-render-popup-window *combo-box-01-large*)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *combo-box-widgets*)
+        do (mnas-sdl3-gui/widgets:render *combo-box-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
+  ;; popup windows are rendered via transient popup proxies appended by
+  ;; `widgets-in-render-order', so no explicit popup calls are needed here.
   (sdl3:render-present *combo-box-renderer*)
   :continue)
 
@@ -265,9 +266,10 @@
                     (slot-value ev 'sdl3:%key)
                     :mods (slot-value ev 'sdl3:%mod)
                     :context (list :window-id *combo-box-window-id*))
-             (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+             (mnas-sdl3-gui/widgets:handle-widget-key-event
               *combo-box-widgets*
               (slot-value ev 'sdl3:%key)
+              nil
               :mods (slot-value ev 'sdl3:%mod)
               :on-escape (lambda ()
                            (setf *combo-box-open* nil)

@@ -168,10 +168,9 @@
                                      "Tab/Shift+Tab: focus, Space: activate button"
                                      70.0 252.0 '(0 0 0 255))
   
-  ;; Render buttons through the demo root widget container.
-  (mnas-sdl3-gui/widgets:render-widgets
-   *renderer*
-   (simple-01-root-widgets)))
+    ;; Render buttons through the demo root widget container.
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (simple-01-root-widgets))
+        do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*)))
 
 ;;; SDL3 demo callbacks
 
@@ -277,9 +276,10 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
                   :context (list :window-id *window-id*))
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+           (mnas-sdl3-gui/widgets:handle-widget-key-event
             (simple-01-root-widgets)
             (slot-value ev 'sdl3:%key)
+            nil
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
                          (setf *dialog-open* nil)

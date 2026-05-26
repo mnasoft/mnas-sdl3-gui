@@ -144,13 +144,14 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          (dialog-widgets)
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda ()
-                       (setf *dialog-open* nil)
-                       :success)))
+        (mnas-sdl3-gui/widgets:handle-widget-key-event
+         (dialog-widgets)
+         (slot-value ev 'sdl3:%key)
+         nil
+         :mods (slot-value ev 'sdl3:%mod)
+         :on-escape (lambda ()
+                (setf *dialog-open* nil)
+                :success)))
        :continue)
       (t :continue))))
 

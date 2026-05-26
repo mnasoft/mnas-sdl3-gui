@@ -119,8 +119,7 @@ Optional CONSTRAINTS can influence measurement behavior."))
 (defgeneric widget-arrange (widget x y width height)
   (:documentation "Arrange WIDGET inside the rectangle defined by X/Y/WIDTH/HEIGHT."))
 
-(defgeneric widget-paint (renderer widget style)
-  (:documentation "Paint WIDGET using RENDERER and STYLE."))
+;; `widget-paint` removed. Call `render` directly: (render renderer widget style).
 
 (defgeneric widget-hit-test (widget x y)
   (:documentation "Return T when point X/Y hits WIDGET.
@@ -131,6 +130,9 @@ Default behavior is based on widget bounds."))
 
 (defgeneric request-redraw (widget)
   (:documentation "Mark WIDGET to be redrawn on the next frame."))
+
+(defgeneric set-widget-focus (widgets target)
+  (:documentation "Assign keyboard focus to TARGET and clear it from the other WIDGETS."))
 
 (defgeneric world-to-screen (widget x y &optional z)
   (:documentation "Convert world coordinates to screen coordinates for WIDGET."))
@@ -228,14 +230,18 @@ Default behavior is based on widget bounds."))
     (values (max 1 (+ max-width (* 2 padding)))
             (max 1 (+ total-height (* 2 padding))))))
 
-(defmethod widget-paint ((renderer t) (widget widget) style)
-  (render renderer widget style))
+;; `widget-paint` method removed. Rendering is performed via `render` generic.
 
 (defmethod widget-hit-test ((widget widget) x y)
   (contains-point-p widget x y))
 
 (defgeneric render (renderer widget style)
   (:documentation "Render WIDGET on RENDERER using STYLE for widget-specific dispatch."))
+
+;; Skip rendering for invisible widgets globally via an :around method.
+(defmethod render :around ((renderer t) (widget widget) style)
+  (when (visible-p widget)
+    (call-next-method)))
 
 (defgeneric handle-widget-mouse-down (widget x y)
   (:documentation "Handle mouse button press. Returns T if event was consumed."))
@@ -261,8 +267,10 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-widget-key-press (widget key char)
   (:documentation "Handle keyboard input for a widget. Returns T if key was handled."))
 
-(defgeneric handle-widget-key-event (widget key char &key ctrl shift alt)
-  (:documentation "Handle keyboard input for WIDGET including modifier-aware bindings."))
+(defgeneric handle-widget-key-event (widget key char &key mods ctrl shift alt on-escape on-return)
+  (:documentation "Handle keyboard input for WIDGET including modifier-aware bindings.
+For top-level widget lists provide :mods (raw modifier mask) and optional
+:on-escape/:on-return callbacks.") )
 
 (defgeneric scroll-by (widget delta)
   (:documentation "Scroll a scrollable WIDGET by DELTA units. Returns T when offset changed."))

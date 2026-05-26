@@ -155,7 +155,8 @@
      0.0
      (- +check-box-window-height+ +check-box-toolbar-height+)))
 
-  (mnas-sdl3-gui/widgets:render-widgets *check-box-renderer* *check-box-widgets*)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *check-box-widgets*)
+        do (mnas-sdl3-gui/widgets:render *check-box-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (mnas-sdl3-gui/widgets:render-text *check-box-renderer*
                                      *check-box-status*
@@ -206,9 +207,10 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
                   :context (list :window-id *check-box-window-id*))
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+           (mnas-sdl3-gui/widgets:handle-widget-key-event
             *check-box-widgets*
             (slot-value ev 'sdl3:%key)
+            nil
             :mods (slot-value ev 'sdl3:%mod)
             :on-escape (lambda ()
                          (setf *check-box-open* nil)

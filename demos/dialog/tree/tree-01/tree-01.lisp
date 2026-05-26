@@ -238,10 +238,11 @@
 (sdl3:def-app-iterate tree-01-iterate ()
   (unless *tree-01-open*
     (return-from tree-01-iterate :success))
-  (sdl3:set-render-draw-color *tree-01-renderer* 242 242 242 255)
-  (sdl3:render-clear *tree-01-renderer*)
-  (tree-01-sync-command-state)
-  (mnas-sdl3-gui/widgets:render-widgets *tree-01-renderer* *tree-01-widgets*)
+    (sdl3:set-render-draw-color *tree-01-renderer* 242 242 242 255)
+    (sdl3:render-clear *tree-01-renderer*)
+    (tree-01-sync-command-state)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *tree-01-widgets*)
+        do (mnas-sdl3-gui/widgets:render *tree-01-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   (mnas-sdl3-gui/toolbar:render-toolbar
    *tree-01-toolbar*
    *tree-01-renderer*
@@ -334,14 +335,15 @@
                 (slot-value ev 'sdl3:%key)
                 :mods (slot-value ev 'sdl3:%mod)
                 :context (list :window-id target-window-id))
-              (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
-          *tree-01-widgets*
-          (slot-value ev 'sdl3:%key)
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda ()
+                    (mnas-sdl3-gui/widgets:handle-widget-key-event
+                 *tree-01-widgets*
+                 (slot-value ev 'sdl3:%key)
+                 nil
+                 :mods (slot-value ev 'sdl3:%mod)
+                 :on-escape (lambda ()
                   (tree-01-command :tree-01/quit)
                   :success)
-          :on-return (lambda ()
+                 :on-return (lambda ()
                   (tree-01-command :tree-01/load)
                   :continue)))))
        :continue)

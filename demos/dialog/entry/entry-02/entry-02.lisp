@@ -252,7 +252,8 @@
      *entry-02-renderer*
      0.0
      0.0))
-  (mnas-sdl3-gui/widgets:render-widgets *entry-02-renderer* *entry-02-widgets*)
+    (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *entry-02-widgets*)
+      do (mnas-sdl3-gui/widgets:render *entry-02-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   (sdl3:render-present *entry-02-renderer*)
   :continue)
 
@@ -295,18 +296,19 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (entry-02-key-modifiers ev)
                   :context (list :window-id *entry-02-window-id*))
-           (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+               (mnas-sdl3-gui/widgets:handle-widget-key-event
             *entry-02-widgets*
             (slot-value ev 'sdl3:%key)
+            nil
             :mods (entry-02-key-modifiers ev)
             :on-escape (lambda ()
-                         (setf *entry-02-open* nil)
-                         :success)
+                 (setf *entry-02-open* nil)
+                 :success)
             :on-return (lambda ()
-                         (setf *entry-02-status*
-                               (format nil "Command executed: ~A"
-                                       (mnas-sdl3-gui/widgets:entry-text *entry-02-command*)))
-                         :success))))
+                 (setf *entry-02-status*
+                   (format nil "Command executed: ~A"
+                       (mnas-sdl3-gui/widgets:entry-text *entry-02-command*)))
+                 :success))))
       :continue)
     (sdl3:text-input-event
      (mnas-sdl3-gui/widgets:dispatch-focused-text-input

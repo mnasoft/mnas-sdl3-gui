@@ -289,8 +289,9 @@
   (sdl3:set-render-draw-color *pack-demo-renderer* 242 242 242 255)
   (sdl3:render-clear *pack-demo-renderer*)
 
-  (pack-01-sync-command-state)
-  (mnas-sdl3-gui/widgets:render-widgets *pack-demo-renderer* *pack-demo-widgets*)
+    (pack-01-sync-command-state)
+      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *pack-demo-widgets*)
+        do (mnas-sdl3-gui/widgets:render *pack-demo-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   (when *pack-demo-toolbar*
     (mnas-sdl3-gui/toolbar:render-toolbar
      *pack-demo-toolbar*
@@ -388,13 +389,14 @@
                     (slot-value ev 'sdl3:%key)
                     :mods (slot-value ev 'sdl3:%mod)
                     :context (list :window-id target-window-id))
-             (mnas-sdl3-gui/widgets:dispatch-widget-keyboard-event
+             (mnas-sdl3-gui/widgets:handle-widget-key-event
               *pack-demo-widgets*
               (slot-value ev 'sdl3:%key)
+              nil
               :mods (slot-value ev 'sdl3:%mod)
               :on-escape (lambda ()
                            (setf *pack-demo-open* nil)
-                           :success)))))
+                           :success)))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input

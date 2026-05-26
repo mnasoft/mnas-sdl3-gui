@@ -2,24 +2,62 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod handle-widget-key-event :around ((widget widget) key char &key ctrl shift alt)
-  (declare (ignore key char ctrl shift alt))
+(defmethod handle-widget-key-event ((widgets cons) key char &key mods ctrl shift alt on-escape on-return)
+  "Top-level keyboard dispatch for a WIDGETS list. Returns an app status keyword.
+This method implements demo-level behavior (escape/tab/return/space) and
+forwards other keys to the focused widget." 
+  (declare (ignore char ctrl shift alt))
+  (let ((focused (focused-widget widgets)))
+    (cond
+      ((and (typep focused 'combo-box)
+            (combo-box-expanded-p focused)
+            (member key '(:escape :return)))
+       (handle-widget-key-event focused key nil
+                                :mods mods :ctrl (key-modifier-active-p mods :ctrl)
+                                :shift (key-modifier-active-p mods :shift)
+                                :alt (key-modifier-active-p mods :alt))
+       :continue)
+      ((eq key :escape)
+       (if on-escape
+           (funcall on-escape)
+           :continue))
+      ((eq key :tab)
+       (move-widget-focus widgets :backward (tab-navigation-backward-p mods))
+       :continue)
+      ((eq key :return)
+       (if on-return
+           (funcall on-return)
+           :continue))
+      ((eq key :space)
+       (dispatch-focused-widget-key-event widgets :space nil)
+       :continue)
+      (t
+       (dispatch-focused-widget-key-event
+        widgets key nil
+        :ctrl (key-modifier-active-p mods :ctrl)
+        :shift (key-modifier-active-p mods :shift)
+        :alt (key-modifier-active-p mods :alt))
+       :continue))))
+
+(defmethod handle-widget-key-event :around ((widget widget) key char &key mods ctrl shift alt on-escape on-return)
+  (declare (ignore key char mods ctrl shift alt on-escape on-return))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
-(defmethod handle-widget-key-event ((widget widget) key char &key ctrl shift alt)
-  (declare (ignore ctrl shift alt))
+(defmethod handle-widget-key-event ((widget widget) key char &key mods ctrl shift alt on-escape on-return)
+  (declare (ignore mods ctrl shift alt on-escape on-return))
   (handle-widget-key-press widget key char))
 
-(defmethod handle-widget-key-event ((widget widget-container) key char &key ctrl shift alt)
-  (declare (ignore ctrl shift alt))
+(defmethod handle-widget-key-event ((widget widget-container) key char &key mods ctrl shift alt on-escape on-return)
+  (declare (ignore mods ctrl shift alt on-escape on-return))
   (let ((focused-child (find-if #'widget-focused (children widget))))
     (when focused-child
       (handle-widget-key-event focused-child key char
-                               :ctrl ctrl :shift shift :alt alt))))
+                               :mods mods :ctrl ctrl :shift shift :alt alt
+                               :on-escape on-escape :on-return on-return))))
 
-(defmethod handle-widget-key-event ((widget entry) key char &key ctrl shift alt)
-  (declare (ignore alt))
+(defmethod handle-widget-key-event ((widget entry) key char &key mods ctrl shift alt on-escape on-return)
+  (declare (ignore mods alt on-escape on-return))
   (cond
     ((and ctrl (eq key :a))
      (set-entry-selection widget 0 (length (entry-text widget)))
@@ -55,7 +93,8 @@
     (t
      (handle-widget-key-press widget key char))))
 
-(defmethod handle-widget-key-event ((widget password-entry) key char &key ctrl shift alt)
+(defmethod handle-widget-key-event ((widget password-entry) key char &key mods ctrl shift alt on-escape on-return)
+  (declare (ignore mods on-escape on-return))
   (cond
     ((and ctrl (member key '(:c :x)))
      t)

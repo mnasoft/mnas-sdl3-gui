@@ -153,7 +153,7 @@
   :depends-on ("mnas-sdl3-gui/demos/dialog/combo-box-01"
                "mnas-sdl3-gui/demos/dialog/combo-box-02"
                "mnas-sdl3-gui/demos/dialog/combo-box-03"
-               ))
+               "mnas-sdl3-gui/demos/dialog/combo-box-04"))
 
 (asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-01"
   :description "Demos for mnas-sdl3-gui"
@@ -181,6 +181,15 @@
                 :serial t
                 :components ((:file "package")
                              (:file "combo-box-03")))))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-04"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/dialog/combo-box/combo-box-04"
+                :serial t
+                :components ((:file "package")
+                             (:file "combo-box-04")))))
 
 
 (asdf:defsystem "mnas-sdl3-gui/demos/dialog/entry"

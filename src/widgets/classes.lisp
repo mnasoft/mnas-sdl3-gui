@@ -223,6 +223,11 @@
                         :documentation "Optional window-layer-manager for popup focus/z-order."))
   (:documentation "Drop-down selection widget backed by a popup list."))
 
+  (defclass combo-box-popup (widget)
+    ((owner :initarg :owner :accessor combo-box-popup-owner
+      :documentation "Owner combo-box widget for this popup proxy."))
+    (:documentation "Transient proxy widget representing a combo-box popup window in render order."))
+
 (defclass editable-combo-box (entry combo-box)
   ((placeholder :initarg :placeholder :initform ""
                 :accessor editable-combo-box-placeholder
