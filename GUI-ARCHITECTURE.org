@@ -455,3 +455,65 @@ canvas, а не попытка реализовать графику через 
 - [X] Перенести один базовый demo на новый widget contract и добавить регрессионные тесты на hit-test и focus lifecycle.
  - [X] Расширить Toolbar Presenter на остальные demo/presenter paths toolkit.
  - [X] Довести единый Window/Layer Manager event pipeline до всех dialog/widget demo-модулей toolkit.
+ 
+* Изменения, внесённые по lifecycle и очистке реестров
+
+Ниже кратко описаны изменения, внесённые для корректного управления жизненным
+циклом окон и связанными с ними виджетами, чтобы избегать утечек и "висячих"
+ссылок на window-id после закрытия окна или завершения приложения.
+
+- **App quit hooks:** добавлен модуль `mnas-sdl3-gui/app` с функциями
+  `add-quit-hook`, `remove-quit-hook` и `run-quit-hooks`. Демо-обработчики
+  `def-app-quit` теперь вызывают `mnas-sdl3-gui/app:run-quit-hooks` перед
+  финальным вызовом `sdl3:quit` — это позволяет централизованно сбросить
+  глобальные реестры и выполнить пользовательские cleanup-ручки.
+
+- **Реестр window-id -> widgets:** глобальная хеш-таблица
+  `*window-id->widgets*` (в `src/widgets/functions.lisp`) теперь имеет API для
+  регистрации/удаления виджетов и явной очистки — `register-widget-for-window-id`,
+  `unregister-widget-for-window-id`, `unregister-widgets-for-window`,
+  `clear-window-widget-registry`.
+
+- **Wrapper при уничтожении окна:** добавлена обёртка
+  `mnas-sdl3-gui/widgets:destroy-window-and-unregister`, которая выполняет
+  `sdl3:destroy-window` (безопасно), затем удаляет все записи для данного
+  window-id из реестра и (опционально) уведомляет `Window/Layer Manager`
+  (`unregister-window`) если передан `:layer-manager`.
+
+- **Window Manager cleanup:** `window-manager` при удалении/очистке окон
+  вызывает очистку соответствующих записей в widgets-реестре. Чтобы избежать
+  проблем порядка загрузки (package may be not yet defined), там где это было
+  критично использован runtime-lookup (`find-package`/`intern`/`funcall`).
+
+- **ASDF:** в `mnas-sdl3-gui.asd` добавлены компоненты для `src/app/*`, чтобы
+  пакет `mnas-sdl3-gui/app` определялся при загрузке системы и тестов.
+
+- **Демо и миграция:** во множестве demo-файлов заменены прямые вызовы
+  `sdl3:destroy-window` на `mnas-sdl3-gui/widgets:destroy-window-and-unregister`,
+  а в `def-app-quit` handlers добавлен вызов `mnas-sdl3-gui/app:run-quit-hooks`.
+
+- **Тесты:** добавлен тест FiveAM `APP-QUIT-HOOKS-AND-REGISTRY-CLEAR`, который
+  проверяет вызов quit-hooks и очистку реестра; локальные прогонки тестов
+  проходят (см. `tests/mnas-sdl3-gui-tests.lisp`).
+
+**Короткая рекомендация для разработчиков**
+
+- При создании transient/popup окон используйте `destroy-window-and-unregister`
+  вместо прямого `sdl3:destroy-window`.
+- Если нужен глобальный cleanup при завершении (например, для сохранения
+  состояния или освобождения ресурсов), регистрируйте hook через
+  `mnas-sdl3-gui/app:add-quit-hook`.
+- Не меняйте `fork/cl-sdl3` — общий binding остаётся без изменений; все правки
+  оставлены в этом репозитории.
+
+**Примеры символов/файлов**
+
+- `src/app/functions.lisp` — `run-quit-hooks`, `add-quit-hook`, `remove-quit-hook`
+- `src/widgets/functions.lisp` — `*window-id->widgets*`, `destroy-window-and-unregister`, `clear-window-widget-registry`
+- `src/window-manager/functions.lisp` — runtime-lookup для вызова очистки реестра
+- `tests/mnas-sdl3-gui-tests.lisp` — тесты на очистку реестра и hooks
+
+---
+
+*** Конец изменений по lifecycle
+

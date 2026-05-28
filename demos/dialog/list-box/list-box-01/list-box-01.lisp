@@ -285,7 +285,8 @@
   (when *list-box-01-renderer*
     (sdl3:destroy-renderer *list-box-01-renderer*))
   (when *list-box-01-window*
-    (sdl3:destroy-window *list-box-01-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *list-box-01-window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

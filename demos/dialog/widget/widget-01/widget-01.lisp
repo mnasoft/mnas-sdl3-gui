@@ -282,7 +282,7 @@
   (mnas-sdl3-gui/widgets:stop-widget-text-input *window-dialog*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (sdl3:destroy-renderer *renderer-dialog*)
-  (sdl3:destroy-window *window-dialog*)
+  (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window-dialog*)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

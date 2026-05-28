@@ -439,7 +439,8 @@
   (when *polyhedron-renderer*
     (sdl3:destroy-renderer *polyhedron-renderer*))
   (when *polyhedron-window*
-    (sdl3:destroy-window *polyhedron-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *polyhedron-window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

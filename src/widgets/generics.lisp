@@ -272,5 +272,4 @@ Default behavior is based on widget bounds."))
 For top-level widget lists provide :mods (raw modifier mask) and optional
 :on-escape/:on-return callbacks.") )
 
-(defgeneric scroll-by (widget delta)
-  (:documentation "Scroll a scrollable WIDGET by DELTA units. Returns T when offset changed."))
+;; `scroll-by` removed: use `handle-widget-mouse-wheel` methods instead for scrolling.

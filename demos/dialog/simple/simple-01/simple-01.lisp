@@ -293,7 +293,8 @@
   (when *renderer*
     (sdl3:destroy-renderer *renderer*))
   (when *window*
-    (sdl3:destroy-window *window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

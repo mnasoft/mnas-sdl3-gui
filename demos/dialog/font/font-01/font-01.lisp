@@ -202,7 +202,8 @@
   (when *cyrillic-font-renderer*
     (sdl3:destroy-renderer *cyrillic-font-renderer*))
   (when *cyrillic-font-window*
-    (sdl3:destroy-window *cyrillic-font-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *cyrillic-font-window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

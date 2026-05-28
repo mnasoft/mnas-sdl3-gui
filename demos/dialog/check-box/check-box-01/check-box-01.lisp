@@ -223,8 +223,9 @@
   (when *check-box-window*
     (sdl3:destroy-renderer *check-box-renderer*))
   (when *check-box-window*
-    (sdl3:destroy-window *check-box-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *check-box-window*))
   (mnas-sdl3-gui/widgets:cleanup-ttf)
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

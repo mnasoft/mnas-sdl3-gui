@@ -135,8 +135,7 @@
   (when *renderer*
     (sdl3:destroy-renderer *renderer*))
   (when *window*
-    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window*))
-  (mnas-sdl3-gui/app:run-quit-hooks result)
+    (sdl3:destroy-window *window*))
   (sdl3:pump-events)
   (sdl3:quit)
   :success)
@@ -153,3 +152,6 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box-04)
 ;;;; (combo-box-04)
+
+
+

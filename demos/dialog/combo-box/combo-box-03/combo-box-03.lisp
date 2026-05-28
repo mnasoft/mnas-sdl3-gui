@@ -70,47 +70,37 @@
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event (setf *combo-box-03-open* nil) :success)
-      (sdl3:mouse-button-event
-       (let ((win-id (slot-value ev 'sdl3:%window-id))
-             (down (slot-value ev 'sdl3:%down))
-             (x (round (slot-value ev 'sdl3:%x)))
-             (y (round (slot-value ev 'sdl3:%y))))
-         (cond
-           ((and down (= win-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*)))
-            (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down *combo-box-03-editable* x y))
-           ((and (not down) (= win-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*)))
-            (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up *combo-box-03-editable* x y))
-           ((and down (= win-id (sdl3:get-window-id *combo-box-03-window*)))
-            (mnas-sdl3-gui/widgets:handle-widget-mouse-down *combo-box-03-widgets* x y))))
-       :continue)
       (sdl3:mouse-motion-event
-       (let ((win-id (slot-value ev 'sdl3:%window-id)))
+       (let* ((win-id (slot-value ev 'sdl3:%window-id))
+              (mx (round (slot-value ev 'sdl3:%x)))
+              (my (round (slot-value ev 'sdl3:%y)))
+              (associated (mnas-sdl3-gui/widgets:widgets-for-window-id win-id)))
          (cond
-           ((= win-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*))
-            (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-motion
-             *combo-box-03-editable*
-             (round (slot-value ev 'sdl3:%x))
-             (round (slot-value ev 'sdl3:%y))))
-           ((= win-id (sdl3:get-window-id *combo-box-03-window*))
-              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-               (list *combo-box-03-widgets*)
-               (round (slot-value ev 'sdl3:%x))
-               (round (slot-value ev 'sdl3:%y))))))
+          (associated
+           (dolist (w associated)
+             (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
+          ((= win-id (sdl3:get-window-id *combo-box-03-window*))
+           (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+            (list *combo-box-03-widgets*)
+            mx my))))
+       
        :continue)
       (sdl3:mouse-wheel-event
-       (let ((win-id (slot-value ev 'sdl3:%window-id)))
+       (let* ((win-id (slot-value ev 'sdl3:%window-id))
+              (dy (round (slot-value ev 'sdl3:%y)))
+              (mx (round (slot-value ev 'sdl3:%mouse-x)))
+              (my (round (slot-value ev 'sdl3:%mouse-y)))
+              (x (round (slot-value ev 'sdl3:%x)))
+              (y (round (slot-value ev 'sdl3:%y)))
+              (associated (mnas-sdl3-gui/widgets:widgets-for-window-id win-id)))
          (cond
-           ((= win-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*))
-            (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-wheel
-             *combo-box-03-editable*
-             (round (slot-value ev 'sdl3:%y))))
-            ((= win-id (sdl3:get-window-id *combo-box-03-window*))
+           (associated
+            (dolist (w associated)
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel w 0 0 0 dy)))
+           ((= win-id (sdl3:get-window-id *combo-box-03-window*))
             (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
              *combo-box-03-widgets*
-             (round (slot-value ev 'sdl3:%mouse-x))
-             (round (slot-value ev 'sdl3:%mouse-y))
-             (round (slot-value ev 'sdl3:%x))
-             (round (slot-value ev 'sdl3:%y))))))
+             mx my x y))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down) (not (slot-value ev 'sdl3:%repeat)))
@@ -127,7 +117,8 @@
   (mnas-sdl3-gui/widgets:stop-widget-text-input *combo-box-03-window*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *combo-box-03-renderer* (sdl3:destroy-renderer *combo-box-03-renderer*))
-  (when *combo-box-03-window* (sdl3:destroy-window *combo-box-03-window*))
+  (when *combo-box-03-window* (mnas-sdl3-gui/widgets:destroy-window-and-unregister *combo-box-03-window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit)
   :success)

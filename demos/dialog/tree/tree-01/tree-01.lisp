@@ -361,7 +361,8 @@
   (when *tree-01-renderer*
     (sdl3:destroy-renderer *tree-01-renderer*))
   (when *tree-01-window*
-    (sdl3:destroy-window *tree-01-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *tree-01-window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

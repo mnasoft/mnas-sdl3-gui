@@ -192,10 +192,19 @@ Modal policy always has priority over non-modal targets."
 
 (defun clear-window-layer-manager (manager)
   "Clear all managed windows in MANAGER."
+  (maphash (lambda (id window)
+             (declare (ignore window))
+             (when id
+               (let ((pkg (find-package :mnas-sdl3-gui/widgets)))
+                 (when pkg
+                   (let ((fn (intern "UNREGISTER-WIDGETS-FOR-WINDOW" pkg)))
+                     (when (fboundp fn)
+                       (ignore-errors (funcall (symbol-function fn) id))))))))
+           (manager-windows manager))
   (clrhash (manager-windows manager))
   (setf (manager-z-counter manager) 0
-    (manager-modal-stack manager) '()
-    (manager-focused-window-id manager) nil)
+        (manager-modal-stack manager) '()
+        (manager-focused-window-id manager) nil)
   manager)
 
 (defun find-window (manager window-id)
@@ -225,6 +234,13 @@ Modal policy always has priority over non-modal targets."
   (%modal-stack-remove manager window-id)
   (when (eql window-id (manager-focused-window-id manager))
     (clear-focused-window manager))
+  ;; Also remove any widget associations for this window id so the
+  ;; global window-id->widgets registry does not retain stale entries.
+  (let ((pkg (find-package :mnas-sdl3-gui/widgets)))
+    (when pkg
+      (let ((fn (intern "UNREGISTER-WIDGETS-FOR-WINDOW" pkg)))
+        (when (fboundp fn)
+          (ignore-errors (funcall (symbol-function fn) window-id))))))
   (remhash window-id (manager-windows manager)))
 
 (defun host-window-p (manager window-id)

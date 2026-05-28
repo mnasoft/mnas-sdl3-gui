@@ -7,6 +7,93 @@
 (defvar *ttf-available-p* nil)
 (defvar *ttf-font* nil)
 
+;; Mapping from SDL window id -> list of widgets associated with that window
+;; Used to quickly find widgets that should receive events coming from
+;; transient popup windows (for example, combo-box popup windows).
+(defvar *window-id->widgets* (make-hash-table :test 'eql)
+  "Hash table mapping SDL window id (integer) to a list of widget objects.")
+
+(defun register-widget-for-window-id (win-id widget)
+  "Associate WIDGET with WIN-ID in the global window->widgets hash table.
+Multiple widgets may be associated with the same window id. Returns the
+updated list of widgets for WIN-ID." 
+  (when (and win-id (numberp win-id) (> win-id 0))
+    (let ((lst (gethash win-id *window-id->widgets*)))
+      (setf (gethash win-id *window-id->widgets*)
+            (if lst (pushnew widget lst :test #'eq) (list widget)))
+      (gethash win-id *window-id->widgets*))))
+
+(defun unregister-widget-for-window-id (win-id widget)
+  "Remove association of WIDGET from WIN-ID. If no widgets remain for
+WIN-ID, the hash entry is removed. Returns the remaining list or NIL." 
+  (when (and win-id (numberp win-id) (> win-id 0))
+    (let ((lst (gethash win-id *window-id->widgets*)))
+      (when lst
+        (let ((new (remove widget lst :test #'eq)))
+          (if new
+              (progn (setf (gethash win-id *window-id->widgets*) new) new)
+              (progn (remhash win-id *window-id->widgets*) nil)))))))
+
+(defun widgets-for-window-id (win-id)
+  "Return the list of widgets associated with WIN-ID or NIL." 
+  (and win-id (gethash win-id *window-id->widgets*)))
+
+;;; Utilities accepting SDL window objects or integer ids -------------------
+(defun window-id-from (window-or-id)
+  "Return SDL window id integer for WINDOW-OR-ID which may be an SDL window object or an integer.
+Returns NIL when the id cannot be determined." 
+  (cond
+    ((null window-or-id) nil)
+    ((integerp window-or-id) window-or-id)
+    (t (handler-case
+         (sdl3:get-window-id window-or-id)
+       (error nil)))))
+
+(defun widgets-for-window (window-or-id)
+  "Return widgets associated with WINDOW-OR-ID (SDL window object or integer id).
+This delegates to `widgets-for-window-id'."
+  (let ((wid (window-id-from window-or-id)))
+    (and wid (widgets-for-window-id wid))))
+
+(defun register-widgets-for-window (window-or-id widgets)
+  "Register each widget from WIDGETS list for WINDOW-OR-ID (object or id).
+Returns the updated list of widgets for the window." 
+  (let ((wid (window-id-from window-or-id)))
+    (when (and wid widgets)
+      (dolist (w widgets)
+        (register-widget-for-window-id wid w))
+      (widgets-for-window-id wid))))
+
+(defun unregister-widgets-for-window (window-or-id &optional widgets)
+  "Unregister WIDGETS (list) from WINDOW-OR-ID. If WIDGETS is NIL remove all associations for that window.
+Returns remaining widget list or NIL." 
+  (let ((wid (window-id-from window-or-id)))
+    (when wid
+      (if widgets
+          (dolist (w widgets)
+            (unregister-widget-for-window-id wid w))
+          (remhash wid *window-id->widgets*))
+      (gethash wid *window-id->widgets*))))
+
+(defun clear-window-widget-registry ()
+  "Clear the global window-id -> widgets registry used for transient popup windows."
+  (clrhash *window-id->widgets*)
+  t)
+
+(defun destroy-window-and-unregister (window-or-id &key (layer-manager nil))
+  "Destroy SDL WINDOW-OR-ID (object or integer) and unregister any widget
+associations for that window id. If LAYER-MANAGER is provided, also call
+`mnas-sdl3-gui/window-manager:unregister-window' to remove the managed window.
+Returns the window id that was processed or NIL." 
+  (let ((wid (window-id-from window-or-id)))
+    (when (and window-or-id (not (integerp window-or-id)))
+      (ignore-errors (sdl3:destroy-window window-or-id)))
+    (when wid
+      (ignore-errors (unregister-widgets-for-window wid))
+      (when layer-manager
+        (ignore-errors (mnas-sdl3-gui/window-manager:unregister-window layer-manager wid)))
+      wid)))
+
 (defparameter +layout-font-char-width+ 8)
 (defparameter +layout-font-text-height+ 16)
 (defparameter +list-box-scrollbar-width+ 12)
@@ -904,6 +991,13 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
          (setf (combo-box-popup-window widget) popup-window
                (combo-box-popup-renderer widget) popup-renderer
                (combo-box-popup-window-id widget) (sdl3:get-window-id popup-window))
+           ;; Register mapping from the SDL popup window id to this widget so
+           ;; event dispatchers can quickly find the widgets associated with
+           ;; transient popup windows.
+           (when (and (combo-box-popup-window-id widget)
+              (numberp (combo-box-popup-window-id widget))
+              (> (combo-box-popup-window-id widget) 0))
+             (register-widget-for-window-id (combo-box-popup-window-id widget) widget))
          (format t "[combo-box] popup created id=~S renderer=~S~%"
                  (combo-box-popup-window-id widget)
                  popup-renderer)
@@ -971,10 +1065,15 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 (defun combo-box-disable-popup-window (widget)
   "Disable popup window mode and destroy popup resources for WIDGET." 
   (combo-box-hide-popup-window widget)
-  (when (combo-box-popup-renderer widget)
-    (sdl3:destroy-renderer (combo-box-popup-renderer widget)))
-  (when (combo-box-popup-window widget)
-    (sdl3:destroy-window (combo-box-popup-window widget)))
+  ;; Capture popup window id before destroying resources so we can remove
+  ;; the mapping from window id -> widget.
+  (let ((old-id (combo-box-popup-window-id widget)))
+    (when (combo-box-popup-renderer widget)
+      (sdl3:destroy-renderer (combo-box-popup-renderer widget)))
+    (when (combo-box-popup-window widget)
+      (destroy-window-and-unregister (combo-box-popup-window widget)
+                                     :layer-manager (combo-box-popup-layer-manager widget)))
+    )
   (setf (combo-box-popup-window widget) nil
         (combo-box-popup-renderer widget) nil
         (combo-box-popup-window-id widget) 0
@@ -1043,4 +1142,4 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 (defun combo-box-handle-popup-mouse-wheel (widget dy)
   "Handle mouse-wheel inside popup window for WIDGET." 
   (when (not (zerop dy))
-    (scroll-by widget (- dy))))
+    (handle-widget-mouse-wheel widget 0 0 0 dy)))

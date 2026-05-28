@@ -412,7 +412,7 @@
   (when *pack-demo-renderer*
     (sdl3:destroy-renderer *pack-demo-renderer*))
   (when *pack-demo-window*
-    (sdl3:destroy-window *pack-demo-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *pack-demo-window*))
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

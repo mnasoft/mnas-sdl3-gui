@@ -371,11 +371,12 @@
   (when *window-02-popup-renderer*
     (sdl3:destroy-renderer *window-02-popup-renderer*))
   (when *window-02-popup-window*
-    (sdl3:destroy-window *window-02-popup-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window-02-popup-window* :layer-manager *window-02-layer-manager*))
   (when *window-02-main-renderer*
     (sdl3:destroy-renderer *window-02-main-renderer*))
   (when *window-02-main-window*
-    (sdl3:destroy-window *window-02-main-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window-02-main-window* :layer-manager *window-02-layer-manager*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

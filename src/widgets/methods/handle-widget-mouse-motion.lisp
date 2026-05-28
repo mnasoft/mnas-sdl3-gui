@@ -40,12 +40,18 @@ Temporary debug logging to help track motion events over labels."
   nil)
 
 (defmethod handle-widget-mouse-motion ((widget combo-box) x y)
-  "Handle scrollbar thumb dragging when combo-box popup is expanded."
+  "Handle scrollbar thumb dragging when combo-box popup is expanded.
+Supports both inline popups and separate popup windows (coordinates for
+popup windows are expected to be relative to the popup)."
   (when (and (combo-box-expanded-p widget)
              (list-box-scrollbar-dragging-p widget))
-    (combo-box-set-scroll-offset-from-thumb-top
-     widget
-     (- y (list-box-scrollbar-drag-offset widget))))
+    (if (combo-box-popup-window-enabled-p widget)
+        (combo-box-popup-set-scroll-offset-from-thumb-top
+         widget 0 0
+         (- y (list-box-scrollbar-drag-offset widget)))
+        (combo-box-set-scroll-offset-from-thumb-top
+         widget
+         (- y (list-box-scrollbar-drag-offset widget)))))
   nil)
 
 (defmethod handle-widget-mouse-motion ((widget list-box) x y)

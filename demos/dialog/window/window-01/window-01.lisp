@@ -366,7 +366,7 @@
   (when *window-01-renderer*
     (sdl3:destroy-renderer *window-01-renderer*))
   (when *window-01-window*
-    (sdl3:destroy-window *window-01-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window-01-window*))
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

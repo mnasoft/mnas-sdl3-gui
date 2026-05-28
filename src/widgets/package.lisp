@@ -57,7 +57,6 @@
   #:widget-remove-child
   #:widget-clear-children
   #:normalize-scroll-container-scroll-offset
-  #:scroll-by
   #:scroll-container-max-scroll-offset
   #:scroll-container-content-height
   ;; style classes and helpers
@@ -142,7 +141,7 @@
   #:tree-view-max-scroll-offset
   #:normalize-tree-view-scroll-offset
   #:ensure-tree-view-selection-visible
-  #:scroll-by
+  
    ;; entry selection and clipboard utilities
    #:clear-entry-selection
    #:get-entry-selected-text
@@ -223,6 +222,14 @@
   #:handle-widget-mouse-up
   #:handle-widget-mouse-wheel
   #:handle-widget-mouse-motion
+  #:widgets-for-window-id
+  #:register-widget-for-window-id
+  #:unregister-widget-for-window-id
+  #:widgets-for-window
+  #:register-widgets-for-window
+  #:unregister-widgets-for-window
+  #:clear-window-widget-registry
+  #:destroy-window-and-unregister
   #:handle-widget-key-press
   #:handle-widget-key-event
   #:focusable-widget-p

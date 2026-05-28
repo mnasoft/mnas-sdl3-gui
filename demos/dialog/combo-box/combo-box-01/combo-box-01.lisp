@@ -185,12 +185,8 @@
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
     (flet ((popup-widget-for-window (window-id)
-             (cond
-               ((= window-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-01-small*))
-                *combo-box-01-small*)
-               ((= window-id (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-01-large*))
-                *combo-box-01-large*)
-               (t nil))))
+             (let ((lst (mnas-sdl3-gui/widgets:widgets-for-window-id window-id)))
+               (and lst (first lst)))))
       (typecase ev
         (sdl3:quit-event
          (setf *combo-box-open* nil)
@@ -205,8 +201,8 @@
          (let* ((window-id (slot-value ev 'sdl3:%window-id))
                 (popup-widget (popup-widget-for-window window-id)))
            (cond
-             (popup-widget
-              (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-motion
+            (popup-widget
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
                popup-widget
                (round (slot-value ev 'sdl3:%x))
                (round (slot-value ev 'sdl3:%y))))
@@ -248,8 +244,9 @@
                 (popup-widget (popup-widget-for-window window-id)))
            (cond
              (popup-widget
-              (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-wheel
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
                popup-widget
+               0 0 0
                (round (slot-value ev 'sdl3:%y))))
              ((= window-id *combo-box-window-id*)
               (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
@@ -285,7 +282,8 @@
   (when *combo-box-renderer*
     (sdl3:destroy-renderer *combo-box-renderer*))
   (when *combo-box-window*
-    (sdl3:destroy-window *combo-box-window*))
+    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *combo-box-window*))
+  (mnas-sdl3-gui/app:run-quit-hooks result)
   (sdl3:pump-events)
   (sdl3:quit-sub-system :video)
   (sdl3:quit))

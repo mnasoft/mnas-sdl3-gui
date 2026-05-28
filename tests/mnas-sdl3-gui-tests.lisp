@@ -141,5 +141,15 @@
     (close-window manager 702)
     (is (= 701 (event-target-window-id manager 701)))))
 
+(test app-quit-hooks-and-registry-clear
+  "Verify app quit hooks run and widget window-id registry is cleared."
+  (let ((*app-called* nil))
+    (mnas-sdl3-gui/widgets:register-widget-for-window-id 999 'dummy-widget)
+    (is (not (null (mnas-sdl3-gui/widgets:widgets-for-window-id 999))))
+    (mnas-sdl3-gui/app:add-quit-hook (lambda (result) (declare (ignore result)) (setf *app-called* t)))
+    (mnas-sdl3-gui/app:run-quit-hooks)
+    (is (not (null *app-called*)))
+    (is (null (mnas-sdl3-gui/widgets:widgets-for-window-id 999)))))
+
 (defun run-tests ()
   (run! :mnas-sdl3-gui-tests))
