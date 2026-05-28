@@ -64,10 +64,13 @@
    - color: (list r g b a) with values 0-255
    
    Returns: :ttf-rendered, :approximated, or :skipped"
+  (when (null renderer)
+    :skipped)
+
   (cond
     ((or (null text) (string= text ""))
      :skipped)
-    
+
     (*ttf-available-p*
      ;; Try TTF rendering first
      (handler-case
@@ -116,9 +119,9 @@
          :approximated)))
     
     (t
-     ;; TTF unavailable, use ASCII approximation
-     (render-text-approximated renderer text x y)
-     :approximated)))
+    ;; TTF unavailable, use ASCII approximation
+    (render-text-approximated renderer text x y)
+    :approximated)))
 
 ;;; Fallback rendering
 (defun render-text-approximated (renderer text x y)

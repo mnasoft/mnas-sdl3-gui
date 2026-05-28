@@ -20,6 +20,8 @@
 
 (defun fill-rect (renderer x y w h color)
   "Fill a rectangle with specified color."
+  (when (null renderer)
+    (return-from fill-rect nil))
   (destructuring-bind (r g b a) color
     (sdl3:set-render-draw-color renderer r g b a))
   (let ((rect (make-instance 'sdl3:frect
@@ -29,6 +31,8 @@
 
 (defun stroke-rect (renderer x y w h color &optional (width 1))
   "Draw rectangle outline with specified color."
+  (when (null renderer)
+    (return-from stroke-rect nil))
   (destructuring-bind (r g b a) color
     (sdl3:set-render-draw-color renderer r g b a))
   (loop repeat width
@@ -42,6 +46,8 @@
 
 (defun render-bevel-rect (renderer x y w h top-left-color bottom-right-color &optional (width 1))
   "Draw a beveled border using different colors on opposite edges."
+  (when (null renderer)
+    (return-from render-bevel-rect nil))
   (loop repeat width
         for offset from 0
         do (progn
@@ -81,6 +87,8 @@
 
 (defun render-button-label (renderer widget color &key (offset-x 0) (offset-y 0))
   "Render centered button label."
+  (when (null renderer)
+    (return-from render-button-label nil))
   (multiple-value-bind (text-w text-h)
       (text-pixel-size (button-text widget))
     (let* ((x (+ (widget-x widget)
@@ -94,6 +102,8 @@
 
 (defun render-button-focus-outline (renderer widget &key (inset 0))
   "Render a high-contrast focus outline for button widgets."
+  (when (null renderer)
+    (return-from render-button-focus-outline nil))
   (let* ((x (+ (widget-x widget) inset))
          (y (+ (widget-y widget) inset))
          (w (- (widget-width widget) (* 2 inset)))
@@ -105,6 +115,8 @@
 (defun render-text (renderer text x y color)
   "Render text using TTF font if available, with fallback to ASCII approximation.
    Supports Unicode text including Cyrillic characters."
+  (when (null renderer)
+    nil)
   (render-text-with-ttf renderer text x y color))
 
 ;; NOTE: `render` is the preferred dispatching entrypoint.
@@ -114,6 +126,8 @@
 
 (defun fill-circle (renderer cx cy radius color)
   "Fill a circle centered at CX/CY with RADIUS and COLOR."
+  (when (null renderer)
+    (return-from fill-circle nil))
   (destructuring-bind (r g b a) color
     (sdl3:set-render-draw-color renderer r g b a))
   (loop for dy from (- radius) to radius
@@ -126,6 +140,8 @@
 
 (defun stroke-circle (renderer cx cy radius color &optional (segments 32))
   "Draw a circle outline centered at CX/CY with RADIUS and COLOR."
+  (when (null renderer)
+    (return-from stroke-circle nil))
   (destructuring-bind (r g b a) color
     (sdl3:set-render-draw-color renderer r g b a))
   (loop for index from 0 below segments
