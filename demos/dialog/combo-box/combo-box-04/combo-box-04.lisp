@@ -11,24 +11,28 @@
 (defparameter *combo-1*  nil)
 (defparameter *open* t)
 
-(defun create-combo-box-04-widgets ()
+(defun create-combo-box-04-widgets (&optional window)
   (let ((combo (make-instance 'mnas-sdl3-gui/widgets:combo-box
                               :x 20 :y 20 :width 320 :height 34
                               :items (loop for i from 1 to 20 collect (format nil "Item ~2,'0D" i))
                               :selected-index 0
                               :max-visible-items 5
                               :placeholder "Choose..."
-                              :popup-host-window *window*))
+                              :popup-host-window window
+                              :window window))
         (combo-1 (make-instance 'mnas-sdl3-gui/widgets:combo-box
                               :x 20 :y 60 :width 320 :height 34
                               :items (loop for i from 1 to 20 collect (format nil "Atem ~2,'0D" i))
                               :selected-index 0
                               :max-visible-items 5
                               :placeholder "Choose..."
-                              :popup-host-window *window*)))
+                              :popup-host-window window
+                              :window window)))
     (setf *combo*   combo
           *combo-1* combo-1 
           *widgets* (list combo combo-1))
+    (when window
+      (mnas-sdl3-gui/widgets:register-widgets-for-window window *widgets*))
     *widgets*))
 
 (sdl3:def-app-init combo-box-04-demo-init (argc argv)
@@ -46,9 +50,8 @@
           *open* t)
     (mnas-sdl3-gui/widgets:set-widget-style :flat)
     (mnas-sdl3-gui/widgets:init-ttf-font)
-        (create-combo-box-04-widgets)
-        (mnas-sdl3-gui/widgets:register-widgets-for-window *window* *widgets*)
-        (mnas-sdl3-gui/widgets:set-widget-focus *widgets* *combo*)
+      (create-combo-box-04-widgets *window*)
+      (mnas-sdl3-gui/widgets:set-widget-focus *widgets* *combo*)
     :continue))
 
 (sdl3:def-app-iterate combo-box-04-demo-iterate ()

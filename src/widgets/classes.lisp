@@ -13,6 +13,8 @@
           :documentation "Width of widget")
    (height :initarg :height :initform 30 :accessor widget-height
            :documentation "Height of widget")
+     (window :initarg :window :initform nil :accessor widget-window
+       :documentation "SDL window object or integer id associated with this widget")
      (z-order :initarg :z-order :initform 0 :accessor widget-z-order
         :documentation "Relative drawing order; higher values are rendered above lower ones")
    (enabled :initarg :enabled :initform t :accessor widget-enabled
