@@ -6,34 +6,33 @@
 
 (defparameter *window*   nil)
 (defparameter *renderer* nil)
-(defparameter *widgets*  nil)
-(defparameter *combo*    nil)
-(defparameter *combo-1*  nil)
 (defparameter *open* t)
 
 (defun create-combo-box-04-widgets (&optional window)
-  (let ((combo (make-instance 'mnas-sdl3-gui/widgets:combo-box
-                              :x 20 :y 20 :width 320 :height 34
-                              :items (loop for i from 1 to 20 collect (format nil "Item ~2,'0D" i))
-                              :selected-index 0
-                              :max-visible-items 5
-                              :placeholder "Choose..."
-                              :popup-host-window window
-                              :window window))
-        (combo-1 (make-instance 'mnas-sdl3-gui/widgets:combo-box
-                              :x 20 :y 60 :width 320 :height 34
-                              :items (loop for i from 1 to 20 collect (format nil "Atem ~2,'0D" i))
-                              :selected-index 0
-                              :max-visible-items 5
-                              :placeholder "Choose..."
-                              :popup-host-window window
-                              :window window)))
-    (setf *combo*   combo
-          *combo-1* combo-1 
-          *widgets* (list combo combo-1))
-    (when window
-      (mnas-sdl3-gui/widgets:register-widgets-for-window window *widgets*))
-    *widgets*))
+  (let ((combo
+          (make-instance
+           'mnas-sdl3-gui/widgets:combo-box
+           :x 20 :y 20 :width 320 :height 34
+           :items (loop for i from 1 to 20 collect (format nil "Item ~2,'0D" i))
+           :selected-index 0
+           :max-visible-items 5
+           :placeholder "Choose..."
+           :popup-host-window window
+           :window window))
+        (combo-1
+          (make-instance
+           'mnas-sdl3-gui/widgets:combo-box
+           :x 20 :y 60 :width 320 :height 34
+           :items (loop for i from 1 to 20 collect (format nil "Atem ~2,'0D" i))
+           :selected-index 0
+           :max-visible-items 5
+           :placeholder "Choose..."
+           :popup-host-window window
+           :window window)))
+        (let ((widgets (list combo combo-1)))
+          (when window
+            (mnas-sdl3-gui/widgets:register-widgets-for-window window widgets))
+          widgets)))
 
 (sdl3:def-app-init combo-box-04-demo-init (argc argv)
   (declare (ignore argc argv))
@@ -50,8 +49,8 @@
           *open* t)
     (mnas-sdl3-gui/widgets:set-widget-style :flat)
     (mnas-sdl3-gui/widgets:init-ttf-font)
-      (create-combo-box-04-widgets *window*)
-      (mnas-sdl3-gui/widgets:set-widget-focus *widgets* *combo*)
+    (let ((widgets (create-combo-box-04-widgets *window*)))
+      (mnas-sdl3-gui/widgets:set-widget-focus widgets (first widgets)))
     :continue))
 
 (sdl3:def-app-iterate combo-box-04-demo-iterate ()
@@ -59,12 +58,16 @@
     (return-from combo-box-04-demo-iterate :success))
     (sdl3:set-render-draw-color *renderer* 240 240 240 255)
     (sdl3:render-clear *renderer*)
-      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *widgets*)
-        do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
+    (let ((widgets (mnas-sdl3-gui/widgets:widgets-for-window *window*)))
+      (when widgets
+        (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order widgets)
+          do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))))
   #+nil
-  (mnas-sdl3-gui/widgets:render-text *renderer*
-                                     (format nil "Selection: ~A" (mnas-sdl3-gui/widgets:widget-value *combo*))
-                                     20.0 90.0 '(80 80 80 255))
+  (let ((widgets (mnas-sdl3-gui/widgets:widgets-for-window *window*)))
+    (mnas-sdl3-gui/widgets:render-text *renderer*
+                                       (format nil "Selection: ~A"
+                                               (and widgets (mnas-sdl3-gui/widgets:widget-value (first widgets))))
+                                       20.0 90.0 '(80 80 80 255)))
   ;; popup windows are rendered via transient popup proxies appended by
   ;; `widgets-in-render-order', so no explicit popup calls are needed here.
   (sdl3:render-present *renderer*)
@@ -99,7 +102,8 @@
                (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up w x y)))
             ((and down (= win-id main-id))
              (format t "[demo] branch=main-down~%")
-             (mnas-sdl3-gui/widgets:handle-widget-mouse-down *widgets* x y)))))
+             (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+              (mnas-sdl3-gui/widgets:widgets-for-window *window*) x y)))))
        :continue)
       (sdl3:mouse-motion-event
        (let* ((win-id (slot-value ev 'sdl3:%window-id))
@@ -112,7 +116,8 @@
             (dolist (w associated)
               (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
            ((= win-id main-id)
-            (mnas-sdl3-gui/widgets:handle-widget-mouse-motion *widgets* mx my))))
+            (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+             (mnas-sdl3-gui/widgets:widgets-for-window *window*) mx my))))
        :continue)
       (sdl3:mouse-wheel-event
        (let ((win-id (slot-value ev 'sdl3:%window-id)))
@@ -128,22 +133,27 @@
               (dolist (w associated)
                 (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel w 0 0 0 dy)))
              ((= win-id main-id)
-              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel *widgets* mx my x y)))))
+              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
+               (mnas-sdl3-gui/widgets:widgets-for-window *window*) mx my x y)))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:handle-widget-key-event
-          *widgets*
-          (slot-value ev 'sdl3:%key)
-          nil
-          :mods (slot-value ev 'sdl3:%mod)))
+              (not (slot-value ev 'sdl3:%repeat)))
+        (mnas-sdl3-gui/widgets:handle-widget-key-event
+         (mnas-sdl3-gui/widgets:widgets-for-window *window*)
+         (slot-value ev 'sdl3:%key)
+         nil
+         :mods (slot-value ev 'sdl3:%mod)))
        :continue)
       (t :continue))))
 
 (sdl3:def-app-quit combo-box-04-demo-quit (result)
   (declare (ignore result))
-  (mnas-sdl3-gui/widgets:combo-box-disable-popup-window *combo*)
+  (let ((widgets (and *window* (mnas-sdl3-gui/widgets:widgets-for-window *window*))))
+    (when widgets
+      (dolist (w widgets)
+        (when (typep w 'mnas-sdl3-gui/widgets:combo-box)
+          (mnas-sdl3-gui/widgets:combo-box-disable-popup-window w)))))
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *renderer*
     (sdl3:destroy-renderer *renderer*))
