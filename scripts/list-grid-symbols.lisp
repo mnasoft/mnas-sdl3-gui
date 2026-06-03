@@ -1,0 +1,12 @@
+(progn
+  (ql:quickload :mnas-sdl3-gui/demos/layout/grid-01)
+  (let ((pkg (find-package "MNAS-SDL3-GUI/DEMOS/LAYOUT/GRID-01")))
+    (format t "Symbols in package ~S with function definitions:~%" pkg)
+    (do-symbols (s pkg)
+      (when (and (symbolp s) (fboundp s))
+        (format t "~S -> function: ~S~%" s (symbol-function s))))
+    (format t "\nAll symbols starting with GRID-DEMO:~%")
+    (do-symbols (s pkg)
+      (when (and (stringp (symbol-name s)) (search "GRID-DEMO" (symbol-name s)))
+        (format t "~S fboundp=~S ~%" s (fboundp s)))))
+  (sb-ext:quit))

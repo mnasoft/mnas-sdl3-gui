@@ -1,0 +1,10 @@
+(progn
+  (ql:quickload :mnas-sdl3-gui/demos/layout/grid-01)
+  (format t "Loading raw grid-01.lisp file...~%")
+  (load "/home/mna/quicklisp/local-projects/sdl3/mnas-sdl3-gui/demos/layout/grid-01/grid-01.lisp")
+  (let ((pkg (find-package "MNAS-SDL3-GUI/DEMOS/LAYOUT/GRID-01")))
+    (format t "After load, symbol statuses:~%")
+    (dolist (name '(grid-demo-init grid-demo-iterate grid-demo-event grid-demo-quit))
+      (let* ((sym (find-symbol (string-upcase (symbol-name name)) pkg)))
+        (format t "~A -> ~S fboundp=~S fn=~S~%" name sym (and sym (fboundp sym)) (and sym (handler-case (symbol-function sym) (error (e) :no-fn)))))))
+  (sb-ext:quit))

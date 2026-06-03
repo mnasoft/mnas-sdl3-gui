@@ -98,6 +98,7 @@
                "mnas-sdl3-gui/demos/dialog/font"
                "mnas-sdl3-gui/demos/dialog/list-box"
                "mnas-sdl3-gui/demos/dialog/pack"
+               "mnas-sdl3-gui/demos/layout/grid-01"
                "mnas-sdl3-gui/demos/dialog/polyhedron"
                "mnas-sdl3-gui/demos/dialog/simple"
                "mnas-sdl3-gui/demos/dialog/toggle"
@@ -382,4 +383,13 @@
                 :serial t
                 :components ((:file "package")
                              (:file "list-box-01")))))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/layout/grid-01"
+  :description "Grid layout demo for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/layout/grid-01"
+                :serial t
+                :components ((:file "package")
+                             (:file "grid-01")))))
 

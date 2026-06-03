@@ -1,0 +1,17 @@
+(progn
+  (ql:quickload :mnas-sdl3-gui)
+  (format t "Scanning grid-layout.lisp for widget-arrange defmethod...~%")
+  (with-open-file (s "/home/mna/quicklisp/local-projects/sdl3/mnas-sdl3-gui/src/widgets/methods/grid-layout.lisp")
+    (let ((*package* (find-package "MNAS-SDL3-GUI/WIDGETS"))
+          (found nil))
+      (loop for form = (read s nil nil) for n from 1 while form do
+            (when (<= n 40)
+              (format t "~3d: ~S~%" n (if (consp form) (list (first form) (second form)) form)))
+            (when (and (consp form)
+                       (string= (string-upcase (symbol-name (first form))) "DEFMETHOD")
+                       (string= (string-upcase (symbol-name (second form))) "WIDGET-ARRANGE"))
+              (format t "Found defmethod form for: ~S~%" (second form))
+              (setf found t)
+              (eval form)))
+      (unless found (format t "No widget-arrange defmethod found in file.~%"))))
+  (sb-ext:quit))
