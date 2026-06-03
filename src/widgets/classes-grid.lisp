@@ -5,25 +5,39 @@
 ;;; Grid container
 
 (defclass grid-child-constraint ()
-  ((row :initarg :row :initform 0 :accessor grid-child-row)
-   (col :initarg :col :initform 0 :accessor grid-child-col)
-   (row-span :initarg :row-span :initform 1 :accessor grid-child-row-span)
-   (col-span :initarg :col-span :initform 1 :accessor grid-child-col-span)
-   (halign :initarg :halign :initform :fill :accessor grid-child-halign)
-   (valign :initarg :valign :initform :fill :accessor grid-child-valign)
-   (weight-x :initarg :weight-x :initform 0 :accessor grid-child-weight-x)
-   (weight-y :initarg :weight-y :initform 0 :accessor grid-child-weight-y)))
+  ((row
+    :initarg :row :initform 0 :accessor grid-child-row)
+   (col
+    :initarg :col :initform 0 :accessor grid-child-col)
+   (row-span
+    :initarg :row-span :initform 1 :accessor grid-child-row-span)
+   (col-span
+    :initarg :col-span :initform 1 :accessor grid-child-col-span)
+   (halign
+    :initarg :halign :initform :fill :accessor grid-child-halign)
+   (valign
+    :initarg :valign :initform :fill :accessor grid-child-valign)
+   (weight-x
+    :initarg :weight-x :initform 0 :accessor grid-child-weight-x)
+   (weight-y
+    :initarg :weight-y :initform 0 :accessor grid-child-weight-y)))
 
 (defclass grid-container (widget-container)
-  ((rows :initarg :rows :initform 1 :accessor grid-rows
-         :documentation "Number of rows in the grid")
-   (cols :initarg :cols :initform 1 :accessor grid-cols
-         :documentation "Number of columns in the grid")
-   (child-constraints :initarg :child-constraints :initform nil :accessor grid-child-constraints
-                      :documentation "Alist of (child . grid-child-constraint)")
-   (row-spacing :initarg :row-spacing :initform 4 :accessor grid-row-spacing)
-   (col-spacing :initarg :col-spacing :initform 4 :accessor grid-col-spacing)
-   (padding :initarg :padding :initform 4 :accessor grid-padding))
+  ((rows
+    :initarg :rows :initform 1 :accessor grid-rows
+    :documentation "Number of rows in the grid")
+   (cols
+    :initarg :cols :initform 1 :accessor grid-cols
+    :documentation "Number of columns in the grid")
+   (child-constraints
+    :initarg :child-constraints :initform nil :accessor grid-child-constraints
+    :documentation "Alist of (child . grid-child-constraint)")
+   (row-spacing
+    :initarg :row-spacing :initform 4 :accessor grid-row-spacing)
+   (col-spacing
+    :initarg :col-spacing :initform 4 :accessor grid-col-spacing)
+   (padding
+    :initarg :padding :initform 4 :accessor grid-padding))
   (:documentation "Grid layout container with row/column spans and weights."))
 
 (defun make-grid (&key (rows 1) (cols 1) (children nil) (row-spacing 4) (col-spacing 4) (padding 4))

@@ -328,7 +328,7 @@
               (return-from pack-layout-demo-event :success)))))
        :continue)
       (sdl3:mouse-motion-event
-         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
         *pack-demo-widgets*
         (round (slot-value ev 'sdl3:%x))
         (round (slot-value ev 'sdl3:%y)))
@@ -355,13 +355,13 @@
                                      *pack-demo-toolbar*
                                      (- mx (round +pack-demo-toolbar-x+))
                                      (- my (round +pack-demo-toolbar-y+))))))
-                     (if button
+                   (if button
                        (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                      *pack-demo-toolbar*
-                      button
-                      (list :window-id target-window-id))
+                        *pack-demo-toolbar*
+                        button
+                        (list :window-id target-window-id))
                        (mnas-sdl3-gui/widgets:handle-widget-mouse-down *pack-demo-widgets* mx my)))
-                         (mnas-sdl3-gui/widgets:handle-widget-mouse-up *pack-demo-widgets* mx my)))))
+                 (mnas-sdl3-gui/widgets:handle-widget-mouse-up *pack-demo-widgets* mx my)))))
        :continue)
       (sdl3:mouse-wheel-event
        (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
@@ -397,13 +397,14 @@
               :on-escape (lambda ()
                            (setf *pack-demo-open* nil)
                            :success)))
-       :continue)
+           :continue)))
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input
         *pack-demo-widgets*
         (slot-value ev 'sdl3:%text))
        :continue)
-      (t :continue))))
+      (t :continue)
+      )))
 
 (sdl3:def-app-quit pack-layout-demo-quit (result)
   (declare (ignore result))
