@@ -27,6 +27,7 @@
   #:scroll-container
   #:row-stack
   #:column-stack
+  #:split-pane
   #:canvas-2d-widget
   #:widget-children
   #:children
@@ -35,6 +36,12 @@
   #:row-stack-padding
   #:column-stack-spacing
   #:column-stack-padding
+  #:split-pane-orientation
+  #:split-pane-ratio
+  #:split-pane-divider-size
+  #:split-pane-padding
+  #:split-pane-min-first-pane
+  #:split-pane-min-second-pane
   #:canvas-2d-widget-scene
   #:canvas-2d-widget-viewport-scale
   #:canvas-2d-widget-viewport-offset-x
@@ -47,6 +54,7 @@
   #:make-scroll-container
   #:make-row-stack
   #:make-column-stack
+  #:make-split-pane
   #:make-canvas-2d-widget
   #:set-scene
   #:request-redraw
@@ -82,6 +90,23 @@
    #:list-box
    #:combo-box
    #:editable-combo-box
+  ;; toolbar widgets
+  #:toolbar
+  #:toolbar-button
+  ;; toolbar accessors
+  #:toolbar-buttons
+   #:toolbar-layout
+  #:toolbar-padding
+  #:toolbar-width
+  #:toolbar-height
+  #:toolbar-x
+  #:toolbar-y
+  ;; button accessors
+  #:button-width
+  #:button-height
+  #:button-x
+  #:button-y
+  #:button-command-id
    ;; label accessors
    #:label-text
    ;; button accessors
@@ -220,6 +245,7 @@
   #:handle-widget-click
   #:handle-widget-mouse-down
   #:handle-widget-mouse-up
+  #:handle-mouse-button-event
   #:handle-widget-mouse-wheel
   #:handle-widget-mouse-motion
   #:widgets-for-window-id

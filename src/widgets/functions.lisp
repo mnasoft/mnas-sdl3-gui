@@ -159,6 +159,28 @@ Returns the window id that was processed or NIL."
                  :spacing spacing
                  :padding padding))
 
+(defun make-split-pane (&key (x 0) (y 0) (width 100) (height 100)
+                           (children nil)
+                           (orientation :horizontal)
+                           (split-ratio 0.5)
+                           (divider-size 4)
+                           (padding 8)
+                           (min-first-pane 32)
+                           (min-second-pane 32))
+  "Create a split-pane container that divides available space into two panes." 
+  (make-instance 'mnas-sdl3-gui/widgets:split-pane
+                 :x x
+                 :y y
+                 :width width
+                 :height height
+                 :children (or children nil)
+                 :orientation orientation
+                 :split-ratio split-ratio
+                 :divider-size divider-size
+                 :padding padding
+                 :min-first-pane min-first-pane
+                 :min-second-pane min-second-pane))
+
 (defun make-canvas-2d-widget (&key (x 0) (y 0) (width 300) (height 200)
                                  (scene nil)
                                  (viewport-scale 1.0)

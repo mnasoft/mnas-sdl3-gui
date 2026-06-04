@@ -21,14 +21,14 @@
 
 (defun make-window-03-toolbar ()
   "Create toolbar with commands reflecting full-state behavior." 
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height 40)))
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-03/decrease-opacity :label "-" :width 34)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-03/increase-opacity :label "+" :width 34)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-03/reset-opacity :label "Reset" :width 62)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-03/toggle-frost :label "Frost" :width 62 :type :toggle)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-03/quit :label "Quit" :width 52)))
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "-" :width 34)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "+" :width 34)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Reset" :width 62)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Frost" :width 62 :type :toggle)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit" :width 52)))
     toolbar))
 
 (defun window-03-sync-command-state ()

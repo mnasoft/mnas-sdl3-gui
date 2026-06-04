@@ -59,16 +59,14 @@
 
 (defun entry-02-create-toolbar ()
   "Create toolbar for entry-02 demo."
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +entry-02-toolbar-height+)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :entry-02/run
-                                                   :label "Run"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Run"
                                                    :width 72)
-           (mnas-sdl3-gui/toolbar:make-button-spec :entry-02/quit
-                                                   :label "Quit"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
                                                    :width 64)))
     toolbar))
 
@@ -272,21 +270,20 @@
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
-         (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y))))
-           (when (slot-value ev 'sdl3:%down)
-             (let ((button (and *entry-02-toolbar*
-                                (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                                 *entry-02-toolbar*
-                                 mx
-                                 my))))
-               (if button
-                   (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                    *entry-02-toolbar*
-                    button
-                    (list :window-id *entry-02-window-id*))
-                    (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-                    *entry-02-widgets* mx my))))))
+         (when (and (slot-value ev 'sdl3:%down)
+                    (and *entry-02-toolbar*
+                         (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                          *entry-02-toolbar*
+                          (round (slot-value ev 'sdl3:%x))
+                          (round (slot-value ev 'sdl3:%y)))))
+           (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+            *entry-02-toolbar*
+            (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+             *entry-02-toolbar*
+             (round (slot-value ev 'sdl3:%x))
+             (round (slot-value ev 'sdl3:%y)))
+            (list :window-id *entry-02-window-id*)))
+         (mnas-sdl3-gui/widgets:handle-mouse-button-event *entry-02-widgets* ev)
        :continue)
       (sdl3:keyboard-event
        (entry-02-update-modifier-state ev)

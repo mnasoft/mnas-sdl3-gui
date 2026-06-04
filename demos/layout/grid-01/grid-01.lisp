@@ -164,12 +164,7 @@
         (round (slot-value ev 'sdl3:%y)))
        :continue)
       (sdl3:mouse-button-event
-       (when (= (slot-value ev 'sdl3:%button) 1)
-         (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y))))
-           (if (slot-value ev 'sdl3:%down)
-               (mnas-sdl3-gui/widgets:handle-widget-mouse-down *grid-demo-widgets* mx my)
-               (mnas-sdl3-gui/widgets:handle-widget-mouse-up *grid-demo-widgets* mx my))))
+       (mnas-sdl3-gui/widgets:handle-mouse-button-event *grid-demo-widgets* ev)
        :continue)
       (sdl3:mouse-wheel-event
        (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel *grid-demo-widgets*

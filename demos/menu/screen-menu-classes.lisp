@@ -129,17 +129,17 @@
 
 (defun make-demo-toolbar ()
   "Create toolbar with common command buttons."
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height 40)))
     ;; Mixed push/toggle/radio buttons bound to the same Command Model.
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :new :label "New" :width 50)
-           (mnas-sdl3-gui/toolbar:make-button-spec :open :label "Open" :width 50)
-      (mnas-sdl3-gui/toolbar:make-button-spec :preferences :label "Prefs" :width 56 :type :toggle)
-      (mnas-sdl3-gui/toolbar:make-button-spec :undo :label "Undo" :width 50 :type :radio :group :edit-history)
-      (mnas-sdl3-gui/toolbar:make-button-spec :redo :label "Redo" :width 50 :type :radio :group :edit-history)))
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "New" :width 50)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Open" :width 50)
+      (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Prefs" :width 56 :type :toggle)
+      (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Undo" :width 50 :type :radio :group :edit-history)
+      (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Redo" :width 50 :type :radio :group :edit-history)))
     toolbar))
 
 (defun screen-menu-sync-command-state ()
@@ -274,7 +274,7 @@
                       (= target-window-id *screen-menu-window-id*)
                       (>= y mnas-sdl3-gui/menu/model:+menu-bar-height+)
                       (< y (+ mnas-sdl3-gui/menu/model:+menu-bar-height+
-                               (mnas-sdl3-gui/toolbar:toolbar-height *toolbar-demo*))))
+                               (mnas-sdl3-gui/widgets:widget-height *toolbar-demo*))))
                  (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
                                *toolbar-demo*
                                x
@@ -284,7 +284,7 @@
                          (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                           *toolbar-demo*
                           button
-                          (list :label (mnas-sdl3-gui/toolbar:button-label button)))
+                          (list :label (mnas-sdl3-gui/widgets::button-label button)))
                          :continue)
                        :continue))
                  ;; Otherwise check menu bar

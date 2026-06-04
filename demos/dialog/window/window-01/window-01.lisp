@@ -101,15 +101,15 @@
 
 (defun make-window-01-toolbar ()
   "Create toolbar for runtime modal/focus demo commands." 
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height 40)))
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-01/open-modal-1 :label "Modal-1" :width 72)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-01/open-modal-2 :label "Modal-2" :width 72)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-01/close-top-modal :label "Close Top" :width 84)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-01/reset-size :label "Reset" :width 62)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-01/toggle-grid :label "Grid" :width 56 :type :toggle)
-           (mnas-sdl3-gui/toolbar:make-button-spec :window-01/quit :label "Quit" :width 52)))
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Modal-1" :width 72)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Modal-2" :width 72)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Close Top" :width 84)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Reset" :width 62)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Grid" :width 56 :type :toggle)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit" :width 52)))
     toolbar))
 
 (defun window-01-sync-command-state ()

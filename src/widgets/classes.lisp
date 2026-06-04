@@ -73,6 +73,28 @@
             :documentation "Padding inside the column stack bounds."))
   (:documentation "Container widget that arranges children in a vertical column."))
 
+(defclass split-pane (widget-container)
+  ((orientation
+    :initarg :orientation :initform :horizontal
+    :accessor split-pane-orientation
+    :documentation "Split orientation: :horizontal for left/right, :vertical for top/bottom.")
+   (split-ratio
+    :initarg :split-ratio :initform 0.5 :accessor split-pane-ratio
+    :documentation "Fraction of available space assigned to the first pane.")
+   (divider-size
+    :initarg :divider-size :initform 4 :accessor split-pane-divider-size
+    :documentation "Thickness of the split divider in pixels.")
+   (padding
+    :initarg :padding :initform 8 :accessor split-pane-padding
+    :documentation "Padding around the split-pane contents.")
+   (min-first-pane
+    :initarg :min-first-pane :initform 32 :accessor split-pane-min-first-pane
+    :documentation "Minimum size of the first pane along the split axis.")
+   (min-second-pane
+    :initarg :min-second-pane :initform 32 :accessor split-pane-min-second-pane
+    :documentation "Minimum size of the second pane along the split axis."))
+  (:documentation "Container widget that divides available area into two panes with a movable split ratio."))
+
 (defclass canvas-2d-widget (widget)
   ((scene
     :initarg :scene :initform nil :accessor canvas-2d-widget-scene
@@ -102,6 +124,26 @@
     :initarg :text :initform "" :accessor label-text
     :documentation "Text content of label"))
   (:documentation "Simple text label widget"))
+
+;;; Toolbar widgets moved here so they integrate with widget hierarchy.
+(defclass toolbar-button (widget)
+  ((command-id :initarg :command-id :accessor button-command-id)
+   (type :initarg :type :initform :push :accessor button-type)
+   (group :initarg :group :initform nil :accessor button-group)
+   (label :initarg :label :initform "" :accessor button-label)
+   (hotkey :initarg :hotkey :initform "" :accessor button-hotkey))
+
+  (:documentation "Toolbar button implemented as a widget so it can be a child of toolbar."))
+
+(defclass toolbar (widget-container)
+  ((buttons :initarg :buttons :initform '() :accessor toolbar-buttons
+            :documentation "Deprecated: use children slot directly. Kept for compatibility.")
+   (layout :initarg :layout :initform :horizontal :accessor toolbar-layout
+           :documentation "Layout mode: :horizontal or :vertical.")
+   (background :initarg :background :initform '(245 245 245 255)
+               :accessor toolbar-background)
+   (padding :initarg :padding :initform 6 :accessor toolbar-padding))
+  (:documentation "Toolbar container implemented as a widget-container; buttons are its children."))
 
 (defclass button (widget)
   ((text

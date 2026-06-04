@@ -34,14 +34,12 @@
 
 (defun entry-01-create-toolbar ()
   "Create toolbar for entry-01 command presenter."
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height 32)))
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 32)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :entry-01/ok
-                                                   :label "OK"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "OK"
                                                    :width 64)
-           (mnas-sdl3-gui/toolbar:make-button-spec :entry-01/cancel
-                                                   :label "Cancel"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Cancel"
                                                    :width 90)))
     toolbar))
 
@@ -166,9 +164,6 @@
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
-      (sdl3:quit-event
-       (setf *entry-01-open* nil)
-       :success)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (let* ((window-id (slot-value ev 'sdl3:%window-id))
@@ -177,27 +172,29 @@
                                            *entry-01-layer-manager*
                                            window-id)
                                           window-id)
-                                      window-id))
-                (mx (round (slot-value ev 'sdl3:%x)))
-                (my (round (slot-value ev 'sdl3:%y))))
+                                      window-id)))
            (when *entry-01-layer-manager*
              (mnas-sdl3-gui/window-manager:set-focused-window
               *entry-01-layer-manager*
               target-window-id))
            (when (= target-window-id *entry-01-window-id*)
-             (if (slot-value ev 'sdl3:%down)
-                 (let ((button (and *entry-01-toolbar*
-                                    (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                                     *entry-01-toolbar*
-                                     mx
-                                     my))))
-                     (if button
-                       (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                        *entry-01-toolbar*
-                        button
-                        (list :window-id target-window-id))
-                       (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-                        (entry-01-widgets) mx my)))
+             (if (and (slot-value ev 'sdl3:%down)
+                      (and *entry-01-toolbar*
+                           (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                            *entry-01-toolbar*
+                            (round (slot-value ev 'sdl3:%x))
+                            (round (slot-value ev 'sdl3:%y)))))
+                 (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                  *entry-01-toolbar*
+                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                   *entry-01-toolbar*
+                   (round (slot-value ev 'sdl3:%x))
+                   (round (slot-value ev 'sdl3:%y)))
+                  (list :window-id target-window-id))
+                 (mnas-sdl3-gui/widgets:handle-mouse-button-event
+                  (entry-01-widgets)
+                  ev)))))
+       :continue)
                    (mnas-sdl3-gui/widgets:handle-widget-mouse-up
                     (entry-01-widgets) mx my)))))
        :continue)

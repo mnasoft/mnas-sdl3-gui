@@ -19,38 +19,28 @@
 
 (defun toggle-01-create-toolbar ()
   "Create toolbar for toggle-01 demo." 
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +toggle-01-toolbar-height+)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec
-            :toggle-01/group-1-option-1
-            :label "1"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "1"
             :width 40
             :type :radio
             :group :group-1)
-           (mnas-sdl3-gui/toolbar:make-button-spec
-            :toggle-01/group-1-option-2
-            :label "2"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "2"
             :width 40
             :type :radio
             :group :group-1)
-           (mnas-sdl3-gui/toolbar:make-button-spec
-            :toggle-01/group-1-option-3
-            :label "3"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "3"
             :width 40
             :type :radio
             :group :group-1)
-           (mnas-sdl3-gui/toolbar:make-button-spec
-            :toggle-01/group-1-option-4
-            :label "4"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "4"
             :width 40
             :type :radio
             :group :group-1)
-           (mnas-sdl3-gui/toolbar:make-button-spec
-            :toggle-01/quit
-            :label "Quit"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
             :width 64)))
     toolbar))
 

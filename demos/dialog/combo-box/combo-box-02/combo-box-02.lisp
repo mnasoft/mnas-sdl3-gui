@@ -56,16 +56,14 @@
 
 (defun combo-box-02-create-toolbar ()
   "Create toolbar for the combo-box-02 demo."
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +combo-box-02-toolbar-height+)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :combo-box-02/add-current
-                                                   :label "Add"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Add"
                                                    :width 56)
-           (mnas-sdl3-gui/toolbar:make-button-spec :combo-box-02/quit
-                                                   :label "Quit"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
                                                    :width 64)))
     toolbar))
 

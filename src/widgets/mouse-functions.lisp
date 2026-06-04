@@ -16,3 +16,9 @@
 ;; `src/widgets/methods/handle-widget-mouse-wheel.lisp`.
 ;; See that file for the implementation and per-widget specializations.
 
+;; Generic dispatch for mouse-button events. Widgets packages can define
+;; methods on `handle-mouse-button-event` specialized on widget tree types
+;; or on the `sdl3:mouse-button-event` argument to customize behavior.
+(defgeneric handle-mouse-button-event (widgets ev)
+	(:documentation "Handle an sdl3:mouse-button-event and dispatch to widget handlers."))
+

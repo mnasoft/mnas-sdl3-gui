@@ -31,14 +31,14 @@
 
 (defun make-widget-01-toolbar ()
   "Create toolbar as a secondary presenter of widget-01 commands." 
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height 34)))
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 34)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :widget-01/style-flat :label "Flat" :width 58 :type :radio :group :style)
-           (mnas-sdl3-gui/toolbar:make-button-spec :widget-01/style-windows :label "Windows" :width 78 :type :radio :group :style)
-           (mnas-sdl3-gui/toolbar:make-button-spec :widget-01/style-motif :label "Motif" :width 62 :type :radio :group :style)
-           (mnas-sdl3-gui/toolbar:make-button-spec :widget-01/clear-entry :label "Clear" :width 56)
-           (mnas-sdl3-gui/toolbar:make-button-spec :widget-01/quit :label "Quit" :width 52)))
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Flat" :width 58 :type :radio :group :style)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Windows" :width 78 :type :radio :group :style)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Motif" :width 62 :type :radio :group :style)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Clear" :width 56)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit" :width 52)))
     toolbar))
 
 (defun widget-01-sync-command-state ()

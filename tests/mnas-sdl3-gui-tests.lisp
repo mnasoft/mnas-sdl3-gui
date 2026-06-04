@@ -115,6 +115,26 @@
       (is (null mnas-sdl3-gui/demos/dialog/window-02::*window-02-popup-visible*))
       (is (null mnas-sdl3-gui/demos/dialog/window-02::*window-02-hover-index*)))))
 
+(test split-pane-layout-basic-measure-arrange
+  (let* ((first-pane (make-instance 'mnas-sdl3-gui/widgets:label :text "First"))
+         (second-pane (make-instance 'mnas-sdl3-gui/widgets:label :text "Second"))
+         (split-pane (mnas-sdl3-gui/widgets:make-split-pane
+                      :orientation :horizontal
+                      :split-ratio 0.25
+                      :divider-size 6
+                      :padding 8
+                      :children (list first-pane second-pane))))
+    (multiple-value-bind (width height) (mnas-sdl3-gui/widgets:widget-measure split-pane)
+      (is (> width 0))
+      (is (> height 0)))
+    (mnas-sdl3-gui/widgets:widget-arrange split-pane 0 0 320 200)
+    (is (= 0 (mnas-sdl3-gui/widgets:widget-x first-pane)))
+    (is (= 0 (mnas-sdl3-gui/widgets:widget-y first-pane)))
+    (is (= (+ 0 (mnas-sdl3-gui/widgets:widget-width first-pane) 6)
+           (mnas-sdl3-gui/widgets:widget-x second-pane)))
+    (is (> (mnas-sdl3-gui/widgets:widget-width second-pane)
+           (mnas-sdl3-gui/widgets:widget-width first-pane)))))
+
 (test window-manager-transient-chain-focus-closure
   (let ((manager (make-window-layer-manager)))
     (register-window manager 600 :main :open-p t)

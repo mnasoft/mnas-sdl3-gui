@@ -72,19 +72,16 @@
 
 (defun simple-01-create-toolbar ()
   "Create toolbar for simple-01 demo." 
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +simple-dialog-toolbar-height+)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :simple-01/ok
-                                                   :label "OK"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "OK"
                                                    :width 56)
-           (mnas-sdl3-gui/toolbar:make-button-spec :simple-01/cancel
-                                                   :label "Cancel"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Cancel"
                                                    :width 72)
-           (mnas-sdl3-gui/toolbar:make-button-spec :simple-01/quit
-                                                   :label "Quit"
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
                                                    :width 64)))
     toolbar))
 
@@ -246,28 +243,23 @@
        :success)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
-         (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y)))
-               (toolbar-y-offset (- +simple-dialog-window-height+ +simple-dialog-toolbar-height+)))
-           (if (slot-value ev 'sdl3:%down)
-               (let ((button (and *toolbar*
-                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                                   *toolbar*
-                                   mx
-                                   (- my toolbar-y-offset)))))
-                     (if button
-                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                      *toolbar*
-                      button
-                      (list :window-id *window-id*))
-                     (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-                      (simple-01-root-widgets)
-                      mx
-                      my)))
-               (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+         (let ((toolbar-y-offset (- +simple-dialog-window-height+ +simple-dialog-toolbar-height+)))
+           (if (and (slot-value ev 'sdl3:%down)
+                    (and *toolbar*
+                         (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                          *toolbar*
+                          (round (slot-value ev 'sdl3:%x))
+                          (- (round (slot-value ev 'sdl3:%y)) toolbar-y-offset))))
+               (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                *toolbar*
+                (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                 *toolbar*
+                 (round (slot-value ev 'sdl3:%x))
+                 (- (round (slot-value ev 'sdl3:%y)) toolbar-y-offset))
+                (list :window-id *window-id*))
+               (mnas-sdl3-gui/widgets:handle-mouse-button-event
                 (simple-01-root-widgets)
-                mx
-                my))))
+                ev))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

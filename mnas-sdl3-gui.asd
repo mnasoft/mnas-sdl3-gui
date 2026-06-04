@@ -23,11 +23,13 @@
                (:file "src/menu/renderer/package")
                (:file "src/menu/renderer/functions")
                (:file "src/widgets/package")
+               (:file "src/widgets/classes")
                (:file "src/toolbar/package")
                (:file "src/toolbar/classes")
                (:file "src/toolbar/presenter/package")
+               (:file "src/toolbar/functions")
+               (:file "src/toolbar/methods/compatibility")
                (:file "src/toolbar/presenter/functions")
-               (:file "src/widgets/classes")
                (:file "src/widgets/classes-grid")
                (:file "src/widgets/methods/print-object")
                (:file "src/widgets/generics")
@@ -35,6 +37,7 @@
                (:file "src/widgets/layout")
                (:file "src/widgets/ttf-render")
                (:file "src/widgets/methods/grid-layout")
+               (:file "src/widgets/methods/split-pane-layout")
                (:file "src/widgets/sdl3-ttf-render")
                (:file "src/widgets/style-functions")
                (:file "src/widgets/rendering-primitives")
@@ -87,6 +90,7 @@
                (:file "src/widgets/methods/handle-widget-mouse-down")
                (:file "src/widgets/methods/handle-widget-mouse-up")
                (:file "src/widgets/methods/handle-widget-mouse-motion")
+               (:file "src/widgets/methods/handle-mouse-button-event")
                (:file "src/widgets/methods/handle-widget-key-press")
                (:file "src/widgets/methods/handle-widget-key-event")))
 
@@ -99,12 +103,14 @@
                "mnas-sdl3-gui/demos/dialog/list-box"
                "mnas-sdl3-gui/demos/dialog/pack"
                "mnas-sdl3-gui/demos/layout/grid-01"
+               "mnas-sdl3-gui/demos/layout/split-pane-01"
                "mnas-sdl3-gui/demos/dialog/polyhedron"
                "mnas-sdl3-gui/demos/dialog/simple"
                "mnas-sdl3-gui/demos/dialog/toggle"
                "mnas-sdl3-gui/demos/dialog/tree"
                "mnas-sdl3-gui/demos/dialog/widget"
                "mnas-sdl3-gui/demos/dialog/window"
+                "mnas-sdl3-gui/demos/dialog/toolbar-demo"
                )
   :serial t
   :components ((:file "demos/package")
@@ -193,6 +199,15 @@
                 :serial t
                 :components ((:file "package")
                              (:file "combo-box-04")))))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/dialog/toolbar-demo"
+  :description "Toolbar demo for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/dialog/toolbar/toolbar-demo"
+                :serial t
+                :components ((:file "package")
+                             (:file "toolbar-demo")))))
 
 
 (asdf:defsystem "mnas-sdl3-gui/demos/dialog/entry"
@@ -392,4 +407,13 @@
                 :serial t
                 :components ((:file "package")
                              (:file "grid-01")))))
+
+(asdf:defsystem "mnas-sdl3-gui/demos/layout/split-pane-01"
+  :description "Split pane layout demo for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/layout/split-pane-01"
+                :serial t
+                :components ((:file "package")
+                             (:file "split-pane-01")))))
 

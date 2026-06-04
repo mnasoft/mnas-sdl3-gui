@@ -79,16 +79,16 @@
 
 (defun pack-01-create-toolbar ()
   "Create toolbar for pack-01 command presenter." 
-  (let ((toolbar (mnas-sdl3-gui/toolbar:make-toolbar :layout :horizontal :height +pack-demo-toolbar-height+)))
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height +pack-demo-toolbar-height+)))
     (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
           (list
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/apply :label "Apply" :width 62)
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/reset :label "Reset" :width 62)
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/theme-flat :label "Flat" :width 62 :type :radio :group :theme)
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/theme-windows :label "Windows" :width 78 :type :radio :group :theme)
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/toggle-logs :label "Logs" :width 58 :type :toggle)
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/toggle-backup :label "Backup" :width 72 :type :toggle)
-           (mnas-sdl3-gui/toolbar:make-button-spec :pack-01/quit :label "Quit" :width 52)))
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Apply" :width 62)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Reset" :width 62)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Flat" :width 62 :type :radio :group :theme)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Windows" :width 78 :type :radio :group :theme)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Logs" :width 58 :type :toggle)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Backup" :width 72 :type :toggle)
+           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit" :width 52)))
     toolbar))
 
 (defun pack-01-sync-command-state ()
