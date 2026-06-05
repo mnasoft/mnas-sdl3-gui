@@ -239,11 +239,6 @@ Default behavior is based on widget bounds."))
   (when (visible-p widget)
     (call-next-method)))
 
-(defgeneric handle-widget-mouse-down (widget x y)
-  (:documentation "Handle mouse button press. Returns T if event was consumed. DEPRECATED: prefer using `handle-mouse-button-event` which accepts raw sdl3 events."))
-
-(defgeneric handle-widget-mouse-up (widget x y)
-  (:documentation "Handle mouse button release. Returns T if event was consumed. DEPRECATED: prefer using `handle-mouse-button-event` which accepts raw sdl3 events."))
 
 (defgeneric children (widget)
   (:documentation "Return a list of child widgets for WIDGET."))
@@ -254,11 +249,9 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-widget-click (widget x y)
   (:documentation "Compatibility helper: emulate click as mouse-down followed by mouse-up."))
 
-(defgeneric handle-widget-mouse-motion (widget x y)
-  (:documentation "Handle mouse motion over a widget. DEPRECATED: prefer using `handle-mouse-motion-event` which accepts raw sdl3 events."))
-
-(defgeneric handle-widget-mouse-wheel (widget x y dx dy)
-  (:documentation "Handle mouse-wheel input for WIDGET. DX and DY are wheel deltas. Returns T if the event was consumed. DEPRECATED: prefer using `handle-mouse-wheel-event` which accepts raw sdl3 events."))
+;; Per-widget low-level mouse handlers removed: use event-level
+;; `handle-mouse-button-event`, `handle-mouse-motion-event`,
+;; `handle-mouse-wheel-event` and `handle-mouse-device-event` instead.
 
 (defgeneric handle-widget-mouse-device-event (widget ev)
   (:documentation "Handle low-level mouse device events for WIDGET. Returns T if handled."))
