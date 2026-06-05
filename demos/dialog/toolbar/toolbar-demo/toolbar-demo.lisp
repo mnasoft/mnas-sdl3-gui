@@ -2,13 +2,6 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 
-(defparameter *window* nil)
-(defparameter *renderer* nil)
-(defparameter *toolbar* nil)
-(defparameter *open* t)
-
-;;; (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-
 (defun make-toolbar-demo-widget (window)
   (let ((tb (make-instance 'mnas-sdl3-gui/widgets:toolbar
                            :layout :horizontal
@@ -39,34 +32,6 @@
                           :window window)))
     tb))
 
-(defun register-toolbar-demo-commands ()
-  (mnas-sdl3-gui/commands:register-command
-   (mnas-sdl3-gui/commands:make-command
-    :toolbar/demo-new
-    "New"
-    :execute (lambda (ctx)
-               (declare (ignore ctx))
-               (format t "[toolbar-demo] New~%")
-               (setf (mnas-sdl3-gui/widgets:widget-enabled *toolbar*) nil)
-               ))
-   :replace t)
-  (mnas-sdl3-gui/commands:register-command
-   (mnas-sdl3-gui/commands:make-command
-    :toolbar/demo-open
-    "Open"
-    :execute (lambda (ctx)
-               (declare (ignore ctx))
-               (format t "[toolbar-demo] Open~%")))
-   :replace t)
-  (mnas-sdl3-gui/commands:register-command
-   (mnas-sdl3-gui/commands:make-command
-    :toolbar/demo-quit
-    "Quit"
-    :execute (lambda (ctx)
-               (declare (ignore ctx))
-               (setf *open* nil)))
-   :replace t))
-
 (sdl3:def-app-init toolbar-demo-init (argc argv)
   (declare (ignore argc argv))
   (unless (sdl3:init :video)
@@ -91,7 +56,7 @@
     (return-from toolbar-demo-iterate :success))
   (sdl3:set-render-draw-color *renderer* 242 242 242 255)
   (sdl3:render-clear *renderer*)
-  (mnas-sdl3-gui/widgets:render *renderer* *toolbar* mnas-sdl3-gui/widgets:*widget-style*) ;; mnas-sdl3-gui/widgets:*widget-style*
+  (mnas-sdl3-gui/widgets:render *renderer* *toolbar* mnas-sdl3-gui/widgets:*widget-style*) 
   
   (mnas-sdl3-gui/widgets:render-text
    *renderer*
@@ -135,4 +100,6 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 ;;;; (toolbar-demo)
 
-;;;; (setf (mnas-sdl3-gui/widgets:widget-enabled *toolbar*) t)
+;;;; (setf (mnas-sdl3-gui/widgets:widget-visible *toolbar*) t)
+;;;; (setf (mnas-sdl3-gui/widgets:widget-x  *toolbar*) 50)
+;;;; (setf (mnas-sdl3-gui/widgets:widget-y  *toolbar*) 50)

@@ -5,6 +5,8 @@
   :version "0.1.0"
   :depends-on ("sdl3"
                "sdl3-ttf"
+               "mnas-sdl3-gui/commands"
+               "mnas-sdl3-gui/app"
                "mnas-sdl3-gui/widgets"
                "mnas-sdl3-gui/menu")
   :serial t
@@ -159,7 +161,7 @@
                "mnas-sdl3-gui/demos/dialog/tree"
                "mnas-sdl3-gui/demos/dialog/widget"
                "mnas-sdl3-gui/demos/dialog/window"
-                "mnas-sdl3-gui/demos/dialog/toolbar-demo"
+               "mnas-sdl3-gui/demos/dialog/toolbar-demo"
                )
   :serial t
   :components ((:file "demos/package")
@@ -256,6 +258,8 @@
   :components ((:module "demos/dialog/toolbar/toolbar-demo"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
+                             (:file "commands")
                              (:file "toolbar-demo")))))
 
 
