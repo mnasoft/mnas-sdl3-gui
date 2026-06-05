@@ -15,8 +15,8 @@
    #:host-window-p
    #:window-root-widget
    #:window-root-widgets
-  #:manager-modal-stack
-  #:manager-focused-window-id
+   #:manager-modal-stack
+   #:manager-focused-window-id
    #:make-window-layer-manager
    #:clear-window-layer-manager
    #:register-window
@@ -30,19 +30,19 @@
    #:close-popup-tree
    #:close-window
    #:window-children
-  #:transient-role-p
-  #:active-modal-id
-  #:active-modal-window
-  #:modal-trap-active-p
-  #:close-tooltips
-  #:open-modal-window
-  #:close-modal-window
-  #:focused-window-id
-  #:focused-window
-  #:set-focused-window
-  #:clear-focused-window
-  #:event-target-window-id
-  #:keyboard-target-window-id
+   #:transient-role-p
+   #:active-modal-id
+   #:active-modal-window
+   #:modal-trap-active-p
+   #:close-tooltips
+   #:open-modal-window
+   #:close-modal-window
+   #:focused-window-id
+   #:focused-window
+   #:set-focused-window
+   #:clear-focused-window
+   #:event-target-window-id
+   #:keyboard-target-window-id
    #:close-transients-for-parent
    #:top-open-window-ids
    #:close-action))

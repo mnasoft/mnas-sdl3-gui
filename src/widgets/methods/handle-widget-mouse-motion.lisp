@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(mnas-sdl3-gui:enable-debug)
+(mnas-debug:enable)
 
 ;; Ensure only enabled/visible widgets handle motion.
 (defmethod handle-widget-mouse-motion :around ((widget widget) x y)
@@ -15,7 +15,7 @@ This replaces the old `dispatch-widget-mouse-motion` free function and
 forwards the motion event to each widget in the list in order. Returns
 nil." 
   ;; Debug output (compile-time gated).
-  (mnas-sdl3-gui:debug-log "[mouse-motion] x=~D y=~D count=~D first=~S~%"
+  (mnas-debug:%log "[mouse-motion] x=~D y=~D count=~D first=~S~%"
                            x y (length widgets)
                            (type-of (car widgets)))
   (dolist (w widgets)
@@ -30,7 +30,7 @@ nil."
 (defmethod handle-widget-mouse-motion ((w label) x y)
   "Handle mouse-motion for `label` widgets (no interactive behaviour).
 Temporary debug logging to help track motion events over labels." 
-  (mnas-sdl3-gui:debug-log "[mouse-motion:label] text=~S x=~D y=~D~%" (label-text w) x y)
+  (mnas-debug:%log "[mouse-motion:label] text=~S x=~D y=~D~%" (label-text w) x y)
   nil)
 
 (defmethod handle-widget-mouse-motion ((widget widget-container) x y)
@@ -40,9 +40,10 @@ Temporary debug logging to help track motion events over labels."
   nil)
 
 (defmethod handle-widget-mouse-motion ((widget combo-box) x y)
-  "Handle scrollbar thumb dragging when combo-box popup is expanded.
-Supports both inline popups and separate popup windows (coordinates for
-popup windows are expected to be relative to the popup)."
+  "Handle scrollbar thumb dragging when combo-box popup is
+expanded. Supports both inline popups and separate popup
+windows (coordinates for popup windows are expected to be relative to
+the popup)."
   (when (and (combo-box-expanded-p widget)
              (list-box-scrollbar-dragging-p widget))
     (if (combo-box-popup-window-enabled-p widget)
@@ -69,4 +70,7 @@ popup windows are expected to be relative to the popup)."
       (setf (button-pressed-p widget) inside)))
   nil)
 
-(mnas-sdl3-gui:disable-debug)
+(mnas-debug:disable)
+
+
+

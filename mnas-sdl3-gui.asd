@@ -3,35 +3,41 @@
   :author "mna"
   :license "GPL-3.0"
   :version "0.1.0"
-  :depends-on ("sdl3" "sdl3-ttf")
+  :depends-on ("sdl3"
+               "sdl3-ttf"
+               "mnas-sdl3-gui/widgets"
+               "mnas-sdl3-gui/menu")
   :serial t
   :components ((:file "src/mnas-sdl3-gui")
-               (:file "src/debug")
-               (:module "src/commands"
-		:serial t
-                :components ((:file "package")
-                             (:file "functions")
-                             (:file "shortcuts")))
+
                
-               
-               (:file "src/menu/model/package")
-               (:file "src/menu/model/classes")
-               (:file "src/menu/model/functions")
-               (:file "src/menu/controller/package")
-               (:file "src/menu/controller/functions")
-               (:file "src/menu/renderer/package")
-               (:file "src/menu/renderer/functions")
                #+nil (:file "src/toolbar/package")
                #+nil (:file "src/toolbar/methods/compatibility")
                #+nil (:file "src/toolbar/presenter/functions")
                ))
 
-(defsystem "mnas-sdl3-gui/debug"
+(defsystem "mnas-sdl3-gui/commands"
   :description "mnas-sdl3-gui Common Lisp system"
   :serial t
-  :components ((:module "src/debug"
+  :components ((:module "src/commands"
 		:serial t
-                :components ((:file "debug")))))
+                :components ((:file "package")
+                             (:file "functions")
+                             (:file "shortcuts")))))
+
+(defsystem "mnas-sdl3-gui/menu"
+  :description "mnas-sdl3-gui Common Lisp system"
+  :serial t
+  :depends-on ("sdl3" "mnas-sdl3-gui/commands")
+  :components ((:module "src/menu"
+                :serial t
+                :components ((:file "model/package")
+                             (:file "model/classes")
+                             (:file "model/functions")
+                             (:file "controller/package")
+                             (:file "controller/functions")
+                             (:file "renderer/package")
+                             (:file "renderer/functions")))))
 
 (defsystem "mnas-sdl3-gui/app"
   :description "mnas-sdl3-gui Common Lisp system"
@@ -52,10 +58,12 @@
                              (:file "classes")
                              (:file "functions")))))
 
-
 (defsystem "mnas-sdl3-gui/widgets"
   :description "mnas-sdl3-gui Common Lisp system"
-  :depends-on (#:sdl3 #:sdl3-ttf)
+  :depends-on ("mnas-debug"
+               "sdl3"
+               "sdl3-ttf"
+               "mnas-sdl3-gui/window-manager")
   :serial t
   :components ((:module "src/widgets"
 		:serial t

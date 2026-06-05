@@ -2,7 +2,7 @@
 ;;;; Usage: sbcl --load test-cyrillic-demo.lisp
 
 (require :asdf)
-(asdf:load-system :mnas-sdl3-gui/demos)
+(asdf:load-system :mnas-sdl3-gui) ;; "mnas-sdl3-gui/menu"
 
 (format t "~%=== Cyrillic Text Input Demo ===~%")
 (format t "Instructions:~%")
