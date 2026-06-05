@@ -82,7 +82,6 @@
                              (:file "rendering-primitives")
                              (:file "toggle-functions")
                              (:file "focus-functions")
-                             (:file "mouse-functions")
                              (:file "entry-functions")
                              (:file "keyboard-functions")))
                (:module "src/widgets/methods"

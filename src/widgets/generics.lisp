@@ -257,6 +257,23 @@ Default behavior is based on widget bounds."))
   (:documentation "Handle keyboard input for a widget. Returns T if key was handled."))
 
 (defgeneric handle-widget-key-event (widget key char &key mods ctrl shift alt on-escape on-return)
-  (:documentation "Handle keyboard input for WIDGET including modifier-aware bindings.
+  (:documentation
+   "Handle keyboard input for WIDGET including modifier-aware bindings.
 For top-level widget lists provide :mods (raw modifier mask) and optional
 :on-escape/:on-return callbacks.") )
+
+(defgeneric handle-mouse-button-event (widgets ev)
+  (:documentation
+   "Handle an sdl3:mouse-button-event and dispatch to widget handlers."))
+
+(defgeneric handle-mouse-wheel-event (widgets ev)
+  (:documentation
+   "Handle an sdl3:mouse-wheel-event and dispatch to widget handlers."))
+
+(defgeneric handle-mouse-motion-event (widgets ev)
+  (:documentation
+   "Handle an sdl3:mouse-motion-event and dispatch to widget handlers."))
+
+(defgeneric handle-mouse-device-event (widgets ev)
+  (:documentation
+   "Handle an sdl3:mouse-device-event and dispatch to widget handlers.") )
