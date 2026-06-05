@@ -1164,4 +1164,5 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 (defun combo-box-handle-popup-mouse-wheel (widget dy)
   "Handle mouse-wheel inside popup window for WIDGET." 
   (when (not (zerop dy))
-    (handle-widget-mouse-wheel widget 0 0 0 dy)))
+    (let ((ev (sdl3:mouse-wheel-event :%yrel dy :%mouse-y dy :%x 0 :%y 0)))
+      (handle-mouse-wheel-event widget ev))))

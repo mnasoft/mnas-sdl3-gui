@@ -118,7 +118,8 @@
                              (:file "entry-delete-selection")
                              (:file "entry-move-to-previous-word")
                              (:file "entry-move-to-next-word")
-                             (:file "handle-widget-mouse-wheel")
+                             
+                             (:file "handle-mouse-wheel-event")
                              (:file "initialize-instance")
                              (:file "canvas-2d-methods")
                              (:file "contains-point-p")
@@ -128,7 +129,7 @@
                              (:file "update-widget-value")
                              (:file "widget-min-size")
                              (:file "activate-widget")
-                             (:file "handle-widget-mouse-motion")
+                             
                              (:file "handle-mouse-button-event")
                              (:file "handle-widget-key-press")
                              (:file "handle-widget-key-event")
@@ -137,7 +138,8 @@
                              #+nil (:file "handle-widget-mouse-up")
                              
                              (:file "widget-measure")
-                             
+                             (:file "handle-mouse-motion-event")
+                             (:file "handle-mouse-device-event")
                              ))))
                
 

@@ -15,7 +15,7 @@
   ;; Default: iterate widgets and call per-widget adapter; most widgets will
   ;; ignore device events.
   (loop for widget in widgets
-        when (handle-widget-mouse-device-event widget ev)
+        when (handle-mouse-device-event widget ev)
           return widget
         finally (return nil)))
 
@@ -23,3 +23,4 @@
   ;; Default no-op; per-widget specializations can respond to device events.
   (declare (ignore ev))
   nil)
+

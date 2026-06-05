@@ -216,9 +216,9 @@
                 (dolist (w associated)
                   (mnas-sdl3-gui/widgets:handle-mouse-motion-event w ev)))
                ((= win-id main-id)
-                (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+                (mnas-sdl3-gui/widgets:handle-mouse-motion-event
                  (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*)
-                 mx my))))
+                 ev))))
            :continue)
           (sdl3:mouse-button-event
            (let* ((button (slot-value ev 'sdl3:%button))

@@ -214,9 +214,9 @@
               (mx (round (slot-value ev 'sdl3:%x)))
               (my (round (slot-value ev 'sdl3:%y))))
          (cond
-           ((and associated (not (= window-id main-id)))
+          ((and associated (not (= window-id main-id)))
             (dolist (widget associated)
-              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion widget mx my)))
+              (mnas-sdl3-gui/widgets:handle-mouse-motion-event widget ev)))
            ((= window-id main-id)
             (mnas-sdl3-gui/widgets:handle-mouse-motion-event
              (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-window*) ev))))

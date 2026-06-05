@@ -9,6 +9,7 @@
 
 (defmethod handle-widget-click ((widget widget) x y)
   "Default compatibility helper: emulate click as mouse-down followed by mouse-up."
-  (let ((down (handle-widget-mouse-down widget x y))
-        (up (handle-widget-mouse-up widget x y)))
-    (or down up)))
+  (let ((ev-down (sdl3:mouse-button-event :%x x :%y y :%down t))
+        (ev-up (sdl3:mouse-button-event :%x x :%y y :%down nil)))
+    (or (handle-mouse-button-event widget ev-down)
+        (handle-mouse-button-event widget ev-up))))

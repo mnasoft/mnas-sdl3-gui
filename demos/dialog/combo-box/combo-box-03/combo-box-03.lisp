@@ -75,14 +75,14 @@
               (mx (round (slot-value ev 'sdl3:%x)))
               (my (round (slot-value ev 'sdl3:%y)))
               (associated (mnas-sdl3-gui/widgets:widgets-for-window-id win-id)))
-         (cond
-          (associated
-           (dolist (w associated)
-             (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
-          ((= win-id (sdl3:get-window-id *combo-box-03-window*))
-           (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-            (list *combo-box-03-widgets*)
-            mx my))))
+        (cond
+         (associated
+          (dolist (w associated)
+           (mnas-sdl3-gui/widgets:handle-mouse-motion-event w ev)))
+         ((= win-id (sdl3:get-window-id *combo-box-03-window*))
+          (mnas-sdl3-gui/widgets:handle-mouse-motion-event
+          (list *combo-box-03-widgets*)
+          ev))))
        
        :continue)
       (sdl3:mouse-wheel-event

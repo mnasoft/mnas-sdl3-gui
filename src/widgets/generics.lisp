@@ -253,9 +253,6 @@ Default behavior is based on widget bounds."))
 ;; `handle-mouse-button-event`, `handle-mouse-motion-event`,
 ;; `handle-mouse-wheel-event` and `handle-mouse-device-event` instead.
 
-(defgeneric handle-widget-mouse-device-event (widget ev)
-  (:documentation "Handle low-level mouse device events for WIDGET. Returns T if handled."))
-
 (defgeneric handle-widget-key-press (widget key char)
   (:documentation "Handle keyboard input for a widget. Returns T if key was handled."))
 
@@ -263,5 +260,3 @@ Default behavior is based on widget bounds."))
   (:documentation "Handle keyboard input for WIDGET including modifier-aware bindings.
 For top-level widget lists provide :mods (raw modifier mask) and optional
 :on-escape/:on-return callbacks.") )
-
-;; `scroll-by` removed: use `handle-widget-mouse-wheel` methods instead for scrolling.

@@ -208,10 +208,9 @@
        (setf *open* nil)
        :success)
       (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+       (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         (check-box-content-widgets)
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        ev)
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)

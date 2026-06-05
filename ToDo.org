@@ -3,12 +3,12 @@
 #+DATE: 2026-05-20
 
 * ToDo
-1. Для обработки событий от мыши в sdl3 есть такие функции:
+** Для обработка событий от мыши. В sdl3 есть такие функции:
    - sdl3:mouse-wheel-event;
    - sdl3:mouse-device-event;
    - sdl3:mouse-motion-event;
    - sdl3:mouse-button-event;
-2. [X] Давай определим для каждого класса порожденного от widget (и
+1. [X] Давай определим для каждого класса порожденного от widget (и
      его включительно) методы (и обобщенные функции (о-функции)):
    - [X] handle-mouse-wheel-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
    - [X] handle-mouse-device-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
@@ -16,54 +16,58 @@
    - [X] handle-mouse-button-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
    - При этом методы и о-функция handle-mouse-button-event уже в
      основном определена.
-3. [X] Методы и о-функции определяем как запрещенные. С помощью их
+2. [X] Методы и о-функции определяем как запрещенные. С помощью их
    кода можно реализовыавать
    handle-mouse-{wheel/device/motion/button}-event.
    - [X] handle-widget-mouse-down
    - [X] handle-widget-mouse-up
    - [X] handle-widget-mouse-motion
    - [X] handle-widget-mouse-wheel
-4. После создания handle-mouse-{wheel/device/motion/button}-event
+3. После создания handle-mouse-{wheel/device/motion/button}-event
    необходимо заменить все вхождения
    - [X] handle-widget-mouse-down,
    - [X] handle-widget-mouse-up,
    - [X] handle-widget-mouse-motion 
    - [X] handle-widget-mouse-wheel -> handle-mouse-wheel-event
-5. [X] Удаляем определения методов и о-функций
+4. [X] Удаляем определения методов и о-функций
    - [X] handle-widget-mouse-down
    - [X] handle-widget-mouse-up
    - [X] handle-widget-mouse-motion
    - [X] handle-widget-mouse-wheel
-6. [ ] find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-down \{\} +
-   - [ ] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:105:             (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-   - [ ] ./src/widgets/methods/handle-widget-click.lisp:12:  (let ((down (handle-widget-mouse-down widget x y))
-   - [ ] ./src/widgets/mouse-functions.lisp:7:;; `dispatch-widget-mouse-down` removed: call `handle-widget-mouse-down` directly.
-7. [ ] find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-up \{\} +
-   - [ ] ./demos/dialog/entry/entry-01/entry-01.lisp:198:                   (mnas-sdl3-gui/widgets:handle-widget-mouse-up
-   - [ ] ./src/widgets/methods/handle-widget-click.lisp:13:        (up (handle-widget-mouse-up widget x y)))
-   - [ ] ./src/widgets/mouse-functions.lisp:9:;; `dispatch-widget-mouse-up` removed: call `handle-widget-mouse-up` directly.
-8. [ ] find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-wheel \{\} +
-   - [ ] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:134:                (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel w 0 0 0 dy)))
-   - [ ] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:136:              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
-   - [ ] ./src/widgets/methods/handle-mouse-wheel-event.lisp:6:;; the per-widget `handle-widget-mouse-wheel` calls already present in
-   - [ ] ./src/widgets/methods/handle-mouse-wheel-event.lisp:24:                    (handle-widget-mouse-wheel widget x y 0 dy))
-   - [ ] ./src/widgets/methods/handle-mouse-wheel-event.lisp:34:    (handle-widget-mouse-wheel widget x y 0 dy)))
-   - [ ] ./src/widgets/mouse-functions.lisp:14:;; generic method. Use `handle-widget-mouse-wheel` to dispatch wheel events.
-   - [ ] ./src/widgets/mouse-functions.lisp:15:;; `handle-widget-mouse-wheel` cons-method moved to
-   - [ ] ./src/widgets/mouse-functions.lisp:16:;; `src/widgets/methods/handle-widget-mouse-wheel.lisp`.
-   - [ ] ./src/widgets/functions.lisp:1167:    (handle-widget-mouse-wheel widget 0 0 0 dy)))
-   - [ ] ./src/widgets/generics.lisp:267:;; `scroll-by` removed: use `handle-widget-mouse-wheel` methods instead for scrolling.
-8. [ ] find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-motion \{\} +
-   - [ ] ./demos/dialog/pack/pack-01/pack-01.lisp:331:       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-   - [ ] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:117:              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
-   - [ ] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:119:            (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-   - [ ] ./demos/dialog/combo-box/combo-box-01/combo-box-01.lisp:219:              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion widget mx my)))
-   - [ ] ./demos/dialog/combo-box/combo-box-02/combo-box-02.lisp:219:                (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-   - [ ] ./demos/dialog/combo-box/combo-box-03/combo-box-03.lisp:81:             (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
-   - [ ] ./demos/dialog/combo-box/combo-box-03/combo-box-03.lisp:83:           (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-   - [ ] ./demos/dialog/check-box/check-box-01/check-box-01.lisp:211:       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-   - [ ] ./demos/dialog/entry/entry-02/entry-02.lisp:266:         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-   - [ ] ./src/widgets/methods/handle-mouse-motion-event.lisp:6:;; calls to `handle-widget-mouse-motion` on per-widget level.
-   - [ ] ./src/widgets/methods/handle-mouse-motion-event.lisp:19:                    (handle-widget-mouse-motion widget x y))
-   - [ ] ./src/widgets/methods/handle-mouse-motion-event.lisp:26:    (handle-widget-mouse-motion widget x y)))
-   - [ ] ./src/widgets/mouse-functions.lisp:11:;; `dispatch-widget-mouse-motion` removed: call `handle-widget-mouse-motion` directly.
+5. [X] Удалить find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-down \{\} +
+   - [X] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:105:             (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+   - [X] ./src/widgets/methods/handle-widget-click.lisp:12:  (let ((down (handle-widget-mouse-down widget x y))
+   - [X] ./src/widgets/mouse-functions.lisp:7:;; `dispatch-widget-mouse-down` removed: call `handle-widget-mouse-down` directly.
+6. [X] Удалить find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-up \{\} +
+   - [X] ./demos/dialog/entry/entry-01/entry-01.lisp:198:                   (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+   - [X] ./src/widgets/methods/handle-widget-click.lisp:13:        (up (handle-widget-mouse-up widget x y)))
+   - [X] ./src/widgets/mouse-functions.lisp:9:;; `dispatch-widget-mouse-up` removed: call `handle-widget-mouse-up` directly.
+7. [X] Удалить find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-wheel \{\} +
+   - [X] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:134:                (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel w 0 0 0 dy)))
+   - [X] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:136:              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
+   - [X] ./src/widgets/methods/handle-mouse-wheel-event.lisp:6:;; the per-widget `handle-widget-mouse-wheel` calls already present in
+   - [X] ./src/widgets/methods/handle-mouse-wheel-event.lisp:24:                    (handle-widget-mouse-wheel widget x y 0 dy))
+   - [X] ./src/widgets/methods/handle-mouse-wheel-event.lisp:34:    (handle-widget-mouse-wheel widget x y 0 dy)))
+   - [X] ./src/widgets/mouse-functions.lisp:14:;; generic method. Use `handle-widget-mouse-wheel` to dispatch wheel events.
+   - [X] ./src/widgets/mouse-functions.lisp:15:;; `handle-widget-mouse-wheel` cons-method moved to
+   - [X] ./src/widgets/mouse-functions.lisp:16:;; `src/widgets/methods/handle-widget-mouse-wheel.lisp`.
+   - [X] ./src/widgets/functions.lisp:1167:    (handle-widget-mouse-wheel widget 0 0 0 dy)))
+   - [X] ./src/widgets/generics.lisp:267:;; `scroll-by` removed: use `handle-widget-mouse-wheel` methods instead for scrolling.
+8. [X] Удалить find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-motion \{\} +
+   - [X] ./demos/dialog/pack/pack-01/pack-01.lisp:331:       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+   - [X] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:117:              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
+   - [X] ./demos/dialog/combo-box/combo-box-04/combo-box-04.lisp:119:            (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+   - [X] ./demos/dialog/combo-box/combo-box-01/combo-box-01.lisp:219:              (mnas-sdl3-gui/widgets:handle-widget-mouse-motion widget mx my)))
+   - [X] ./demos/dialog/combo-box/combo-box-02/combo-box-02.lisp:219:                (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+   - [X] ./demos/dialog/combo-box/combo-box-03/combo-box-03.lisp:81:             (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
+   - [X] ./demos/dialog/combo-box/combo-box-03/combo-box-03.lisp:83:           (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+   - [X] ./demos/dialog/check-box/check-box-01/check-box-01.lisp:211:       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+   - [X] ./demos/dialog/entry/entry-02/entry-02.lisp:266:         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+   - [X] ./src/widgets/methods/handle-mouse-motion-event.lisp:6:;; calls to `handle-widget-mouse-motion` on per-widget level.
+   - [X] ./src/widgets/methods/handle-mouse-motion-event.lisp:19:                    (handle-widget-mouse-motion widget x y))
+   - [X] ./src/widgets/methods/handle-mouse-motion-event.lisp:26:    (handle-widget-mouse-motion widget x y)))
+   - [X] ./src/widgets/mouse-functions.lisp:11:;; `dispatch-widget-mouse-motion` removed: call `handle-widget-mouse-motion` directly.
+9. [X] Удалить find -H . -type d \( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} \) -prune -o  -type f \( -name \*.lisp \) \! \( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo \) -exec grep --color=auto -i -nH --null -e handle-widget-mouse-device-event \{\} +
+   - [X] ./src/widgets/methods/handle-mouse-device-event.lisp:18:        when (handle-widget-mouse-device-event widget ev)
+     
+** Нечто следующее

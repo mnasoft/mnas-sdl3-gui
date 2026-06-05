@@ -194,10 +194,7 @@
                  (mnas-sdl3-gui/widgets:handle-mouse-button-event
                   (entry-01-widgets)
                   ev)))))
-       :continue)
-                   (mnas-sdl3-gui/widgets:handle-widget-mouse-up
-                    (entry-01-widgets) mx my)))))
-       :continue)
+      :continue)
       (sdl3:keyboard-event
        (entry-01-update-modifier-state ev)
        (if (slot-value ev 'sdl3:%down)
