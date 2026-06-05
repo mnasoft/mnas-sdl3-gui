@@ -59,7 +59,7 @@
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +combo-box-02-toolbar-height+)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Add"
                                                    :width 56)

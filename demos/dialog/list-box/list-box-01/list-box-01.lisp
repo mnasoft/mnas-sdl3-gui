@@ -69,13 +69,13 @@
   (mnas-sdl3-gui/commands:register-shortcut :list-box-01/ok :enter :replace t)
   (mnas-sdl3-gui/commands:register-shortcut :list-box-01/cancel :escape :replace t)
   t)
-
+                                  (mnas-sdl3-gui/widgets:render-toolbar
 (defun list-box-01-create-toolbar ()
   "Create toolbar for list-box-01 demo." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +list-box-01-toolbar-height+)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "OK"
                                                    :width 56)

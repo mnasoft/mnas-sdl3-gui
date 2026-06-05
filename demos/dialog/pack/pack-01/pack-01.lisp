@@ -80,7 +80,7 @@
 (defun pack-01-create-toolbar ()
   "Create toolbar for pack-01 command presenter." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height +pack-demo-toolbar-height+)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Apply" :width 62)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Reset" :width 62)
@@ -275,7 +275,7 @@
             (pack-01-register-commands)
             (pack-01-register-shortcuts)
             (setf *pack-demo-toolbar* (pack-01-create-toolbar))
-            (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *pack-demo-toolbar*)
+            (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *pack-demo-toolbar*)
             (mnas-sdl3-gui/widgets:set-widget-style *pack-demo-style*)
             (mnas-sdl3-gui/widgets:start-widget-text-input window)
             (setf *pack-demo-widgets* widgets)
@@ -293,7 +293,7 @@
       (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *pack-demo-widgets*)
         do (mnas-sdl3-gui/widgets:render *pack-demo-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   (when *pack-demo-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
+    (mnas-sdl3-gui/widgets:render-toolbar
      *pack-demo-toolbar*
      *pack-demo-renderer*
      +pack-demo-toolbar-x+
@@ -350,12 +350,12 @@
            (when (= target-window-id *pack-demo-window-id*)
              (if (slot-value ev 'sdl3:%down)
                  (let ((button (and *pack-demo-toolbar*
-                                    (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                    (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                      *pack-demo-toolbar*
                                      (- mx (round +pack-demo-toolbar-x+))
                                      (- my (round +pack-demo-toolbar-y+))))))
                    (if button
-                       (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                       (mnas-sdl3-gui/widgets:toolbar-button-clicked
                         *pack-demo-toolbar*
                         button
                         (list :window-id target-window-id))

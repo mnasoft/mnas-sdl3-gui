@@ -62,7 +62,7 @@
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +combo-box-01-toolbar-height+)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Report"
                                                    :width 72)
@@ -149,7 +149,7 @@
           (combo-box-01-register-commands)
           (combo-box-01-register-shortcuts)
           (setf *combo-box-toolbar* (combo-box-01-create-toolbar))
-          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *combo-box-toolbar*)
+          (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *combo-box-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-01-widgets window)
@@ -173,7 +173,7 @@
   (sdl3:render-clear *combo-box-renderer*)
   (combo-box-01-sync-command-state)
   (when *combo-box-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
+    (mnas-sdl3-gui/widgets:render-toolbar
      *combo-box-toolbar*
      *combo-box-renderer*
      0.0
@@ -238,12 +238,12 @@
                     (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up widget mx my))))
              ((and down (= window-id main-id))
               (let ((button (and *combo-box-toolbar*
-                                 (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                 (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                   *combo-box-toolbar*
                                   mx
                                   (- my toolbar-y-offset)))))
                 (if button
-                    (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                    (mnas-sdl3-gui/widgets:toolbar-button-clicked
                      *combo-box-toolbar*
                      button
                      (list :window-id *combo-box-window-id*))

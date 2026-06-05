@@ -62,7 +62,7 @@
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +entry-02-toolbar-height+)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Run"
                                                    :width 72)
@@ -245,11 +245,11 @@
   (sdl3:render-clear *entry-02-renderer*)
   (entry-02-sync-command-state)
   (when *entry-02-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
-     *entry-02-toolbar*
-     *entry-02-renderer*
-     0.0
-     0.0))
+      (mnas-sdl3-gui/widgets:render-toolbar
+       *entry-02-toolbar*
+       *entry-02-renderer*
+       0.0
+       0.0))
     (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *entry-02-widgets*)
       do (mnas-sdl3-gui/widgets:render *entry-02-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   (sdl3:render-present *entry-02-renderer*)

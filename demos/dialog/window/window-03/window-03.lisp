@@ -22,7 +22,7 @@
 (defun make-window-03-toolbar ()
   "Create toolbar with commands reflecting full-state behavior." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "-" :width 34)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "+" :width 34)

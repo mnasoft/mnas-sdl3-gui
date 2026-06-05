@@ -39,7 +39,7 @@
 (defun make-window-02-toolbar ()
   "Create toolbar that mirrors window-02 command model state." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Popup" :width 70 :type :toggle)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Pin" :width 56 :type :toggle)
@@ -135,7 +135,7 @@
                        "Pin mode: on (click outside does not close popup)"
                        "Pin mode: off")
                      28.0 204.0 '(164 196 216 255))
-    (mnas-sdl3-gui/toolbar:render-toolbar
+    (mnas-sdl3-gui/widgets:render-toolbar
      *window-02-toolbar*
      *window-02-main-renderer*
      +window-02-toolbar-x+
@@ -236,7 +236,7 @@
   (window-02-register-commands)
   (window-02-register-shortcuts)
   (setf *window-02-toolbar* (make-window-02-toolbar))
-  (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-02-toolbar*)
+  (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *window-02-toolbar*)
   (window-02-hide-popup)
   (setf *window-02-open* t
         *window-02-pin-popup* nil
@@ -316,12 +316,12 @@
                  (>= y (round +window-02-toolbar-y+))
                  (<= y (+ (round +window-02-toolbar-y+) (round +window-02-toolbar-height+))))
             (let ((toolbar-button
-                    (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                    (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                      *window-02-toolbar*
                      (- x (round +window-02-toolbar-x+))
                      (- y (round +window-02-toolbar-y+)))))
               (when toolbar-button
-                (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                (mnas-sdl3-gui/widgets:toolbar-button-clicked
                  *window-02-toolbar*
                  toolbar-button
                  (list :window-id window-id :x x :y y)))))

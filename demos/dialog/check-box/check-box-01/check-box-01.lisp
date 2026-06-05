@@ -60,7 +60,7 @@
                                     :width 164
                                     :window window
                                     )))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar) (list tb-btn-quit))
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar) (list tb-btn-quit))
     toolbar))
 
 (defun check-box-01-sync-command-state ()
@@ -164,7 +164,7 @@
           (check-box-register-commands)
           (check-box-register-shortcuts)
           (setf *toolbar* (check-box-create-toolbar window))
-          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toolbar*)
+          (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-check-box-widgets window)
@@ -181,7 +181,7 @@
   (check-box-01-sync-command-state)
 
   (when *toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
+    (mnas-sdl3-gui/widgets:render-toolbar
      *toolbar*
      *renderer*
      0.0
@@ -214,7 +214,7 @@
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
-         (if (mnas-sdl3-gui/toolbar:handle-toolbar-mouse-event
+            (if (mnas-sdl3-gui/widgets:handle-toolbar-mouse-event
               *toolbar* ev 0 (- +check-box-window-height+ +check-box-toolbar-height+))
              nil
              (mnas-sdl3-gui/widgets:handle-mouse-button-event (check-box-content-widgets) ev)))
@@ -259,9 +259,8 @@
    'check-box-demo-quit)
   :done)
 
+;;;; (ql:quickload :mnas-sdl3-gui)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box-01)
 ;;;; (mnas-sdl3-gui/demos/dialog/check-box-01:check-box-01)
 ;;;; (check-box-01)

@@ -3,7 +3,6 @@
   :author "mna"
   :license "GPL-3.0"
   :depends-on (#:mnas-sdl3-gui
-               #:mnas-sdl3-gui/demos/dialog/window-02
                #:fiveam)
   :serial t
   :components ((:file "tests/package")

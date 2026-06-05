@@ -35,7 +35,7 @@
 (defun entry-01-create-toolbar ()
   "Create toolbar for entry-01 command presenter."
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 32)))
-    (setf (mnas-sdl3-gui/toolbar:toolbar-buttons toolbar)
+    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "OK"
                                                    :width 64)
@@ -147,12 +147,12 @@
                                      *entry-01-hint* 40.0 62.0 '(70 70 70 255))
 
   (entry-01-sync-command-state)
-  (when *entry-01-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
-     *entry-01-toolbar*
-     *entry-01-renderer*
-     0.0
-     0.0))
+    (when *entry-01-toolbar*
+      (mnas-sdl3-gui/widgets:render-toolbar
+       *entry-01-toolbar*
+       *entry-01-renderer*
+       0.0
+       0.0))
 
       (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (entry-01-widgets))
         do (mnas-sdl3-gui/widgets:render *entry-01-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))

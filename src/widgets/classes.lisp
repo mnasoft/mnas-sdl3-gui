@@ -136,9 +136,7 @@
   (:documentation "Toolbar button implemented as a widget so it can be a child of toolbar."))
 
 (defclass toolbar (widget-container)
-  ((buttons :initarg :buttons :initform '() :accessor toolbar-buttons
-            :documentation "Deprecated: use children slot directly. Kept for compatibility.")
-   (layout :initarg :layout :initform :horizontal :accessor toolbar-layout
+  ((layout :initarg :layout :initform :horizontal :accessor toolbar-layout
            :documentation "Layout mode: :horizontal or :vertical.")
    (background :initarg :background :initform '(245 245 245 255)
                :accessor toolbar-background)
