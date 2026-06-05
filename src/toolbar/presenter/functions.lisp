@@ -236,19 +236,3 @@ Returns T when the event was consumed (toolbar button clicked), NIL otherwise."
         (toolbar-button-clicked toolbar button (list :window-id (slot-value ev 'sdl3:%window-id))))
       t)))
 
-(defun toolbar-from-command-group (group-name &key (type :push))
-  "Create toolbar from commands in specified group."
-  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar)))
-    (maphash (lambda (id cmd)
-               (declare (ignore id))
-               (when (eq (mnas-sdl3-gui/commands:command-group cmd) group-name)
-                 (push (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
-                                      :command-id (mnas-sdl3-gui/commands:command-id cmd)
-                                      :type type
-                                      :label (mnas-sdl3-gui/commands:command-title cmd)
-                                      :hotkey (or (mnas-sdl3-gui/commands:command-shortcut cmd) ""))
-                       (toolbar-buttons toolbar))))
-             mnas-sdl3-gui/commands:*command-registry*)
-    (setf (toolbar-buttons toolbar) (nreverse (toolbar-buttons toolbar)))
-    toolbar))
-

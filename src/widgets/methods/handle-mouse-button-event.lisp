@@ -1,6 +1,10 @@
 ;;;; ./src/widgets/methods/handle-mouse-button-event.lisp
 
- (in-package :mnas-sdl3-gui/widgets)
+(in-package :mnas-sdl3-gui/widgets)
+
+(defmethod handle-mouse-button-event :around ((widget widget) (ev sdl3:mouse-button-event))
+  (when (and (enabled-p widget) (visible-p widget))
+    (call-next-method)))
 
  ;; Root list handler: perform hit-test order dispatch and delegate to
  ;; per-widget `handle-mouse-button-event` methods.

@@ -4,8 +4,9 @@
 
 ;; Application-level quit hooks
 (defvar *app-quit-hooks* nil
-  "List of functions called when the application quits. Each function is called with one
-optional argument: the quit RESULT passed by the app framework.")
+  "List of functions called when the application quits. Each function is
+called with one optional argument: the quit RESULT passed by the app
+framework.")
 
 (defun add-quit-hook (fn)
   "Register FN to be called when the application quits. Returns FN.

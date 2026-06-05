@@ -1,20 +1,19 @@
-(asdf:defsystem #:mnas-sdl3-gui
+(defsystem "mnas-sdl3-gui"
   :description "mnas-sdl3-gui Common Lisp system"
   :author "mna"
   :license "GPL-3.0"
   :version "0.1.0"
-  :depends-on (#:sdl3 #:sdl3-ttf)
+  :depends-on ("sdl3" "sdl3-ttf")
   :serial t
   :components ((:file "src/mnas-sdl3-gui")
-               (:file "src/app/package")
-               (:file "src/app/functions")
                (:file "src/debug")
-               (:file "src/commands/package")
-               (:file "src/commands/functions")
-               (:file "src/commands/shortcuts")
-               (:file "src/window-manager/package")
-               (:file "src/window-manager/classes")
-               (:file "src/window-manager/functions")
+               (:module "src/commands"
+		:serial t
+                :components ((:file "package")
+                             (:file "functions")
+                             (:file "shortcuts")))
+               
+               
                (:file "src/menu/model/package")
                (:file "src/menu/model/classes")
                (:file "src/menu/model/functions")
@@ -22,79 +21,115 @@
                (:file "src/menu/controller/functions")
                (:file "src/menu/renderer/package")
                (:file "src/menu/renderer/functions")
-               (:file "src/widgets/package")
-               (:file "src/widgets/classes")
-               (:file "src/toolbar/package")
-               (:file "src/toolbar/classes")
-               (:file "src/toolbar/presenter/package")
-               (:file "src/toolbar/functions")
-               (:file "src/toolbar/methods/compatibility")
-               (:file "src/toolbar/presenter/functions")
-               (:file "src/widgets/classes-grid")
-               (:file "src/widgets/methods/print-object")
-               (:file "src/widgets/generics")
-               (:file "src/widgets/functions")
-               (:file "src/widgets/layout")
-               (:file "src/widgets/ttf-render")
-               (:file "src/widgets/methods/grid-layout")
-               (:file "src/widgets/methods/split-pane-layout")
-               (:file "src/widgets/sdl3-ttf-render")
-               (:file "src/widgets/style-functions")
-               (:file "src/widgets/rendering-primitives")
-               (:file "src/widgets/methods/render")
-               (:file "src/widgets/toggle-functions")
-               (:file "src/widgets/focus-functions")
-               (:file "src/widgets/methods/handle-widget-mouse-wheel")
-               (:file "src/widgets/mouse-functions")
-               (:file "src/widgets/entry-functions")
-               (:file "src/widgets/methods/entry-cursor-pixel-offset")
-               (:file "src/widgets/methods/compute-text-segment-pixel-width")
-               (:file "src/widgets/methods/compute-text-offset-to-position")
-               (:file "src/widgets/methods/entry-visible-text-width")
-               (:file "src/widgets/methods/entry-visible-range")
-               (:file "src/widgets/methods/clear-entry-selection")
-               (:file "src/widgets/methods/get-entry-selected-text")
-               (:file "src/widgets/methods/set-entry-selection")
-               (:file "src/widgets/methods/entry-selection-anchor")
-               (:file "src/widgets/methods/entry-select-from-anchor")
-               (:file "src/widgets/methods/entry-select-previous-char")
-               (:file "src/widgets/methods/entry-select-next-char")
-               (:file "src/widgets/methods/entry-select-previous-word")
-               (:file "src/widgets/methods/entry-select-next-word")
-               (:file "src/widgets/methods/entry-select-to-start")
-               (:file "src/widgets/methods/entry-select-to-end")
-               (:file "src/widgets/methods/entry-inner-width")
-               (:file "src/widgets/methods/entry-text-width-between")
-               (:file "src/widgets/methods/entry-show-text")
-               (:file "src/widgets/methods/entry-valid-text-p")
-               (:file "src/widgets/methods/normalize-entry-scroll-offset")
-               (:file "src/widgets/methods/entry-ensure-cursor-visible")
-               (:file "src/widgets/methods/entry-scroll-to-start")
-               (:file "src/widgets/methods/entry-position-from-pixel")
-               (:file "src/widgets/methods/entry-scroll-to-end")
-               (:file "src/widgets/methods/entry-copy-to-clipboard")
-               (:file "src/widgets/methods/entry-paste-from-clipboard")
-               (:file "src/widgets/methods/entry-delete-selection")
-               (:file "src/widgets/methods/entry-move-to-previous-word")
-               (:file "src/widgets/methods/entry-move-to-next-word")
-               (:file "src/widgets/keyboard-functions")
-               (:file "src/widgets/methods/initialize-instance")
-               (:file "src/widgets/methods/canvas-2d-methods")
-               (:file "src/widgets/methods/contains-point-p")
-               (:file "src/widgets/methods/visible-p")
-               (:file "src/widgets/methods/enabled-p")
-               (:file "src/widgets/methods/children")
-               (:file "src/widgets/methods/update-widget-value")
-               (:file "src/widgets/methods/widget-min-size")
-               (:file "src/widgets/methods/activate-widget")
-               (:file "src/widgets/methods/handle-widget-mouse-down")
-               (:file "src/widgets/methods/handle-widget-mouse-up")
-               (:file "src/widgets/methods/handle-widget-mouse-motion")
-               (:file "src/widgets/methods/handle-mouse-button-event")
-               (:file "src/widgets/methods/handle-widget-key-press")
-               (:file "src/widgets/methods/handle-widget-key-event")))
+               #+nil (:file "src/toolbar/package")
+               #+nil (:file "src/toolbar/methods/compatibility")
+               #+nil (:file "src/toolbar/presenter/functions")
+               ))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos
+(defsystem "mnas-sdl3-gui/debug"
+  :description "mnas-sdl3-gui Common Lisp system"
+  :serial t
+  :components ((:module "src/debug"
+		:serial t
+                :components ((:file "debug")))))
+
+(defsystem "mnas-sdl3-gui/app"
+  :description "mnas-sdl3-gui Common Lisp system"
+  :depends-on ("sdl3" "sdl3-ttf")
+  :serial t
+  :components ((:module "src/app"
+		:serial t
+                :components ((:file "package")
+                             (:file "functions")))))
+
+(defsystem "mnas-sdl3-gui/window-manager"
+  :description "mnas-sdl3-gui Common Lisp system"
+  :depends-on ("sdl3" "sdl3-ttf")
+  :serial t
+  :components ((:module "src/window-manager"
+		:serial t
+                :components ((:file "package")
+                             (:file "classes")
+                             (:file "functions")))))
+
+
+(defsystem "mnas-sdl3-gui/widgets"
+  :description "mnas-sdl3-gui Common Lisp system"
+  :depends-on (#:sdl3 #:sdl3-ttf)
+  :serial t
+  :components ((:module "src/widgets"
+		:serial t
+                :components ((:file "package")
+                             (:file "classes")
+                             (:file "classes-grid")
+                             (:file "methods/print-object")
+                             (:file "generics")
+                             (:file "functions")
+                             (:file "layout")
+                             (:file "ttf-render")
+                             (:file "methods/grid-layout")
+                             (:file "methods/split-pane-layout")
+                             (:file "sdl3-ttf-render")
+                             (:file "style-functions")
+                             (:file "rendering-primitives")
+                             (:file "toggle-functions")
+                             (:file "focus-functions")
+                             (:file "mouse-functions")
+                             (:file "entry-functions")
+                             (:file "keyboard-functions")))
+               (:module "src/widgets/methods"
+		:serial t
+                :components ((:file "render")
+                             (:file "entry-cursor-pixel-offset")
+                             (:file "compute-text-segment-pixel-width")
+                             (:file "compute-text-offset-to-position")
+                             (:file "entry-visible-text-width")
+                             (:file "entry-visible-range")
+                             (:file "clear-entry-selection")
+                             (:file "get-entry-selected-text")
+                             (:file "set-entry-selection")
+                             (:file "entry-selection-anchor")
+                             (:file "entry-select-from-anchor")
+                             (:file "entry-select-previous-char")
+                             (:file "entry-select-next-char")
+                             (:file "entry-select-previous-word")
+                             (:file "entry-select-next-word")
+                             (:file "entry-select-to-start")
+                             (:file "entry-select-to-end")
+                             (:file "entry-inner-width")
+                             (:file "entry-text-width-between")
+                             (:file "entry-show-text")
+                             (:file "entry-valid-text-p")
+                             (:file "normalize-entry-scroll-offset")
+                             (:file "entry-ensure-cursor-visible")
+                             (:file "entry-scroll-to-start")
+                             (:file "entry-position-from-pixel")
+                             (:file "entry-scroll-to-end")
+                             (:file "entry-copy-to-clipboard")
+                             (:file "entry-paste-from-clipboard")
+                             (:file "entry-delete-selection")
+                             (:file "entry-move-to-previous-word")
+                             (:file "entry-move-to-next-word")
+                             (:file "handle-widget-mouse-wheel")
+                             (:file "initialize-instance")
+                             (:file "canvas-2d-methods")
+                             (:file "contains-point-p")
+                             (:file "visible-p")
+                             (:file "enabled-p")
+                             (:file "children")
+                             (:file "update-widget-value")
+                             (:file "widget-min-size")
+                             (:file "activate-widget")
+                             #+nil (:file "handle-widget-mouse-down")
+                             #+nil (:file "handle-widget-mouse-up")
+                             (:file "handle-widget-mouse-motion")
+                             (:file "handle-mouse-button-event")
+                             (:file "handle-widget-key-press")
+                             (:file "handle-widget-key-event")))))
+               
+
+
+(defsystem "mnas-sdl3-gui/demos"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/check-box"
                "mnas-sdl3-gui/demos/dialog/combo-box"
@@ -118,7 +153,7 @@
                (:file "demos/menu/screen-menu-classes")
                (:file "demos/dialog/package")))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/canvas
+(defsystem "mnas-sdl3-gui/demos/canvas"
       :description "Canvas demos for mnas-sdl3-gui"
       :depends-on ("mnas-sdl3-gui")
       :serial t
@@ -128,11 +163,11 @@
                                    (:file "canvas-01")
                                    (:file "canvas-window-demo")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/simple"
+(defsystem "mnas-sdl3-gui/demos/dialog/simple"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/simple-01"))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/simple-01
+(defsystem #:mnas-sdl3-gui/demos/dialog/simple-01
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -141,14 +176,14 @@
                 :components ((:file "package")
                              (:file "simple-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/check-box"
+(defsystem "mnas-sdl3-gui/demos/dialog/check-box"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui"
                "mnas-sdl3-gui/demos/dialog/check-box-01"
                "mnas-sdl3-gui/demos/dialog/combo-box-02"))
 
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/check-box-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/check-box-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -157,14 +192,14 @@
                 :components ((:file "package")
                              (:file "check-box-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box"
+(defsystem "mnas-sdl3-gui/demos/dialog/combo-box"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/combo-box-01"
                "mnas-sdl3-gui/demos/dialog/combo-box-02"
                "mnas-sdl3-gui/demos/dialog/combo-box-03"
                "mnas-sdl3-gui/demos/dialog/combo-box-04"))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/combo-box-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -173,7 +208,7 @@
                 :components ((:file "package")
                              (:file "combo-box-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/combo-box-02
+(defsystem #:mnas-sdl3-gui/demos/dialog/combo-box-02
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -182,7 +217,7 @@
                 :components ((:file "package")
                              (:file "combo-box-02")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-03"
+(defsystem "mnas-sdl3-gui/demos/dialog/combo-box-03"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -191,7 +226,7 @@
                 :components ((:file "package")
                              (:file "combo-box-03")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/combo-box-04"
+(defsystem "mnas-sdl3-gui/demos/dialog/combo-box-04"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -200,7 +235,7 @@
                 :components ((:file "package")
                              (:file "combo-box-04")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/toolbar-demo"
+(defsystem "mnas-sdl3-gui/demos/dialog/toolbar-demo"
   :description "Toolbar demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -210,12 +245,12 @@
                              (:file "toolbar-demo")))))
 
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/entry"
+(defsystem "mnas-sdl3-gui/demos/dialog/entry"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/entry-01"
                "mnas-sdl3-gui/demos/dialog/entry-02"))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-01
+(defsystem #:mnas-sdl3-gui/demos/dialog/entry-01
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -225,7 +260,7 @@
                              (:file "commands")
                              (:file "entry-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/entry-02
+(defsystem #:mnas-sdl3-gui/demos/dialog/entry-02
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -234,7 +269,7 @@
                 :components ((:file "package")
                              (:file "entry-02")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron"
+(defsystem "mnas-sdl3-gui/demos/dialog/polyhedron"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/polyhedron-01"
                "mnas-sdl3-gui/demos/dialog/polyhedron-02"
@@ -242,7 +277,7 @@
                "mnas-sdl3-gui/demos/dialog/polyhedron-04"))
 
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -251,7 +286,7 @@
                 :components ((:file "package")
                              (:file "polyhedron-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-02"
+(defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-02"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -260,7 +295,7 @@
                 :components ((:file "package")
                              (:file "polyhedron-02")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-03"
+(defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-03"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -269,7 +304,7 @@
                 :components ((:file "package")
                              (:file "polyhedron-03")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-04"
+(defsystem "mnas-sdl3-gui/demos/dialog/polyhedron-04"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -278,11 +313,11 @@
                 :components ((:file "package")
                              (:file "polyhedron-04")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/tree"
+(defsystem "mnas-sdl3-gui/demos/dialog/tree"
   :description "Filesystem tree demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/tree-01"))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/tree-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/tree-01"
   :description "Filesystem tree demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -292,12 +327,12 @@
                              (:file "commands")
                              (:file "tree-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/window"
+(defsystem "mnas-sdl3-gui/demos/dialog/window"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/window-01"
                "mnas-sdl3-gui/demos/dialog/window-02"))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-01
+(defsystem #:mnas-sdl3-gui/demos/dialog/window-01
   :description "Demos for mnas-sdl3-gui"
   :depends-on (#:mnas-sdl3-gui
                #:mnas-sdl3-gui/demos/dialog/window-02
@@ -309,7 +344,7 @@
                              (:file "commands")
                              (:file "window-01")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-02
+(defsystem #:mnas-sdl3-gui/demos/dialog/window-02
   :description "Popup-menu window demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -319,7 +354,7 @@
                              (:file "commands")
                              (:file "window-02")))))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/window-03
+(defsystem #:mnas-sdl3-gui/demos/dialog/window-03
   :description "Transparent window demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -329,11 +364,11 @@
                              (:file "commands")
                              (:file "window-03")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/widget"
+(defsystem "mnas-sdl3-gui/demos/dialog/widget"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/widget-01"))
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/widget-01
+(defsystem #:mnas-sdl3-gui/demos/dialog/widget-01
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -343,11 +378,11 @@
                              (:file "commands")
                              (:file "widget-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/toggle"
+(defsystem "mnas-sdl3-gui/demos/dialog/toggle"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/toggle-01"))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/toggle-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/toggle-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -357,12 +392,12 @@
                              (:file "commands")
                              (:file "toggle-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/font"
+(defsystem "mnas-sdl3-gui/demos/dialog/font"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/font-01"))
 
 
-(asdf:defsystem #:mnas-sdl3-gui/demos/dialog/font-01
+(defsystem #:mnas-sdl3-gui/demos/dialog/font-01
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -372,11 +407,11 @@
                              (:file "commands")
                              (:file "font-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/pack"
+(defsystem "mnas-sdl3-gui/demos/dialog/pack"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/pack-01"))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/pack-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/pack-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -386,11 +421,11 @@
                              (:file "commands")
                              (:file "pack-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/list-box"
+(defsystem "mnas-sdl3-gui/demos/dialog/list-box"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/list-box-01"))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/dialog/list-box-01"
+(defsystem "mnas-sdl3-gui/demos/dialog/list-box-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -399,7 +434,7 @@
                 :components ((:file "package")
                              (:file "list-box-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/layout/grid-01"
+(defsystem "mnas-sdl3-gui/demos/layout/grid-01"
   :description "Grid layout demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -408,7 +443,7 @@
                 :components ((:file "package")
                              (:file "grid-01")))))
 
-(asdf:defsystem "mnas-sdl3-gui/demos/layout/split-pane-01"
+(defsystem "mnas-sdl3-gui/demos/layout/split-pane-01"
   :description "Split pane layout demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t

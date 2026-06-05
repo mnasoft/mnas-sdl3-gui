@@ -7,13 +7,8 @@
    Different representation of commands compared to menu.")
   (:use :cl)
   (:export
-   ;; Classes
-   #:toolbar
-   #:toolbar-button-spec
    ;; Compatibility accessors
    #:toolbar-buttons
-   ;; widgetized button class
-   #:toolbar-button
    ;; Functions
    #:toolbar-layout-horizontal
    #:toolbar-layout-vertical
@@ -26,3 +21,5 @@
    #:unregister-toolbar-for-command-updates))
 
 (in-package :mnas-sdl3-gui/toolbar)
+
+(TOOLBAR-BUTTONS
