@@ -2,46 +2,41 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 
-;; (mnas-sdl3-gui/widgets::widget-text-pixel-size "New")
-;; (mnas-sdl3-gui/widgets:widget-min-size *toolbar-button*)
-
-#+nil (defparameter *toolbar-button*
-  (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
-                 :command-id :toolbar/demo-quit
-                 :label "Quit"
-                 :width 64
-                 :height 32))
-
-
 (defparameter *window* nil)
 (defparameter *renderer* nil)
 (defparameter *toolbar* nil)
 (defparameter *open* t)
 
-(defparameter +toolbar-x+ 12.0)
-(defparameter +toolbar-y+ 12.0)
+;;; (mnas-sdl3-gui/widgets:widgets-for-window *window*)
 
-
-
-(defun make-toolbar-demo-widget ()
+(defun make-toolbar-demo-widget (window)
   (let ((tb (make-instance 'mnas-sdl3-gui/widgets:toolbar
-                           :layout
-                           :horizontal
-                           :height 34)))
+                           :layout :horizontal
+                           :height 34
+                           :window window
+                           )))
     (setf (mnas-sdl3-gui/widgets:widget-children tb)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
                           :command-id :toolbar/demo-new
-                          :label "New" :width 66 :height 32)
+                          :label "New"
+                          :width 66
+                          :height 32
+                          :window window
+                          )
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
                           :command-id :toolbar/demo-open
                           :label "Open"
-                          :width 70 :height 32)
+                          :width 70
+                          :height 32
+                          :window window
+                          )
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
                           :command-id :toolbar/demo-quit
                           :label "Quit"
                           :width 64
-                          :height 32)))
+                          :height 32
+                          :window window)))
     tb))
 
 (defun register-toolbar-demo-commands ()
@@ -51,7 +46,9 @@
     "New"
     :execute (lambda (ctx)
                (declare (ignore ctx))
-               (format t "[toolbar-demo] New~%")))
+               (format t "[toolbar-demo] New~%")
+               (setf (mnas-sdl3-gui/widgets:widget-enabled *toolbar*) nil)
+               ))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
@@ -82,10 +79,9 @@
       (return-from toolbar-demo-init :failure))
     (setf *window* window
           *renderer* renderer
-          *toolbar* (make-toolbar-demo-widget)
+          *toolbar* (make-toolbar-demo-widget window)
           *open* t)
     (register-toolbar-demo-commands)
-    ;; (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *toolbar*)
     (mnas-sdl3-gui/widgets:set-widget-style :flat)
     (mnas-sdl3-gui/widgets:init-ttf-font)
     :continue))
@@ -95,7 +91,8 @@
     (return-from toolbar-demo-iterate :success))
   (sdl3:set-render-draw-color *renderer* 242 242 242 255)
   (sdl3:render-clear *renderer*)
-  ;;(mnas-sdl3-gui/widgets:render-toolbar *toolbar* *renderer* +toolbar-x+ +toolbar-y+)
+  (mnas-sdl3-gui/widgets:render *renderer* *toolbar* mnas-sdl3-gui/widgets:*widget-style*) ;; mnas-sdl3-gui/widgets:*widget-style*
+  
   (mnas-sdl3-gui/widgets:render-text
    *renderer*
    "Toolbar demo (style like combo-box-04)"
@@ -111,18 +108,9 @@
        (setf *open* nil)
        :success)
       (sdl3:mouse-button-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (= (slot-value ev 'sdl3:%button) 1))
-         (let* ((x (round (slot-value ev 'sdl3:%x)))
-                (y (round (slot-value ev 'sdl3:%y)))
-                (button NIL
-                 #+NIL (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
-                  *toolbar*
-                  (- x (round +toolbar-x+))
-                  (- y (round +toolbar-y+)))))
-           (when button 
-             #+NIL (mnas-sdl3-gui/widgets:toolbar-button-clicked
-              *toolbar* button (list :x x :y y)))))
+       (mnas-sdl3-gui/widgets:handle-mouse-button-event
+              (mnas-sdl3-gui/widgets:widgets-for-window *window*)
+              ev)
        :continue)
       (t :continue))))
 
@@ -146,3 +134,5 @@
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 ;;;; (toolbar-demo)
+
+;;;; (setf (mnas-sdl3-gui/widgets:widget-enabled *toolbar*) t)

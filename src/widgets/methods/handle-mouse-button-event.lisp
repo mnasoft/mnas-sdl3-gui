@@ -84,6 +84,25 @@
         (or armed inside)))))
 
 
+(defmethod handle-mouse-button-event ((widget toolbar-button) (ev sdl3:mouse-button-event))
+  (let* ((x (round (slot-value ev 'sdl3:%x)))
+         (y (round (slot-value ev 'sdl3:%y)))
+         (down (slot-value ev 'sdl3:%down))
+         (inside (contains-point-p widget x y)))
+    (when down
+      (setf (widget-focused widget) inside)
+      inside)
+    (unless down
+      (when inside
+        (let ((cmd-id (button-command-id widget)))
+          (when cmd-id
+            (handler-case
+                (mnas-sdl3-gui/commands:execute-command cmd-id :context widget)
+              (error (e)
+                (format *error-output* "Error executing toolbar command ~S: ~S~%" cmd-id e)))))
+        t))))
+
+
 (defmethod handle-mouse-button-event ((widget toggle) (ev sdl3:mouse-button-event))
   (let ((x (round (slot-value ev 'sdl3:%x)))
         (y (round (slot-value ev 'sdl3:%y)))
