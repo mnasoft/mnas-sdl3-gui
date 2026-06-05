@@ -1,0 +1,31 @@
+#+TITLE: mnas-sdl3-gui: архитектурный набросок
+#+AUTHOR: mna
+#+DATE: 2026-05-20
+
+* ToDo
+1. Для обработки событий от мыши в sdl3 есть такие функции:
+   - sdl3:mouse-wheel-event;
+   - sdl3:mouse-device-event;
+   - sdl3:mouse-motion-event;
+   - sdl3:mouse-button-event;
+2. [ ] Давай определим для каждого класса порожденного от widget (и
+     его включительно) методы (и обобщенные функции (о-функции)):
+     - [ ] handle-mouse-wheel-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
+     - [ ] handle-mouse-device-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
+     - [ ] handle-mouse-motion-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
+     - [ ] handle-mouse-button-event ((widget widget-and-derived) (ev sdl3:mouse-button-event))
+     - При этом методы и о-функция handle-mouse-button-event уже в
+       основном определена.
+3. [ ] Методы и о-функции определяем как запрещенные. С помощью их
+   кода можно реализовыавать
+   handle-mouse-{wheel/device/motion/button}-event.
+   - [ ] handle-widget-mouse-down
+   - [ ] handle-widget-mouse-up
+   - [ ] handle-widget-mouse-motion
+   - [ ] handle-widget-mouse-wheel
+4. После создания handle-mouse-{wheel/device/motion/button}-event
+   необходимо заменить все вхождения
+   - [ ] handle-widget-mouse-down,
+   - [ ] handle-widget-mouse-up,
+   - [ ] handle-widget-mouse-motion 
+   - [ ] handle-widget-mouse-wheel -> handle-mouse-wheel-event

@@ -274,10 +274,10 @@
               (return-from tree-01-event :success)))))
        :continue)
       (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+       (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         *tree-01-widgets*
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        ev)
+       )
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) +tree-01-mouse-left+)
@@ -309,12 +309,10 @@
                  (mnas-sdl3-gui/widgets:handle-mouse-button-event *tree-01-widgets* ev)))))
        :continue)
       (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
+       (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
         *tree-01-widgets*
-        (round (slot-value ev 'sdl3:%mouse-x))
-        (round (slot-value ev 'sdl3:%mouse-y))
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        ev)
+       )
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

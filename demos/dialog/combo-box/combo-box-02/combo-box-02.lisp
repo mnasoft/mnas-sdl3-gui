@@ -214,7 +214,7 @@
              (cond
                ((and associated (not (= win-id main-id)))
                 (dolist (w associated)
-                  (mnas-sdl3-gui/widgets:handle-widget-mouse-motion w mx my)))
+                  (mnas-sdl3-gui/widgets:handle-mouse-motion-event w ev)))
                ((= win-id main-id)
                 (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
                  (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*)
@@ -245,11 +245,11 @@
                   (if button-spec
                       (mnas-sdl3-gui/toolbar:toolbar-button-clicked
                        *combo-box-02-toolbar* button-spec (list :window-id *combo-box-02-window-id* :x x :y y))
-                      (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-                       (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*) x y))))
+                      (mnas-sdl3-gui/widgets:handle-mouse-button-event
+                       (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*) ev))))
                ((and (not down) (= win-id main-id))
-                (mnas-sdl3-gui/widgets:handle-widget-mouse-up
-                 (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*) x y)))
+                (mnas-sdl3-gui/widgets:handle-mouse-button-event
+                 (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*) ev)))
              :continue)
            (sdl3:mouse-wheel-event
               (let* ((win-id (slot-value ev 'sdl3:%window-id))
@@ -265,11 +265,11 @@
                 (cond
                   ((and associated (not (= win-id main-id)))
                    (dolist (w associated)
-                     (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel w 0 0 0 dy)))
+                     (mnas-sdl3-gui/widgets:handle-mouse-wheel-event w ev)))
                   ((= win-id main-id)
-                   (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
+                   (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
                     (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*)
-                    mx my x y)))))
+                    ev)))))
              :continue)
           (sdl3:keyboard-event
            (when (and (slot-value ev 'sdl3:%down)

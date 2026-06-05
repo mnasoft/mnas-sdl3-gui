@@ -157,21 +157,16 @@
                           :test #'eq))
          (grid-demo-relayout *grid-demo-window*))
        :continue)
-      (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
-        *grid-demo-widgets*
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        (sdl3:mouse-motion-event
+         (mnas-sdl3-gui/widgets:handle-mouse-motion-event
+          *grid-demo-widgets*
+          ev)
        :continue)
       (sdl3:mouse-button-event
        (mnas-sdl3-gui/widgets:handle-mouse-button-event *grid-demo-widgets* ev)
        :continue)
       (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel *grid-demo-widgets*
-                                                        (round (slot-value ev 'sdl3:%mouse-x))
-                                                        (round (slot-value ev 'sdl3:%mouse-y))
-                                                        (round (slot-value ev 'sdl3:%x))
-                                                        (round (slot-value ev 'sdl3:%y)))
+         (mnas-sdl3-gui/widgets:handle-mouse-wheel-event *grid-demo-widgets* ev)
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down) (not (slot-value ev 'sdl3:%repeat)))
@@ -239,4 +234,5 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/layout/grid-01)
 ;;;; (mnas-sdl3-gui/demos/layout/grid-01:grid-01)
 ;;;; (grid-01)
+
 

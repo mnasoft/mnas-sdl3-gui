@@ -143,10 +143,6 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-viewport-resize (widget width height)
   (:documentation "Handle viewport resize events for WIDGET."))
 
-(defmethod widget-measure ((widget widget) &optional constraints)
-  (declare (ignore constraints))
-  (widget-min-size widget))
-
 (defmethod widget-arrange ((widget widget) x y width height)
   (place-widget widget :x x :y y :width width :height height))
 
@@ -244,10 +240,10 @@ Default behavior is based on widget bounds."))
     (call-next-method)))
 
 (defgeneric handle-widget-mouse-down (widget x y)
-  (:documentation "Handle mouse button press. Returns T if event was consumed."))
+  (:documentation "Handle mouse button press. Returns T if event was consumed. DEPRECATED: prefer using `handle-mouse-button-event` which accepts raw sdl3 events."))
 
 (defgeneric handle-widget-mouse-up (widget x y)
-  (:documentation "Handle mouse button release. Returns T if event was consumed."))
+  (:documentation "Handle mouse button release. Returns T if event was consumed. DEPRECATED: prefer using `handle-mouse-button-event` which accepts raw sdl3 events."))
 
 (defgeneric children (widget)
   (:documentation "Return a list of child widgets for WIDGET."))
@@ -259,10 +255,13 @@ Default behavior is based on widget bounds."))
   (:documentation "Compatibility helper: emulate click as mouse-down followed by mouse-up."))
 
 (defgeneric handle-widget-mouse-motion (widget x y)
-  (:documentation "Handle mouse motion over a widget."))
+  (:documentation "Handle mouse motion over a widget. DEPRECATED: prefer using `handle-mouse-motion-event` which accepts raw sdl3 events."))
 
 (defgeneric handle-widget-mouse-wheel (widget x y dx dy)
-  (:documentation "Handle mouse-wheel input for WIDGET. DX and DY are wheel deltas. Returns T if the event was consumed."))
+  (:documentation "Handle mouse-wheel input for WIDGET. DX and DY are wheel deltas. Returns T if the event was consumed. DEPRECATED: prefer using `handle-mouse-wheel-event` which accepts raw sdl3 events."))
+
+(defgeneric handle-widget-mouse-device-event (widget ev)
+  (:documentation "Handle low-level mouse device events for WIDGET. Returns T if handled."))
 
 (defgeneric handle-widget-key-press (widget key char)
   (:documentation "Handle keyboard input for a widget. Returns T if key was handled."))

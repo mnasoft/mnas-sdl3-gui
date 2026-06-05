@@ -128,12 +128,17 @@
                              (:file "update-widget-value")
                              (:file "widget-min-size")
                              (:file "activate-widget")
-                             #+nil (:file "handle-widget-mouse-down")
-                             #+nil (:file "handle-widget-mouse-up")
                              (:file "handle-widget-mouse-motion")
                              (:file "handle-mouse-button-event")
                              (:file "handle-widget-key-press")
-                             (:file "handle-widget-key-event")))))
+                             (:file "handle-widget-key-event")
+
+                             #+nil (:file "handle-widget-mouse-down")
+                             #+nil (:file "handle-widget-mouse-up")
+                             
+                             (:file "widget-measure")
+                             
+                             ))))
                
 
 

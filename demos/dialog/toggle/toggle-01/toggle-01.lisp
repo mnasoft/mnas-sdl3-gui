@@ -293,10 +293,9 @@
               (return-from toggle-01-demo-event :success)))))
        :continue)
       (sdl3:mouse-motion-event
-         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+         (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         *toggle-01-widgets*
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        ev)
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
@@ -308,14 +307,14 @@
                                    *toggle-01-toolbar*
                                    mx
                                    my))))
-                     (if button
-                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                      *toggle-01-toolbar*
-                      button
-                      (list :window-id *toggle-01-window-id*))
-                     (mnas-sdl3-gui/widgets:handle-widget-mouse-down
-                      *toggle-01-widgets* mx my)))
-                   (mnas-sdl3-gui/widgets:handle-widget-mouse-up *toggle-01-widgets* mx my))))
+                    (if button
+                    (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                     *toggle-01-toolbar*
+                     button
+                     (list :window-id *toggle-01-window-id*))
+                    (mnas-sdl3-gui/widgets:handle-mouse-button-event
+                     *toggle-01-widgets* ev)))
+                   (mnas-sdl3-gui/widgets:handle-mouse-button-event *toggle-01-widgets* ev))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

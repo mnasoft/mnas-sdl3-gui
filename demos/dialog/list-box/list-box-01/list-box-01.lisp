@@ -211,10 +211,9 @@
        (setf *list-box-01-open* nil)
        :success)
       (sdl3:mouse-motion-event
-         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+         (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         *list-box-01-widgets*
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        ev)
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
@@ -232,16 +231,12 @@
                         *list-box-01-toolbar*
                         button
                         (list :window-id *list-box-01-window-id*))
-                       (mnas-sdl3-gui/widgets:handle-widget-mouse-down *list-box-01-widgets* mx my)))
-                     (mnas-sdl3-gui/widgets:handle-widget-mouse-up *list-box-01-widgets* mx my))))
+                       (mnas-sdl3-gui/widgets:handle-mouse-button-event *list-box-01-widgets* ev)))
+                     (mnas-sdl3-gui/widgets:handle-mouse-button-event *list-box-01-widgets* ev))))
        :continue)
       (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
-        *list-box-01-widgets*
-        (round (slot-value ev 'sdl3:%mouse-x))
-        (round (slot-value ev 'sdl3:%mouse-y))
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+       (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
+        *list-box-01-widgets* ev)
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

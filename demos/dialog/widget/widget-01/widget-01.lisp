@@ -200,10 +200,9 @@
        (widget-01-command :widget-01/quit)
        :success)
       (sdl3:mouse-motion-event
-         (mnas-sdl3-gui/widgets:handle-widget-mouse-motion
+         (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         (list *widget-root*)
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+        ev)
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
@@ -223,27 +222,24 @@
                         *widget-01-toolbar*
                         button
                         (list :x x :y y))))
-                          (mnas-sdl3-gui/widgets:handle-widget-mouse-down
+                          (mnas-sdl3-gui/widgets:handle-mouse-button-event
                         (or (mnas-sdl3-gui/window-manager:window-root-widgets
                           *widget-01-layer-manager*
                           (sdl3:get-window-id *window-dialog*))
-                            (list *widget-root*)) x y))
-                  (mnas-sdl3-gui/widgets:handle-widget-mouse-up
+                            (list *widget-root*)) ev))
+                  (mnas-sdl3-gui/widgets:handle-mouse-button-event
                    (or (mnas-sdl3-gui/window-manager:window-root-widgets
                      *widget-01-layer-manager*
                      (sdl3:get-window-id *window-dialog*))
-                    (list *widget-root*)) x y))))
+                    (list *widget-root*)) ev))))
        :continue)
             (sdl3:mouse-wheel-event
-             (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
+             (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
             (or (mnas-sdl3-gui/window-manager:window-root-widgets
                *widget-01-layer-manager*
                (sdl3:get-window-id *window-dialog*))
               (list *widget-root*))
-            (round (slot-value ev 'sdl3:%mouse-x))
-            (round (slot-value ev 'sdl3:%mouse-y))
-            (round (slot-value ev 'sdl3:%x))
-            (round (slot-value ev 'sdl3:%y)))
+            ev)
              :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

@@ -96,11 +96,11 @@
          (cond
            (associated
             (dolist (w associated)
-              (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel w 0 0 0 dy)))
+              (mnas-sdl3-gui/widgets:handle-mouse-wheel-event w ev)))
            ((= win-id (sdl3:get-window-id *combo-box-03-window*))
-            (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
+            (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
              *combo-box-03-widgets*
-             mx my x y))))
+             ev))))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down) (not (slot-value ev 'sdl3:%repeat)))

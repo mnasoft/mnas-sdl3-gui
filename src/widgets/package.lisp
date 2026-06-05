@@ -251,6 +251,9 @@
            #+nil #:handle-widget-mouse-down
            #+nil #:handle-widget-mouse-up
            #:handle-mouse-button-event
+           #:handle-mouse-wheel-event
+           #:handle-mouse-motion-event
+           #:handle-mouse-device-event
            #:handle-widget-mouse-wheel
            #:handle-widget-mouse-motion
            #:widgets-for-window-id

@@ -360,16 +360,12 @@
                         *pack-demo-toolbar*
                         button
                         (list :window-id target-window-id))
-                       (mnas-sdl3-gui/widgets:handle-widget-mouse-down *pack-demo-widgets* mx my)))
-                 (mnas-sdl3-gui/widgets:handle-widget-mouse-up *pack-demo-widgets* mx my)))))
+                       (mnas-sdl3-gui/widgets:handle-mouse-button-event *pack-demo-widgets* ev)))
+                 (mnas-sdl3-gui/widgets:handle-mouse-button-event *pack-demo-widgets* ev))))
        :continue)
       (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:handle-widget-mouse-wheel
-        *pack-demo-widgets*
-        (round (slot-value ev 'sdl3:%mouse-x))
-        (round (slot-value ev 'sdl3:%mouse-y))
-        (round (slot-value ev 'sdl3:%x))
-        (round (slot-value ev 'sdl3:%y)))
+       (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
+        *pack-demo-widgets* ev)
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
