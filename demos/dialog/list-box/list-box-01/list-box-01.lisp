@@ -139,31 +139,34 @@
                    :height 22
                    :text "Слева 50 элементов, справа 4 элемента")))
     (setf *left*
-          (make-instance 'mnas-sdl3-gui/widgets:list-box
-                         :x 20 :y 74 :width 290 :height 170
-                         :items (list-box-01-items 50 "Элемент")
-                         :selected-index 0
-                         :item-height 24
-                         :window *window*)
+          (make-instance
+           'mnas-sdl3-gui/widgets:list-box
+           :x 20 :y 74 :width 290 :height 170
+           :items (list-box-01-items 50 "Элемент")
+           :selected-index 0
+           :item-height 24
+           :window *window*)
           *right*
-          (make-instance 'mnas-sdl3-gui/widgets:list-box
-                         :x 330 :y 74 :width 290 :height 170
-                         :items (list-box-01-items 4 "Пункт")
-                         :selected-index 0
-                         :item-height 24
-                         :window *window*)
+          (make-instance
+           'mnas-sdl3-gui/widgets:list-box
+           :x 330 :y 74 :width 290 :height 170
+           :items (list-box-01-items 4 "Пункт")
+           :selected-index 0
+           :item-height 24
+           :window *window*)
           *ok*
-          (make-instance 'mnas-sdl3-gui/widgets:button
-                         :x 350 :y 264 :width 120 :height 34
-                         :text "Ок"
-                         :on-click (lambda (widget)
-                                     (declare (ignore widget))
-                                     (setf *result*
-                                           (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *left*)
-                                                            (mnas-sdl3-gui/widgets:list-box-items *left*))
-                                                 :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *right*)
-                                                             (mnas-sdl3-gui/widgets:list-box-items *right*)))
-                                           *open* nil)))
+          (make-instance
+           'mnas-sdl3-gui/widgets:button
+           :x 350 :y 264 :width 120 :height 34
+           :text "Ок"
+           :on-click (lambda (widget)
+                       (declare (ignore widget))
+                       (setf *result*
+                             (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *left*)
+                                              (mnas-sdl3-gui/widgets:list-box-items *left*))
+                                   :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *right*)
+                                               (mnas-sdl3-gui/widgets:list-box-items *right*)))
+                             *open* nil)))
           *cancel*
           (make-instance 'mnas-sdl3-gui/widgets:button
                          :x 490 :y 264 :width 130 :height 34
