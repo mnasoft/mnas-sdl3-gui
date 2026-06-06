@@ -206,7 +206,11 @@
   :components ((:module "demos/dialog/check-box/check-box-01"
                 :serial t
                 :components ((:file "package")
-                             (:file "check-box-01")))))
+                             (:file "parameters")
+                             (:file "commands")
+                             (:file "callbacks")
+                             (:file "check-box-01")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/combo-box"
   :description "Demos for mnas-sdl3-gui"
@@ -450,7 +454,9 @@
   :components ((:module "demos/dialog/list-box/list-box-01"
                 :serial t
                 :components ((:file "package")
-                             (:file "list-box-01")))))
+                             (:file "list-box-01")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/layout/grid-01"
   :description "Grid layout demo for mnas-sdl3-gui"

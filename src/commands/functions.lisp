@@ -3,26 +3,53 @@
 (in-package :mnas-sdl3-gui/commands)
 
 (defclass command ()
-  ((id :initarg :id :accessor command-id
-       :documentation "Unique command id, usually keyword or symbol.")
-   (title :initarg :title :initform "" :accessor command-title
-          :documentation "Human-readable command title.")
-   (group :initarg :group :initform nil :accessor command-group
-          :documentation "Optional command group/category.")
-   (enabled :initarg :enabled :initform t :accessor command-enabled
-            :documentation "Static enabled switch for command.")
-   (visible :initarg :visible :initform t :accessor command-visible
-            :documentation "Whether command is visible in presenters.")
-   (checked :initarg :checked :initform nil :accessor command-checked
-            :documentation "Toggle/radio checked state.")
-   (shortcut :initarg :shortcut :initform nil :accessor command-shortcut
-             :documentation "Optional shortcut descriptor.")
-   (execute :initarg :execute :initform nil :accessor command-execute
-            :documentation "Function of one argument CONTEXT that performs command action.")
-   (can-execute :initarg :can-execute :initform nil :accessor command-can-execute
-                :documentation "Optional predicate of one argument CONTEXT.")
+  ((id
+    :initarg :id
+    :accessor command-id
+    :documentation "Unique command id, usually keyword or symbol.")
+   (title
+    :initarg :title
+    :initform ""
+    :accessor command-title
+    :documentation "Human-readable command title.")
+   (group
+    :initarg :group
+    :initform nil
+    :accessor command-group
+    :documentation "Optional command group/category.")
+   (enabled
+    :initarg :enabled
+    :initform t
+    :accessor command-enabled
+    :documentation "Static enabled switch for command.")
+   (visible
+    :initarg :visible
+    :initform t
+    :accessor command-visible
+    :documentation "Whether command is visible in presenters.")
+   (checked
+    :initarg :checked
+    :initform nil
+    :accessor command-checked
+    :documentation "Toggle/radio checked state.")
+   (shortcut
+    :initarg :shortcut
+    :initform nil
+    :accessor command-shortcut
+    :documentation "Optional shortcut descriptor.")
+   (execute
+    :initarg :execute
+    :initform nil
+    :accessor command-execute
+    :documentation "Function of one argument CONTEXT that performs command action.")
+   (can-execute
+    :initarg :can-execute
+    :initform nil
+    :accessor command-can-execute
+    :documentation "Optional predicate of one argument CONTEXT.")
    )
-  (:documentation "Unified command model entity used by menu/toolbar/popup presenters."))
+  (:documentation
+   "Unified command model entity used by menu/toolbar/popup presenters."))
 
 (defparameter *command-registry* (make-hash-table :test #'equal)
   "Global registry mapping command ids to COMMAND objects.")
@@ -52,8 +79,8 @@
   (clrhash *command-registry*))
 
 (defun register-command (cmd &key replace)
-  "Register CMD in command registry.
-When REPLACE is NIL and id already exists, signal an error." 
+  "Register CMD in command registry. When REPLACE is NIL and id already
+exists, signal an error." 
   (let* ((id (normalize-command-id (command-id cmd)))
          (existing (gethash id *command-registry*)))
     (when (and existing (not replace))

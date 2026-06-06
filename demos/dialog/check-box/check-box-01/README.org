@@ -1,0 +1,7 @@
+
+* Область переходов
+
+[[elisp:(progn (find-file "~/quicklisp/local-projects/sdl3/mnas-sdl3-gui/mnas-sdl3-gui.asd") (goto-char (point-max)) (search-backward "defsystem \"mnas-sdl3-gui/demos/dialog/check-box-01\""))][check-box-01]]
+
+[[elisp:(progn (find-file "~/quicklisp/local-projects/sdl3/mnas-sdl3-gui/mnas-sdl3-gui.asd") (goto-char (point-min)) (search-forward "defsystem \"mnas-sdl3-gui/demos/dialog/check-box-01\""))][check-box-01]]
+
