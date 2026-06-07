@@ -158,12 +158,17 @@
               (tree-view-select-node widget node)))))
       (contains-point-p widget x y))))
 
+(mnas-debug:enable)
 
 (defmethod handle-mouse-button-event ((widget list-box) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))
          (inside (contains-point-p widget x y)))
+    
+    (mnas-debug:with
+      (format t "x=~A~%" x))
+    
     (when (and down inside)
       (setf (widget-focused widget) t)
       (normalize-list-box-scroll-offset widget))
@@ -208,6 +213,8 @@
         (setf (list-box-scrollbar-dragging-p widget) nil
               (list-box-scrollbar-drag-offset widget) 0)
         dragging-p))))
+
+(mnas-debug:disable)
 
 
 (defmethod handle-mouse-button-event ((widget editable-combo-box) (ev sdl3:mouse-button-event))

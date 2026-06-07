@@ -12,7 +12,10 @@
   "Pointer to loaded TTF font (SDL3_ttf::ttf-font)")
 
 (defparameter *ttf-font-path*
-  #+windows "D:/home/_namatv/PRG/msys64/home/namatv/quicklisp/local-projects/sdl3/mnas-sdl3-gui/fonts/DejaVuSans.ttf"
+  #+windows
+  (namestring
+   (merge-pathnames
+   "fonts/DejaVuSans.ttf" (asdf:system-source-directory :mnas-sdl3-gui)))
   #+linux "/usr/share/fonts/TTF/DejaVuSans.ttf"
     "Path to TTF font with Cyrillic support") 
 
