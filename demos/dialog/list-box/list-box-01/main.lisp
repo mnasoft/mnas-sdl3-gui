@@ -15,4 +15,7 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/list-box)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/list-box-01)
+;;;; (mnas-sdl3-gui/demos/dialog/list-box-01:list-box-01)
 ;;;; (list-box-01)
+
+;;;; (setf mnas-sdl3-gui/widgets::*debug-mouse-wheel-events* t)

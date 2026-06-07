@@ -189,17 +189,20 @@
                (list-box-set-scroll-offset-from-thumb-top
                 widget
                 (- y (list-box-scrollbar-drag-offset widget))))))
-          ((and (>= rel-y 0) (< rel-x content-width))
+          ((and (>= rel-y 0) (>= rel-x 0) (< rel-x content-width))
            (setf (list-box-scrollbar-dragging-p widget) nil)
            (let* ((row (floor rel-y item-height))
                   (new-index (+ (list-box-scroll-offset widget) row)))
              (when (and (< row visible-count)
                         (< new-index (length (list-box-items widget))))
                (setf (list-box-selected-index widget) new-index)
+               (when *debug-mouse-wheel-events*
+                 (format t "[click] widget=~S clicked-x=~D clicked-y=~D rel-x=~D rel-y=~D row=~D new-index=~D~%"
+                         widget x y rel-x rel-y row new-index))
                (update-widget-value widget
-                                    (nth new-index (list-box-items widget))))))
+                                    (nth new-index (list-box-items widget))))
           (t
-           (setf (list-box-scrollbar-dragging-p widget) nil)))))
+           (setf (list-box-scrollbar-dragging-p widget) nil)))))))
     (when (not down)
       (let ((dragging-p (list-box-scrollbar-dragging-p widget)))
         (setf (list-box-scrollbar-dragging-p widget) nil
@@ -261,7 +264,7 @@
                   (combo-box-set-scroll-offset-from-thumb-top
                    widget
                    (- y (list-box-scrollbar-drag-offset widget))))))
-             ((>= rel-y 0)
+             ((and (>= rel-y 0) (>= rel-x 0))
               (setf (list-box-scrollbar-dragging-p widget) nil)
               (let* ((row (floor rel-y item-height))
                      (new-index (+ (list-box-scroll-offset widget) row)))
@@ -319,7 +322,7 @@
                   (combo-box-set-scroll-offset-from-thumb-top
                    widget
                    (- y (list-box-scrollbar-drag-offset widget))))))
-             ((>= rel-y 0)
+             ((and (>= rel-y 0) (>= rel-x 0))
               (setf (list-box-scrollbar-dragging-p widget) nil)
               (let* ((row (floor rel-y item-height))
                      (new-index (+ (list-box-scroll-offset widget) row)))

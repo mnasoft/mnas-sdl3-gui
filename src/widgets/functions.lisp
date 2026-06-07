@@ -7,6 +7,11 @@
 (defvar *ttf-available-p* nil)
 (defvar *ttf-font* nil)
 
+;; Last known mouse position as a cons (x . y), updated from motion events.
+(defparameter *last-mouse-pos* nil
+  "Last known mouse position (x . y). Updated by mouse-motion events and used as a
+fallback when mouse-wheel events do not include absolute mouse coordinates.")
+
 ;; Mapping from SDL window id -> list of widgets associated with that window
 ;; Used to quickly find widgets that should receive events coming from
 ;; transient popup windows (for example, combo-box popup windows).

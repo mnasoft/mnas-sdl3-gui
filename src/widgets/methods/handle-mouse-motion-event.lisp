@@ -10,6 +10,8 @@
   "Dispatch motion events to children in hit-test order; return the widget that consumed the event or NIL."
   (let ((x (round (slot-value ev 'sdl3:%x)))
         (y (round (slot-value ev 'sdl3:%y))))
+    ;; Update global last-mouse position for wheel-event fallbacks
+    (setf *last-mouse-pos* (cons x y))
     (loop for widget in (widgets-in-hit-test-order widgets)
           when (and (visible-p widget)
                     (enabled-p widget)

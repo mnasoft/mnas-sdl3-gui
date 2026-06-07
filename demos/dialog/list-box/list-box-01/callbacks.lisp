@@ -72,9 +72,17 @@
         ev)
        :continue)
       (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
-        (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-        ev)
+       ;; Temporary debug: log received mouse-wheel events at app level
+       (handler-case
+           (let ((mx (handler-case (slot-value ev 'sdl3:%x) (error () nil)))
+                 (my (handler-case (slot-value ev 'sdl3:%y) (error () nil)))
+                 (myrel (handler-case (slot-value ev 'sdl3:%yrel) (error () nil))))
+             (format t "[app-event] mouse-wheel x=~S y=~S yrel=~S~%" mx my myrel)
+             (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
+              (mnas-sdl3-gui/widgets:widgets-for-window *window*)
+              ev))
+         (error (e)
+           (format t "[app-event] mouse-wheel: error inspecting event: ~S~%" e)))
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
