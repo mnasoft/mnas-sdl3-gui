@@ -1,0 +1,97 @@
+
+* Область переходов
+
+
+#+begin_src elisp
+  (setf mnas-sdl3-gui.asd
+        "~/quicklisp/local-projects/sdl3/mnas-sdl3-gui/mnas-sdl3-gui.asd")
+
+  (defun go-to-string (file string)
+    (progn
+      (find-file file)
+      (goto-char (point-min))
+      (search-forward string)))
+
+  ;(defun my/org-expand-defsystem-line ()
+  ;  (interactive)
+  ; (let* ((line (thing-at-point 'line t))
+  ;         (re "(defsystem \"\\([^\"]+\\)\"")
+  ;         name asd-file link)
+  ;    (when (string-match re line)
+  ;      (setq name (match-string 1 line))
+  ;      (setq asd-file (format "%s.asd" name))
+  ;      (setq link (format "[[elisp:(go-to-string %s \"(defsystem \\\"%s\\\"\")][%s]]"
+  ;                         asd-file name name))
+  ;      (beginning-of-line)
+  ;      (kill-line)
+  ;      (insert link))))
+
+  (defun my/org-expand-defsystem-line ()
+    (interactive)
+    (let* ((line (thing-at-point 'line t))
+           (re "(defsystem \"\\([^\"]+\\)\"")
+           name base asd-file link)
+      (when (string-match re line)
+        (setq name (match-string 1 line))          ;; mnas-sdl3-gui/events
+        (setq base (car (split-string name "/")))  ;; mnas-sdl3-gui
+        (setq asd-file (format "%s.asd" base))
+        (setq link (format "[[elisp:(go-to-string %s \"(defsystem \\\"%s\\\"\")][%s]]"
+                           asd-file name name))
+        (beginning-of-line)
+        (kill-line)
+        (insert link))))
+#+end_src
+
+#+RESULTS:
+: go-to-string
+
+* Область переходов
+** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui\"")][mnas-sdl3-gui]]
+*** [[elisp:(go-to-string mnas-sdl3-gui/events.asd "(defsystem \"mnas-sdl3-gui/events\"")][mnas-sdl3-gui/events]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/commands\"")][mnas-sdl3-gui/commands]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/menu\"")][mnas-sdl3-gui/menu]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/app\"")][mnas-sdl3-gui/app]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/window-manager\"")][mnas-sdl3-gui/window-manager]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/widgets\"")][mnas-sdl3-gui/widgets]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos\"")][mnas-sdl3-gui/demos]]
+**** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/canvas\"")][mnas-sdl3-gui/demos/canvas]]
+**** mnas-sdl3-gui/demos/dialog
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/simple\"")][mnas-sdl3-gui/demos/dialog/simple]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/simple-01\"")][mnas-sdl3-gui/demos/dialog/simple-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/check-box\"")][mnas-sdl3-gui/demos/dialog/check-box]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/check-box-01\"")][mnas-sdl3-gui/demos/dialog/check-box-01]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box\"")][mnas-sdl3-gui/demos/dialog/combo-box]]
+******* [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-01\"")][mnas-sdl3-gui/demos/dialog/combo-box-01]]
+******* [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-02\"")][mnas-sdl3-gui/demos/dialog/combo-box-02]]
+******* [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-03\"")][mnas-sdl3-gui/demos/dialog/combo-box-03]]
+******* [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-04\"")][mnas-sdl3-gui/demos/dialog/combo-box-04]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/toolbar-demo\"")][mnas-sdl3-gui/demos/dialog/toolbar-demo]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/entry\"")][mnas-sdl3-gui/demos/dialog/entry]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/entry-01\"")][mnas-sdl3-gui/demos/dialog/entry-01]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/entry-02\"")][mnas-sdl3-gui/demos/dialog/entry-02]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/polyhedron\"")][mnas-sdl3-gui/demos/dialog/polyhedron]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/polyhedron-01\"")][mnas-sdl3-gui/demos/dialog/polyhedron-01]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/polyhedron-02\"")][mnas-sdl3-gui/demos/dialog/polyhedron-02]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/polyhedron-03\"")][mnas-sdl3-gui/demos/dialog/polyhedron-03]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/polyhedron-04\"")][mnas-sdl3-gui/demos/dialog/polyhedron-04]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/tree\"")][mnas-sdl3-gui/demos/dialog/tree]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/tree-01\"")][mnas-sdl3-gui/demos/dialog/tree-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/window\"")][mnas-sdl3-gui/demos/dialog/window]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/window-01\"")][mnas-sdl3-gui/demos/dialog/window-01]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/window-02\"")][mnas-sdl3-gui/demos/dialog/window-02]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/window-03\"")][mnas-sdl3-gui/demos/dialog/window-03]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/widget\"")][mnas-sdl3-gui/demos/dialog/widget]]
+******* [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/widget-01\"")][mnas-sdl3-gui/demos/dialog/widget-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/toggle\"")][mnas-sdl3-gui/demos/dialog/toggle]]
+******* [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/toggle-01\"")][mnas-sdl3-gui/demos/dialog/toggle-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/font\"")][mnas-sdl3-gui/demos/dialog/font]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/font-01\"")][mnas-sdl3-gui/demos/dialog/font-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/pack\"")][mnas-sdl3-gui/demos/dialog/pack]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/pack-01\"")][mnas-sdl3-gui/demos/dialog/pack-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/list-box\"")][mnas-sdl3-gui/demos/dialog/list-box]]
+****** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/list-box-01\"")][mnas-sdl3-gui/demos/dialog/list-box-01]]
+**** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/input-events\"")][mnas-sdl3-gui/demos/input-events]]
+**** mnas-sdl3-gui/demos/layout
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/layout/grid-01\"")][mnas-sdl3-gui/demos/layout/grid-01]]
+***** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/layout/split-pane-01\"")][mnas-sdl3-gui/demos/layout/split-pane-01]]
+
