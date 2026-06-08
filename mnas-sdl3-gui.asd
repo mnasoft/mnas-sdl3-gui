@@ -1,3 +1,4 @@
+
 (defsystem "mnas-sdl3-gui"
   :description "mnas-sdl3-gui Common Lisp system"
   :author "mna"
@@ -5,6 +6,7 @@
   :version "0.1.0"
   :depends-on ("sdl3"
                "sdl3-ttf"
+               "mnas-sdl3-gui/events"
                "mnas-sdl3-gui/commands"
                "mnas-sdl3-gui/app"
                "mnas-sdl3-gui/widgets"
@@ -17,6 +19,14 @@
                #+nil (:file "src/toolbar/methods/compatibility")
                #+nil (:file "src/toolbar/presenter/functions")
                ))
+
+(defsystem "mnas-sdl3-gui/events"
+  :description "mnas-sdl3-gui Common Lisp system"
+  :serial t
+  :components ((:module "src/events"
+		:serial t
+                :components ((:file "package")
+                             (:file "event-tracker")))))
 
 (defsystem "mnas-sdl3-gui/commands"
   :description "mnas-sdl3-gui Common Lisp system"
@@ -183,7 +193,7 @@
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/simple-01"))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/simple-01
+(defsystem "mnas-sdl3-gui/demos/dialog/simple-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -228,7 +238,7 @@
                 :components ((:file "package")
                              (:file "combo-box-01")))))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/combo-box-02
+(defsystem "mnas-sdl3-gui/demos/dialog/combo-box-02"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -272,7 +282,7 @@
   :depends-on ("mnas-sdl3-gui/demos/dialog/entry-01"
                "mnas-sdl3-gui/demos/dialog/entry-02"))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/entry-01
+(defsystem "mnas-sdl3-gui/demos/dialog/entry-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -282,7 +292,7 @@
                              (:file "commands")
                              (:file "entry-01")))))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/entry-02
+(defsystem "mnas-sdl3-gui/demos/dialog/entry-02"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -354,7 +364,7 @@
   :depends-on ("mnas-sdl3-gui/demos/dialog/window-01"
                "mnas-sdl3-gui/demos/dialog/window-02"))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/window-01
+(defsystem "mnas-sdl3-gui/demos/dialog/window-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on (#:mnas-sdl3-gui
                #:mnas-sdl3-gui/demos/dialog/window-02
@@ -366,7 +376,7 @@
                              (:file "commands")
                              (:file "window-01")))))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/window-02
+(defsystem "mnas-sdl3-gui/demos/dialog/window-02"
   :description "Popup-menu window demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -376,7 +386,7 @@
                              (:file "commands")
                              (:file "window-02")))))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/window-03
+(defsystem "mnas-sdl3-gui/demos/dialog/window-03"
   :description "Transparent window demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -390,7 +400,7 @@
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui/demos/dialog/widget-01"))
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/widget-01
+(defsystem "mnas-sdl3-gui/demos/dialog/widget-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -419,7 +429,7 @@
   :depends-on ("mnas-sdl3-gui/demos/dialog/font-01"))
 
 
-(defsystem #:mnas-sdl3-gui/demos/dialog/font-01
+(defsystem "mnas-sdl3-gui/demos/dialog/font-01"
   :description "Demos for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
   :serial t
@@ -476,3 +486,11 @@
                 :components ((:file "package")
                              (:file "split-pane-01")))))
 
+(defsystem "mnas-sdl3-gui/demos/input-events"
+  :description "Split pane layout demo for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/input-events"
+                :serial t
+                :components ((:file "package")
+                             (:file "input-events-demo")))))
