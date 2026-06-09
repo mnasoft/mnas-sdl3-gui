@@ -1,0 +1,38 @@
+
+* Область переходов
+
+#+begin_src elisp
+  (setf mnas-sdl3-gui.asd
+        "~/quicklisp/local-projects/sdl3/mnas-sdl3-gui/mnas-sdl3-gui.asd")
+
+  (defun go-to-string (file string)
+    (progn
+      (find-file file)
+      (goto-char (point-min))
+      (search-forward string)))
+
+  (defun my/org-expand-defsystem-line ()
+    (interactive)
+    (let* ((line (thing-at-point 'line t))
+           (re "(defsystem \"\\([^\"]+\\)\"")
+           name base asd-file link)
+      (when (string-match re line)
+        (setq name (match-string 1 line))          ;; mnas-sdl3-gui/events
+        (setq base (car (split-string name "/")))  ;; mnas-sdl3-gui
+        (setq asd-file (format "%s.asd" base))
+        (setq link (format "[[elisp:(go-to-string %s \"(defsystem \\\"%s\\\"\")][%s]]"
+                           asd-file name name))
+        (beginning-of-line)
+        (kill-line)
+        (insert link))))
+#+end_src
+
+#+RESULTS:
+: go-to-string
+
+* Область переходов
+** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box\"")][mnas-sdl3-gui/demos/dialog/combo-box]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-01\"")][mnas-sdl3-gui/demos/dialog/combo-box-01]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-02\"")][mnas-sdl3-gui/demos/dialog/combo-box-02]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-03\"")][mnas-sdl3-gui/demos/dialog/combo-box-03]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box-04\"")][mnas-sdl3-gui/demos/dialog/combo-box-04]]
