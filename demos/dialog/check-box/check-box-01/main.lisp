@@ -17,5 +17,8 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/app)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box-01)
+
 ;;;; (mnas-sdl3-gui/demos/dialog/check-box-01:check-box-01)
 ;;;; (check-box-01)
+;;;; (mnas-debug:enable)
+;;;; (mnas-debug:disable)

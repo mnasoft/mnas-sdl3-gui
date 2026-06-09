@@ -57,6 +57,9 @@
 (sdl3:def-app-event check-box-demo-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
+    (mnas-debug:with
+      (mnas-sdl3-gui/events:update-from-sdl-event ev)
+      (mnas-sdl3-gui/events:log-event ev))
     (typecase ev
       (sdl3:quit-event
        (setf *open* nil)

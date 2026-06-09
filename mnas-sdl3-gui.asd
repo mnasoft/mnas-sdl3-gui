@@ -26,7 +26,12 @@
   :components ((:module "src/events"
 		:serial t
                 :components ((:file "package")
-                             (:file "event-tracker")))))
+                             (:file "classes")
+                             (:file "parameters")
+                             (:file "event-tracker")
+                             (:file "methods/process-sdl-event/process-sdl-event")
+                             (:file "methods/log-event/log-event")
+                             ))))
 
 (defsystem "mnas-sdl3-gui/commands"
   :description "mnas-sdl3-gui Common Lisp system"
@@ -236,7 +241,10 @@
   :components ((:module "demos/dialog/combo-box/combo-box-01"
                 :serial t
                 :components ((:file "package")
-                             (:file "combo-box-01")))))
+                             (:file "parameters")
+                             (:file "combo-box-01")
+                             (:file "callbacks")
+                             #+nil(:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/combo-box-02"
   :description "Demos for mnas-sdl3-gui"
@@ -263,7 +271,11 @@
   :components ((:module "demos/dialog/combo-box/combo-box-04"
                 :serial t
                 :components ((:file "package")
-                             (:file "combo-box-04")))))
+                             (:file "parameters")
+                             (:file "combo-box-04")
+                             (:file "callbacks")
+                             (:file "main")
+                             ))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/toolbar-demo"
   :description "Toolbar demo for mnas-sdl3-gui"

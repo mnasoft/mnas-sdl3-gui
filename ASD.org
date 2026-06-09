@@ -1,7 +1,6 @@
 
 * Область переходов
 
-
 #+begin_src elisp
   (setf mnas-sdl3-gui.asd
         "~/quicklisp/local-projects/sdl3/mnas-sdl3-gui/mnas-sdl3-gui.asd")
@@ -11,20 +10,6 @@
       (find-file file)
       (goto-char (point-min))
       (search-forward string)))
-
-  ;(defun my/org-expand-defsystem-line ()
-  ;  (interactive)
-  ; (let* ((line (thing-at-point 'line t))
-  ;         (re "(defsystem \"\\([^\"]+\\)\"")
-  ;         name asd-file link)
-  ;    (when (string-match re line)
-  ;      (setq name (match-string 1 line))
-  ;      (setq asd-file (format "%s.asd" name))
-  ;      (setq link (format "[[elisp:(go-to-string %s \"(defsystem \\\"%s\\\"\")][%s]]"
-  ;                         asd-file name name))
-  ;      (beginning-of-line)
-  ;      (kill-line)
-  ;      (insert link))))
 
   (defun my/org-expand-defsystem-line ()
     (interactive)

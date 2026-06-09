@@ -10,7 +10,11 @@
     (format t "~a~%" (sdl3:get-error))
     (return-from list-box-01-demo-init :failure))
   (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Two List-Boxes Demo" 640 +list-box-01-window-height+ 0)
+      (sdl3:create-window-and-renderer
+       "Two List-Boxes Demo"
+       640
+       +list-box-01-window-height+
+       0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
@@ -56,6 +60,9 @@
 
 (sdl3:def-app-event list-box-01-demo-event (type event)
   (declare (ignore type))
+  (mnas-debug:with
+    (mnas-sdl3-gui/events:update-from-sdl-event ev)
+    (mnas-sdl3-gui/events:log-event ev))
   (let ((ev (sdl3:event-unmarshal event)))
     (typecase ev
       (sdl3:quit-event

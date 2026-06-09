@@ -158,21 +158,20 @@
               (tree-view-select-node widget node)))))
       (contains-point-p widget x y))))
 
-(mnas-debug:enable)
-
 (defmethod handle-mouse-button-event ((widget list-box) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))
          (inside (contains-point-p widget x y)))
-    
-    (mnas-debug:with
-      (format t "x=~A~%" x))
-    
     (when (and down inside)
       (setf (widget-focused widget) t)
       (normalize-list-box-scroll-offset widget))
-    (when down
+    (when (and down (not inside))
+      (setf (widget-focused widget) nil)
+      (normalize-list-box-scroll-offset widget))
+    (when (and down (widget-focused widget))
+      (mnas-debug:%log  "~A~%" widget)
+      #+nil (format t "x=~A~%" widget)
       (let* ((scrollbar-width +list-box-scrollbar-width+)
              (visible-count (list-box-visible-item-count widget))
              (scrollbar-needed-p (list-box-scrollbar-needed-p widget))
@@ -204,10 +203,11 @@
                (when *debug-mouse-wheel-events*
                  (format t "[click] widget=~S clicked-x=~D clicked-y=~D rel-x=~D rel-y=~D row=~D new-index=~D~%"
                          widget x y rel-x rel-y row new-index))
-               (update-widget-value widget
-                                    (nth new-index (list-box-items widget))))
+               (update-widget-value
+                widget
+                (nth new-index (list-box-items widget))))))
           (t
-           (setf (list-box-scrollbar-dragging-p widget) nil)))))))
+           (setf (list-box-scrollbar-dragging-p widget) nil)))))
     (when (not down)
       (let ((dragging-p (list-box-scrollbar-dragging-p widget)))
         (setf (list-box-scrollbar-dragging-p widget) nil
