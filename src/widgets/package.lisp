@@ -182,19 +182,27 @@
   (:export #:list-box-items
            #:list-box-selected-index
            #:list-box-scroll-offset
-           #:list-box-item-height)
+           #:list-box-item-height
+           #:list-box-layout
+           #:list-box-has-scrollbar)
   ;; combo-box accessors
   (:export #:combo-box-expanded-p
            #:combo-box-max-visible-items
            #:combo-box-visible-item-count
            #:combo-box-main-height
            #:combo-box-content-width
+           ;; header/popup accessors
+           #:combo-box-header-widget
+           #:combo-box-popup-widget
+           #:combo-box-header-display-text
+           ;; popup compatibility/accessors
            #:combo-box-popup-mode
            #:combo-box-popup-host-window
            #:combo-box-popup-window
            #:combo-box-popup-renderer
            #:combo-box-popup-window-id
            #:combo-box-popup-visible-p
+           #:combo-box-selected-item
            #:combo-box-popup-layer-manager
            #:combo-box-popup-window-enabled-p
            #:combo-box-enable-popup-window

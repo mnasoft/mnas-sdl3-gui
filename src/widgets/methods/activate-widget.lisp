@@ -34,3 +34,12 @@
   (when (combo-box-expanded-p widget)
     (ensure-combo-box-selection-visible widget))
   t)
+
+(defmethod activate-widget ((widget combo-box-header))
+  "Activate header by toggling owner combo-box expansion state." 
+  (let ((owner (combo-box-header-owner widget)))
+    (when owner
+      (sync-combo-box-expanded-state owner (not (combo-box-expanded-p owner)))
+      (when (combo-box-expanded-p owner)
+        (ensure-combo-box-selection-visible owner))
+      t)))

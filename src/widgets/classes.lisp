@@ -95,6 +95,113 @@
     :documentation "Minimum size of the second pane along the split axis."))
   (:documentation "Container widget that divides available area into two panes with a movable split ratio."))
 
+(defclass list-box (widget-container)
+  ((items :initarg :items :initform nil :accessor list-box-items
+          :documentation "List of items in the box")
+   (selected-index
+    :initarg :selected-index :initform 0 :accessor list-box-selected-index
+    :documentation "Index of currently selected item")
+   (scroll-offset
+    :initarg :scroll-offset :initform 0 :accessor list-box-scroll-offset
+    :documentation "Index of the first visible item")
+   (scrollbar-dragging-p
+    :initarg :scrollbar-dragging-p :initform nil
+    :accessor list-box-scrollbar-dragging-p
+    :documentation "Whether the list-box scrollbar thumb is currently dragged")
+   (scrollbar-drag-offset
+    :initarg :scrollbar-drag-offset :initform 0
+    :accessor list-box-scrollbar-drag-offset
+    :documentation "Mouse Y offset inside the dragged scrollbar thumb")
+   (item-height
+    :initarg :item-height :initform 24 :accessor list-box-item-height
+    :documentation "Height of each item")
+   (layout :initarg :layout :initform :vertical :accessor list-box-layout
+           :documentation "Layout direction for children; list-box uses :vertical.")
+   (has-scrollbar :initarg :has-scrollbar :initform t :accessor list-box-has-scrollbar
+                  :documentation "Whether the list-box shows a scrollbar (optional)."))
+  (:documentation "Scrollable list box widget implemented as a container with vertical layout."))
+
+(defclass combo-box-popup (list-box)
+  ((owner
+    :initarg :owner
+    :accessor combo-box-popup-owner
+    :documentation "Owner widget (header or combo) for this popup instance.")
+   (window
+    :initarg :window
+    :initform nil
+    :accessor combo-box-popup-window
+    :documentation "SDL window handle used by this popup (popups always use their own window).")
+   (renderer
+    :initarg :renderer
+    :initform nil
+    :accessor combo-box-popup-renderer
+    :documentation "Renderer used to draw the popup when it has its own window.")
+   (window-id
+    :initarg :window-id
+    :initform 0 :accessor combo-box-popup-window-id
+    :documentation "SDL window id for the popup window.")
+   (visible-p
+    :initarg :visible-p
+    :initform nil :accessor combo-box-popup-visible-p
+    :documentation "Whether the popup window is currently shown.")
+   (layer-manager
+    :initarg :layer-manager
+    :initform nil
+    :accessor combo-box-popup-layer-manager
+    :documentation "Optional window-layer-manager for popup focus/z-order."))
+  (:documentation
+   "Popup list displayed in its own transient window; subclass of `list-box`.") )
+
+(defclass combo-box-header (widget)
+  ((owner
+    :initarg :owner
+    :accessor combo-box-header-owner
+    :documentation "Owner combo-box container for this header.")
+   (display-text
+    :initarg :display-text
+    :initform ""
+    :accessor combo-box-header-display-text
+    :documentation "Text shown in the collapsed header (reflects selected item)."))
+  (:documentation
+   "Collapsed header of a combo-box; clicking toggles the associated popup."))
+
+(defclass combo-box (widget)
+  ((header
+    :initarg :header
+    :initform nil
+    :accessor combo-box-header-widget
+    :documentation "Header widget instance (a `combo-box-header`).")
+   (popup
+    :initarg :popup
+    :initform nil :accessor combo-box-popup-widget
+    :documentation "Popup widget instance (a `combo-box-popup`).")
+   (initial-items
+    :initarg :items
+    :initform nil
+    :accessor combo-box-initial-items
+    :documentation "Compatibility initarg to supply initial items for the popup.")
+   (initial-selected-index
+    :initarg :selected-index
+    :initform 0
+    :accessor combo-box-initial-selected-index
+    :documentation "Compatibility initarg to set initial selected index on popup.")
+   (main-height
+    :initarg :main-height
+    :initform 30
+    :accessor combo-box-main-height
+    :documentation "Collapsed header height of the combo-box")
+   (expanded-p
+    :initarg :expanded-p
+    :initform nil
+    :accessor combo-box-expanded-p
+    :documentation "Whether combo-box popup list is currently visible")
+   (max-visible-items
+    :initarg :max-visible-items
+    :initform 6
+    :accessor combo-box-max-visible-items
+    :documentation "Maximum number of visible rows in the popup list"))
+  (:documentation "Combined combo-box that manages a header and a popup list (popup always uses its own window)."))
+
 (defclass canvas-2d-widget (widget)
   ((scene
     :initarg :scene :initform nil :accessor canvas-2d-widget-scene
@@ -269,91 +376,6 @@
    (indent-width :initarg :indent-width :initform 16 :accessor tree-view-indent-width
                  :documentation "Indent width per depth level."))
   (:documentation "Tree widget with expandable/collapsible nodes."))
-
-(defclass list-box (widget)
-  ((items :initarg :items :initform nil :accessor list-box-items
-          :documentation "List of items in the box")
-   (selected-index
-    :initarg :selected-index :initform 0 :accessor list-box-selected-index
-    :documentation "Index of currently selected item")
-   (scroll-offset
-    :initarg :scroll-offset :initform 0 :accessor list-box-scroll-offset
-    :documentation "Index of the first visible item")
-   (scrollbar-dragging-p
-    :initarg :scrollbar-dragging-p :initform nil
-    :accessor list-box-scrollbar-dragging-p
-    :documentation "Whether the list-box scrollbar thumb is currently dragged")
-   (scrollbar-drag-offset
-    :initarg :scrollbar-drag-offset :initform 0
-    :accessor list-box-scrollbar-drag-offset
-    :documentation "Mouse Y offset inside the dragged scrollbar thumb")
-   (item-height
-    :initarg :item-height :initform 24 :accessor list-box-item-height
-    :documentation "Height of each item"))
-  (:documentation "Scrollable list box widget"))
-
-(defclass combo-box (list-box)
-  ((main-height
-    :initarg :main-height
-    :initform 30
-    :accessor combo-box-main-height
-    :documentation
-    "Collapsed header height of the combo-box")
-   (expanded-p
-    :initarg :expanded-p
-    :initform nil
-    :accessor combo-box-expanded-p
-    :documentation
-    "Whether combo-box popup list is currently visible")
-   (max-visible-items
-    :initarg :max-visible-items :initform 6 :accessor combo-box-max-visible-items
-    :documentation
-    "Maximum number of visible rows in the popup list")
-   (popup-mode
-    :initarg :popup-mode
-    :initform :inline
-    :accessor combo-box-popup-mode
-    :documentation
-    "Popup mode: :inline renders in-window, :window uses a transient popup window.")
-   (popup-host-window
-    :initarg :popup-host-window :initform nil
-    :accessor combo-box-popup-host-window
-    :documentation
-    "SDL host window for popup when popup-mode is :window.")
-   (popup-window
-    :initarg :popup-window
-    :initform nil
-    :accessor combo-box-popup-window
-    :documentation
-    "SDL popup window for dropdown list (when popup-mode is :window).")
-   (popup-renderer
-    :initarg :popup-renderer
-    :initform nil
-    :accessor combo-box-popup-renderer
-    :documentation
-    "SDL renderer for popup window (when popup-mode is :window).")
-   (popup-window-id
-    :initarg :popup-window-id
-    :initform 0
-    :accessor combo-box-popup-window-id
-    :documentation
-    "SDL window id for popup window (when popup-mode is :window).")
-   (popup-visible-p
-    :initarg :popup-visible-p :initform nil :accessor combo-box-popup-visible-p
-    :documentation
-    "Whether popup window is currently shown.")
-   (popup-layer-manager
-    :initarg :popup-layer-manager
-    :initform nil
-    :accessor combo-box-popup-layer-manager
-    :documentation
-    "Optional window-layer-manager for popup focus/z-order."))
-  (:documentation "Drop-down selection widget backed by a popup list."))
-
-  (defclass combo-box-popup (widget)
-    ((owner :initarg :owner :accessor combo-box-popup-owner
-      :documentation "Owner combo-box widget for this popup proxy."))
-    (:documentation "Transient proxy widget representing a combo-box popup window in render order."))
 
 (defclass editable-combo-box (entry combo-box)
   ((placeholder :initarg :placeholder :initform ""

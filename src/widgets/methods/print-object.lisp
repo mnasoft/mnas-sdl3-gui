@@ -106,12 +106,39 @@
 (defmethod print-object ((obj combo-box) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " items=~A selected=~A expanded=~A scroll=~A max-visible=~A"
-            (length (list-box-items obj))
-            (list-box-selected-index obj)
-            (combo-box-expanded-p obj)
-            (list-box-scroll-offset obj)
-            (combo-box-max-visible-items obj))))
+    (let ((popup (combo-box-popup-widget obj))
+          (items-len 0)
+          (selected -1)
+          (scroll 0))
+      (when popup
+        (let ((items (list-box-items popup)))
+          (setq items-len (if items (length items) 0))
+          (setq selected (list-box-selected-index popup))
+          (setq scroll (list-box-scroll-offset popup))))
+      (format stream " items=~A selected=~A expanded=~A scroll=~A max-visible=~A"
+              items-len
+              (if (plusp selected) selected nil)
+              (combo-box-expanded-p obj)
+              scroll
+              (combo-box-max-visible-items obj)))))
+
+(defmethod print-object ((obj combo-box-header) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (%print-widget-core obj stream)
+    (format stream " display-text=~S" (combo-box-header-display-text obj))))
+
+(defmethod print-object ((obj combo-box-popup) stream)
+  (print-unreadable-object (obj stream :type t :identity t)
+    (%print-widget-core obj stream)
+    (let ((items (list-box-items obj))
+          (sel (list-box-selected-index obj))
+          (wid (and (combo-box-popup-window obj) (combo-box-popup-window-id obj))))
+      (format stream " items=~A selected=~A scroll=~A window-id=~S visible=~A"
+              (if items (length items) 0)
+              (if (and (numberp sel) (plusp sel)) sel nil)
+              (list-box-scroll-offset obj)
+              wid
+              (combo-box-popup-visible-p obj)))))
 
 (defmethod print-object ((obj widget-style) stream)
   (print-unreadable-object (obj stream :type t :identity t)

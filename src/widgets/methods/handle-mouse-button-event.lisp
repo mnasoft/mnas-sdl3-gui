@@ -295,6 +295,7 @@
 (defmethod handle-mouse-button-event ((widget combo-box) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
+         (win-id (slot-value ev 'sdl3:%window-id))
          (down (slot-value ev 'sdl3:%down))
          (inside (contains-point-p widget x y))
          )
@@ -309,8 +310,8 @@
          (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))
          (when (combo-box-expanded-p widget)
            (ensure-combo-box-selection-visible widget)))
-        ((and (combo-box-expanded-p widget)
-              (not (combo-box-popup-window-enabled-p widget)))
+          ((and (combo-box-expanded-p widget)
+            (not (combo-box-popup-window-enabled-p widget)))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
                 (visible-count (combo-box-visible-item-count widget))
@@ -346,6 +347,15 @@
              (t
               (setf (list-box-scrollbar-dragging-p widget) nil)
               (sync-combo-box-expanded-state widget nil)))))))
+        ;; If event comes from popup's own SDL window, translate to popup handlers.
+        (when (and (not down) nil))
+        (when (and (slot-value ev 'sdl3:%window-id)
+               (combo-box-popup-widget widget)
+               (= (slot-value ev 'sdl3:%window-id)
+                (combo-box-popup-window-id (combo-box-popup-widget widget))))
+          (if down
+            (combo-box-handle-popup-mouse-down widget x y)
+            (combo-box-handle-popup-mouse-up widget x y)))
     (unless down
       (let ((dragging-p (list-box-scrollbar-dragging-p widget)))
         (setf (list-box-scrollbar-dragging-p widget) nil

@@ -281,6 +281,17 @@
                              (:file "main")
                              ))))
 
+(defsystem "mnas-sdl3-gui/demos/dialog/combo-box-05"
+  :description "Demos for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/dialog/combo-box/combo-box-05"
+                :serial t
+                :components ((:file "package")
+                             (:file "combo-box-05")
+                             ))))
+
+
 (defsystem "mnas-sdl3-gui/demos/dialog/toolbar-demo"
   :description "Toolbar demo for mnas-sdl3-gui"
   :depends-on ("mnas-sdl3-gui")
