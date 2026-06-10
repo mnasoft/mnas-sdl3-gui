@@ -1,8 +1,6 @@
 ;;;; ./demos/dialog/combo-box-01.lisp
 
-
-
-
+(in-package :mnas-sdl3-gui/demos/dialog/combo-box-01)
 
 (defun combo-box-01-report-value ()
   "Update status line from current combo box selections."
@@ -10,8 +8,6 @@
         (format nil "Selected: ~A / ~A"
                 (mnas-sdl3-gui/widgets:widget-value *small*)
                 (mnas-sdl3-gui/widgets:widget-value *large*))))
-
-
 
 (defun combo-box-01-sync-command-state ()
   "Sync command state for combo-box-01 toolbar." 

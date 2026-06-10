@@ -104,8 +104,6 @@
        #+nil (mnas-sdl3-gui/widgets:handle-mouse-button-event *toolbar* ev)
        (mnas-sdl3-gui/widgets:handle-mouse-button-event
         (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
-       :continue
-       #+nil
        (let* ((window-id (slot-value ev 'sdl3:%window-id))
               (main-id (and *window* (sdl3:get-window-id *window*)))
               (associated (mnas-sdl3-gui/widgets:widgets-for-window-id window-id))
@@ -113,6 +111,9 @@
               (mx (round (slot-value ev 'sdl3:%x)))
               (my (round (slot-value ev 'sdl3:%y)))
               (toolbar-y-offset (- +combo-box-01-window-height+ +combo-box-01-toolbar-height+)))
+         (mnas-debug:%log "window-id:~A~%" window-id)
+         (mnas-debug:%log "main-id:~A~%"   main-id)
+         (mnas-debug:%log "associated:~S~%" associated)
          (when (= (slot-value ev 'sdl3:%button) 1)
            (cond
              ((and associated (not (= window-id main-id)))
@@ -120,20 +121,6 @@
                 (if down
                     (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down widget mx my)
                     (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up widget mx my))))
-             ((and down (= window-id main-id))
-              (let ((button (and *toolbar*
-                                 (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
-                                  *toolbar*
-                                  mx
-                                  (- my toolbar-y-offset)))))
-                (if button
-                    (mnas-sdl3-gui/widgets:toolbar-button-clicked
-                     *toolbar*
-                     button
-                     (list :window-id *window-id*))
-                    (mnas-sdl3-gui/widgets:handle-mouse-button-event
-                     (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-                     ev))))
              ((and (not down) (= window-id main-id))
               (mnas-sdl3-gui/widgets:handle-mouse-button-event
                (mnas-sdl3-gui/widgets:widgets-for-window *window*)

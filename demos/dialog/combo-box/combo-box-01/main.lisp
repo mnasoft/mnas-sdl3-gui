@@ -15,3 +15,6 @@
 
 ;;;; (mnas-sdl3-gui/demos/dialog/combo-box-01:combo-box-01)
 ;;;; (combo-box-01)
+
+;;;;(mnas-debug:enable)
+;;;;(mnas-debug:disable)
