@@ -90,6 +90,7 @@
                              (:file "methods/print-object")
                              (:file "generics")
                              (:file "functions")
+                             (:file "combo-box-functions")
                              (:file "layout")
                              (:file "ttf-render")
                              (:file "methods/grid-layout")
