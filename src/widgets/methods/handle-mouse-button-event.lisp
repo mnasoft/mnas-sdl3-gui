@@ -214,9 +214,6 @@
               (list-box-scrollbar-drag-offset widget) 0)
         dragging-p))))
 
-(mnas-debug:disable)
-
-
 (defmethod handle-mouse-button-event ((widget editable-combo-box) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
@@ -293,13 +290,20 @@
               (list-box-scrollbar-drag-offset widget) 0)
         dragging-p))))
 
-
+#+nil (mnas-debug:disable)
+#+nil (mnas-debug:enable)
 (defmethod handle-mouse-button-event ((widget combo-box) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
-         (down (slot-value ev 'sdl3:%down)))
-    (when down
-      (setf (widget-focused widget) t)
+         (down (slot-value ev 'sdl3:%down))
+         (inside (contains-point-p widget x y))
+         )
+    (when (and down inside)
+      (mnas-debug:%log "x:~A y:~A window:~A~%" x y (widget-window widget))
+      (loop :for w :in (mnas-sdl3-gui/widgets:widgets-for-window (widget-window widget))
+            :do (setf (widget-focused w) nil))
+      (setf (widget-focused widget) t))
+    (when (and down inside)
       (cond
         ((<= (widget-y widget) y (+ (widget-y widget) (combo-box-main-height widget)))
          (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))

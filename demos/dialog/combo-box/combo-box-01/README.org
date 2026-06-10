@@ -28,7 +28,7 @@
 #+end_src
 
 #+RESULTS:
-: go-to-string
+: my/org-expand-defsystem-line
 
 * Область переходов
 ** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/combo-box\"")][mnas-sdl3-gui/demos/dialog/combo-box]]

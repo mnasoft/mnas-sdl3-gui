@@ -242,9 +242,12 @@
                 :serial t
                 :components ((:file "package")
                              (:file "parameters")
+                             (:file "commands")
+                             (:file "toolbar")
+                             (:file "shortcuts")
                              (:file "combo-box-01")
                              (:file "callbacks")
-                             #+nil(:file "main")))))
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/combo-box-02"
   :description "Demos for mnas-sdl3-gui"

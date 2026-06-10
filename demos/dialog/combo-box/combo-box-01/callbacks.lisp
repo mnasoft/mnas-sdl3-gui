@@ -28,7 +28,7 @@
                :open-p t)
           (combo-box-01-register-commands)
           (combo-box-01-register-shortcuts)
-          (setf *toolbar* (combo-box-01-create-toolbar))
+          (setf *toolbar* (combo-box-01-create-toolbar window))
           #+nil (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
@@ -101,6 +101,11 @@
              (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev))))
        :continue)
       (sdl3:mouse-button-event
+       #+nil (mnas-sdl3-gui/widgets:handle-mouse-button-event *toolbar* ev)
+       (mnas-sdl3-gui/widgets:handle-mouse-button-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
+       :continue
+       #+nil
        (let* ((window-id (slot-value ev 'sdl3:%window-id))
               (main-id (and *window* (sdl3:get-window-id *window*)))
               (associated (mnas-sdl3-gui/widgets:widgets-for-window-id window-id))
