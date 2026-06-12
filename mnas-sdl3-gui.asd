@@ -288,9 +288,11 @@
   :components ((:module "demos/dialog/combo-box/combo-box-05"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")                             
                              (:file "combo-box-05")
+                             (:file "callbacks")                             
+                             (:file "main")
                              ))))
-
 
 (defsystem "mnas-sdl3-gui/demos/dialog/toolbar-demo"
   :description "Toolbar demo for mnas-sdl3-gui"
