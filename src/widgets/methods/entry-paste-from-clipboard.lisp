@@ -23,6 +23,6 @@
                        (+ cursor (length clipboard-text))))
             (clear-entry-selection widget)
             (entry-ensure-cursor-visible widget)
-            (update-widget-value widget truncated)))
+            (update-<widget>-value widget truncated)))
       (error (e)
         (format *error-output* "Clipboard error: ~a~%" e)))))

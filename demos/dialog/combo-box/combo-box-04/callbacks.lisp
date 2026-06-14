@@ -34,7 +34,7 @@
   (let ((widgets (mnas-sdl3-gui/widgets:widgets-for-window *window*)))
     (mnas-sdl3-gui/widgets:render-text *renderer*
                                        (format nil "Selection: ~A"
-                                               (and widgets (mnas-sdl3-gui/widgets:widget-value (first widgets))))
+                                               (and widgets (mnas-sdl3-gui/widgets:<widget>-value (first widgets))))
                                        20.0 90.0 '(80 80 80 255)))
   ;; popup windows are rendered via transient popup proxies appended by
   ;; `widgets-in-render-order', so no explicit popup calls are needed here.
@@ -104,7 +104,7 @@
   (let ((widgets (and *window* (mnas-sdl3-gui/widgets:widgets-for-window *window*))))
     (when widgets
       (dolist (w widgets)
-        (when (typep w 'mnas-sdl3-gui/widgets:combo-box)
+        (when (typep w 'mnas-sdl3-gui/widgets:<combo-box>)
           (mnas-sdl3-gui/widgets:combo-box-disable-popup-window w)))))
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *renderer*

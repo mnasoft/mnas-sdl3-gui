@@ -6,16 +6,16 @@
   "Update status line from current combo box selections."
   (setf *status*
         (format nil "Selected: ~A / ~A"
-                (mnas-sdl3-gui/widgets:widget-value *small*)
-                (mnas-sdl3-gui/widgets:widget-value *large*))))
+                (mnas-sdl3-gui/widgets:<widget>-value *small*)
+                (mnas-sdl3-gui/widgets:<widget>-value *large*))))
 
 (defun combo-box-01-sync-command-state ()
   "Sync command state for combo-box-01 toolbar." 
   (let ((report-cmd (mnas-sdl3-gui/commands:find-command :combo-box-01/report))
         (enabled (and *small*
                       *large*
-                      (mnas-sdl3-gui/widgets:widget-value *small*)
-                      (mnas-sdl3-gui/widgets:widget-value *large*))))
+                      (mnas-sdl3-gui/widgets:<widget>-value *small*)
+                      (mnas-sdl3-gui/widgets:<widget>-value *large*))))
     (when report-cmd
       (mnas-sdl3-gui/commands:set-command-enabled report-cmd enabled))))
 
@@ -50,8 +50,8 @@
                                             (declare (ignore widget))
                                             (setf *status*
                                                   (format nil "Selected: ~A / ~A"
-                                                          (mnas-sdl3-gui/widgets:widget-value small)
-                                                          (mnas-sdl3-gui/widgets:widget-value large)))))))
+                                                          (mnas-sdl3-gui/widgets:<widget>-value small)
+                                                          (mnas-sdl3-gui/widgets:<widget>-value large)))))))
     (setf *small* small
           *large* large
           *widgets* (list title hint small large action))

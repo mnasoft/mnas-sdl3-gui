@@ -8,18 +8,18 @@
   "Return true when WIDGET participates in keyboard focus traversal."
     (and (enabled-p widget)
       (visible-p widget)
-       (widget-focusable widget)
+       (<widget>-focusable widget)
        (typep widget '(or button toggle check-box entry list-box combo-box))))
 
 (defun focused-widget (widgets)
   "Return the currently focused widget from WIDGETS, or NIL."
-  (find-if #'widget-focused widgets))
+  (find-if #'<widget>-focused widgets))
 
 (defun focused-entry (widgets)
   "Return the currently focused entry from WIDGETS, or NIL."
   (find-if (lambda (widget)
              (and (typep widget 'entry)
-                  (widget-focused widget)))
+                  (<widget>-focused widget)))
            widgets))
 
 (defun tab-navigation-backward-p (mods)
@@ -66,7 +66,7 @@
 (defmethod set-widget-focus ((widgets cons) (target widget))
   "Assign keyboard focus to TARGET and clear it from the other WIDGETS."
   (loop for widget in widgets
-    do (setf (widget-focused widget) (eq widget target)))
+    do (setf (<widget>-focused widget) (eq widget target)))
   target)
 
 (defun move-widget-focus (widgets &key backward)
@@ -74,7 +74,7 @@
   (let* ((focusable (remove-if-not #'focusable-widget-p widgets))
          (count (length focusable)))
     (when (plusp count)
-      (let* ((current (position-if #'widget-focused focusable))
+      (let* ((current (position-if #'<widget>-focused focusable))
              (next-index (cond
                            ((null current) (if backward (1- count) 0))
                            (backward (mod (1- current) count))

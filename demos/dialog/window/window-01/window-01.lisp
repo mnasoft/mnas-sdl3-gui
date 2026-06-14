@@ -102,7 +102,7 @@
 (defun make-window-01-toolbar ()
   "Create toolbar for runtime modal/focus demo commands." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Modal-1" :width 72)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Modal-2" :width 72)

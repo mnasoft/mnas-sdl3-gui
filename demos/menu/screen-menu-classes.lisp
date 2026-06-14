@@ -133,7 +133,7 @@
                   :layout :horizontal
                   :height 40)))
     ;; Mixed push/toggle/radio buttons bound to the same Command Model.
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "New" :width 50)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Open" :width 50)
@@ -274,7 +274,7 @@
                       (= target-window-id *screen-menu-window-id*)
                       (>= y mnas-sdl3-gui/menu/model:+menu-bar-height+)
                       (< y (+ mnas-sdl3-gui/menu/model:+menu-bar-height+
-                               (mnas-sdl3-gui/widgets:widget-height *toolbar-demo*))))
+                               (mnas-sdl3-gui/widgets:<widget>-height *toolbar-demo*))))
                  (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
                                *toolbar-demo*
                                x

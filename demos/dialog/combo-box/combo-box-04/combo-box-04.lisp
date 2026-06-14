@@ -7,7 +7,7 @@
 (defun create-combo-box-04-widgets (&optional window)
   (let ((combo
           (make-instance
-           'mnas-sdl3-gui/widgets:combo-box
+           'mnas-sdl3-gui/widgets:<combo-box>
            :x 20 :y 20 :width 320 :height 34
            :items (loop for i from 1 to 20 collect (format nil "Item ~2,'0D" i))
            :selected-index 0
@@ -17,7 +17,7 @@
            :window window))
         (combo-1
           (make-instance
-           'mnas-sdl3-gui/widgets:combo-box
+           'mnas-sdl3-gui/widgets:<combo-box>
            :x 20 :y 60 :width 320 :height 34
            :items (loop for i from 1 to 20 collect (format nil "Atem ~2,'0D" i))
            :selected-index 0

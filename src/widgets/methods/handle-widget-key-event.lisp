@@ -10,7 +10,7 @@ forwards other keys to the focused widget."
   (let ((focused (focused-widget widgets)))
     (cond
       ((and (typep focused 'combo-box)
-            (combo-box-expanded-p focused)
+            (<combo-box>-expanded-p focused)
             (member key '(:escape :return)))
        (handle-widget-key-event focused key nil
                                 :mods mods :ctrl (key-modifier-active-p mods :ctrl)
@@ -48,9 +48,9 @@ forwards other keys to the focused widget."
   (declare (ignore mods ctrl shift alt on-escape on-return))
   (handle-widget-key-press widget key char))
 
-(defmethod handle-widget-key-event ((widget widget-container) key char &key mods ctrl shift alt on-escape on-return)
+(defmethod handle-widget-key-event ((widget <widget-container>) key char &key mods ctrl shift alt on-escape on-return)
   (declare (ignore mods ctrl shift alt on-escape on-return))
-  (let ((focused-child (find-if #'widget-focused (children widget))))
+  (let ((focused-child (find-if #'<widget>-focused (children widget))))
     (when focused-child
       (handle-widget-key-event focused-child key char
                                :mods mods :ctrl ctrl :shift shift :alt alt

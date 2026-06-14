@@ -25,7 +25,7 @@
 (defun make-font-01-toolbar ()
   "Create toolbar as a presenter for font-01 commands."
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height +cyrillic-font-toolbar-height+)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
                                                    :width 64)))

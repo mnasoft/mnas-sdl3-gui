@@ -21,10 +21,10 @@
   "Select WIDGET and clear all other toggles from the same group."
   (let ((group (toggle-group widget)))
     (setf (toggle-state widget) t)
-    (update-widget-value widget t)
+    (update-<widget>-value widget t)
     (when group
       (dolist (member (gethash group *toggle-groups*))
         (unless (eq member widget)
           (when (toggle-state member)
             (setf (toggle-state member) nil)
-            (update-widget-value member nil)))))))
+            (update-<widget>-value member nil)))))))

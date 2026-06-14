@@ -80,7 +80,7 @@
 (defun pack-01-create-toolbar ()
   "Create toolbar for pack-01 command presenter." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height +pack-demo-toolbar-height+)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Apply" :width 62)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Reset" :width 62)

@@ -8,7 +8,7 @@
                            :height 34
                            :window window
                            )))
-    (setf (mnas-sdl3-gui/widgets:widget-children tb)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children tb)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
                           :command-id :toolbar/demo-new
@@ -100,6 +100,6 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 ;;;; (toolbar-demo)
 
-;;;; (setf (mnas-sdl3-gui/widgets:widget-visible *toolbar*) t)
-;;;; (setf (mnas-sdl3-gui/widgets:widget-x  *toolbar*) 50)
-;;;; (setf (mnas-sdl3-gui/widgets:widget-y  *toolbar*) 50)
+;;;; (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) t)
+;;;; (setf (mnas-sdl3-gui/widgets:<widget>-x  *toolbar*) 50)
+;;;; (setf (mnas-sdl3-gui/widgets:<widget>-y  *toolbar*) 50)

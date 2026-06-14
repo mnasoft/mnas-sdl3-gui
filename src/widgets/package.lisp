@@ -3,32 +3,35 @@
 (defpackage :mnas-sdl3-gui/widgets
   (:nicknames :gui/widgets)
   (:use #:cl)
-  ;; base widget class
+;;; base widget class
+;;; base widget class 
   (:export #:widget
-           #:widget-x
-           #:widget-y
-           #:widget-width
-           #:widget-height
-           #:widget-z-order
-           #:widget-enabled
+           #:<widget>-x
+           #:<widget>-y
+           #:<widget>-width
+           #:<widget>-height
+           #:<widget>-z-order
+           #:<widget>-enabled
            #:enabled-p
-           #:widget-focused
-           #:widget-visible
+           #:<widget>-focused
+           #:<widget>-visible
            #:visible-p
-           #:widget-focusable
-           #:widget-value
-           #:widget-on-change
+           #:<widget>-focusable
+           #:<widget>-value
+           #:<widget>-on-change
            #:widget-min-size
            #:widget-measure
            #:widget-arrange
            #:widget-hit-test
-           #:widget-container
+
            #:scroll-container
            #:row-stack
            #:column-stack
            #:split-pane
            #:canvas-2d-widget
-           #:widget-children
+           
+           #:<widget-container>
+           #:<widget-container>-children
            #:children
            #:scroll-container-scroll-offset
            #:row-stack-spacing
@@ -66,7 +69,7 @@
            #:normalize-scroll-container-scroll-offset
            #:scroll-container-max-scroll-offset
            #:scroll-container-content-height
-           ;; style classes and helpers
+;;; style classes and helpers
            #:widget-style
            #:flat-widget-style
            #:windows-widget-style
@@ -75,7 +78,7 @@
            #:make-widget-style
            #:set-widget-style
            #:widget-style-name
-           ;; concrete widgets
+;;; concrete widgets
            #:label
            #:button
            #:toggle
@@ -87,12 +90,12 @@
            #:tree-node
            #:tree-view
            #:list-box
-           #:combo-box
+           #:<combo-box>
            #:editable-combo-box
-           ;; toolbar widgets
+;;; toolbar widgets
            #:toolbar
            #:toolbar-button
-           ;; toolbar accessors
+;;; toolbar accessors
            #:toolbar-buttons
            #:toolbar-layout
            #:toolbar-padding
@@ -100,27 +103,27 @@
            #:toolbar-height
            #:toolbar-x
            #:toolbar-y
-           ;; button accessors
+;;; button accessors
            #:button-width
            #:button-height
            #:button-x
            #:button-y
            #:button-command-id
-           ;; label accessors
+;;; label accessors
            #:label-text
-           ;; button accessors
+;;; button accessors
            #:button-text
            #:button-pressed-p
            #:button-armed-p
            #:button-on-click
-           ;; toggle accessors
+;;; toggle accessors
            #:toggle-state
            #:toggle-group
            #:toggle-label
-           ;; check-box accessors
+;;; check-box accessors
            #:check-box-checked
            #:check-box-label
-           ;; entry accessors
+;;; entry accessors
            #:entry-text
            #:entry-cursor
            #:entry-scroll-offset
@@ -129,7 +132,7 @@
            #:entry-validate
            #:entry-selection-start
            #:entry-selection-end
-           ;; tree-node accessors
+;;; tree-node accessors
            #:tree-node-id
            #:tree-node-text
            #:tree-node-kind
@@ -139,7 +142,7 @@
            #:tree-node-children
            #:tree-node-expanded-p
            #:tree-node-data
-           ;; tree-view accessors/helpers
+;;; tree-view accessors/helpers
            #:tree-view-roots
            #:tree-view-selected-node
            #:tree-view-root-path
@@ -166,7 +169,7 @@
            #:normalize-tree-view-scroll-offset
            #:ensure-tree-view-selection-visible
            )
-  ;; entry selection and clipboard utilities
+;;; entry selection and clipboard utilities
   (:export #:clear-entry-selection
            #:get-entry-selected-text
            #:set-entry-selection
@@ -178,24 +181,25 @@
            #:entry-ensure-cursor-visible
            #:entry-scroll-to-start
            #:entry-scroll-to-end)
-  ;; list-box accessors
+;;; list-box accessors
   (:export #:list-box-items
            #:list-box-selected-index
            #:list-box-scroll-offset
            #:list-box-item-height
            #:list-box-layout
            #:list-box-has-scrollbar)
-  ;; combo-box accessors
-  (:export #:combo-box-expanded-p
-           #:combo-box-max-visible-items
+;;; combo-box accessors
+  (:export #:<combo-box>-expanded-p
+           #:<combo-box>-max-visible-items
            #:combo-box-visible-item-count
-           #:combo-box-main-height
+           #:<combo-box>-main-height
            #:combo-box-content-width
-           ;; header/popup accessors
-           #:combo-box-header-widget
-           #:combo-box-popup-widget
+;;; header/popup accessors
+           #:<combo-box>-header-widget
+           #:<combo-box>-popup-widget
+           #:<combo-box>-initial-items
            #:combo-box-header-display-text
-           ;; popup compatibility/accessors
+;;; popup compatibility/accessors
            #:combo-box-popup-mode
            #:combo-box-popup-host-window
            #:combo-box-popup-window
@@ -211,13 +215,13 @@
            #:combo-box-handle-popup-mouse-up
            #:combo-box-handle-popup-mouse-motion
            #:combo-box-handle-popup-mouse-wheel
-           #:update-widget-value
+           #:update-<widget>-value
            #:sync-combo-box-expanded-state
            #:*combo-box-expanded-callback*
            #:combo-box-add-item)
-  ;; editable combo-box accessors
+;;; editable combo-box accessors
   (:export #:editable-combo-box-placeholder)
-  ;; layout managers
+;;; layout managers
   (:export #:pack-widget
            #:unpack-widget
            #:clear-pack-layout
@@ -225,7 +229,7 @@
            #:pack-layout-widgets
            #:place-widget
            )
-  ;; grid layout  
+;;; grid layout  
   (:export #:grid-container
            #:widgets-in-render-order
            #:make-grid
@@ -237,11 +241,11 @@
            #:grid-col-spacing
            #:grid-padding
            )
-  ;; rendering
+;;; rendering
   (:export #:render
            #:render-text
            )
-  ;; TTF/font rendering
+;;; TTF/font rendering
   (:export #:render-text-with-ttf
            #:*ttf-available-p*
            #:*ttf-font*
@@ -250,11 +254,11 @@
            #:init-ttf-font
            #:cleanup-ttf
            )
-  ;; Cyrillic approximation
+;;; Cyrillic approximation
   (:export           
    #:approximate-cyrillic-text
    )
-  ;; event handling
+;;; event handling
   (:export #:handle-widget-click
            #:handle-mouse-button-event
            #:handle-mouse-wheel-event
@@ -281,7 +285,7 @@
            #:set-widget-focus
            #:move-widget-focus
            #:activate-widget
-           ;; toggle group helpers
+;;; toggle group helpers
            #:clear-toggle-group-registry))
 
 (in-package :mnas-sdl3-gui/widgets)

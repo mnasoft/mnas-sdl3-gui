@@ -24,7 +24,7 @@
     (multiple-value-bind (val pos) (read-from-string str)
       (when (and pos (numberp val)) val))))
 
-(defun canvas-screenshot-svg (canvas path &key (width (mnas-sdl3-gui/widgets:widget-width canvas)) (height (mnas-sdl3-gui/widgets:widget-height canvas)))
+(defun canvas-screenshot-svg (canvas path &key (width (mnas-sdl3-gui/widgets:<widget>-width canvas)) (height (mnas-sdl3-gui/widgets:<widget>-height canvas)))
   "Write current canvas scene into a simple SVG file at PATH.
 This is a lightweight screenshot helper that visualizes circle items from the scene." 
   (with-open-file (out path :direction :output :if-exists :supersede :if-does-not-exist :create)
@@ -78,8 +78,8 @@ The loop reads commands from *query-io* until `quit` is entered."
                       (cy (and (fourth parts) (parse-number (fourth parts)))))
                  (when factor
                    (mnas-sdl3-gui/widgets:canvas-2d-zoom-by canvas factor
-                                                            (or cx (/ (mnas-sdl3-gui/widgets:widget-width canvas) 2))
-                                                            (or cy (/ (mnas-sdl3-gui/widgets:widget-height canvas) 2)))
+                                                            (or cx (/ (mnas-sdl3-gui/widgets:<widget>-width canvas) 2))
+                                                            (or cy (/ (mnas-sdl3-gui/widgets:<widget>-height canvas) 2)))
                    (format t "zoom -> scale: ~A~%" (mnas-sdl3-gui/widgets:canvas-2d-widget-viewport-scale canvas)))))
               ((string= cmd "screenshot")
                (let ((path (second parts)))

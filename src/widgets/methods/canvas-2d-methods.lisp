@@ -30,7 +30,7 @@
 
 (defmethod handle-viewport-resize ((widget canvas-2d-widget) width height)
   "Handle viewport resize - update widget bounds and request redraw."
-  (place-widget widget :x (widget-x widget) :y (widget-y widget) :width width :height height)
+  (place-widget widget :x (<widget>-x widget) :y (<widget>-y widget) :width width :height height)
   (request-redraw widget))
 
 (defun canvas-2d-pan-by (widget dx dy)
@@ -61,8 +61,8 @@
 perform a trivial placeholder draw. Real scene rendering should be implemented
 by higher-level code that inspects `canvas-2d-widget-scene`."
   ;; clear canvas area
-  (fill-rect renderer (widget-x widget) (widget-y widget)
-             (widget-width widget) (widget-height widget) +color-bg+)
+  (fill-rect renderer (<widget>-x widget) (<widget>-y widget)
+             (<widget>-width widget) (<widget>-height widget) +color-bg+)
   ;; placeholder scene rendering: if scene is a simple list of items, draw them
   (let ((scene (canvas-2d-widget-scene widget)))
     (when (and scene (listp scene))
@@ -77,4 +77,4 @@ by higher-level code that inspects `canvas-2d-widget-scene`."
 
 (defmethod widget-min-size ((widget canvas-2d-widget))
   "Minimal size hint for canvas widget - default to current size."
-  (values (widget-width widget) (widget-height widget)))
+  (values (<widget>-width widget) (<widget>-height widget)))

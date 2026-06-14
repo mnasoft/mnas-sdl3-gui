@@ -15,7 +15,7 @@
 (defun grid-demo-focus-widgets ()
   "Return widgets that participate in focus and text-input dispatch."
   (let ((root (first *grid-demo-widgets*)))
-    (if (and root (typep root 'mnas-sdl3-gui/widgets:widget-container))
+    (if (and root (typep root 'mnas-sdl3-gui/widgets:<widget-container>))
         (mnas-sdl3-gui/widgets:children root)
         *grid-demo-widgets*)))
 

@@ -3,8 +3,8 @@
 (in-package :mnas-sdl3-gui/widgets)
 
 (defmethod widget-min-size ((widget widget))
-  (values (max 1 (widget-width widget))
-          (max 1 (widget-height widget))))
+  (values (max 1 (<widget>-width widget))
+          (max 1 (<widget>-height widget))))
 
 (defmethod widget-min-size ((widget label))
   (multiple-value-bind (tw th)
@@ -42,8 +42,8 @@
             (max 30 (+ th 10)))))
 
 (defmethod widget-min-size ((widget tree-view))
-  (values (max 160 (widget-width widget))
-          (max 96 (widget-height widget))))
+  (values (max 160 (<widget>-width widget))
+          (max 96 (<widget>-height widget))))
 
 (defmethod widget-min-size ((widget list-box))
   (let* ((longest-item (or (loop for item in (list-box-items widget)
@@ -64,4 +64,4 @@
          (arrow-width 24))
     (values (max 120 (+ text-width arrow-width 12))
       (max (combo-box-total-height widget)
-        (combo-box-main-height widget)))))
+        (<combo-box>-main-height widget)))))

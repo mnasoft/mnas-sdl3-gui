@@ -119,7 +119,7 @@ Returns the window id that was processed or NIL."
 
 (defun make-widget-container (&key (x 0) (y 0) (width 100) (height 100) (children nil))
   "Create a new widget container that holds child widgets." 
-  (make-instance 'mnas-sdl3-gui/widgets:widget-container
+  (make-instance 'mnas-sdl3-gui/widgets:<widget-container>
                  :x x
                  :y y
                  :width width
@@ -220,10 +220,10 @@ Returns the window id that was processed or NIL."
   (let ((scale (max 0.01 (canvas-2d-widget-viewport-scale widget)))
         (offset-x (canvas-2d-widget-viewport-offset-x widget))
         (offset-y (canvas-2d-widget-viewport-offset-y widget)))
-    (values (+ (widget-x widget)
+    (values (+ (<widget>-x widget)
                offset-x
                (* x scale))
-            (+ (widget-y widget)
+            (+ (<widget>-y widget)
                offset-y
                (* y scale))
             z)))
@@ -232,23 +232,23 @@ Returns the window id that was processed or NIL."
   (let ((scale (max 0.01 (canvas-2d-widget-viewport-scale widget)))
         (offset-x (canvas-2d-widget-viewport-offset-x widget))
         (offset-y (canvas-2d-widget-viewport-offset-y widget)))
-    (values (/ (- x (widget-x widget) offset-x) scale)
-            (/ (- y (widget-y widget) offset-y) scale)
+    (values (/ (- x (<widget>-x widget) offset-x) scale)
+            (/ (- y (<widget>-y widget) offset-y) scale)
             z)))
 
 (defmethod handle-viewport-resize ((widget canvas-2d-widget) width height)
-  (when (or (/= (widget-width widget) width)
-            (/= (widget-height widget) height))
-    (setf (widget-width widget) width
-          (widget-height widget) height)
+  (when (or (/= (<widget>-width widget) width)
+            (/= (<widget>-height widget) height))
+    (setf (<widget>-width widget) width
+          (<widget>-height widget) height)
     (request-redraw widget)))
 
 (defun render-canvas-2d-grid (renderer widget)
   "Render a faint background grid for a canvas-2d-widget." 
-  (let ((x (widget-x widget))
-        (y (widget-y widget))
-        (w (widget-width widget))
-        (h (widget-height widget))
+  (let ((x (<widget>-x widget))
+        (y (<widget>-y widget))
+        (w (<widget>-width widget))
+        (h (<widget>-height widget))
         (grid-step 32)
         (grid-color '(220 220 220 255)))
     (loop for gx from 0 below w by grid-step
@@ -258,15 +258,15 @@ Returns the window id that was processed or NIL."
 
 (defun render-canvas-2d-placeholder (renderer widget)
   "Render placeholder content when a 2D scene model is not provided." 
-  (let ((x (widget-x widget))
-        (y (widget-y widget)))
+  (let ((x (<widget>-x widget))
+        (y (<widget>-y widget)))
     (render-text renderer "Canvas-2D" (+ x 8) (+ y 8) +color-text+)
     (render-text renderer "set-scene to display content" (+ x 8) (+ y 26) +color-text+)))
 
 (defun render-canvas-2d-scene (renderer widget)
   "Render a very small default canvas scene for 2D canvas widgets." 
-  (let ((x0 (widget-x widget))
-        (y0 (widget-y widget))
+  (let ((x0 (<widget>-x widget))
+        (y0 (<widget>-y widget))
         (scale (max 0.01 (canvas-2d-widget-viewport-scale widget))))
     (fill-circle renderer (+ x0 80) (+ y0 80) (max 8 (floor (* 8 scale))) '(0 128 255 255))
     (stroke-rect renderer (+ x0 120) (+ y0 40) (max 24 (floor (* 56 scale))) (max 24 (floor (* 40 scale))) '(0 0 0 255))))
@@ -274,12 +274,12 @@ Returns the window id that was processed or NIL."
 (defun scroll-container-content-height (widget)
   "Return total height of child widgets inside scroll container." 
     (loop for child in (children widget)
-      sum (widget-height child)))
+      sum (<widget>-height child)))
 
 (defun scroll-container-max-scroll-offset (widget)
   "Return maximal vertical scroll offset for SCROLL-CONTAINER." 
   (max 0 (- (scroll-container-content-height widget)
-            (widget-height widget))))
+            (<widget>-height widget))))
 
 (defun normalize-scroll-container-scroll-offset (widget)
   "Clamp SCROLL-CONTAINER scroll offset to valid range." 
@@ -564,7 +564,7 @@ Returns the window id that was processed or NIL."
 (defun tree-view-visible-row-count (widget)
   "Return number of tree rows that fit in WIDGET viewport." 
   (max 1
-       (floor (max 1 (- (widget-height widget) 2))
+       (floor (max 1 (- (<widget>-height widget) 2))
               (max 1 (tree-view-row-height widget)))))
 
 (defun tree-view-max-scroll-offset (widget)
@@ -586,9 +586,9 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
         (values nil nil nil nil nil nil 0)
         (let* ((visible-count (tree-view-visible-row-count widget))
                (row-height (max 16 (tree-view-row-height widget)))
-               (track-x (+ (widget-x widget) (- (widget-width widget) +list-box-scrollbar-width+)))
-               (track-y (1+ (widget-y widget)))
-               (track-height (max 1 (- (widget-height widget) 2)))
+               (track-x (+ (<widget>-x widget) (- (<widget>-width widget) +list-box-scrollbar-width+)))
+               (track-y (1+ (<widget>-y widget)))
+               (track-height (max 1 (- (<widget>-height widget) 2)))
                (max-offset (tree-view-max-scroll-offset widget))
                (thumb-height (max 18 (floor (* track-height (/ visible-count (float (length (tree-view-visible-rows widget))))))))
                (thumb-travel (max 0 (- track-height thumb-height)))
@@ -642,7 +642,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   "Select NODE in TREE-VIEW WIDGET and trigger update callback." 
   (setf (tree-view-selected-node widget) node)
   (ensure-tree-view-selection-visible widget)
-  (update-widget-value widget node)
+  (update-<widget>-value widget node)
   node)
 
 (defun widget-text-pixel-size (text)
@@ -664,7 +664,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 (defun list-box-visible-item-count (widget)
   "Return how many list-box rows fit into WIDGET's current height."
   (max 1
-       (floor (max 1 (- (widget-height widget) 4))
+       (floor (max 1 (- (<widget>-height widget) 4))
               (max 1 (list-box-item-height widget)))))
 
 (defun list-box-max-scroll-offset (widget)
@@ -704,7 +704,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 
 (defun list-box-content-width (widget)
   "Return the drawable content width of WIDGET excluding scrollbar if present."
-  (- (widget-width widget)
+  (- (<widget>-width widget)
      (if (list-box-scrollbar-needed-p widget)
          +list-box-scrollbar-width+
          0)))
@@ -717,9 +717,9 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
         (values nil nil nil nil nil nil 0)
         (let* ((visible-count (list-box-visible-item-count widget))
                (item-count (length (list-box-items widget)))
-               (track-x (+ (widget-x widget) (list-box-content-width widget)))
-               (track-y (1+ (widget-y widget)))
-               (track-height (max 1 (- (widget-height widget) 2)))
+               (track-x (+ (<widget>-x widget) (list-box-content-width widget)))
+               (track-y (1+ (<widget>-y widget)))
+               (track-height (max 1 (- (<widget>-height widget) 2)))
                (max-offset (list-box-max-scroll-offset widget))
                (thumb-height (max 18 (floor (* track-height (/ visible-count item-count)))))
                (thumb-travel (max 0 (- track-height thumb-height)))
@@ -753,9 +753,9 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 
 (defun widget-effective-z-order (widget)
   "Return effective z-order for WIDGET, keeping expanded combo-box popups on top."
-  (+ (widget-z-order widget)
+  (+ (<widget>-z-order widget)
      (if (and (typep widget 'combo-box)
-              (combo-box-expanded-p widget))
+              (<combo-box>-expanded-p widget))
          1000000
          0)))
 

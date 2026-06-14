@@ -59,7 +59,7 @@
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +combo-box-02-toolbar-height+)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Add"
                                                    :width 56)
@@ -101,7 +101,7 @@
                                              (declare (ignore widget))
                                              (setf *combo-box-02-status*
                                                    (format nil "Value: ~A  Text: ~A"
-                                                           (mnas-sdl3-gui/widgets:widget-value editable)
+                                                           (mnas-sdl3-gui/widgets:<widget>-value editable)
                                                            (mnas-sdl3-gui/widgets:entry-text editable))))))
          (add-item (make-instance 'mnas-sdl3-gui/widgets:button
                                   :x 220 :y 140 :width 180 :height 34

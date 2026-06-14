@@ -32,7 +32,7 @@
 (defun make-widget-01-toolbar ()
   "Create toolbar as a secondary presenter of widget-01 commands." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 34)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Flat" :width 58 :type :radio :group :style)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Windows" :width 78 :type :radio :group :style)

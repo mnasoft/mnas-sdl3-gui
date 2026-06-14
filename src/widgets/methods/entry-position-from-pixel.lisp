@@ -6,7 +6,7 @@
   (let* ((text-len (length (entry-text widget)))
          (visible-start (max 0 (min (entry-scroll-offset widget) text-len)))
          (visible-width (entry-inner-width widget))
-         (relative-x (max 0 (min (- x (widget-x widget) 4) visible-width)))
+         (relative-x (max 0 (min (- x (<widget>-x widget) 4) visible-width)))
          (previous-width 0))
     (loop for position from visible-start below text-len
           for next-width = (entry-text-width-between widget visible-start (1+ position))

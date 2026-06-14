@@ -14,5 +14,5 @@
         (setf (entry-cursor widget) start)
         (clear-entry-selection widget)
         (entry-ensure-cursor-visible widget)
-        (update-widget-value widget (entry-text widget))
+        (update-<widget>-value widget (entry-text widget))
         t))))

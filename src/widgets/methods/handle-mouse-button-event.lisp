@@ -16,7 +16,7 @@
     (when down
       (loop for widget in widgets
             when (and (typep widget 'combo-box)
-                      (combo-box-expanded-p widget)
+                      (<combo-box>-expanded-p widget)
                       (not (contains-point-p widget x y)))
               do (progn
                    (sync-combo-box-expanded-state widget nil)
@@ -43,13 +43,13 @@
   nil)
 
 
-(defmethod handle-mouse-button-event ((widget widget-container) (ev sdl3:mouse-button-event))
+(defmethod handle-mouse-button-event ((widget <widget-container>) (ev sdl3:mouse-button-event))
   (let ((x (round (slot-value ev 'sdl3:%x)))
         (y (round (slot-value ev 'sdl3:%y))))
     (when (contains-point-p widget x y)
       (loop for child in (widgets-in-hit-test-order (children widget))
             when (handle-mouse-button-event child ev)
-              do (setf (widget-focused widget) t)
+              do (setf (<widget>-focused widget) t)
                  (return t)
             finally (return nil)))))
 
@@ -58,7 +58,7 @@
   (let ((x (round (slot-value ev 'sdl3:%x)))
         (y (round (slot-value ev 'sdl3:%y))))
     (when (contains-point-p widget x y)
-      (setf (widget-focused widget) t)
+      (setf (<widget>-focused widget) t)
       t)))
 
 
@@ -70,7 +70,7 @@
     (when down
       (setf (button-armed-p widget) inside
             (button-pressed-p widget) inside
-            (widget-focused widget) inside)
+            (<widget>-focused widget) inside)
       inside)
     (unless down
       (let ((armed (button-armed-p widget))
@@ -90,7 +90,7 @@
          (down (slot-value ev 'sdl3:%down))
          (inside (contains-point-p widget x y)))
     (when down
-      (setf (widget-focused widget) inside)
+      (setf (<widget>-focused widget) inside)
       inside)
     (unless down
       (when inside
@@ -108,7 +108,7 @@
         (y (round (slot-value ev 'sdl3:%y)))
         (down (slot-value ev 'sdl3:%down)))
     (when (and down (contains-point-p widget x y))
-      (setf (widget-focused widget) t)
+      (setf (<widget>-focused widget) t)
       (select-toggle-in-group widget)
       t)))
 
@@ -118,9 +118,9 @@
         (y (round (slot-value ev 'sdl3:%y)))
         (down (slot-value ev 'sdl3:%down)))
     (when (and down (contains-point-p widget x y))
-      (setf (widget-focused widget) t)
+      (setf (<widget>-focused widget) t)
       (setf (check-box-checked widget) (not (check-box-checked widget)))
-      (update-widget-value widget (check-box-checked widget))
+      (update-<widget>-value widget (check-box-checked widget))
       t)))
 
 
@@ -128,7 +128,7 @@
    (let ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down)))
-     (setf (widget-focused widget) (contains-point-p widget x y))
+     (setf (<widget>-focused widget) (contains-point-p widget x y))
      (when (and down (contains-point-p widget x y))
        (setf (entry-cursor widget) (entry-position-from-pixel widget x))
        (clear-entry-selection widget)
@@ -140,15 +140,15 @@
   (let ((x (round (slot-value ev 'sdl3:%x)))
         (y (round (slot-value ev 'sdl3:%y)))
         (down (slot-value ev 'sdl3:%down)))
-    (setf (widget-focused widget) (contains-point-p widget x y))
+    (setf (<widget>-focused widget) (contains-point-p widget x y))
     (when (and down (contains-point-p widget x y))
       (let* ((rows (tree-view-visible-rows widget))
              (row-height (max 16 (tree-view-row-height widget)))
              (row-index (+ (tree-view-scroll-offset widget)
-                           (floor (- y (widget-y widget)) row-height))))
+                           (floor (- y (<widget>-y widget)) row-height))))
         (when (and (>= row-index 0) (< row-index (length rows)))
           (destructuring-bind (node depth) (nth row-index rows)
-            (let* ((toggle-x (+ (widget-x widget)
+            (let* ((toggle-x (+ (<widget>-x widget)
                                 +widget-padding+
                                 (* depth (max 8 (tree-view-indent-width widget)))))
                    (toggle-hit (and (tree-node-has-children-p node)
@@ -164,12 +164,12 @@
          (down (slot-value ev 'sdl3:%down))
          (inside (contains-point-p widget x y)))
     (when (and down inside)
-      (setf (widget-focused widget) t)
+      (setf (<widget>-focused widget) t)
       (normalize-list-box-scroll-offset widget))
     (when (and down (not inside))
-      (setf (widget-focused widget) nil)
+      (setf (<widget>-focused widget) nil)
       (normalize-list-box-scroll-offset widget))
-    (when (and down (widget-focused widget))
+    (when (and down (<widget>-focused widget))
       (mnas-debug:%log  "~A~%" widget)
       #+nil (format t "x=~A~%" widget)
       (let* ((scrollbar-width +list-box-scrollbar-width+)
@@ -177,8 +177,8 @@
              (scrollbar-needed-p (list-box-scrollbar-needed-p widget))
              (content-width (list-box-content-width widget))
              (item-height (list-box-item-height widget))
-             (rel-x (- x (widget-x widget)))
-             (rel-y (- y (widget-y widget))))
+             (rel-x (- x (<widget>-x widget)))
+             (rel-y (- y (<widget>-y widget))))
         (cond
           ((and scrollbar-needed-p (>= rel-x content-width))
            (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
@@ -203,7 +203,7 @@
                (when *debug-mouse-wheel-events*
                  (format t "[click] widget=~S clicked-x=~D clicked-y=~D rel-x=~D rel-y=~D row=~D new-index=~D~%"
                          widget x y rel-x rel-y row new-index))
-               (update-widget-value
+               (update-<widget>-value
                 widget
                 (nth new-index (list-box-items widget))))))
           (t
@@ -218,31 +218,31 @@
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))
-         (main-height (combo-box-main-height widget))
-         (main-x (widget-x widget))
-         (main-y (widget-y widget))
-         (main-width (widget-width widget))
+         (main-height (<combo-box>-main-height widget))
+         (main-x (<widget>-x widget))
+         (main-y (<widget>-y widget))
+         (main-width (<widget>-width widget))
          (arrow-width 24)
          (popup-y (+ main-y main-height)))
     (when down
-      (setf (widget-focused widget) t)
+      (setf (<widget>-focused widget) t)
       (cond
         ((and (<= main-y y (+ main-y main-height))
               (>= x main-x)
               (< x (+ main-x main-width)))
          (if (>= x (- (+ main-x main-width) arrow-width))
              (progn
-               (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))
-               (when (combo-box-expanded-p widget)
+               (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
+               (when (<combo-box>-expanded-p widget)
                  (ensure-combo-box-selection-visible widget)))
              (progn
                (setf (entry-cursor widget) (entry-position-from-pixel widget x)
                      (entry-selection-start widget) nil
                      (entry-selection-end widget) nil)
                (entry-ensure-cursor-visible widget)
-               (when (combo-box-expanded-p widget)
+               (when (<combo-box>-expanded-p widget)
                  (sync-combo-box-expanded-state widget nil)))))
-        ((and (combo-box-expanded-p widget)
+        ((and (<combo-box>-expanded-p widget)
               (not (combo-box-popup-window-enabled-p widget))
               (>= y popup-y)
               (< y (+ popup-y (combo-box-popup-height widget))))
@@ -252,7 +252,7 @@
                 (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
                 (content-width (combo-box-content-width widget))
                 (item-height (list-box-item-height widget))
-                (rel-x (- x (widget-x widget)))
+                (rel-x (- x (<widget>-x widget)))
                 (rel-y (- y popup-y)))
            (cond
              ((and scrollbar-needed-p (>= rel-x content-width))
@@ -278,7 +278,7 @@
                         (entry-text widget) (format nil "~a" (nth new-index (list-box-items widget)))
                         (entry-cursor widget) (length (entry-text widget)))
                   (sync-combo-box-expanded-state widget nil)
-                  (update-widget-value widget
+                  (update-<widget>-value widget
                                        (nth new-index (list-box-items widget))))))
              (t
               (setf (list-box-scrollbar-dragging-p widget) nil)
@@ -300,17 +300,17 @@
          (inside (contains-point-p widget x y))
          )
     (when (and down inside)
-      (mnas-debug:%log "x:~A y:~A window:~A~%" x y (widget-window widget))
-      (loop :for w :in (mnas-sdl3-gui/widgets:widgets-for-window (widget-window widget))
-            :do (setf (widget-focused w) nil))
-      (setf (widget-focused widget) t))
+      (mnas-debug:%log "x:~A y:~A window:~A~%" x y (<widget>-window widget))
+      (loop :for w :in (mnas-sdl3-gui/widgets:widgets-for-window (<widget>-window widget))
+            :do (setf (<widget>-focused w) nil))
+      (setf (<widget>-focused widget) t))
     (when (and down inside)
       (cond
-        ((<= (widget-y widget) y (+ (widget-y widget) (combo-box-main-height widget)))
-         (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))
-         (when (combo-box-expanded-p widget)
+        ((<= (<widget>-y widget) y (+ (<widget>-y widget) (<combo-box>-main-height widget)))
+         (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
+         (when (<combo-box>-expanded-p widget)
            (ensure-combo-box-selection-visible widget)))
-          ((and (combo-box-expanded-p widget)
+          ((and (<combo-box>-expanded-p widget)
             (not (combo-box-popup-window-enabled-p widget)))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
@@ -318,7 +318,7 @@
                 (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
                 (content-width (combo-box-content-width widget))
                 (item-height (list-box-item-height widget))
-                (rel-x (- x (widget-x widget)))
+                (rel-x (- x (<widget>-x widget)))
                 (rel-y (- y (combo-box-popup-y widget))))
            (cond
              ((and scrollbar-needed-p (>= rel-x content-width))
@@ -342,7 +342,7 @@
                            (< new-index (length (list-box-items widget))))
                   (setf (list-box-selected-index widget) new-index)
                   (sync-combo-box-expanded-state widget nil)
-                  (update-widget-value widget
+                  (update-<widget>-value widget
                                        (nth new-index (list-box-items widget))))))
              (t
               (setf (list-box-scrollbar-dragging-p widget) nil)
@@ -350,9 +350,9 @@
         ;; If event comes from popup's own SDL window, translate to popup handlers.
         (when (and (not down) nil))
         (when (and (slot-value ev 'sdl3:%window-id)
-               (combo-box-popup-widget widget)
+               (<combo-box>-popup-widget widget)
                (= (slot-value ev 'sdl3:%window-id)
-                (combo-box-popup-window-id (combo-box-popup-widget widget))))
+                (combo-box-popup-window-id (<combo-box>-popup-widget widget))))
           (if down
             (combo-box-handle-popup-mouse-down widget x y)
             (combo-box-handle-popup-mouse-up widget x y)))

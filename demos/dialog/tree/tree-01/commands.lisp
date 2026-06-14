@@ -45,7 +45,7 @@
                (when *tree-01-show-hidden*
                  (setf (mnas-sdl3-gui/widgets:check-box-checked *tree-01-show-hidden*)
                        (not (mnas-sdl3-gui/widgets:check-box-checked *tree-01-show-hidden*)))
-                 (setf (mnas-sdl3-gui/widgets:widget-value *tree-01-show-hidden*)
+                 (setf (mnas-sdl3-gui/widgets:<widget>-value *tree-01-show-hidden*)
                        (mnas-sdl3-gui/widgets:check-box-checked *tree-01-show-hidden*)))
                (tree-01-load-tree)
                t))

@@ -39,7 +39,7 @@
 (defun make-window-02-toolbar ()
   "Create toolbar that mirrors window-02 command model state." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Popup" :width 70 :type :toggle)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Pin" :width 56 :type :toggle)

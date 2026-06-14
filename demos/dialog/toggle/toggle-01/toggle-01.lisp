@@ -22,7 +22,7 @@
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
                   :layout :horizontal
                   :height +toggle-01-toolbar-height+)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "1"
             :width 40
@@ -51,7 +51,7 @@
                (eql (mnas-sdl3-gui/widgets:toggle-group widget) group))
       (let ((selected-p (string= (mnas-sdl3-gui/widgets:toggle-label widget) label)))
         (setf (mnas-sdl3-gui/widgets:toggle-state widget) selected-p
-              (mnas-sdl3-gui/widgets:widget-value widget) selected-p))))
+              (mnas-sdl3-gui/widgets:<widget>-value widget) selected-p))))
   (refresh-toggle-01-status))
 
 (defun toggle-01-sync-command-state ()
@@ -90,8 +90,8 @@
                                :group group
                                :state selected-p
                                :focused nil)))
-    (setf (mnas-sdl3-gui/widgets:widget-value toggle) selected-p)
-    (setf (mnas-sdl3-gui/widgets:widget-on-change toggle)
+    (setf (mnas-sdl3-gui/widgets:<widget>-value toggle) selected-p)
+    (setf (mnas-sdl3-gui/widgets:<widget>-on-change toggle)
           (lambda (widget value)
             (declare (ignore widget))
             (when value

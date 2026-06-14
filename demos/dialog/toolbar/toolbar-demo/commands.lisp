@@ -10,7 +10,7 @@
     :execute (lambda (ctx)
                (declare (ignore ctx))
                (format t "[toolbar-demo] New~%")
-               (setf (mnas-sdl3-gui/widgets:widget-visible *toolbar*) nil)
+               (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) nil)
                ))
    :replace t)
   (mnas-sdl3-gui/commands:register-command

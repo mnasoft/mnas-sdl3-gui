@@ -26,12 +26,12 @@
 
 (defmethod activate-widget ((widget check-box))
   (setf (check-box-checked widget) (not (check-box-checked widget)))
-  (update-widget-value widget (check-box-checked widget))
+  (update-<widget>-value widget (check-box-checked widget))
   t)
 
 (defmethod activate-widget ((widget combo-box))
-  (sync-combo-box-expanded-state widget (not (combo-box-expanded-p widget)))
-  (when (combo-box-expanded-p widget)
+  (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
+  (when (<combo-box>-expanded-p widget)
     (ensure-combo-box-selection-visible widget))
   t)
 
@@ -39,7 +39,7 @@
   "Activate header by toggling owner combo-box expansion state." 
   (let ((owner (combo-box-header-owner widget)))
     (when owner
-      (sync-combo-box-expanded-state owner (not (combo-box-expanded-p owner)))
-      (when (combo-box-expanded-p owner)
+      (sync-combo-box-expanded-state owner (not (<combo-box>-expanded-p owner)))
+      (when (<combo-box>-expanded-p owner)
         (ensure-combo-box-selection-visible owner))
       t)))

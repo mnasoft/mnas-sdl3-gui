@@ -36,4 +36,4 @@
 ;;;; (mnas-sdl3-gui/demos/dialog/combo-box-05:combo-box-05)
 ;;;; (combo-box-05)
 
-;;;;(setf (mnas-sdl3-gui/widgets:combo-box-expanded-p (first *widgets*)) t)
+;;;;(setf (mnas-sdl3-gui/widgets:<combo-box>-expanded-p (first *widgets*)) t)

@@ -57,7 +57,7 @@
 (defun make-tree-01-toolbar ()
   "Create toolbar as a secondary presenter of tree-01 commands." 
   (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 24)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Load" :width 56)
            (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Hidden" :width 68 :type :toggle)

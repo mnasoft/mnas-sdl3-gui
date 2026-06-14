@@ -55,7 +55,7 @@
     (mnas-sdl3-gui/widgets:render-text
      *combo-box-03-renderer*
      (format nil "expanded=~A popup=~A enabled=~A popup-id=~S"
-       (mnas-sdl3-gui/widgets:combo-box-expanded-p *combo-box-03-editable*)
+       (mnas-sdl3-gui/widgets:<combo-box>-expanded-p *combo-box-03-editable*)
        (mnas-sdl3-gui/widgets:combo-box-popup-visible-p *combo-box-03-editable*)
        (mnas-sdl3-gui/widgets:combo-box-popup-window-enabled-p *combo-box-03-editable*)
        (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*))

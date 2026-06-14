@@ -76,7 +76,7 @@
                                 :layout :horizontal
                                 :height +list-box-01-toolbar-height+
                                 :window *window*)))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar)
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance
             'mnas-sdl3-gui/widgets:toolbar-button

@@ -16,7 +16,7 @@
   "Return widgets that participate in focus and text-input dispatch."
   (labels ((flatten (widgets)
              (loop for widget in widgets
-                   append (if (and (typep widget 'mnas-sdl3-gui/widgets:widget-container)
+                   append (if (and (typep widget 'mnas-sdl3-gui/widgets:<widget-container>)
                                    (mnas-sdl3-gui/widgets:children widget))
                               (flatten (mnas-sdl3-gui/widgets:children widget))
                               (list widget)))))

@@ -6,49 +6,75 @@
 
 (defclass widget ()
   ((x
-    :initarg :x :initform 0 :accessor widget-x
+    :initarg :x
+    :initform 0
+    :accessor <widget>-x
     :documentation "X coordinate of widget")
    (y
-    :initarg :y :initform 0 :accessor widget-y
+    :initarg :y
+    :initform 0
+    :accessor <widget>-y
     :documentation "Y coordinate of widget")
    (width
-    :initarg :width :initform 100 :accessor widget-width
+    :initarg :width
+    :initform 100
+    :accessor <widget>-width
     :documentation "Width of widget")
    (height
-    :initarg :height :initform 30 :accessor widget-height
+    :initarg :height
+    :initform 30
+    :accessor <widget>-height
     :documentation "Height of widget")
    (window
-    :initarg :window :initform nil :accessor widget-window
+    :initarg :window
+    :initform nil
+    :accessor <widget>-window
     :documentation "SDL window object or integer id associated with this widget")
    (z-order
-    :initarg :z-order :initform 0 :accessor widget-z-order
+    :initarg :z-order
+    :initform 0
+    :accessor <widget>-z-order
     :documentation "Relative drawing order; higher values are rendered above lower ones")
    (enabled
-    :initarg :enabled :initform t :accessor widget-enabled
+    :initarg :enabled :initform t :accessor <widget>-enabled
     :documentation "Whether widget is enabled for interaction")
    (focused
-    :initarg :focused :initform nil :accessor widget-focused
+    :initarg :focused
+    :initform nil
+    :accessor <widget>-focused
     :documentation "Whether widget has keyboard focus")
    (visible
-    :initarg :visible :initform t :accessor widget-visible
+    :initarg :visible
+    :initform t
+    :accessor <widget>-visible
     :documentation "Whether widget is visible")
    (focusable
-    :initarg :focusable :initform t :accessor widget-focusable
+    :initarg :focusable
+    :initform t
+    :accessor <widget>-focusable
     :documentation "Whether widget can receive keyboard focus.")
    (value
-    :initarg :value :initform nil :accessor widget-value
+    :initarg :value
+    :initform nil
+    :accessor <widget>-value
     :documentation "Current value of widget")
    (on-change
-    :initarg :on-change :initform nil :accessor widget-on-change
+    :initarg :on-change
+    :initform nil
+    :accessor <widget>-on-change
     :documentation "Callback function called when value changes"))
   (:documentation "Base class for all widgets"))
 
-(defclass widget-container (widget)
-  ((children :initarg :children :initform nil :accessor widget-children
-             :documentation "Child widgets contained by this container."))
-  (:documentation "Widget that groups child widgets and delegates rendering/events."))
+(defclass <widget-container> (widget)
+  ((children
+    :initarg :children
+    :initform nil
+    :accessor <widget-container>-children
+    :documentation "Child widgets contained by this container."))
+  (:documentation
+   "Widget that groups child widgets and delegates rendering/events."))
 
-(defclass scroll-container (widget-container)
+(defclass scroll-container (<widget-container>)
   ((scroll-offset
     :initarg :scroll-offset :initform 0 :accessor scroll-container-scroll-offset
     :documentation "Vertical scroll offset for child content.")
@@ -57,7 +83,7 @@
     :documentation "Hide scroll bar when content fits inside the container."))
   (:documentation "Scrollable container widget for vertically stacked child widgets."))
 
-(defclass row-stack (widget-container)
+(defclass row-stack (<widget-container>)
   ((spacing
     :initarg :spacing :initform 4 :accessor row-stack-spacing
     :documentation "Horizontal spacing between child widgets.")
@@ -66,14 +92,14 @@
     :documentation "Padding inside the row stack bounds."))
   (:documentation "Container widget that arranges children in a horizontal row."))
 
-(defclass column-stack (widget-container)
+(defclass column-stack (<widget-container>)
   ((spacing :initarg :spacing :initform 4 :accessor column-stack-spacing
             :documentation "Vertical spacing between child widgets.")
    (padding :initarg :padding :initform 4 :accessor column-stack-padding
             :documentation "Padding inside the column stack bounds."))
   (:documentation "Container widget that arranges children in a vertical column."))
 
-(defclass split-pane (widget-container)
+(defclass split-pane (<widget-container>)
   ((orientation
     :initarg :orientation :initform :horizontal
     :accessor split-pane-orientation
@@ -95,7 +121,7 @@
     :documentation "Minimum size of the second pane along the split axis."))
   (:documentation "Container widget that divides available area into two panes with a movable split ratio."))
 
-(defclass list-box (widget-container)
+(defclass list-box (<widget-container>)
   ((items :initarg :items :initform nil :accessor list-box-items
           :documentation "List of items in the box")
    (selected-index
@@ -165,40 +191,40 @@
   (:documentation
    "Collapsed header of a combo-box; clicking toggles the associated popup."))
 
-(defclass combo-box (widget)
+(defclass <combo-box> (widget)
   ((header
     :initarg :header
     :initform nil
-    :accessor combo-box-header-widget
+    :accessor <combo-box>-header-widget
     :documentation "Header widget instance (a `combo-box-header`).")
    (popup
     :initarg :popup
-    :initform nil :accessor combo-box-popup-widget
+    :initform nil :accessor <combo-box>-popup-widget
     :documentation "Popup widget instance (a `combo-box-popup`).")
    (initial-items
     :initarg :items
     :initform nil
-    :accessor combo-box-initial-items
+    :accessor <combo-box>-initial-items
     :documentation "Compatibility initarg to supply initial items for the popup.")
    (initial-selected-index
     :initarg :selected-index
     :initform 0
-    :accessor combo-box-initial-selected-index
+    :accessor <combo-box-initial>-selected-index
     :documentation "Compatibility initarg to set initial selected index on popup.")
    (main-height
     :initarg :main-height
     :initform 30
-    :accessor combo-box-main-height
+    :accessor <combo-box>-main-height
     :documentation "Collapsed header height of the combo-box")
    (expanded-p
     :initarg :expanded-p
     :initform nil
-    :accessor combo-box-expanded-p
+    :accessor <combo-box>-expanded-p
     :documentation "Whether combo-box popup list is currently visible")
    (max-visible-items
     :initarg :max-visible-items
     :initform 6
-    :accessor combo-box-max-visible-items
+    :accessor <combo-box>-max-visible-items
     :documentation "Maximum number of visible rows in the popup list"))
   (:documentation "Combined combo-box that manages a header and a popup list (popup always uses its own window)."))
 
@@ -242,13 +268,15 @@
 
   (:documentation "Toolbar button implemented as a widget so it can be a child of toolbar."))
 
-(defclass toolbar (widget-container)
+(defclass toolbar (<widget-container>)
   ((layout :initarg :layout :initform :horizontal :accessor toolbar-layout
            :documentation "Layout mode: :horizontal or :vertical.")
    (background :initarg :background :initform '(245 245 245 255)
                :accessor toolbar-background)
    (padding :initarg :padding :initform 6 :accessor toolbar-padding))
-  (:documentation "Toolbar container implemented as a widget-container; buttons are its children."))
+  (:documentation
+   "Toolbar container implemented as a <widget-container>; buttons are its
+children."))
 
 (defclass button (widget)
   ((text

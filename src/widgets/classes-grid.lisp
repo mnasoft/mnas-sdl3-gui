@@ -22,7 +22,7 @@
    (weight-y
     :initarg :weight-y :initform 0 :accessor grid-child-weight-y)))
 
-(defclass grid-container (widget-container)
+(defclass grid-container (<widget-container>)
   ((rows
     :initarg :rows :initform 1 :accessor grid-rows
     :documentation "Number of rows in the grid")

@@ -21,7 +21,7 @@
                                     :width 64
                                     :window window
                                     )))
-    (setf (mnas-sdl3-gui/widgets:widget-children toolbar) (list tb-btn-quit))
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar) (list tb-btn-quit))
     toolbar))
 
 (defun check-box-labels-in-column (prefix)
@@ -58,8 +58,8 @@
                     :checked checked-p
                     :focused nil
                     :window  window)))
-    (setf (mnas-sdl3-gui/widgets:widget-value check-box) checked-p)
-    (setf (mnas-sdl3-gui/widgets:widget-on-change check-box)
+    (setf (mnas-sdl3-gui/widgets:<widget>-value check-box) checked-p)
+    (setf (mnas-sdl3-gui/widgets:<widget>-on-change check-box)
           (lambda (widget value)
             (declare (ignore widget value))
             (refresh-check-box-status)))
