@@ -39,12 +39,12 @@ forwards other keys to the focused widget."
         :alt (key-modifier-active-p mods :alt))
        :continue))))
 
-(defmethod handle-widget-key-event :around ((widget widget) key char &key mods ctrl shift alt on-escape on-return)
+(defmethod handle-widget-key-event :around ((widget <widget>) key char &key mods ctrl shift alt on-escape on-return)
   (declare (ignore key char mods ctrl shift alt on-escape on-return))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
-(defmethod handle-widget-key-event ((widget widget) key char &key mods ctrl shift alt on-escape on-return)
+(defmethod handle-widget-key-event ((widget <widget>) key char &key mods ctrl shift alt on-escape on-return)
   (declare (ignore mods ctrl shift alt on-escape on-return))
   (handle-widget-key-press widget key char))
 

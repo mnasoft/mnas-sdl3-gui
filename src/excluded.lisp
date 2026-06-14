@@ -22,3 +22,6 @@ a `combo-box-popup` return its renderer slot. Returns NIL otherwise."
     ((typep obj 'combo-box-popup)
      (slot-value obj 'renderer))
     (t nil)))
+
+(defgeneric list-box-selected-index (widget)
+  (:documentation "Return selected index for LIST-BOX or combo-box via its popup."))

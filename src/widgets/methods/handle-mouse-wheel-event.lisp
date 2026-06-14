@@ -6,7 +6,7 @@
 (defparameter *debug-mouse-wheel-events* nil
   "When T, log mouse-wheel event coords and list-box scroll changes to *error-output*.")
 
-(defmethod handle-mouse-wheel-event :around ((widget widget) (ev sdl3:mouse-wheel-event))
+(defmethod handle-mouse-wheel-event :around ((widget <widget>) (ev sdl3:mouse-wheel-event))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
@@ -27,12 +27,12 @@
             return widget
           finally (return nil))))
 
-(defmethod handle-mouse-wheel-event ((widget widget) (ev sdl3:mouse-wheel-event))
+(defmethod handle-mouse-wheel-event ((widget <widget>) (ev sdl3:mouse-wheel-event))
   "Default per-widget wheel handler: no-op. Special widgets provide scrolling behavior."
   (declare (ignore ev))
   nil)
 
-(defmethod handle-mouse-wheel-event ((widget scroll-container) (ev sdl3:mouse-wheel-event))
+(defmethod handle-mouse-wheel-event ((widget <scroll-container>) (ev sdl3:mouse-wheel-event))
   "Try children first; if none consume the event, scroll the container by the vertical delta." 
     (let* ((x (round (slot-value ev 'sdl3:%x)))
       (y (round (slot-value ev 'sdl3:%y)))
@@ -43,11 +43,11 @@
             when (handle-mouse-wheel-event child ev)
               return t
             finally (return (and (not (zerop dy))
-                                 (let ((old-offset (scroll-container-scroll-offset widget)))
-                                   (setf (scroll-container-scroll-offset widget)
+                                 (let ((old-offset (<scroll-container>-scroll-offset widget)))
+                                   (setf (<scroll-container>-scroll-offset widget)
                                          (+ old-offset dy))
                                    (normalize-scroll-container-scroll-offset widget)
-                                   (/= old-offset (scroll-container-scroll-offset widget)))))))))
+                                   (/= old-offset (<scroll-container>-scroll-offset widget)))))))))
 
 (defmethod handle-mouse-wheel-event ((widget combo-box) (ev sdl3:mouse-wheel-event))
   "Handle mouse-wheel for combo-box popups: adjust list-box scroll offset." 
@@ -69,21 +69,21 @@
     (finish-output)
     (when (not (zerop dy))
       (let* ((popup (<combo-box>-popup-widget widget))
-             (item-h (or (and popup (list-box-item-height popup)) 24))
-             (old-offset (list-box-scroll-offset widget))
+             (item-h (or (and popup (<list-box>-item-height popup)) 24))
+             (old-offset (<list-box>-scroll-offset widget))
              (delta-rows (if (< (abs dy) item-h)
                              (if (> dy 0) 1 -1)
                              (round (/ dy item-h)))))
         (format t "[combo-box] old-offset=~A dy=~A item-h=~A delta-rows=~A~%" old-offset dy item-h delta-rows)
         (finish-output)
-        (setf (list-box-scroll-offset widget)
+        (setf (<list-box>-scroll-offset widget)
               (+ old-offset delta-rows))
         (normalize-list-box-scroll-offset widget)
-        (format t "[combo-box] new-offset=~A~%" (list-box-scroll-offset widget))
+        (format t "[combo-box] new-offset=~A~%" (<list-box>-scroll-offset widget))
         (finish-output)
-        (/= old-offset (list-box-scroll-offset widget))))))
+        (/= old-offset (<list-box>-scroll-offset widget))))))
 
-(defmethod handle-mouse-wheel-event ((widget list-box) (ev sdl3:mouse-wheel-event))
+(defmethod handle-mouse-wheel-event ((widget <list-box>) (ev sdl3:mouse-wheel-event))
   "Handle mouse-wheel for list-box: adjust scroll offset when pointer is over the widget."
     (let* ((mx (ignore-errors (slot-value ev 'sdl3:%mouse-x)))
       (my (ignore-errors (slot-value ev 'sdl3:%mouse-y)))
@@ -100,15 +100,15 @@
         (format t "[mouse-wheel] widget=~S x=~D y=~D raw-dy=~S dir=~S dy=~S inside=~S~%" widget x y raw-dy dir dy inside))
       (when inside
         (and (not (zerop dy))
-             (let* ((item-h (or (and (typep widget 'list-box) (list-box-item-height widget)) 24))
-                    (old-offset (list-box-scroll-offset widget))
+             (let* ((item-h (or (and (typep widget '<list-box>) (<list-box>-item-height widget)) 24))
+                    (old-offset (<list-box>-scroll-offset widget))
                     (delta-rows (if (< (abs dy) item-h)
                                     (if (> dy 0) 1 -1)
                                     (round (/ dy item-h)))))
-               (setf (list-box-scroll-offset widget)
+               (setf (<list-box>-scroll-offset widget)
                      (+ old-offset delta-rows))
                (normalize-list-box-scroll-offset widget)
                (when *debug-mouse-wheel-events*
                  (format t "[mouse-wheel] widget=~S old-offset=~D new-offset=~D delta-rows=~D~%"
-                         widget old-offset (list-box-scroll-offset widget) delta-rows))
-               (/= old-offset (list-box-scroll-offset widget))))))))
+                         widget old-offset (<list-box>-scroll-offset widget) delta-rows))
+               (/= old-offset (<list-box>-scroll-offset widget))))))))

@@ -4,7 +4,6 @@
   (:nicknames :gui/widgets)
   (:use #:cl)
 ;;; base widget class
-;;; base widget class 
   (:export #:widget
            #:<widget>-x
            #:<widget>-y
@@ -24,27 +23,30 @@
            #:widget-arrange
            #:widget-hit-test
 
-           #:scroll-container
-           #:row-stack
-           #:column-stack
-           #:split-pane
-           #:canvas-2d-widget
-           
-           #:<widget-container>
+           #:canvas-2d-widget)
+  (:export #:<widget-container>
            #:<widget-container>-children
-           #:children
-           #:scroll-container-scroll-offset
-           #:row-stack-spacing
-           #:row-stack-padding
-           #:column-stack-spacing
-           #:column-stack-padding
-           #:split-pane-orientation
-           #:split-pane-ratio
-           #:split-pane-divider-size
-           #:split-pane-padding
-           #:split-pane-min-first-pane
-           #:split-pane-min-second-pane
-           #:canvas-2d-widget-scene
+           #:children)
+;;; scroll-container
+  (:export #:<scroll-container>
+           #:<scroll-container>-scroll-offset
+           #:<scroll-container>-max-scroll-offset
+           #:<scroll-container>-content-height
+           )
+  (:export #:<row-stack>
+           #:<row-stack>-spacing
+           #:<row-stack>-padding)
+  (:export #:<column-stack>
+           #:<column-stack>-spacing
+           #:<column-stack>-padding)
+  (:export #:<split-pane>
+           #:<split-pane>-orientation
+           #:<split-pane>-ratio
+           #:<split-pane>-divider-size
+           #:<split-pane>-padding
+           #:<split-pane>-min-first-pane
+           #:<split-pane>-min-second-pane)
+  (:export #:canvas-2d-widget-scene
            #:canvas-2d-widget-viewport-scale
            #:canvas-2d-widget-viewport-offset-x
            #:canvas-2d-widget-viewport-offset-y
@@ -67,8 +69,7 @@
            #:widget-remove-child
            #:widget-clear-children
            #:normalize-scroll-container-scroll-offset
-           #:scroll-container-max-scroll-offset
-           #:scroll-container-content-height
+
 ;;; style classes and helpers
            #:widget-style
            #:flat-widget-style

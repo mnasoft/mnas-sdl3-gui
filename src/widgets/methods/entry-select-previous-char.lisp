@@ -2,10 +2,10 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod entry-select-previous-char ((widget entry))
-  (let ((anchor (entry-selection-anchor widget)))
-    (when (> (entry-cursor widget) 0)
-      (decf (entry-cursor widget))
-      (entry-ensure-cursor-visible widget)
-      (entry-select-from-anchor widget anchor)))
+(defmethod entry-select-previous-char ((obj entry))
+  (let ((anchor (entry-selection-anchor obj)))
+    (when (> (entry-cursor obj) 0)
+      (decf (entry-cursor obj))
+      (entry-ensure-cursor-visible obj)
+      (entry-select-from-anchor obj anchor)))
   t)

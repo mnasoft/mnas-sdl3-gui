@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod update-<widget>-value ((widget widget) new-value)
+(defmethod update-<widget>-value ((widget <widget>) new-value)
   (unless (eql (<widget>-value widget) new-value)
     (setf (<widget>-value widget) new-value)
     (when (<widget>-on-change widget)

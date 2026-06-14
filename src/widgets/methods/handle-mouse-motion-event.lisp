@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod handle-mouse-motion-event :around ((widget widget) (ev sdl3:mouse-motion-event))
+(defmethod handle-mouse-motion-event :around ((widget <widget>) (ev sdl3:mouse-motion-event))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
@@ -20,7 +20,7 @@
             return widget
           finally (return nil))))
 
-(defmethod handle-mouse-motion-event ((widget widget) (ev sdl3:mouse-motion-event))
+(defmethod handle-mouse-motion-event ((widget <widget>) (ev sdl3:mouse-motion-event))
   "Default per-widget motion handler: no-op. Specialized widgets implement their own behavior."
   (declare (ignore ev))
   nil)

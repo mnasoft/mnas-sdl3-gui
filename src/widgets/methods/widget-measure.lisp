@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod widget-measure ((widget widget) &optional constraints)
+(defmethod widget-measure ((widget <widget>) &optional constraints)
   (declare (ignore constraints))
   (widget-min-size widget))
 

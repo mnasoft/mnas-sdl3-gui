@@ -6,8 +6,8 @@
 ;; accessor to keep backward compatibility while switching callsites to the
 ;; generic API.
 
-(defmethod visible-p ((widget widget))
-  (<widget>-visible widget))
+(defmethod visible-p ((obj <widget>))
+  (<widget>-visible obj))
 
-(defmethod visible-p ((widget <widget-container>))
-  (<widget>-visible widget))
+(defmethod visible-p ((obj <widget-container>))
+  (<widget>-visible obj))

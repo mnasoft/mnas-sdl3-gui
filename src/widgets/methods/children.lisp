@@ -6,17 +6,17 @@
 ;; `<widget-container>-children` slot accessor for backward compatibility until slot
 ;; migration completes.
 
-(defmethod children :around ((widget widget))
+(defmethod children :around ((widget <widget>))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
-(defmethod children ((widget widget))
+(defmethod children ((widget <widget>))
   (<widget-container>-children widget))
 
 (defmethod children ((widget <widget-container>))
   (<widget-container>-children widget))
 
-(defmethod (setf children) (newlist (widget widget))
+(defmethod (setf children) (newlist (widget <widget>))
   (setf (<widget-container>-children widget) newlist)
   newlist)
 

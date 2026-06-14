@@ -4,7 +4,7 @@
 
 ;;; Widget classes
 
-(defclass widget ()
+(defclass <widget> ()
   ((x
     :initarg :x
     :initform 0
@@ -65,7 +65,7 @@
     :documentation "Callback function called when value changes"))
   (:documentation "Base class for all widgets"))
 
-(defclass <widget-container> (widget)
+(defclass <widget-container> (<widget>)
   ((children
     :initarg :children
     :initform nil
@@ -74,80 +74,122 @@
   (:documentation
    "Widget that groups child widgets and delegates rendering/events."))
 
-(defclass scroll-container (<widget-container>)
+(defclass <scroll-container> (<widget-container>)
   ((scroll-offset
-    :initarg :scroll-offset :initform 0 :accessor scroll-container-scroll-offset
+    :initarg :scroll-offset
+    :initform 0
+    :accessor <scroll-container>-scroll-offset
     :documentation "Vertical scroll offset for child content.")
    (auto-hide-scrollbar
-    :initarg :auto-hide-scrollbar :initform t :accessor scroll-container-auto-hide-scrollbar
+    :initarg :auto-hide-scrollbar
+    :initform t
+    :accessor <scroll-container>-auto-hide-scrollbar
     :documentation "Hide scroll bar when content fits inside the container."))
   (:documentation "Scrollable container widget for vertically stacked child widgets."))
 
-(defclass row-stack (<widget-container>)
+(defclass <row-stack> (<widget-container>)
   ((spacing
-    :initarg :spacing :initform 4 :accessor row-stack-spacing
+    :initarg :spacing
+    :initform 4
+    :accessor <row-stack>-spacing
     :documentation "Horizontal spacing between child widgets.")
    (padding
-    :initarg :padding :initform 4 :accessor row-stack-padding
+    :initarg :padding
+    :initform 4
+    :accessor <row-stack>-padding
     :documentation "Padding inside the row stack bounds."))
   (:documentation "Container widget that arranges children in a horizontal row."))
 
-(defclass column-stack (<widget-container>)
-  ((spacing :initarg :spacing :initform 4 :accessor column-stack-spacing
-            :documentation "Vertical spacing between child widgets.")
-   (padding :initarg :padding :initform 4 :accessor column-stack-padding
-            :documentation "Padding inside the column stack bounds."))
+(defclass <column-stack> (<widget-container>)
+  ((spacing
+    :initarg :spacing
+    :initform 4
+    :accessor <column-stack>-spacing
+    :documentation "Vertical spacing between child widgets.")
+   (padding
+    :initarg :padding
+    :initform 4
+    :accessor <column-stack>-padding
+    :documentation "Padding inside the column stack bounds."))
   (:documentation "Container widget that arranges children in a vertical column."))
 
-(defclass split-pane (<widget-container>)
+(defclass <split-pane> (<widget-container>)
   ((orientation
-    :initarg :orientation :initform :horizontal
-    :accessor split-pane-orientation
+    :initarg :orientation
+    :initform :horizontal
+    :accessor <split-pane>-orientation
     :documentation "Split orientation: :horizontal for left/right, :vertical for top/bottom.")
    (split-ratio
-    :initarg :split-ratio :initform 0.5 :accessor split-pane-ratio
+    :initarg :split-ratio
+    :initform 0.5
+    :accessor <split-pane>-ratio
     :documentation "Fraction of available space assigned to the first pane.")
    (divider-size
-    :initarg :divider-size :initform 4 :accessor split-pane-divider-size
+    :initarg :divider-size
+    :initform 4
+    :accessor <split-pane>-divider-size
     :documentation "Thickness of the split divider in pixels.")
    (padding
-    :initarg :padding :initform 8 :accessor split-pane-padding
+    :initarg :padding
+    :initform 8
+    :accessor <split-pane>-padding
     :documentation "Padding around the split-pane contents.")
    (min-first-pane
-    :initarg :min-first-pane :initform 32 :accessor split-pane-min-first-pane
+    :initarg :min-first-pane
+    :initform 32
+    :accessor <split-pane>-min-first-pane
     :documentation "Minimum size of the first pane along the split axis.")
    (min-second-pane
-    :initarg :min-second-pane :initform 32 :accessor split-pane-min-second-pane
+    :initarg :min-second-pane
+    :initform 32
+    :accessor <split-pane>-min-second-pane
     :documentation "Minimum size of the second pane along the split axis."))
-  (:documentation "Container widget that divides available area into two panes with a movable split ratio."))
+  (:documentation
+   "Container widget that divides available area into two panes with a movable split ratio."))
 
-(defclass list-box (<widget-container>)
-  ((items :initarg :items :initform nil :accessor list-box-items
-          :documentation "List of items in the box")
+(defclass <list-box> (<widget-container>)
+  ((items
+    :initarg :items
+    :initform nil
+    :accessor <list-box>-items
+    :documentation "List of items in the box")
    (selected-index
-    :initarg :selected-index :initform 0 :accessor list-box-selected-index
+    :initarg :selected-index
+    :initform 0
+    :accessor <list-box>-selected-index
     :documentation "Index of currently selected item")
    (scroll-offset
-    :initarg :scroll-offset :initform 0 :accessor list-box-scroll-offset
+    :initarg :scroll-offset
+    :initform 0
+    :accessor <list-box>-scroll-offset
     :documentation "Index of the first visible item")
    (scrollbar-dragging-p
-    :initarg :scrollbar-dragging-p :initform nil
-    :accessor list-box-scrollbar-dragging-p
+    :initarg :scrollbar-dragging-p
+    :initform nil
+    :accessor <list-box>-scrollbar-dragging-p
     :documentation "Whether the list-box scrollbar thumb is currently dragged")
    (scrollbar-drag-offset
-    :initarg :scrollbar-drag-offset :initform 0
-    :accessor list-box-scrollbar-drag-offset
+    :initarg :scrollbar-drag-offset
+    :initform 0
+    :accessor <list-box>-scrollbar-drag-offset
     :documentation "Mouse Y offset inside the dragged scrollbar thumb")
    (item-height
-    :initarg :item-height :initform 24 :accessor list-box-item-height
+    :initarg :item-height
+    :initform 24
+    :accessor <list-box>-item-height
     :documentation "Height of each item")
-   (layout :initarg :layout :initform :vertical :accessor list-box-layout
-           :documentation "Layout direction for children; list-box uses :vertical.")
-   (has-scrollbar :initarg :has-scrollbar :initform t :accessor list-box-has-scrollbar
-                  :documentation "Whether the list-box shows a scrollbar (optional)."))
+   (layout
+    :initarg :layout
+    :initform :vertical
+    :accessor <list-box>-layout
+    :documentation "Layout direction for children; list-box uses :vertical.")
+   (has-scrollbar
+    :initarg :has-scrollbar
+    :initform t :accessor <list-box>-has-scrollbar
+    :documentation "Whether the list-box shows a scrollbar (optional)."))
   (:documentation "Scrollable list box widget implemented as a container with vertical layout."))
 
-(defclass combo-box-popup (list-box)
+(defclass combo-box-popup (<list-box>)
   ((owner
     :initarg :owner
     :accessor combo-box-popup-owner
@@ -178,7 +220,7 @@
   (:documentation
    "Popup list displayed in its own transient window; subclass of `list-box`.") )
 
-(defclass combo-box-header (widget)
+(defclass combo-box-header (<widget>)
   ((owner
     :initarg :owner
     :accessor combo-box-header-owner
@@ -191,7 +233,7 @@
   (:documentation
    "Collapsed header of a combo-box; clicking toggles the associated popup."))
 
-(defclass <combo-box> (widget)
+(defclass <combo-box> (<widget>)
   ((header
     :initarg :header
     :initform nil
@@ -228,7 +270,7 @@
     :documentation "Maximum number of visible rows in the popup list"))
   (:documentation "Combined combo-box that manages a header and a popup list (popup always uses its own window)."))
 
-(defclass canvas-2d-widget (widget)
+(defclass canvas-2d-widget (<widget>)
   ((scene
     :initarg :scene :initform nil :accessor canvas-2d-widget-scene
     :documentation "Scene model for 2D canvas rendering.")
@@ -252,14 +294,14 @@
     :documentation "Enable zooming for the canvas viewport."))
   (:documentation "Canvas widget specialized for 2D scene rendering and interaction."))
 
-(defclass label (widget)
+(defclass label (<widget>)
   ((text
     :initarg :text :initform "" :accessor label-text
     :documentation "Text content of label"))
   (:documentation "Simple text label widget"))
 
 ;;; Toolbar widgets moved here so they integrate with widget hierarchy.
-(defclass toolbar-button (widget)
+(defclass toolbar-button (<widget>)
   ((command-id :initarg :command-id :accessor button-command-id)
    (type :initarg :type :initform :push :accessor button-type)
    (group :initarg :group :initform nil :accessor button-group)
@@ -278,7 +320,7 @@
    "Toolbar container implemented as a <widget-container>; buttons are its
 children."))
 
-(defclass button (widget)
+(defclass button (<widget>)
   ((text
     :initarg :text :initform "Button" :accessor button-text
     :documentation "Button label text")
@@ -293,7 +335,7 @@ children."))
     :documentation "Callback function called on button click"))
   (:documentation "Clickable button widget"))
 
-(defclass toggle (widget)
+(defclass toggle (<widget>)
   ((state
     :initarg :state :initform nil :accessor toggle-state
     :documentation "Current toggle state (selected or NIL)")
@@ -305,14 +347,14 @@ children."))
     :documentation "Label for toggle"))
   (:documentation "Radio-style toggle widget (single selection per group)"))
 
-(defclass check-box (widget)
+(defclass check-box (<widget>)
   ((checked :initarg :checked :initform nil :accessor check-box-checked
             :documentation "Whether checkbox is checked")
    (label :initarg :label :initform "Check" :accessor check-box-label
           :documentation "Label for checkbox"))
   (:documentation "Checkbox widget"))
 
-(defclass entry (widget)
+(defclass entry (<widget>)
   ((text
     :initarg :text :initform "" :accessor entry-text
     :documentation "Text content of entry")
@@ -382,7 +424,7 @@ children."))
     :documentation "Optional user payload for the node."))
   (:documentation "Node model used by tree-view widget."))
 
-(defclass tree-view (widget)
+(defclass tree-view (<widget>)
   ((roots :initarg :roots :initform nil :accessor tree-view-roots
           :documentation "Top-level tree-node list.")
    (selected-node :initarg :selected-node :initform nil :accessor tree-view-selected-node

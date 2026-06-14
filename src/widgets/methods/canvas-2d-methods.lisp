@@ -5,33 +5,33 @@
 ;; Minimal scaffold for canvas-2d-widget behavior: scene assignment,
 ;; viewport transforms, pan/zoom helpers and a simple render pass.
 
-(defmethod set-scene ((widget canvas-2d-widget) scene)
+(defmethod set-scene ((obj canvas-2d-widget) scene)
   "Assign SCENE model to canvas and request redraw."
-  (setf (canvas-2d-widget-scene widget) scene)
-  (request-redraw widget))
+  (setf (canvas-2d-widget-scene obj) scene)
+  (request-redraw obj))
 
-(defmethod request-redraw ((widget canvas-2d-widget))
+(defmethod request-redraw ((obj canvas-2d-widget))
   "Mark widget to be redrawn on next frame." 
-  (setf (canvas-2d-widget-redraw-requested widget) t))
+  (setf (canvas-2d-widget-redraw-requested obj) t))
 
-(defmethod world-to-screen ((widget canvas-2d-widget) x y &optional z)
+(defmethod world-to-screen ((obj canvas-2d-widget) x y &optional z)
   "Convert world coordinates to screen coordinates using viewport scale/offsets." 
-  (let ((s (canvas-2d-widget-viewport-scale widget))
-        (ox (canvas-2d-widget-viewport-offset-x widget))
-        (oy (canvas-2d-widget-viewport-offset-y widget)))
+  (let ((s (canvas-2d-widget-viewport-scale obj))
+        (ox (canvas-2d-widget-viewport-offset-x obj))
+        (oy (canvas-2d-widget-viewport-offset-y obj)))
     (values (+ ox (* x s)) (+ oy (* y s)) (and z (* s z)))))
 
-(defmethod screen-to-world ((widget canvas-2d-widget) x y &optional z)
+(defmethod screen-to-world ((obj canvas-2d-widget) x y &optional z)
   "Inverse of `world-to-screen`." 
-  (let ((s (canvas-2d-widget-viewport-scale widget))
-        (ox (canvas-2d-widget-viewport-offset-x widget))
-        (oy (canvas-2d-widget-viewport-offset-y widget)))
+  (let ((s (canvas-2d-widget-viewport-scale obj))
+        (ox (canvas-2d-widget-viewport-offset-x obj))
+        (oy (canvas-2d-widget-viewport-offset-y obj)))
     (values (/ (- x ox) (max s 1e-9)) (/ (- y oy) (max s 1e-9)) (and z (/ z (max s 1e-9))))))
 
-(defmethod handle-viewport-resize ((widget canvas-2d-widget) width height)
+(defmethod handle-viewport-resize ((obj canvas-2d-widget) width height)
   "Handle viewport resize - update widget bounds and request redraw."
-  (place-widget widget :x (<widget>-x widget) :y (<widget>-y widget) :width width :height height)
-  (request-redraw widget))
+  (place-widget obj :x (<widget>-x obj) :y (<widget>-y obj) :width width :height height)
+  (request-redraw obj))
 
 (defun canvas-2d-pan-by (widget dx dy)
   "Pan canvas viewport by DX/DY (in screen pixels). Returns new offsets." 
@@ -56,15 +56,15 @@
       (request-redraw widget)
       (canvas-2d-widget-viewport-scale widget))))
 
-(defmethod render (renderer (widget canvas-2d-widget) style)
+(defmethod render (renderer (obj canvas-2d-widget) style)
   "Basic render pass for canvas: clear background and, if a scene is present,
 perform a trivial placeholder draw. Real scene rendering should be implemented
 by higher-level code that inspects `canvas-2d-widget-scene`."
   ;; clear canvas area
-  (fill-rect renderer (<widget>-x widget) (<widget>-y widget)
-             (<widget>-width widget) (<widget>-height widget) +color-bg+)
+  (fill-rect renderer (<widget>-x obj) (<widget>-y obj)
+             (<widget>-width obj) (<widget>-height obj) +color-bg+)
   ;; placeholder scene rendering: if scene is a simple list of items, draw them
-  (let ((scene (canvas-2d-widget-scene widget)))
+  (let ((scene (canvas-2d-widget-scene obj)))
     (when (and scene (listp scene))
       (dolist (item scene)
         (when (and (consp item) (eq (car item) :circle))
@@ -72,9 +72,9 @@ by higher-level code that inspects `canvas-2d-widget-scene`."
                 (cy (nth 2 item))
                 (r  (nth 3 item))
                 (color (nth 4 item)))
-            (multiple-value-bind (sx sy) (world-to-screen widget cx cy)
+            (multiple-value-bind (sx sy) (world-to-screen obj cx cy)
               (fill-circle renderer sx sy r (or color '(64 128 200 255))))))))))
 
-(defmethod widget-min-size ((widget canvas-2d-widget))
+(defmethod widget-min-size ((obj canvas-2d-widget))
   "Minimal size hint for canvas widget - default to current size."
-  (values (<widget>-width widget) (<widget>-height widget)))
+  (values (<widget>-width obj) (<widget>-height obj)))

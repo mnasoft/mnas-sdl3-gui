@@ -128,7 +128,7 @@ Returns the window id that was processed or NIL."
 
 (defun make-scroll-container (&key (x 0) (y 0) (width 100) (height 100) (children nil))
   "Create a new scroll-container for vertically stacked child widgets." 
-  (make-instance 'mnas-sdl3-gui/widgets:scroll-container
+  (make-instance 'mnas-sdl3-gui/widgets:<scroll-container>
                  :x x
                  :y y
                  :width width
@@ -141,7 +141,7 @@ Returns the window id that was processed or NIL."
                         (spacing 4)
                         (padding 4))
   "Create a row-stack container that arranges child widgets horizontally." 
-  (make-instance 'mnas-sdl3-gui/widgets:row-stack
+  (make-instance 'mnas-sdl3-gui/widgets:<row-stack>
                  :x x
                  :y y
                  :width width
@@ -155,7 +155,7 @@ Returns the window id that was processed or NIL."
                            (spacing 4)
                            (padding 4))
   "Create a column-stack container that arranges child widgets vertically." 
-  (make-instance 'mnas-sdl3-gui/widgets:column-stack
+  (make-instance 'mnas-sdl3-gui/widgets:<column-stack>
                  :x x
                  :y y
                  :width width
@@ -173,7 +173,7 @@ Returns the window id that was processed or NIL."
                            (min-first-pane 32)
                            (min-second-pane 32))
   "Create a split-pane container that divides available space into two panes." 
-  (make-instance 'mnas-sdl3-gui/widgets:split-pane
+  (make-instance 'mnas-sdl3-gui/widgets:<split-pane>
                  :x x
                  :y y
                  :width width

@@ -5,7 +5,7 @@
 (defmethod initialize-instance :after ((widget toggle) &key &allow-other-keys)
   (register-toggle-group-member widget))
 
-(defmethod initialize-instance :after ((widget widget) &key &allow-other-keys)
+(defmethod initialize-instance :after ((widget <widget>) &key &allow-other-keys)
   "Auto-register WIDGET in global window->widgets registry when :window slot is provided."
   (let ((win (<widget>-window widget)))
     (when win
@@ -26,8 +26,8 @@
   ;; Forward any initial items passed via :items initarg to popup
   (let ((init-items (<combo-box>-initial-items widget)))
     (when init-items
-      (setf (list-box-items (<combo-box>-popup-widget widget)) init-items)
-      (setf (list-box-selected-index (<combo-box>-popup-widget widget))
+      (setf (<list-box>-items (<combo-box>-popup-widget widget)) init-items)
+      (setf (<list-box>-selected-index (<combo-box>-popup-widget widget))
             (<combo-box-initial>-selected-index widget))))
   (setf (<combo-box>-main-height widget) (<widget>-height widget))
   (ensure-combo-box-selection-visible widget)
@@ -47,7 +47,7 @@
 ;; When widget's `:window` slot is changed after creation we should update the
 ;; global registry accordingly. Provide a setf method for `<widget>-window`
 ;; that unregisters from the old window id and registers for the new one.
-(defmethod (setf <widget>-window) (new-win (widget widget))
+(defmethod (setf <widget>-window) (new-win (widget <widget>))
   (let ((old (<widget>-window widget)))
     ;; Unregister from old window id if present
     (when old
@@ -72,7 +72,7 @@
               (and popup (combo-box-popup-window popup)))
       (ignore-errors (combo-box-disable-popup-window widget)))))
 
-(defmethod finalize-instance :after ((widget widget))
+(defmethod finalize-instance :after ((widget <widget>))
   (let ((win (<widget>-window widget)))
     (when win
       (let ((wid (window-id-from win)))

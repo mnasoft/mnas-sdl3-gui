@@ -2,11 +2,11 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod activate-widget :around ((widget widget))
+(defmethod activate-widget :around ((widget <widget>))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
-(defmethod activate-widget ((widget widget))
+(defmethod activate-widget ((widget <widget>))
   nil)
 
 (defmethod activate-widget ((widget button))

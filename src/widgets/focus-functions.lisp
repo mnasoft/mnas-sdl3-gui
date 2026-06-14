@@ -63,7 +63,7 @@
   (when window
     (sdl3:stop-text-input window)))
 
-(defmethod set-widget-focus ((widgets cons) (target widget))
+(defmethod set-widget-focus ((widgets cons) (target <widget>))
   "Assign keyboard focus to TARGET and clear it from the other WIDGETS."
   (loop for widget in widgets
     do (setf (<widget>-focused widget) (eq widget target)))

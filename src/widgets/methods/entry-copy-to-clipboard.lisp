@@ -2,12 +2,12 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod entry-copy-to-clipboard ((widget entry))
-  (let ((selected (get-entry-selected-text widget)))
+(defmethod entry-copy-to-clipboard ((obj entry))
+  (let ((selected (get-entry-selected-text obj)))
     (when (plusp (length selected))
       (sdl3:set-clipboard-text selected))))
 
-(defmethod entry-copy-to-clipboard ((widget password-entry))
+(defmethod entry-copy-to-clipboard ((obj password-entry))
   ;; Do not place password text into the system clipboard.
-  (declare (ignore widget))
+  (declare (ignore obj))
   nil)

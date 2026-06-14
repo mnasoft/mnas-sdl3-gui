@@ -7,7 +7,7 @@
 ;; `handle-widget-mouse-device` adapters when appropriate. Default
 ;; behaviour is no-op.
 
-(defmethod handle-mouse-device-event :around ((widget widget) (ev sdl3:mouse-device-event))
+(defmethod handle-mouse-device-event :around ((widget <widget>) (ev sdl3:mouse-device-event))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
 
@@ -19,7 +19,7 @@
           return widget
         finally (return nil)))
 
-(defmethod handle-mouse-device-event ((widget widget) (ev sdl3:mouse-device-event))
+(defmethod handle-mouse-device-event ((widget <widget>) (ev sdl3:mouse-device-event))
   ;; Default no-op; per-widget specializations can respond to device events.
   (declare (ignore ev))
   nil)

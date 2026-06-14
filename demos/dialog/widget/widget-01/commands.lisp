@@ -2,11 +2,11 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/widget-01)
 
-(defun widget-01-command (id &rest context-plist)
+(defun command (id &rest context-plist)
   "Execute command ID with CONTEXT-PLIST." 
   (mnas-sdl3-gui/commands:execute-command id :context context-plist))
 
-(defun widget-01-register-commands ()
+(defun register-commands ()
   "Register command set for widget-01 demo." 
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
@@ -16,7 +16,7 @@
     :shortcut :escape
     :execute (lambda (context)
                (declare (ignore context))
-               (setf *widget-01-open* nil)
+               (setf *open* nil)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -28,7 +28,7 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (widget-01-apply-style :flat)
+               (apply-style :flat)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -40,7 +40,7 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (widget-01-apply-style :windows)
+               (apply-style :windows)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -52,7 +52,7 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (widget-01-apply-style :motif)
+               (apply-style :motif)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -64,11 +64,11 @@
     :visible nil
     :can-execute (lambda (context)
                    (declare (ignore context))
-                   (let ((entry (widget-01-entry-widget)))
+                   (let ((entry (entry-widget)))
                      (and entry (> (length (mnas-sdl3-gui/widgets:entry-text entry)) 0))))
     :execute (lambda (context)
                (declare (ignore context))
-               (let ((entry (widget-01-entry-widget)))
+               (let ((entry (entry-widget)))
                  (when entry
                    (setf (mnas-sdl3-gui/widgets:entry-text entry) ""
                          (mnas-sdl3-gui/widgets:entry-cursor entry) 0)
@@ -76,7 +76,7 @@
                    t))))
    :replace t))
 
-(defun widget-01-register-shortcuts ()
+(defun register-shortcuts ()
   "Register keyboard shortcuts for widget-01 commands." 
   (mnas-sdl3-gui/commands:register-shortcut :widget-01/quit :escape :replace t)
   (mnas-sdl3-gui/commands:register-shortcut :widget-01/style-flat :f :replace t)
