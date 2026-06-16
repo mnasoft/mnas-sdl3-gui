@@ -7,18 +7,18 @@
   (:use #:cl)
   (:export
    ;; classes
-   #:menu-entry
-   #:command-entry
-   #:separator-entry
-   #:submenu-entry
+   #:menu-<entry>
+   #:command-<entry>
+   #:separator-<entry>
+   #:submenu-<entry>
    #:dropdown-menu
    #:menu-bar
-   ;; entry accessors
-   #:entry-label
-   #:entry-hotkey
-   #:entry-action
-  #:entry-command-id
-   #:entry-submenu
+   ;; <entry> accessors
+   #:<entry>-<label>
+   #:<entry>-hotkey
+   #:<entry>-action
+  #:<entry>-command-id
+   #:<entry>-submenu
    ;; dropdown-menu accessors
    #:menu-title
    #:menu-entries
@@ -36,7 +36,7 @@
    #:bar-open-menu-index
    #:bar-hover-menu-index
    #:bar-hover-item-index
-   #:bar-open-submenu-entry-index
+   #:bar-open-submenu-<entry>-index
    #:bar-hover-sub-item-index
    ;; constants
    #:+font-char-width+
@@ -46,17 +46,17 @@
    #:+menu-title-gap+
    #:+menu-item-pad-x+
    #:+menu-item-pad-y+
-   #:+menu-item-gap-label-hotkey+
+   #:+menu-item-gap-<label>-hotkey+
    #:+submenu-arrow-width+
    #:+separator-height+
    #:+submenu-min-width+
    ;; functions
    #:text-width
-   #:entry-row-height
-   #:entry-content-width
-  #:command-entry-id
-  #:command-entry-enabled-p
-  #:command-entry-checked-p
+   #:<entry>-row-height
+   #:<entry>-content-width
+  #:command-<entry>-id
+  #:command-<entry>-enabled-p
+  #:command-<entry>-checked-p
    #:layout-menu-bar
    #:title-menu-index-at
    #:dropdown-item-index-at

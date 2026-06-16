@@ -65,7 +65,7 @@
          (dy (if dir-flipped? (- raw-dy) raw-dy)))
     (format t "[combo-box] wheel raw=~A dir=~S dy=~A popup-id=~S~%" raw-dy dir dy
             (and (<combo-box>-popup-widget widget)
-                 (combo-box-popup-window-id (<combo-box>-popup-widget widget))))
+                 (<combo-box-popup>-window-id (<combo-box>-popup-widget widget))))
     (finish-output)
     (when (not (zerop dy))
       (let* ((popup (<combo-box>-popup-widget widget))

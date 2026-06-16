@@ -9,25 +9,25 @@
 (defconstant +menu-title-gap+           4)
 (defconstant +menu-item-pad-x+         12)
 (defconstant +menu-item-pad-y+          8)
-(defconstant +menu-item-gap-label-hotkey+ 26)
+(defconstant +menu-item-gap-<label>-hotkey+ 26)
 (defconstant +submenu-arrow-width+     12)
 (defconstant +separator-height+        12)
 (defconstant +submenu-min-width+      140)
 
-(defclass menu-entry ()
-  ((label :initarg :label :initform "" :accessor entry-label)))
+(defclass menu-<entry> ()
+  ((<label> :initarg :<label> :initform "" :accessor <entry>-<label>)))
 
-(defclass command-entry (menu-entry)
-  ((hotkey :initarg :hotkey :initform "" :accessor entry-hotkey)
+(defclass command-<entry> (menu-<entry>)
+  ((hotkey :initarg :hotkey :initform "" :accessor <entry>-hotkey)
    ;; Legacy action id, kept for backward compatibility.
-   (action :initarg :action :initform :none :accessor entry-action)
+   (action :initarg :action :initform :none :accessor <entry>-action)
    ;; Preferred command id used by command dispatcher.
-   (command-id :initarg :command-id :initform nil :accessor entry-command-id)))
+   (command-id :initarg :command-id :initform nil :accessor <entry>-command-id)))
 
-(defclass separator-entry (menu-entry) ())
+(defclass separator-<entry> (menu-<entry>) ())
 
-(defclass submenu-entry (menu-entry)
-  ((submenu :initarg :submenu :accessor entry-submenu)))
+(defclass submenu-<entry> (menu-<entry>)
+  ((submenu :initarg :submenu :accessor <entry>-submenu)))
 
 (defclass dropdown-menu ()
   ((title        :initarg :title   :accessor menu-title)
@@ -47,5 +47,5 @@
    (open-menu-index          :initform nil    :accessor bar-open-menu-index)
    (hover-menu-index         :initform nil    :accessor bar-hover-menu-index)
    (hover-item-index         :initform nil    :accessor bar-hover-item-index)
-   (open-submenu-entry-index :initform nil    :accessor bar-open-submenu-entry-index)
+   (open-submenu-<entry>-index :initform nil    :accessor bar-open-submenu-<entry>-index)
    (hover-sub-item-index     :initform nil    :accessor bar-hover-sub-item-index)))

@@ -86,11 +86,11 @@
       (values (* (length text) +font-char-width+) +font-text-height+)))
 
 (defun render-button-label (renderer widget color &key (offset-x 0) (offset-y 0))
-  "Render centered button label."
+  "Render centered button <label>."
   (when (null renderer)
     (return-from render-button-label nil))
   (multiple-value-bind (text-w text-h)
-      (text-pixel-size (button-text widget))
+      (text-pixel-size (<button>-text widget))
     (let* ((x (+ (<widget>-x widget)
                  (max +widget-padding+
                       (floor (- (<widget>-width widget) text-w) 2))
@@ -98,7 +98,7 @@
            (y (+ (<widget>-y widget)
                  (max 0 (floor (- (<widget>-height widget) text-h) 2))
                  offset-y)))
-      (render-text renderer (button-text widget) x y color))))
+      (render-text renderer (<button>-text widget) x y color))))
 
 (defun render-button-focus-outline (renderer widget &key (inset 0))
   "Render a high-contrast focus outline for button widgets."
@@ -119,7 +119,7 @@
     nil)
   (render-text-with-ttf renderer text x y color))
 
-;; NOTE: `render` is the preferred dispatching entrypoint.
+;; NOTE: `render` is the preferred dispatching <entry>point.
 ;; Removed compatibility wrappers `render-widget`/`render-widgets` as a
 ;; deliberate breaking change; call sites should use `render` or
 ;; iterate over `(widgets-in-render-order ...)` and call `render`.

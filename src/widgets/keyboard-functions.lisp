@@ -14,8 +14,8 @@
                                :alt alt))))
 
 (defun dispatch-focused-text-input (widgets text)
-  "Insert TEXT into the currently focused entry from WIDGETS."
-  (let ((widget (focused-entry widgets)))
+  "Insert TEXT into the currently focused <entry> from WIDGETS."
+  (let ((widget (focused-<entry> widgets)))
     (when widget
       (loop for char across text
             do (handle-widget-key-event widget nil char)))))

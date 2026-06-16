@@ -62,29 +62,29 @@
       t)))
 
 
-(defmethod handle-mouse-button-event ((widget button) (ev sdl3:mouse-button-event))
+(defmethod handle-mouse-button-event ((widget <button>) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (inside (contains-point-p widget x y))
          (down (slot-value ev 'sdl3:%down)))
     (when down
-      (setf (button-armed-p widget) inside
-            (button-pressed-p widget) inside
+      (setf (<button>-armed-p widget) inside
+            (<button>-pressed-p widget) inside
             (<widget>-focused widget) inside)
       inside)
     (unless down
-      (let ((armed (button-armed-p widget))
+      (let ((armed (<button>-armed-p widget))
             (activate nil))
-        (setf (button-pressed-p widget) nil
-              (button-armed-p widget) nil)
+        (setf (<button>-pressed-p widget) nil
+              (<button>-armed-p widget) nil)
         (setf activate (and armed inside))
         (when activate
-          (when (button-on-click widget)
-            (funcall (button-on-click widget) widget)))
+          (when (<button>-on-click widget)
+            (funcall (<button>-on-click widget) widget)))
         (or armed inside)))))
 
 
-(defmethod handle-mouse-button-event ((widget toolbar-button) (ev sdl3:mouse-button-event))
+(defmethod handle-mouse-button-event ((widget <toolbar-button>) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))
@@ -94,7 +94,7 @@
       inside)
     (unless down
       (when inside
-        (let ((cmd-id (button-command-id widget)))
+        (let ((cmd-id (<toolbar-button>-command-id widget)))
           (when cmd-id
             (handler-case
                 (mnas-sdl3-gui/commands:execute-command cmd-id :context widget)
@@ -124,15 +124,15 @@
       t)))
 
 
- (defmethod handle-mouse-button-event ((widget entry) (ev sdl3:mouse-button-event))
+ (defmethod handle-mouse-button-event ((widget <entry>) (ev sdl3:mouse-button-event))
    (let ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down)))
      (setf (<widget>-focused widget) (contains-point-p widget x y))
      (when (and down (contains-point-p widget x y))
-       (setf (entry-cursor widget) (entry-position-from-pixel widget x))
-       (clear-entry-selection widget)
-       (entry-ensure-cursor-visible widget))
+       (setf (<entry>-cursor widget) (<entry>-position-from-pixel widget x))
+       (clear-<entry>-selection widget)
+       (<entry>-ensure-cursor-visible widget))
      (contains-point-p widget x y)))
 
 
@@ -236,16 +236,16 @@
                (when (<combo-box>-expanded-p widget)
                  (ensure-combo-box-selection-visible widget)))
              (progn
-               (setf (entry-cursor widget) (entry-position-from-pixel widget x)
-                     (entry-selection-start widget) nil
-                     (entry-selection-end widget) nil)
-               (entry-ensure-cursor-visible widget)
+               (setf (<entry>-cursor widget) (<entry>-position-from-pixel widget x)
+                     (<entry>-selection-start widget) nil
+                     (<entry>-selection-end widget) nil)
+               (<entry>-ensure-cursor-visible widget)
                (when (<combo-box>-expanded-p widget)
                  (sync-combo-box-expanded-state widget nil)))))
         ((and (<combo-box>-expanded-p widget)
-              (not (combo-box-popup-window-enabled-p widget))
+              (not (<combo-box-popup>-window-enabled-p widget))
               (>= y popup-y)
-              (< y (+ popup-y (combo-box-popup-height widget))))
+              (< y (+ popup-y (<combo-box-popup>-height widget))))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
                 (visible-count (combo-box-visible-item-count widget))
@@ -275,8 +275,8 @@
                 (when (and (< row visible-count)
                            (< new-index (length (<list-box>-items widget))))
                   (setf (<list-box>-selected-index widget) new-index
-                        (entry-text widget) (format nil "~a" (nth new-index (<list-box>-items widget)))
-                        (entry-cursor widget) (length (entry-text widget)))
+                        (<entry>-text widget) (format nil "~a" (nth new-index (<list-box>-items widget)))
+                        (<entry>-cursor widget) (length (<entry>-text widget)))
                   (sync-combo-box-expanded-state widget nil)
                   (update-<widget>-value widget
                                        (nth new-index (<list-box>-items widget))))))
@@ -292,7 +292,7 @@
 
 #+nil (mnas-debug:disable)
 #+nil (mnas-debug:enable)
-(defmethod handle-mouse-button-event ((widget combo-box) (ev sdl3:mouse-button-event))
+(defmethod handle-mouse-button-event ((widget <combo-box>) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (win-id (slot-value ev 'sdl3:%window-id))
@@ -311,7 +311,7 @@
          (when (<combo-box>-expanded-p widget)
            (ensure-combo-box-selection-visible widget)))
           ((and (<combo-box>-expanded-p widget)
-            (not (combo-box-popup-window-enabled-p widget)))
+            (not (<combo-box-popup>-window-enabled-p widget)))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
                 (visible-count (combo-box-visible-item-count widget))
@@ -319,7 +319,7 @@
                 (content-width (combo-box-content-width widget))
                 (item-height (<list-box>-item-height widget))
                 (rel-x (- x (<widget>-x widget)))
-                (rel-y (- y (combo-box-popup-y widget))))
+                (rel-y (- y (<combo-box-popup>-y widget))))
            (cond
              ((and scrollbar-needed-p (>= rel-x content-width))
               (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
@@ -352,7 +352,7 @@
         (when (and (slot-value ev 'sdl3:%window-id)
                (<combo-box>-popup-widget widget)
                (= (slot-value ev 'sdl3:%window-id)
-                (combo-box-popup-window-id (<combo-box>-popup-widget widget))))
+                (<combo-box-popup>-window-id (<combo-box>-popup-widget widget))))
           (if down
             (combo-box-handle-popup-mouse-down widget x y)
             (combo-box-handle-popup-mouse-up widget x y)))

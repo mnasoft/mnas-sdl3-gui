@@ -2,6 +2,8 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
+;;;; [^A-Za-z-><]widget[^A-Za-z-><]
+
 ;;; Widget classes
 
 (defclass <widget> ()
@@ -189,24 +191,24 @@
     :documentation "Whether the list-box shows a scrollbar (optional)."))
   (:documentation "Scrollable list box widget implemented as a container with vertical layout."))
 
-(defclass combo-box-popup (<list-box>)
+(defclass <combo-box-popup> (<list-box>)
   ((owner
     :initarg :owner
-    :accessor combo-box-popup-owner
+    :accessor <combo-box-popup>-owner
     :documentation "Owner widget (header or combo) for this popup instance.")
    (window
     :initarg :window
     :initform nil
-    :accessor combo-box-popup-window
+    :accessor <combo-box-popup>-window
     :documentation "SDL window handle used by this popup (popups always use their own window).")
    (renderer
     :initarg :renderer
     :initform nil
-    :accessor combo-box-popup-renderer
+    :accessor <combo-box-popup>-renderer
     :documentation "Renderer used to draw the popup when it has its own window.")
    (window-id
     :initarg :window-id
-    :initform 0 :accessor combo-box-popup-window-id
+    :initform 0 :accessor <combo-box-popup>-window-id
     :documentation "SDL window id for the popup window.")
    (visible-p
     :initarg :visible-p
@@ -215,20 +217,20 @@
    (layer-manager
     :initarg :layer-manager
     :initform nil
-    :accessor combo-box-popup-layer-manager
+    :accessor <combo-box-popup>-layer-manager
     :documentation "Optional window-layer-manager for popup focus/z-order."))
   (:documentation
    "Popup list displayed in its own transient window; subclass of `list-box`.") )
 
-(defclass combo-box-header (<widget>)
+(defclass <combo-box-header> (<widget>)
   ((owner
     :initarg :owner
-    :accessor combo-box-header-owner
+    :accessor <combo-box-header>-owner
     :documentation "Owner combo-box container for this header.")
    (display-text
     :initarg :display-text
     :initform ""
-    :accessor combo-box-header-display-text
+    :accessor <combo-box-header>-display-text
     :documentation "Text shown in the collapsed header (reflects selected item)."))
   (:documentation
    "Collapsed header of a combo-box; clicking toggles the associated popup."))
@@ -238,7 +240,7 @@
     :initarg :header
     :initform nil
     :accessor <combo-box>-header-widget
-    :documentation "Header widget instance (a `combo-box-header`).")
+    :documentation "Header widget instance (a `<combo-box-header>`).")
    (popup
     :initarg :popup
     :initform nil :accessor <combo-box>-popup-widget
@@ -294,44 +296,76 @@
     :documentation "Enable zooming for the canvas viewport."))
   (:documentation "Canvas widget specialized for 2D scene rendering and interaction."))
 
-(defclass label (<widget>)
+(defclass <label> (<widget>)
   ((text
-    :initarg :text :initform "" :accessor label-text
-    :documentation "Text content of label"))
-  (:documentation "Simple text label widget"))
+    :initarg :text
+    :initform ""
+    :accessor <label>-text
+    :documentation "Text content of <label>"))
+  (:documentation "Simple text <label> widget"))
 
 ;;; Toolbar widgets moved here so they integrate with widget hierarchy.
-(defclass toolbar-button (<widget>)
-  ((command-id :initarg :command-id :accessor button-command-id)
-   (type :initarg :type :initform :push :accessor button-type)
-   (group :initarg :group :initform nil :accessor button-group)
-   (label :initarg :label :initform "" :accessor button-label)
-   (hotkey :initarg :hotkey :initform "" :accessor button-hotkey))
-
-  (:documentation "Toolbar button implemented as a widget so it can be a child of toolbar."))
-
-(defclass toolbar (<widget-container>)
-  ((layout :initarg :layout :initform :horizontal :accessor toolbar-layout
-           :documentation "Layout mode: :horizontal or :vertical.")
-   (background :initarg :background :initform '(245 245 245 255)
-               :accessor toolbar-background)
-   (padding :initarg :padding :initform 6 :accessor toolbar-padding))
+(defclass <toolbar-button> (<widget>)
+  ((command-id
+    :initarg :command-id
+    :accessor <toolbar-button>-command-id)
+   (type
+    :initarg :type
+    :initform :push
+    :accessor <toolbar-button>-type)
+   (group
+    :initarg :group
+    :initform nil
+    :accessor <toolbar-button>-group)
+   (<label>
+    :initarg :<label>
+    :initform ""
+    :accessor <toolbar-button>-label)
+   (hotkey
+    :initarg :hotkey
+    :initform ""
+    :accessor <toolbar-button>-hotkey))
   (:documentation
-   "Toolbar container implemented as a <widget-container>; buttons are its
-children."))
+   "Toolbar button implemented as a widget so it can be a child of toolbar."))
 
-(defclass button (<widget>)
+(defclass <toolbar> (<widget-container>)
+  ((layout
+    :initarg :layout
+    :initform :horizontal
+    :accessor <toolbar>-layout
+    :documentation "Layout mode: :horizontal or :vertical.")
+   (background
+    :initarg :background
+    :initform '(245 245 245 255)
+    :accessor <toolbar>-background)
+   (padding
+    :initarg :padding
+    :initform 6
+    :accessor <toolbar>-padding))
+  (:documentation
+   "<Toolbar> container implemented as a <widget-container>; buttons are
+its children."))
+
+(defclass <button> (<widget>)
   ((text
-    :initarg :text :initform "Button" :accessor button-text
-    :documentation "Button label text")
+    :initarg :text
+    :initform "Button"
+    :accessor <button>-text
+    :documentation "Button <label> text")
    (pressed
-    :initarg :pressed :initform nil :accessor button-pressed-p
+    :initarg :pressed
+    :initform nil
+    :accessor <button>-pressed-p
     :documentation "Whether button is currently shown as pressed")
    (armed
-    :initarg :armed :initform nil :accessor button-armed-p
+    :initarg :armed
+    :initform nil
+    :accessor <button>-armed-p
     :documentation "Whether mouse press started on this button")
    (on-click
-    :initarg :on-click :initform nil :accessor button-on-click
+    :initarg :on-click
+    :initform nil
+    :accessor <button>-on-click
     :documentation "Callback function called on button click"))
   (:documentation "Clickable button widget"))
 
@@ -342,58 +376,74 @@ children."))
    (group
     :initarg :group :initform nil :accessor toggle-group
     :documentation "Group identifier for mutually exclusive toggles")
-   (label
-    :initarg :label :initform "Toggle" :accessor toggle-label
-    :documentation "Label for toggle"))
+   (<label>
+    :initarg :<label> :initform "Toggle" :accessor toggle-<label>
+    :documentation "<Label> for toggle"))
   (:documentation "Radio-style toggle widget (single selection per group)"))
 
 (defclass check-box (<widget>)
   ((checked :initarg :checked :initform nil :accessor check-box-checked
             :documentation "Whether checkbox is checked")
-   (label :initarg :label :initform "Check" :accessor check-box-label
-          :documentation "Label for checkbox"))
+   (<label> :initarg :<label> :initform "Check" :accessor check-box-<label>
+          :documentation "<Label> for checkbox"))
   (:documentation "Checkbox widget"))
 
-(defclass entry (<widget>)
+(defclass <entry> (<widget>)
   ((text
-    :initarg :text :initform "" :accessor entry-text
-    :documentation "Text content of entry")
+    :initarg :text
+    :initform ""
+    :accessor <entry>-text
+    :documentation "Text content of <entry>")
    (cursor
-    :initarg :cursor :initform 0 :accessor entry-cursor
+    :initarg :cursor
+    :initform 0
+    :accessor <entry>-cursor
     :documentation "Cursor position in text")
    (scroll-offset
-    :initarg :scroll-offset :initform 0 :accessor entry-scroll-offset
+    :initarg :scroll-offset
+    :initform 0
+    :accessor <entry>-scroll-offset
     :documentation "Character offset of the first visible glyph")
    (selection-start
-    :initarg :selection-start :initform nil :accessor entry-selection-start
+    :initarg :selection-start
+    :initform nil
+    :accessor <entry>-selection-start
     :documentation "Start of text selection (NIL if no selection)")
    (selection-end
-    :initarg :selection-end :initform nil :accessor entry-selection-end
+    :initarg :selection-end
+    :initform nil
+    :accessor <entry>-selection-end
     :documentation "End of text selection (NIL if no selection)")
    (max-length
-    :initarg :max-length :initform 256 :accessor entry-max-length
+    :initarg :max-length
+    :initform 256
+    :accessor <entry>-max-length
     :documentation "Maximum length of text")
    (show
-    :initarg :show :initform nil :accessor entry-show
-    :documentation "Mask character or string used to display entry text.")
+    :initarg :show
+    :initform nil
+    :accessor <entry>-show
+    :documentation "Mask character or string used to display <entry> text.")
    (validate
-    :initarg :validate :initform nil :accessor entry-validate
+    :initarg :validate
+    :initform nil
+    :accessor <entry>-validate
     :documentation "Optional validation function NEW-TEXT -> non-NIL.")
    )
   (:documentation "Text input box widget"))
 
-(defclass password-entry (entry)
+(defclass <password-entry> (<entry>)
   ()
   (:default-initargs :show #\*)
-  (:documentation "Entry widget specialized for password input with masked display."))
+  (:documentation "<Entry> widget specialized for password input with masked display."))
 
-(defclass integer-entry (entry)
+(defclass <integer-entry> (<entry>)
   ()
-  (:documentation "Entry widget specialized for integer input."))
+  (:documentation "<Entry> widget specialized for integer input."))
 
-(defclass real-entry (entry)
+(defclass <real-entry> (<entry>)
   ()
-  (:documentation "Entry widget specialized for real number input."))
+  (:documentation "<Entry> widget specialized for real number input."))
 
 (defclass tree-node ()
   ((id
@@ -401,7 +451,7 @@ children."))
     :documentation "Optional node identifier.")
    (text
     :initarg :text :initform "" :accessor tree-node-text
-    :documentation "Display label for the node.")
+    :documentation "Display <label> for the node.")
    (kind
     :initarg :kind :initform :item :accessor tree-node-kind
     :documentation "Node kind keyword, e.g. :directory or :file.")
@@ -447,11 +497,11 @@ children."))
                  :documentation "Indent width per depth level."))
   (:documentation "Tree widget with expandable/collapsible nodes."))
 
-(defclass editable-combo-box (entry combo-box)
+(defclass editable-combo-box (<entry> combo-box)
   ((placeholder :initarg :placeholder :initform ""
                 :accessor editable-combo-box-placeholder
                 :documentation "Placeholder text shown when the input is empty."))
-  (:documentation "Editable combo-box with inline text entry and drop-down item selection."))
+  (:documentation "Editable combo-box with inline text <entry> and drop-down item selection."))
 
 ;;; Rendering style classes
 

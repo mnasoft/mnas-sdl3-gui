@@ -2,9 +2,9 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod compute-text-segment-pixel-width ((widget entry) text-start text-end)
-  (let ((text (or (entry-show-text widget)
-                  (entry-text widget))))
+(defmethod compute-text-segment-pixel-width ((widget <entry>) text-start text-end)
+  (let ((text (or (<entry>-show-text widget)
+                  (<entry>-text widget))))
     (if (>= text-start text-end)
         0
         (let ((segment (subseq text text-start text-end)))

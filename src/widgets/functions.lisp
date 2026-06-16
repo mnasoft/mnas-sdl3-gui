@@ -30,7 +30,7 @@ updated list of widgets for WIN-ID."
 
 (defun unregister-widget-for-window-id (win-id widget)
   "Remove association of WIDGET from WIN-ID. If no widgets remain for
-WIN-ID, the hash entry is removed. Returns the remaining list or NIL." 
+WIN-ID, the hash <entry> is removed. Returns the remaining list or NIL." 
   (when (and win-id (numberp win-id) (> win-id 0))
     (let ((lst (gethash win-id *window-id->widgets*)))
       (when lst
@@ -315,7 +315,7 @@ Returns the window id that was processed or NIL."
 
 (defun %filesystem-file-extension (path)
   "Return lowercase file extension for PATH without leading dot." 
-  (let* ((name (%filesystem-entry-name path))
+  (let* ((name (%filesystem-<entry>-name path))
          (dot-pos (position #\. name :from-end t)))
     (if (and dot-pos (> dot-pos 0) (< dot-pos (1- (length name))))
         (string-downcase (subseq name (1+ dot-pos)))
@@ -370,8 +370,8 @@ Returns the window id that was processed or NIL."
                (lambda (left right)
                  (%tree-node-sort< left right sort-mode))))
 
-(defun %filesystem-entry-name (path)
-  "Return leaf name of PATH for display in tree labels." 
+(defun %filesystem-<entry>-name (path)
+  "Return leaf name of PATH for display in tree <label>s." 
   (let* ((namestr (uiop:native-namestring path))
          (trimmed (string-right-trim '(#\/) namestr))
          (last-slash (position #\/ trimmed :from-end t)))
@@ -379,9 +379,9 @@ Returns the window id that was processed or NIL."
         (subseq trimmed (1+ last-slash))
         trimmed)))
 
-(defun %hidden-filesystem-entry-p (path)
-  "Return true when PATH refers to a hidden entry (name starts with '.')." 
-  (let ((name (%filesystem-entry-name path)))
+(defun %hidden-filesystem-<entry>-p (path)
+  "Return true when PATH refers to a hidden <entry> (name starts with '.')." 
+  (let ((name (%filesystem-<entry>-name path)))
     (and (> (length name) 0)
          (char= (char name 0) #\.))))
 
@@ -392,9 +392,9 @@ Returns the window id that was processed or NIL."
          (all (append subdirs files)))
     (if show-hidden-p
         all
-        (remove-if #'%hidden-filesystem-entry-p all))))
+        (remove-if #'%hidden-filesystem-<entry>-p all))))
 
-(defun %filesystem-entry-allowed-p (path filter-extensions)
+(defun %filesystem-<entry>-allowed-p (path filter-extensions)
   "Return true when PATH should be visible for FILTER-EXTENSIONS." 
   (or (uiop:directory-exists-p path)
       (null filter-extensions)
@@ -406,8 +406,8 @@ Returns the window id that was processed or NIL."
                (lambda (left right)
                  (let* ((left-dir-p (not (null (uiop:directory-exists-p left))))
                         (right-dir-p (not (null (uiop:directory-exists-p right))))
-                        (left-name (string-downcase (%filesystem-entry-name left)))
-                        (right-name (string-downcase (%filesystem-entry-name right))))
+                        (left-name (string-downcase (%filesystem-<entry>-name left)))
+                        (right-name (string-downcase (%filesystem-<entry>-name right))))
                    (cond
                      ((not (eq left-dir-p right-dir-p))
                       left-dir-p)
@@ -434,7 +434,7 @@ Returns the window id that was processed or NIL."
                      (file-p :file)
         (t :item))))
     (make-tree-node :id (uiop:native-namestring path)
-                    :text (%filesystem-entry-name path)
+                    :text (%filesystem-<entry>-name path)
                     :kind kind
                     :path (uiop:native-namestring path)
                     :children nil
@@ -459,7 +459,7 @@ Returns the window id that was processed or NIL."
                       (%sort-filesystem-paths
                        (remove-if-not
                         (lambda (child-path)
-                          (%filesystem-entry-allowed-p child-path filter-exts))
+                          (%filesystem-<entry>-allowed-p child-path filter-exts))
                         (%directory-child-paths directory-path
                                                 (tree-view-show-hidden-p widget)))
                        (tree-view-sort-mode widget)))))
@@ -536,7 +536,7 @@ Returns the window id that was processed or NIL."
 
 (defun tree-view-node-depth (widget target)
   "Return depth of TARGET in WIDGET tree roots, or 0 when missing." 
-  (labels ((walk (nodes depth)
+  (<label>s ((walk (nodes depth)
              (loop for node in nodes do
                (when (eq node target)
                  (return-from tree-view-node-depth depth))
@@ -547,7 +547,7 @@ Returns the window id that was processed or NIL."
 
 (defun tree-view-visible-rows (widget)
   "Return visible rows as a list of (NODE DEPTH) pairs for TREE-VIEW WIDGET." 
-  (labels ((collect-visible (nodes depth)
+  (<label>s ((collect-visible (nodes depth)
              (loop for node in nodes append
                    (cons (list node depth)
                          (progn
@@ -627,7 +627,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 
 (defun tree-view-parent-node (widget target)
   "Return parent node of TARGET inside TREE-VIEW WIDGET, or NIL." 
-  (labels ((find-parent (nodes parent)
+  (<label>s ((find-parent (nodes parent)
              (loop for node in nodes do
                (when (eq node target)
                  (return-from find-parent parent))
@@ -774,7 +774,7 @@ present the popup's renderer."
          (popups '()))
     (dolist (w sorted)
       (when (and (typep w 'combo-box)
-                 (combo-box-popup-window-enabled-p w))
+                 (<combo-box-popup>-window-enabled-p w))
         (push (make-instance 'combo-box-popup :owner w) popups)))
     (append sorted (nreverse popups))))
 

@@ -9,16 +9,16 @@
 (defmethod activate-widget ((widget <widget>))
   nil)
 
-(defmethod activate-widget ((widget button))
-  (setf (button-armed-p widget) t
-        (button-pressed-p widget) t)
+(defmethod activate-widget ((widget <button>))
+  (setf (<button>-armed-p widget) t
+        (<button>-pressed-p widget) t)
   (unwind-protect
        (progn
-         (when (button-on-click widget)
-           (funcall (button-on-click widget) widget))
+         (when (<button>-on-click widget)
+           (funcall (<button>-on-click widget) widget))
          t)
-    (setf (button-armed-p widget) nil
-          (button-pressed-p widget) nil)))
+    (setf (<button>-armed-p widget) nil
+          (<button>-pressed-p widget) nil)))
 
 (defmethod activate-widget ((widget toggle))
   (select-toggle-in-group widget)
@@ -35,9 +35,9 @@
     (ensure-combo-box-selection-visible widget))
   t)
 
-(defmethod activate-widget ((widget combo-box-header))
+(defmethod activate-widget ((widget <combo-box-header>))
   "Activate header by toggling owner combo-box expansion state." 
-  (let ((owner (combo-box-header-owner widget)))
+  (let ((owner (<combo-box-header>-owner widget)))
     (when owner
       (sync-combo-box-expanded-state owner (not (<combo-box>-expanded-p owner)))
       (when (<combo-box>-expanded-p owner)

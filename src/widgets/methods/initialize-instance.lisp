@@ -16,12 +16,12 @@
 (defmethod initialize-instance :after ((widget combo-box) &key popup-host-window popup-layer-manager &allow-other-keys)
   ;; Ensure header and popup instances exist and are linked.
   (unless (<combo-box>-header-widget widget)
-    (let* ((hdr (make-instance 'combo-box-header :owner widget))
-           (pop (make-instance 'combo-box-popup :owner widget)))
+    (let* ((hdr (make-instance '<combo-box-header> :owner widget))
+           (pop (make-instance '<combo-box-popup> :owner widget)))
       (setf (<combo-box>-header-widget widget) hdr
             (<combo-box>-popup-widget widget) pop
-            (combo-box-popup-owner pop) widget
-            (combo-box-header-owner hdr) widget
+            (<combo-box-popup>-owner pop) widget
+            (<combo-box-header>-owner hdr) widget
             )))
   ;; Forward any initial items passed via :items initarg to popup
   (let ((init-items (<combo-box>-initial-items widget)))
@@ -36,13 +36,13 @@
   (when popup-host-window
     (combo-box-enable-popup-window widget popup-host-window :layer-manager popup-layer-manager)))
 
-(defmethod initialize-instance :after ((widget integer-entry) &key &allow-other-keys)
-  (unless (entry-validate widget)
-    (setf (entry-validate widget) #'integer-entry-text-p)))
+(defmethod initialize-instance :after ((widget <integer-entry>) &key &allow-other-keys)
+  (unless (<entry>-validate widget)
+    (setf (<entry>-validate widget) #'<integer-entry>-text-p)))
 
-(defmethod initialize-instance :after ((widget real-entry) &key &allow-other-keys)
-  (unless (entry-validate widget)
-    (setf (entry-validate widget) #'real-entry-text-p)))
+(defmethod initialize-instance :after ((widget <real-entry>) &key &allow-other-keys)
+  (unless (<entry>-validate widget)
+    (setf (<entry>-validate widget) #'<real-entry>-text-p)))
 
 ;; When widget's `:window` slot is changed after creation we should update the
 ;; global registry accordingly. Provide a setf method for `<widget>-window`
@@ -68,8 +68,8 @@
 ;; ignore-errors to avoid throwing during GC/finalization.
 (defmethod finalize-instance :before ((widget combo-box))
   (let ((popup (<combo-box>-popup-widget widget)))
-    (when (or (and popup (combo-box-popup-visible-p popup))
-              (and popup (combo-box-popup-window popup)))
+    (when (or (and popup (<combo-box-popup>-visible-p popup))
+              (and popup (<combo-box-popup>-window popup)))
       (ignore-errors (combo-box-disable-popup-window widget)))))
 
 (defmethod finalize-instance :after ((widget <widget>))

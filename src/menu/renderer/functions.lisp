@@ -34,12 +34,12 @@
                     (mnas-sdl3-gui/menu/model:menu-panel-height menu)
                     120 105 88)
   (let ((cursor-y panel-top))
-    (loop for entry in (mnas-sdl3-gui/menu/model:menu-entries menu)
+    (loop for <entry> in (mnas-sdl3-gui/menu/model:menu-entries menu)
           for index from 0
-          for row-h = (mnas-sdl3-gui/menu/model:entry-row-height entry)
+          for row-h = (mnas-sdl3-gui/menu/model:<entry>-row-height <entry>)
           do (progn
                (cond
-                 ((typep entry 'mnas-sdl3-gui/menu/model:separator-entry)
+                 ((typep <entry> 'mnas-sdl3-gui/menu/model:separator-<entry>)
                   (line-menu renderer
                              (+ panel-left mnas-sdl3-gui/menu/model:+menu-item-pad-x+)
                              (+ cursor-y (floor row-h 2))
@@ -53,38 +53,38 @@
                                     panel-left cursor-y
                                     (mnas-sdl3-gui/menu/model:menu-panel-width menu) row-h
                                     186 221 198))
-                    (let* ((is-command (typep entry 'mnas-sdl3-gui/menu/model:command-entry))
+                    (let* ((is-command (typep <entry> 'mnas-sdl3-gui/menu/model:command-<entry>))
                          (enabled (or (not is-command)
-                                  (mnas-sdl3-gui/menu/model:command-entry-enabled-p entry))))
+                                  (mnas-sdl3-gui/menu/model:command-<entry>-enabled-p <entry>))))
                       (if enabled
                         (sdl3:set-render-draw-color renderer 35 35 35 255)
                         (sdl3:set-render-draw-color renderer 135 135 135 255)))
                   (render-debug-text renderer
                                      (+ panel-left mnas-sdl3-gui/menu/model:+menu-item-pad-x+)
                                      (+ cursor-y mnas-sdl3-gui/menu/model:+menu-item-pad-y+)
-                                     (mnas-sdl3-gui/menu/model:entry-label entry))
+                                     (mnas-sdl3-gui/menu/model:<entry>-<label> <entry>))
                   (cond
-                    ((typep entry 'mnas-sdl3-gui/menu/model:command-entry)
-                      (when (mnas-sdl3-gui/menu/model:command-entry-checked-p entry)
+                    ((typep <entry> 'mnas-sdl3-gui/menu/model:command-<entry>)
+                      (when (mnas-sdl3-gui/menu/model:command-<entry>-checked-p <entry>)
                         (sdl3:set-render-draw-color renderer 35 35 35 255)
                         (render-debug-text renderer
                                     (+ panel-left 2)
                                     (+ cursor-y mnas-sdl3-gui/menu/model:+menu-item-pad-y+)
                                     "*"))
-                     (let* ((hotkey   (mnas-sdl3-gui/menu/model:entry-hotkey entry))
+                     (let* ((hotkey   (mnas-sdl3-gui/menu/model:<entry>-hotkey <entry>))
                             (hotkey-w (mnas-sdl3-gui/menu/model:text-width hotkey))
                             (hotkey-x (- (+ panel-left (mnas-sdl3-gui/menu/model:menu-panel-width menu))
                                          mnas-sdl3-gui/menu/model:+menu-item-pad-x+
                                          hotkey-w)))
                        (when (plusp (length hotkey))
-                         (if (mnas-sdl3-gui/menu/model:command-entry-enabled-p entry)
+                         (if (mnas-sdl3-gui/menu/model:command-<entry>-enabled-p <entry>)
                             (sdl3:set-render-draw-color renderer 102 102 102 255)
                             (sdl3:set-render-draw-color renderer 155 155 155 255))
                          (render-debug-text renderer
                                             hotkey-x
                                             (+ cursor-y mnas-sdl3-gui/menu/model:+menu-item-pad-y+)
                                             hotkey))))
-                    ((typep entry 'mnas-sdl3-gui/menu/model:submenu-entry)
+                    ((typep <entry> 'mnas-sdl3-gui/menu/model:submenu-<entry>)
                      (sdl3:set-render-draw-color renderer 102 102 102 255)
                      (render-debug-text renderer
                                         (- (+ panel-left
@@ -134,14 +134,14 @@
                             (mnas-sdl3-gui/menu/model:bar-height bar))))
         (draw-dropdown-panel renderer menu panel-left panel-top
                              (mnas-sdl3-gui/menu/model:bar-hover-item-index bar))
-        (let ((sub-entry-index (mnas-sdl3-gui/menu/model:bar-open-submenu-entry-index bar)))
-          (when sub-entry-index
-            (let ((entry (nth sub-entry-index (mnas-sdl3-gui/menu/model:menu-entries menu))))
-              (when (typep entry 'mnas-sdl3-gui/menu/model:submenu-entry)
+        (let ((sub-<entry>-index (mnas-sdl3-gui/menu/model:bar-open-submenu-<entry>-index bar)))
+          (when sub-<entry>-index
+            (let ((<entry> (nth sub-<entry>-index (mnas-sdl3-gui/menu/model:menu-entries menu))))
+              (when (typep <entry> 'mnas-sdl3-gui/menu/model:submenu-<entry>)
                 (multiple-value-bind (sub-left sub-top)
                     (mnas-sdl3-gui/menu/model:submenu-panel-origin
-                     menu panel-left panel-top sub-entry-index)
+                     menu panel-left panel-top sub-<entry>-index)
                   (draw-dropdown-panel renderer
-                                       (mnas-sdl3-gui/menu/model:entry-submenu entry)
+                                       (mnas-sdl3-gui/menu/model:<entry>-submenu <entry>)
                                        sub-left sub-top
                                        (mnas-sdl3-gui/menu/model:bar-hover-sub-item-index bar)))))))))))

@@ -17,44 +17,44 @@
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)))
 
-(defmethod print-object ((obj label) stream)
+(defmethod print-object ((obj <label>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " text=~S" (label-text obj))))
+    (format stream " text=~S" (<label>-text obj))))
 
-(defmethod print-object ((obj button) stream)
+(defmethod print-object ((obj <button>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
     (format stream " text=~S pressed=~A armed=~A"
-            (button-text obj)
-            (button-pressed-p obj)
-            (button-armed-p obj))))
+            (<button>-text obj)
+            (<button>-pressed-p obj)
+            (<button>-armed-p obj))))
 
 (defmethod print-object ((obj toggle) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " label=~S state=~A group=~S"
-            (toggle-label obj)
+    (format stream " <label>=~S state=~A group=~S"
+            (toggle-<label> obj)
             (toggle-state obj)
             (toggle-group obj))))
 
 (defmethod print-object ((obj check-box) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " label=~S checked=~A"
-            (check-box-label obj)
+    (format stream " <label>=~S checked=~A"
+            (check-box-<label> obj)
             (check-box-checked obj))))
 
-(defmethod print-object ((obj entry) stream)
+(defmethod print-object ((obj <entry>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
     (format stream "text=~S cursor=~A scroll=~A sel=~A..~A max=~A"
-            (entry-text obj)
-            (entry-cursor obj)
-            (entry-scroll-offset obj)
-            (entry-selection-start obj)
-            (entry-selection-end obj)
-            (entry-max-length obj))))
+            (<entry>-text obj)
+            (<entry>-cursor obj)
+            (<entry>-scroll-offset obj)
+            (<entry>-selection-start obj)
+            (<entry>-selection-end obj)
+            (<entry>-max-length obj))))
 
 (defmethod print-object ((obj tree-node) stream)
   (print-unreadable-object (obj stream :type t :identity t)
@@ -82,16 +82,16 @@
             (tree-view-row-height obj)
             (tree-view-indent-width obj))))
 
-(defmethod print-object ((obj password-entry) stream)
+(defmethod print-object ((obj <password-entry>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
     (format stream "text=~S cursor=~A scroll=~A sel=~A..~A max=~A"
             "***"
-            (entry-cursor obj)
-            (entry-scroll-offset obj)
-            (entry-selection-start obj)
-            (entry-selection-end obj)
-            (entry-max-length obj))))
+            (<entry>-cursor obj)
+            (<entry>-scroll-offset obj)
+            (<entry>-selection-start obj)
+            (<entry>-selection-end obj)
+            (<entry>-max-length obj))))
 
 (defmethod print-object ((obj <list-box>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
@@ -122,23 +122,23 @@
               scroll
               (<combo-box>-max-visible-items obj)))))
 
-(defmethod print-object ((obj combo-box-header) stream)
+(defmethod print-object ((obj <combo-box-header>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " display-text=~S" (combo-box-header-display-text obj))))
+    (format stream " display-text=~S" (<combo-box-header>-display-text obj))))
 
-(defmethod print-object ((obj combo-box-popup) stream)
+(defmethod print-object ((obj <combo-box-popup>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
     (let ((items (<list-box>-items obj))
           (sel (<list-box>-selected-index obj))
-          (wid (and (combo-box-popup-window obj) (combo-box-popup-window-id obj))))
+          (wid (and (<combo-box-popup>-window obj) (<combo-box-popup>-window-id obj))))
       (format stream " items=~A selected=~A scroll=~A window-id=~S visible=~A"
               (if items (length items) 0)
               (if (and (numberp sel) (plusp sel)) sel nil)
               (<list-box>-scroll-offset obj)
               wid
-              (combo-box-popup-visible-p obj)))))
+              (<combo-box-popup>-visible-p obj)))))
 
 (defmethod print-object ((obj widget-style) stream)
   (print-unreadable-object (obj stream :type t :identity t)

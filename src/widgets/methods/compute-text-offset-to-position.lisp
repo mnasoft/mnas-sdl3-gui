@@ -2,11 +2,11 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod compute-text-offset-to-position ((widget entry) text-pos)
-  (let* ((text (entry-text widget))
+(defmethod compute-text-offset-to-position ((widget <entry>) text-pos)
+  (let* ((text (<entry>-text widget))
          (pos (max 0 (min text-pos (length text))))
          (prefix (subseq text 0 pos))
-         (display-prefix (or (entry-show-text widget) prefix)))
+         (display-prefix (or (<entry>-show-text widget) prefix)))
     (if (and *ttf-available-p* *ttf-font*)
         (handler-case
             (multiple-value-bind (w h)

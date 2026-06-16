@@ -13,4 +13,4 @@
   (call-next-method)
   (let ((hdr (<combo-box>-header-widget widget)))
     (when hdr
-      (setf (combo-box-header-display-text hdr) (format nil "~a" new-value)))))
+      (setf (<combo-box-header>-display-text hdr) (format nil "~a" new-value)))))

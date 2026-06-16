@@ -1,8 +1,8 @@
-;;;; ./src/widgets/entry-functions.lisp
+;;;; ./src/widgets/<entry>-functions.lisp
 
 (in-package :mnas-sdl3-gui/widgets)
 
-;;; Entry string helpers
+;;; <Entry> string helpers
 
 (defun char-is-word-char-p (char)
   "Return T if CHAR is part of a word (alphanumeric or underscore)."
@@ -23,7 +23,7 @@
           do (incf i))
     i))
 
-(defun integer-entry-text-p (text)
+(defun <integer-entry>-text-p (text)
   "Return T when TEXT is a valid in-progress integer representation."
   (or (string= text "")
       (string= text "+")
@@ -87,7 +87,7 @@
                 (%has-digit-p mantissa)
                 (%exponent-tail-in-progress-p exp-tail))))))
 
-(defun real-entry-text-p (text)
+(defun <real-entry>-text-p (text)
   "Return T when TEXT is a valid in-progress real representation."
   (or (string= text "")
       (string= text "+")
@@ -101,5 +101,5 @@
           (let ((value (read-from-string text)))
             (typep value 'real))))))
 
-;; entry methods moved to src/widgets/methods/entry-show-text.lisp
-;; and src/widgets/methods/entry-valid-text-p.lisp
+;; <entry> methods moved to src/widgets/methods/<entry>-show-text.lisp
+;; and src/widgets/methods/<entry>-valid-text-p.lisp

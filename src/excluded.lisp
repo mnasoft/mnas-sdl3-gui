@@ -11,7 +11,7 @@
      (slot-value obj 'visible-p))
     (t nil)))
 
-(defun combo-box-popup-renderer (obj)
+(defun <combo-box-popup>-renderer (obj)
   "Return popup renderer for OBJ.
 If OBJ is a `combo-box`, return renderer stored on its popup; if OBJ is
 a `combo-box-popup` return its renderer slot. Returns NIL otherwise."

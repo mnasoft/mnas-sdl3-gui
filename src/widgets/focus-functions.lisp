@@ -9,16 +9,16 @@
     (and (enabled-p widget)
       (visible-p widget)
        (<widget>-focusable widget)
-       (typep widget '(or button toggle check-box entry list-box combo-box))))
+       (typep widget '(or button toggle check-box <entry> list-box combo-box))))
 
 (defun focused-widget (widgets)
   "Return the currently focused widget from WIDGETS, or NIL."
   (find-if #'<widget>-focused widgets))
 
-(defun focused-entry (widgets)
-  "Return the currently focused entry from WIDGETS, or NIL."
+(defun focused-<entry> (widgets)
+  "Return the currently focused <entry> from WIDGETS, or NIL."
   (find-if (lambda (widget)
-             (and (typep widget 'entry)
+             (and (typep widget '<entry>)
                   (<widget>-focused widget)))
            widgets))
 

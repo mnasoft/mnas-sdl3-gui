@@ -80,14 +80,14 @@
            #:set-widget-style
            #:widget-style-name
 ;;; concrete widgets
-           #:label
-           #:button
+           #:<label>
+           #:<button>
            #:toggle
            #:check-box
-           #:entry
-           #:password-entry
-           #:integer-entry
-           #:real-entry
+           #:<entry>
+           #:<password-entry>
+           #:<integer-entry>
+           #:<real-entry>
            #:tree-node
            #:tree-view
            #:list-box
@@ -95,11 +95,11 @@
            #:editable-combo-box
 ;;; toolbar widgets
            #:toolbar
-           #:toolbar-button
+           #:<toolbar-button>
 ;;; toolbar accessors
-           #:toolbar-buttons
+           #:<toolbar-button>s
            #:toolbar-layout
-           #:toolbar-padding
+           #:<toolbar>-padding
            #:toolbar-width
            #:toolbar-height
            #:toolbar-x
@@ -109,30 +109,30 @@
            #:button-height
            #:button-x
            #:button-y
-           #:button-command-id
-;;; label accessors
-           #:label-text
+           #:<toolbar-button>-command-id
+;;; <label> accessors
+           #:<label>-text
 ;;; button accessors
-           #:button-text
-           #:button-pressed-p
-           #:button-armed-p
-           #:button-on-click
+           #:<button>-text
+           #:<button>-pressed-p
+           #:<button>-armed-p
+           #:<button>-on-click
 ;;; toggle accessors
            #:toggle-state
            #:toggle-group
-           #:toggle-label
+           #:toggle-<label>
 ;;; check-box accessors
            #:check-box-checked
-           #:check-box-label
-;;; entry accessors
-           #:entry-text
-           #:entry-cursor
-           #:entry-scroll-offset
-           #:entry-max-length
-           #:entry-show
-           #:entry-validate
-           #:entry-selection-start
-           #:entry-selection-end
+           #:check-box-<label>
+;;; <entry> accessors
+           #:<entry>-text
+           #:<entry>-cursor
+           #:<entry>-scroll-offset
+           #:<entry>-max-length
+           #:<entry>-show
+           #:<entry>-validate
+           #:<entry>-selection-start
+           #:<entry>-selection-end
 ;;; tree-node accessors
            #:tree-node-id
            #:tree-node-text
@@ -170,18 +170,18 @@
            #:normalize-tree-view-scroll-offset
            #:ensure-tree-view-selection-visible
            )
-;;; entry selection and clipboard utilities
-  (:export #:clear-entry-selection
-           #:get-entry-selected-text
-           #:set-entry-selection
-           #:entry-copy-to-clipboard
-           #:entry-paste-from-clipboard
-           #:entry-delete-selection
-           #:entry-move-to-previous-word
-           #:entry-move-to-next-word
-           #:entry-ensure-cursor-visible
-           #:entry-scroll-to-start
-           #:entry-scroll-to-end)
+;;; <entry> selection and clipboard utilities
+  (:export #:clear-<entry>-selection
+           #:get-<entry>-selected-text
+           #:set-<entry>-selection
+           #:<entry>-copy-to-clipboard
+           #:<entry>-paste-from-clipboard
+           #:<entry>-delete-selection
+           #:<entry>-move-to-previous-word
+           #:<entry>-move-to-next-word
+           #:<entry>-ensure-cursor-visible
+           #:<entry>-scroll-to-start
+           #:<entry>-scroll-to-end)
 ;;; list-box accessors
   (:export #:list-box-items
            #:list-box-selected-index
@@ -199,17 +199,17 @@
            #:<combo-box>-header-widget
            #:<combo-box>-popup-widget
            #:<combo-box>-initial-items
-           #:combo-box-header-display-text
+           #:<combo-box-header>-display-text
 ;;; popup compatibility/accessors
-           #:combo-box-popup-mode
-           #:combo-box-popup-host-window
-           #:combo-box-popup-window
-           #:combo-box-popup-renderer
-           #:combo-box-popup-window-id
-           #:combo-box-popup-visible-p
+           #:<combo-box-popup>-mode
+           #:<combo-box-popup>-host-window
+           #:<combo-box-popup>-window
+           #:<combo-box-popup>-renderer
+           #:<combo-box-popup>-window-id
+           #:<combo-box-popup>-visible-p
            #:combo-box-selected-item
-           #:combo-box-popup-layer-manager
-           #:combo-box-popup-window-enabled-p
+           #:<combo-box-popup>-layer-manager
+           #:<combo-box-popup>-window-enabled-p
            #:combo-box-enable-popup-window
            #:combo-box-disable-popup-window
            #:combo-box-handle-popup-mouse-down
@@ -277,7 +277,7 @@
            #:handle-widget-key-event
            #:focusable-widget-p
            #:focused-widget
-           #:focused-entry
+           #:focused-<entry>
            #:dispatch-focused-widget-key-event
            #:dispatch-focused-text-input
            #:tab-navigation-backward-p
