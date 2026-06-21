@@ -693,7 +693,7 @@
                            (+ (<widget>-y widget) offset-y)
                            +color-text+)))))))
 
-(defmethod render (renderer (widget editable-combo-box) (style <widget-style>))
+(defmethod render (renderer (widget <editable-combo-box>) (style <widget-style>))
   (declare (ignore style))
   (let ((arrow-width 24)
         (border-color (if (<widget>-focused widget) +color-focus-border+ +color-border+)))
@@ -711,7 +711,7 @@
                                '(180 180 180 255)
                                '(120 120 120 255)))))
 
-(defmethod render (renderer (widget editable-combo-box) (style <windows-widget-style>))
+(defmethod render (renderer (widget <editable-combo-box>) (style <windows-widget-style>))
   (declare (ignore style))
   (let ((x (<widget>-x widget))
         (y (<widget>-y widget))
@@ -740,7 +740,7 @@
                              '(180 180 180 255)
                              '(96 96 96 255))))
 
-(defmethod render (renderer (widget editable-combo-box) (style <motif-widget-style>))
+(defmethod render (renderer (widget <editable-combo-box>) (style <motif-widget-style>))
   (declare (ignore style))
   (let ((x (<widget>-x widget))
         (y (<widget>-y widget))

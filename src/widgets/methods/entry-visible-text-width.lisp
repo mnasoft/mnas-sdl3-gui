@@ -5,6 +5,6 @@
 (defmethod <entry>-visible-text-width ((widget <entry>))
   (max 1 (- (<widget>-width widget) (* 2 +widget-padding+))))
 
-(defmethod <entry>-visible-text-width ((widget editable-combo-box))
+(defmethod <entry>-visible-text-width ((widget <editable-combo-box>))
   (let ((arrow-width 24))
     (max 1 (- (<widget>-width widget) (* 2 +widget-padding+) arrow-width))))

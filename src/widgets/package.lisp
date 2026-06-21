@@ -97,7 +97,6 @@
   (:export #:<toolbar>
            #:<toolbar-button>
 ;;; toolbar accessors
-           #:<toolbar-button>s
            #:toolbar-layout
            #:<toolbar>-padding
            #:toolbar-width

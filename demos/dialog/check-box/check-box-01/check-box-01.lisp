@@ -11,17 +11,20 @@
 
 (defun create-toolbar (window)
   "Create toolbar for the check-box demo." 
-  (let ((toolbar     (make-instance 'mnas-sdl3-gui/widgets:<toolbar>
-                                    :layout :horizontal
-                                    :height +check-box-toolbar-height+
-                                    :window window))
-        (tb-btn-quit (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
-                                    :command-id :check-box-01/quit
-                                    :label "Quit"
-                                    :width 64
-                                    :window window
-                                    )))
-    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar) (list tb-btn-quit))
+  (let ((toolbar
+          (make-instance 'mnas-sdl3-gui/widgets:<toolbar>
+                         :layout :horizontal
+                         :height +check-box-toolbar-height+
+                         :window window))
+        (tb-btn-quit
+          (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                         :command-id :check-box-01/quit
+                         :label "Quit"
+                         :width 64
+                         :window window
+                         )))
+    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
+          (list tb-btn-quit))
     toolbar))
 
 (defun labels-in-column (prefix)

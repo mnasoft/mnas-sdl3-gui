@@ -318,8 +318,11 @@
   :components ((:module "demos/dialog/entry/entry-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "entry-01")))))
+                             (:file "entry-01")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/entry-02"
   :description "Demos for mnas-sdl3-gui"
@@ -328,7 +331,11 @@
   :components ((:module "demos/dialog/entry/entry-02"
                 :serial t
                 :components ((:file "package")
-                             (:file "entry-02")))))
+                             (:file "parameters")
+                             (:file "commands")
+                             (:file "entry-02")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/polyhedron"
   :description "Demos for mnas-sdl3-gui"

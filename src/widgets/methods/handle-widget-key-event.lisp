@@ -2,6 +2,11 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
+(defmethod handle-widget-key-event (null key char &key mods ctrl shift alt on-escape on-return)
+  "Default no-op for generic widgets unless specialized." 
+  (declare (ignore mods ctrl shift alt on-escape on-return))
+  nil)
+  
 (defmethod handle-widget-key-event ((widgets cons) key char &key mods ctrl shift alt on-escape on-return)
   "Top-level keyboard dispatch for a WIDGETS list. Returns an app status keyword.
 This method implements demo-level behavior (escape/tab/return/space) and

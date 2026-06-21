@@ -24,3 +24,8 @@
   "Default per-widget motion handler: no-op. Specialized widgets implement their own behavior."
   (declare (ignore ev))
   nil)
+
+(defmethod handle-mouse-motion-event (null (ev sdl3:mouse-motion-event))
+  "Default per-widget motion handler: no-op. Specialized widgets implement their own behavior."
+  (declare (ignore ev))
+  nil)

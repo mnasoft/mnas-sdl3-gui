@@ -11,6 +11,12 @@
 (test hello-smoke
   (is (search "mnas-sdl3-gui" (hello))))
 
+(test toolbar-button-label-initarg
+  (let ((button (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                               :label "Quit"
+                               :width 64 :height 24)))
+    (is (string= "Quit" (mnas-sdl3-gui/widgets:<toolbar-button>-label button)))))
+
 (test window-manager-modal-keyboard-target
   (let ((manager (make-window-layer-manager)))
     (register-window manager 100 :main :open-p t)

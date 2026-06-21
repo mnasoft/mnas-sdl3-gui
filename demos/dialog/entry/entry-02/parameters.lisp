@@ -1,0 +1,21 @@
+;;;; ./demos/dialog/entry/entry-02/entry-02.lisp
+
+(in-package :mnas-sdl3-gui/demos/dialog/entry-02)
+
+(defparameter *window* nil)
+(defparameter *renderer* nil)
+(defparameter *open* t)
+(defparameter *result* nil)
+(defparameter *active-modifiers* nil)
+(defparameter *style* :flat)
+(defparameter *status* "Entry demo: name, password, integer, real, path, command.")
+(defparameter *widgets* nil)
+(defparameter *name* nil)
+(defparameter *password* nil)
+(defparameter *integer* nil)
+(defparameter *real* nil)
+(defparameter *path* nil)
+(defparameter *command* nil)
+(defparameter *window-id* 0)
+(defparameter *toolbar* nil)
+(defparameter +toolbar-height+ 32)

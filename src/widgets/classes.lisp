@@ -318,8 +318,8 @@
     :initarg :group
     :initform nil
     :accessor <toolbar-button>-group)
-   (<label>
-    :initarg :<label>
+   (label
+    :initarg :label
     :initform ""
     :accessor <toolbar-button>-label)
    (hotkey
@@ -352,7 +352,7 @@ its children."))
     :initarg :text
     :initform "Button"
     :accessor <button>-text
-    :documentation "Button <label> text")
+    :documentation "Button label text")
    (pressed
     :initarg :pressed
     :initform nil

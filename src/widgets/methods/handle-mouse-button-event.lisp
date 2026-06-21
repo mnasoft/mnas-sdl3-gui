@@ -2,6 +2,11 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
+(defmethod handle-mouse-button-event (null (ev sdl3:mouse-button-event))
+  "Default no-op for generic widgets unless specialized." 
+  (declare (ignore ev))
+  nil)
+
 (defmethod handle-mouse-button-event :around ((widget <widget>) (ev sdl3:mouse-button-event))
   (when (and (enabled-p widget) (visible-p widget))
     (call-next-method)))
@@ -41,7 +46,6 @@
   "Default no-op for generic widgets unless specialized." 
   (declare (ignore ev))
   nil)
-
 
 (defmethod handle-mouse-button-event ((widget <widget-container>) (ev sdl3:mouse-button-event))
   (let ((x (round (slot-value ev 'sdl3:%x)))
@@ -214,7 +218,7 @@
               (<list-box>-scrollbar-drag-offset widget) 0)
         dragging-p))))
 
-(defmethod handle-mouse-button-event ((widget editable-combo-box) (ev sdl3:mouse-button-event))
+(defmethod handle-mouse-button-event ((widget <editable-combo-box>) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))

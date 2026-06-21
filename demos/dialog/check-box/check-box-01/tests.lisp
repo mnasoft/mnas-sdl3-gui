@@ -8,4 +8,5 @@
 (setf (mnas-sdl3-gui/widgets:<widget>-x *toolbar*) 100)
 (setf (mnas-sdl3-gui/widgets:<widget>-y *toolbar*) 280)
 
+
 (check-box-content-widgets)
