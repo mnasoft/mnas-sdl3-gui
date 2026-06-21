@@ -20,16 +20,16 @@
     (setf (<button>-armed-p widget) nil
           (<button>-pressed-p widget) nil)))
 
-(defmethod activate-widget ((widget toggle))
-  (select-toggle-in-group widget)
+(defmethod activate-widget ((widget <toggle>))
+  (select-<toggle>-in-group widget)
   t)
 
-(defmethod activate-widget ((widget check-box))
-  (setf (check-box-checked widget) (not (check-box-checked widget)))
-  (update-<widget>-value widget (check-box-checked widget))
+(defmethod activate-widget ((widget <check-box>))
+  (setf (<check-box>-checked widget) (not (<check-box>-checked widget)))
+  (update-<widget>-value widget (<check-box>-checked widget))
   t)
 
-(defmethod activate-widget ((widget combo-box))
+(defmethod activate-widget ((widget <combo-box>))
   (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
   (when (<combo-box>-expanded-p widget)
     (ensure-combo-box-selection-visible widget))

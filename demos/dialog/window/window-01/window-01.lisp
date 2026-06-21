@@ -210,7 +210,7 @@
             (window-01-register-commands)
             (window-01-register-shortcuts)
             (setf *window-01-toolbar* (make-window-01-toolbar))
-            (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-01-toolbar*)
+            #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-01-toolbar*)
             (window-01-sync-command-state)
           (mnas-sdl3-gui/widgets:init-ttf-font))))
   :continue)

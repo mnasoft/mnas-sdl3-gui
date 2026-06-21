@@ -25,7 +25,7 @@
   newlist)
 
 ;; If toolbar stores buttons in a legacy `buttons` slot, keep both in sync.
-(defmethod children ((tb mnas-sdl3-gui/widgets:toolbar))
+(defmethod children ((tb <toolbar>))
   (let ((kids (<widget-container>-children tb)))
     (if (and (null kids)
              (slot-boundp tb 'buttons)
@@ -35,7 +35,7 @@
           kids))
         )
 
-(defmethod (setf children) (newlist (tb toolbar))
+(defmethod (setf children) (newlist (tb <toolbar>))
   ;; update both <widget-container>-children and legacy buttons slot for compatibility
   (setf (<widget-container>-children tb) newlist)
   (when (slot-boundp tb 'buttons)

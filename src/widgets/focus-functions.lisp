@@ -9,7 +9,7 @@
     (and (enabled-p widget)
       (visible-p widget)
        (<widget>-focusable widget)
-       (typep widget '(or button toggle check-box <entry> list-box combo-box))))
+       (typep widget '(or <button> <toggle> <check-box> <entry> <list-box> <combo-box>))))
 
 (defun focused-widget (widgets)
   "Return the currently focused widget from WIDGETS, or NIL."

@@ -110,16 +110,16 @@
   "Create pack-managed widgets and return (values widgets window-width window-height)."
   (mnas-sdl3-gui/widgets:clear-pack-layout)
   (mnas-sdl3-gui/widgets:clear-toggle-group-registry)
-  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
+  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:<label>
                                :text "Pack Layout Demo"))
-         (subtitle (make-instance 'mnas-sdl3-gui/widgets:label
+         (subtitle (make-instance 'mnas-sdl3-gui/widgets:<label>
                                   :text "Несколько виджетов каждого типа"))
-         (button-apply (make-instance 'mnas-sdl3-gui/widgets:button
+         (button-apply (make-instance 'mnas-sdl3-gui/widgets:<button>
                                       :text "Применить"
                                       :on-click (lambda (widget)
                                                   (declare (ignore widget))
                                                   (pack-01-command :pack-01/apply))))
-         (button-reset (make-instance 'mnas-sdl3-gui/widgets:button
+         (button-reset (make-instance 'mnas-sdl3-gui/widgets:<button>
                                       :text "Сбросить"
                                       :on-click (lambda (widget)
                                                   (declare (ignore widget))
@@ -275,7 +275,7 @@
             (pack-01-register-commands)
             (pack-01-register-shortcuts)
             (setf *pack-demo-toolbar* (pack-01-create-toolbar))
-            (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *pack-demo-toolbar*)
+            #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *pack-demo-toolbar*)
             (mnas-sdl3-gui/widgets:set-widget-style *pack-demo-style*)
             (mnas-sdl3-gui/widgets:start-widget-text-input window)
             (setf *pack-demo-widgets* widgets)

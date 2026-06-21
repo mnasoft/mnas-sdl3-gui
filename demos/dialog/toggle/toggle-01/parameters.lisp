@@ -1,0 +1,20 @@
+;;;; ./demos/dialog/toggle/toggle-01/toggle-01.lisp
+
+(in-package :mnas-sdl3-gui/demos/dialog/toggle-01)
+
+(defparameter *window* nil)
+(defparameter *renderer* nil)
+(defparameter *window-id* 0)
+(defparameter *layer-manager* nil)
+(defparameter *toolbar* nil)
+(defparameter *open* t)
+(defparameter *style* :windows)
+(defparameter *widgets* nil)
+(defparameter *status* "Выберите переключатель в любой группе.")
+(defparameter *status-y* 0)
+(defparameter +toolbar-height+ 32)
+(defparameter +margin+ 16)
+(defparameter +status-band+ 26)
+(defparameter +section-gap+ 8)
+(defparameter +window-width+ 500)
+(defparameter +window-height+ 322)

@@ -6,7 +6,7 @@
   (and (<= (<widget>-x widget) x (+ (<widget>-x widget) (<widget>-width widget)))
        (<= (<widget>-y widget) y (+ (<widget>-y widget) (<widget>-height widget)))))
 
-(defmethod contains-point-p ((widget combo-box) x y)
+(defmethod contains-point-p ((widget <combo-box>) x y)
   (or (and (<= (<widget>-x widget) x (+ (<widget>-x widget) (<widget>-width widget)))
            (<= (<widget>-y widget) y (+ (<widget>-y widget) (<combo-box>-main-height widget))))
       (and (<combo-box>-expanded-p widget)

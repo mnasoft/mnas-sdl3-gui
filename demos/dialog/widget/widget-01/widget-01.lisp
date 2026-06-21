@@ -63,12 +63,12 @@
   "Create a collection of widgets for the demo."
   (list
     ;; Title label
-    (make-instance 'mnas-sdl3-gui/widgets:label
+    (make-instance 'mnas-sdl3-gui/widgets:<label>
                    :x 20 :y 20 :width 350 :height 30
                    :text "Widget Controls Demo")
     
     ;; Simple button
-    (make-instance 'mnas-sdl3-gui/widgets:button
+    (make-instance 'mnas-sdl3-gui/widgets:<button>
                    :x 20 :y 70 :width 100 :height 30
                    :text "Click Me"
                    :on-click (lambda (widget)
@@ -153,7 +153,7 @@
           (register-commands)
           (register-shortcuts)
           (setf *toolbar* (make-toolbar))
-          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toolbar*)
+          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toolbar*)
           (apply-style *dialog-style*)
           (sync-command-state)
           (mnas-sdl3-gui/widgets:set-widget-focus (list *widget-root*) *widget-root*)

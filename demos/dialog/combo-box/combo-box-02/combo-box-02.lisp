@@ -78,10 +78,10 @@
        (> (length (string-trim '(#\Space #\Tab #\Newline #\Return) (or text ""))) 0)))))
 
 (defun create-combo-box-02-demo-widgets ()
-  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
+  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:<label>
                                :x 20 :y 18 :width 560 :height 24
                                :text "Editable Combo-Box Demo"))
-         (hint (make-instance 'mnas-sdl3-gui/widgets:label
+         (hint (make-instance 'mnas-sdl3-gui/widgets:<label>
                               :x 20 :y 42 :width 560 :height 24
                               :text "Type a value or choose from the list. Press buttons to report or add the current text."))
          (editable (make-instance 'mnas-sdl3-gui/widgets:editable-combo-box
@@ -94,7 +94,7 @@
                                   :max-length 100
                                   :max-visible-items 6
                                   :placeholder "Type new item or select from list"))
-         (report (make-instance 'mnas-sdl3-gui/widgets:button
+         (report (make-instance 'mnas-sdl3-gui/widgets:<button>
                                  :x 20 :y 140 :width 180 :height 34
                                  :text "Show current value"
                                  :on-click (lambda (widget)
@@ -103,7 +103,7 @@
                                                    (format nil "Value: ~A  Text: ~A"
                                                            (mnas-sdl3-gui/widgets:<widget>-value editable)
                                                            (mnas-sdl3-gui/widgets:entry-text editable))))))
-         (add-item (make-instance 'mnas-sdl3-gui/widgets:button
+         (add-item (make-instance 'mnas-sdl3-gui/widgets:<button>
                                   :x 220 :y 140 :width 180 :height 34
                                   :text "Add current text"
                                   :on-click (lambda (widget)
@@ -148,7 +148,7 @@
           (combo-box-02-register-commands)
           (combo-box-02-register-shortcuts)
           (setf *combo-box-02-toolbar* (combo-box-02-create-toolbar))
-          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *combo-box-02-toolbar*)
+          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *combo-box-02-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-02-demo-widgets)

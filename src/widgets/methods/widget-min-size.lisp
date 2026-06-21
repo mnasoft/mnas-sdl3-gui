@@ -19,18 +19,18 @@
     (values (max 64 (+ tw 24))
             (max 28 (+ th 12)))))
 
-(defmethod widget-min-size ((obj toggle))
+(defmethod widget-min-size ((obj <toggle>))
   (multiple-value-bind (tw th)
-      (widget-text-pixel-size (toggle-<label> obj))
+      (widget-text-pixel-size (<toggle>-label obj))
     (declare (ignore th))
     (let ((indicator-width 16)
           (<label>-gap (nth-value 0 (widget-text-pixel-size "M"))))
       (values (max 80 (+ indicator-width <label>-gap tw))
               24))))
 
-(defmethod widget-min-size ((obj check-box))
+(defmethod widget-min-size ((obj <check-box>))
   (multiple-value-bind (tw th)
-      (widget-text-pixel-size (check-box-<label> obj))
+      (widget-text-pixel-size (<check-box>-label obj))
     (let ((indicator-width 16)
           (<label>-gap (nth-value 0 (widget-text-pixel-size "M"))))
       (values (max 72 (+ indicator-width <label>-gap tw))
@@ -42,7 +42,7 @@
     (values (max 120 (+ tw 12))
             (max 30 (+ th 10)))))
 
-(defmethod widget-min-size ((obj tree-view))
+(defmethod widget-min-size ((obj <tree-view>))
   (values (max 160 (<widget>-width obj))
           (max 96 (<widget>-height obj))))
 
@@ -57,7 +57,7 @@
     (values (max 120 (+ text-width 12 scrollbar-width))
             (max min-height 72))))
 
-(defmethod widget-min-size ((obj combo-box))
+(defmethod widget-min-size ((obj <combo-box>))
   (let* ((longest-item (or (loop for item in (<list-box>-items obj)
                                  maximize (length (format nil "~a" item)))
                           8))

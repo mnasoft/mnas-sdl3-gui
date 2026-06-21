@@ -67,7 +67,7 @@
           (font-01-register-commands)
           (font-01-register-shortcuts)
             (setf *cyrillic-font-toolbar* (make-font-01-toolbar))
-            (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *cyrillic-font-toolbar*)))
+            #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *cyrillic-font-toolbar*)))
   ;; Инициализируем TTF после SDL3 (именно здесь, не при загрузке файла)
   (mnas-sdl3-gui/widgets:init-ttf-font)
   :continue))

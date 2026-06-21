@@ -105,8 +105,8 @@ Returns the window id that was processed or NIL."
 
 (defun make-tree-node (&key id text kind path children children-loaded-p
                             modified-time expanded-p data)
-  "Create a TREE-NODE instance." 
-  (make-instance 'tree-node
+  "Create a <TREE-NODE> instance." 
+  (make-instance '<tree-node>
                  :id id
                  :text (or text "")
                  :kind (or kind :item)
@@ -305,13 +305,13 @@ Returns the window id that was processed or NIL."
   (setf (children container) nil)
   container)
 
-(defun tree-node-directory-p (node)
+(defun <tree-node>-directory-p (node)
   "Return true when NODE represents a directory." 
-  (and node (eq (tree-node-kind node) :directory)))
+  (and node (eq (<tree-node>-kind node) :directory)))
 
-(defun tree-node-file-p (node)
+(defun <tree-node>-file-p (node)
   "Return true when NODE represents a file." 
-  (and node (eq (tree-node-kind node) :file)))
+  (and node (eq (<tree-node>-kind node) :file)))
 
 (defun %filesystem-file-extension (path)
   "Return lowercase file extension for PATH without leading dot." 
@@ -337,41 +337,41 @@ Returns the window id that was processed or NIL."
       (file-write-date path)
     (error () nil)))
 
-(defun %tree-node-sort< (left right sort-mode)
+(defun %<tree-node>-sort< (left right sort-mode)
   "Return true when LEFT must be ordered before RIGHT for SORT-MODE." 
-  (let ((left-directory (tree-node-directory-p left))
-        (right-directory (tree-node-directory-p right)))
+  (let ((left-directory (<tree-node>-directory-p left))
+        (right-directory (<tree-node>-directory-p right)))
     (cond
       ((not (eq left-directory right-directory))
        left-directory)
       ((eq sort-mode :date)
-       (let ((left-time (or (tree-node-modified-time left) 0))
-             (right-time (or (tree-node-modified-time right) 0)))
+       (let ((left-time (or (<tree-node>-modified-time left) 0))
+             (right-time (or (<tree-node>-modified-time right) 0)))
          (if (/= left-time right-time)
              (> left-time right-time)
-             (string-lessp (string-downcase (tree-node-text left))
-                           (string-downcase (tree-node-text right))))))
+             (string-lessp (string-downcase (<tree-node>-text left))
+                           (string-downcase (<tree-node>-text right))))))
       ((eq sort-mode :type)
-       (let ((left-ext (%filesystem-file-extension (or (tree-node-path left)
-                                                       (tree-node-text left))))
-             (right-ext (%filesystem-file-extension (or (tree-node-path right)
-                                                        (tree-node-text right)))))
+       (let ((left-ext (%filesystem-file-extension (or (<tree-node>-path left)
+                                                       (<tree-node>-text left))))
+             (right-ext (%filesystem-file-extension (or (<tree-node>-path right)
+                                                        (<tree-node>-text right)))))
          (if (string/= left-ext right-ext)
              (string-lessp left-ext right-ext)
-             (string-lessp (string-downcase (tree-node-text left))
-                           (string-downcase (tree-node-text right))))))
+             (string-lessp (string-downcase (<tree-node>-text left))
+                           (string-downcase (<tree-node>-text right))))))
       (t
-       (string-lessp (string-downcase (tree-node-text left))
-                     (string-downcase (tree-node-text right)))))))
+       (string-lessp (string-downcase (<tree-node>-text left))
+                     (string-downcase (<tree-node>-text right)))))))
 
-(defun tree-node-children-sorted (node &key (sort-mode :name))
+(defun <tree-node>-children-sorted (node &key (sort-mode :name))
   "Return NODE children sorted with directories first and SORT-MODE ordering." 
-  (stable-sort (copy-list (tree-node-children node))
+  (stable-sort (copy-list (<tree-node>-children node))
                (lambda (left right)
-                 (%tree-node-sort< left right sort-mode))))
+                 (%<tree-node>-sort< left right sort-mode))))
 
 (defun %filesystem-<entry>-name (path)
-  "Return leaf name of PATH for display in tree <label>s." 
+  "Return leaf name of PATH for display in tree labels." 
   (let* ((namestr (uiop:native-namestring path))
          (trimmed (string-right-trim '(#\/) namestr))
          (last-slash (position #\/ trimmed :from-end t)))
@@ -427,7 +427,7 @@ Returns the window id that was processed or NIL."
                       (string-lessp left-name right-name)))))))
 
 (defun make-filesystem-tree-node (path &key (expanded-p nil) (children-loaded-p nil))
-  "Create a lazy TREE-NODE for filesystem PATH." 
+  "Create a lazy <TREE-NODE> for filesystem PATH." 
   (let* ((directory-p (uiop:directory-exists-p path))
          (file-p (and (not directory-p) (uiop:file-exists-p path)))
          (kind (cond (directory-p :directory)
@@ -445,14 +445,14 @@ Returns the window id that was processed or NIL."
 
 (defun tree-view-load-node-children (widget node)
   "Load NODE children lazily from filesystem according to WIDGET options." 
-  (when (and (tree-node-directory-p node)
-             (not (tree-node-children-loaded-p node)))
-    (let* ((directory-path (or (tree-node-path node)
-                               (tree-node-id node)
-                               (tree-node-data node)))
+  (when (and (<tree-node>-directory-p node)
+             (not (<tree-node>-children-loaded-p node)))
+    (let* ((directory-path (or (<tree-node>-path node)
+                               (<tree-node>-id node)
+                               (<tree-node>-data node)))
            (filter-exts (tree-view-normalize-extensions
-                         (tree-view-filter-extensions widget)))
-           (max-depth (tree-view-max-depth widget))
+                         (<tree-view>-filter-extensions widget)))
+           (max-depth (<tree-view>-max-depth widget))
            (depth (tree-view-node-depth widget node))
            (paths (if (and max-depth (>= depth max-depth))
                       nil
@@ -461,30 +461,30 @@ Returns the window id that was processed or NIL."
                         (lambda (child-path)
                           (%filesystem-<entry>-allowed-p child-path filter-exts))
                         (%directory-child-paths directory-path
-                                                (tree-view-show-hidden-p widget)))
-                       (tree-view-sort-mode widget)))))
-      (setf (tree-node-children node)
+                                                (<tree-view>-show-hidden-p widget)))
+                       (<tree-view>-sort-mode widget)))))
+      (setf (<tree-node>-children node)
             (loop for child-path in paths
                   collect (make-filesystem-tree-node child-path
                                                      :expanded-p nil
                                                      :children-loaded-p nil))
-            (tree-node-children-loaded-p node) t))
-    (setf (tree-node-children node)
-          (tree-node-children-sorted node :sort-mode (tree-view-sort-mode widget))))
+            (<tree-node>-children-loaded-p node) t))
+    (setf (<tree-node>-children node)
+          (<tree-node>-children-sorted node :sort-mode (<tree-view>-sort-mode widget))))
   node)
 
 (defun tree-view-expand-node (widget node)
   "Expand NODE in WIDGET and ensure lazy children are loaded." 
-  (when (tree-node-directory-p node)
+  (when (<tree-node>-directory-p node)
     (tree-view-load-node-children widget node)
-    (setf (tree-node-expanded-p node) t))
+    (setf (<tree-node>-expanded-p node) t))
   node)
 
 (defun tree-view-toggle-node-expanded (widget node)
-  "Toggle NODE expansion in WIDGET, loading children lazily when opening." 
-  (when (tree-node-directory-p node)
-    (if (tree-node-expanded-p node)
-        (setf (tree-node-expanded-p node) nil)
+  "<Toggle> NODE expansion in WIDGET, loading children lazily when opening." 
+  (when (<tree-node>-directory-p node)
+    (if (<tree-node>-expanded-p node)
+        (setf (<tree-node>-expanded-p node) nil)
         (tree-view-expand-node widget node)))
   node)
 
@@ -502,12 +502,13 @@ Returns the window id that was processed or NIL."
         (list root-node)
         nil)))
 
-(defun tree-view-load-directory (widget root-path &key (show-hidden-p nil)
-                                          (filter-extensions nil)
-                                          (sort-mode :name)
-                                          (max-depth nil)
-                                          (expanded-root-p t))
-  "Populate TREE-VIEW WIDGET roots from ROOT-PATH filesystem contents." 
+(defun tree-view-load-directory (widget root-path
+                                 &key (show-hidden-p nil)
+                                   (filter-extensions nil)
+                                   (sort-mode :name)
+                                   (max-depth nil)
+                                   (expanded-root-p t))
+  "Populate <TREE-VIEW> WIDGET roots from ROOT-PATH filesystem contents." 
   (let* ((normalized-exts (tree-view-normalize-extensions filter-extensions))
          (roots (build-filesystem-tree root-path
                                        :show-hidden-p show-hidden-p
@@ -515,14 +516,14 @@ Returns the window id that was processed or NIL."
                                        :sort-mode sort-mode
                                        :max-depth max-depth
                                        :expanded-root-p expanded-root-p)))
-    (setf (tree-view-root-path widget) (uiop:native-namestring root-path)
-        (tree-view-show-hidden-p widget) show-hidden-p
-          (tree-view-filter-extensions widget) normalized-exts
-          (tree-view-sort-mode widget) sort-mode
-          (tree-view-max-depth widget) max-depth
-          (tree-view-scroll-offset widget) 0
-          (tree-view-roots widget) roots
-          (tree-view-selected-node widget) nil)
+    (setf (<tree-view>-root-path widget) (uiop:native-namestring root-path)
+          (<tree-view>-show-hidden-p widget) show-hidden-p
+          (<tree-view>-filter-extensions widget) normalized-exts
+          (<tree-view>-sort-mode widget) sort-mode
+          (<tree-view>-max-depth widget) max-depth
+          (<tree-view>-scroll-offset widget) 0
+          (<tree-view>-roots widget) roots
+          (<tree-view>-selected-node widget) nil)
     (when (and expanded-root-p roots)
       (tree-view-expand-node widget (first roots))))
   widget)
@@ -530,62 +531,64 @@ Returns the window id that was processed or NIL."
 (defun tree-node-has-children-p (node)
   "Return true when NODE has child nodes." 
   (and node
-       (or (consp (tree-node-children node))
-           (and (tree-node-directory-p node)
-                (not (tree-node-children-loaded-p node))))))
+       (or (consp (<tree-node>-children node))
+           (and (<tree-node>-directory-p node)
+                (not (<tree-node>-children-loaded-p node))))))
 
 (defun tree-view-node-depth (widget target)
   "Return depth of TARGET in WIDGET tree roots, or 0 when missing." 
-  (<label>s ((walk (nodes depth)
+  (labels ((walk (nodes depth)
              (loop for node in nodes do
                (when (eq node target)
                  (return-from tree-view-node-depth depth))
                (when (tree-node-has-children-p node)
-                 (walk (tree-node-children node) (1+ depth))))))
-    (walk (tree-view-roots widget) 0)
+                 (walk (<tree-node>-children node) (1+ depth))))))
+    (walk (<tree-view>-roots widget) 0)
     0))
 
 (defun tree-view-visible-rows (widget)
-  "Return visible rows as a list of (NODE DEPTH) pairs for TREE-VIEW WIDGET." 
-  (<label>s ((collect-visible (nodes depth)
-             (loop for node in nodes append
-                   (cons (list node depth)
-                         (progn
-                           (when (and (tree-node-expanded-p node)
-                                      (tree-node-directory-p node)
-                                      (not (tree-node-children-loaded-p node)))
-                             (tree-view-load-node-children widget node))
-                           (if (and (tree-node-expanded-p node)
-                                    (tree-node-has-children-p node))
-                               (collect-visible (tree-node-children node) (1+ depth))
-                               nil))))))
-    (collect-visible (tree-view-roots widget) 0)))
+  "Return visible rows as a list of (NODE DEPTH) pairs for <TREE-VIEW> WIDGET." 
+  (labels
+      ((collect-visible (nodes depth)
+         (loop :for node :in nodes
+               append
+               (cons (list node depth)
+                     (progn
+                       (when (and (<tree-node>-expanded-p node)
+                                  (<tree-node>-directory-p node)
+                                  (not (<tree-node>-children-loaded-p node)))
+                         (tree-view-load-node-children widget node))
+                       (if (and (<tree-node>-expanded-p node)
+                                (tree-node-has-children-p node))
+                           (collect-visible (<tree-node>-children node) (1+ depth))
+                           nil))))))
+    (collect-visible (<tree-view>-roots widget) 0)))
 
 (defun tree-view-visible-row-count (widget)
   "Return number of tree rows that fit in WIDGET viewport." 
   (max 1
        (floor (max 1 (- (<widget>-height widget) 2))
-              (max 1 (tree-view-row-height widget)))))
+              (max 1 (<tree-view>-row-height widget)))))
 
 (defun tree-view-max-scroll-offset (widget)
-  "Return maximum valid first-visible row index for TREE-VIEW WIDGET." 
+  "Return maximum valid first-visible row index for <TREE-VIEW> WIDGET." 
   (max 0
        (- (length (tree-view-visible-rows widget))
           (tree-view-visible-row-count widget))))
 
 (defun tree-view-scrollbar-needed-p (widget)
-  "Return true when TREE-VIEW needs a vertical scrollbar." 
+  "Return true when <TREE-VIEW> needs a vertical scrollbar." 
   (> (length (tree-view-visible-rows widget))
      (tree-view-visible-row-count widget)))
 
 (defun tree-view-scrollbar-geometry (widget)
-  "Return geometry values for the TREE-VIEW scrollbar.
+  "Return geometry values for the <TREE-VIEW> scrollbar.
 Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max-offset."
   (let ((needed-p (tree-view-scrollbar-needed-p widget)))
     (if (not needed-p)
         (values nil nil nil nil nil nil 0)
         (let* ((visible-count (tree-view-visible-row-count widget))
-               (row-height (max 16 (tree-view-row-height widget)))
+               (row-height (max 16 (<tree-view>-row-height widget)))
                (track-x (+ (<widget>-x widget) (- (<widget>-width widget) +list-box-scrollbar-width+)))
                (track-y (1+ (<widget>-y widget)))
                (track-height (max 1 (- (<widget>-height widget) 2)))
@@ -596,51 +599,51 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                            (if (zerop max-offset)
                                0
                                (round (* thumb-travel
-                                         (/ (tree-view-scroll-offset widget) max-offset)))))))
+                                         (/ (<tree-view>-scroll-offset widget) max-offset)))))))
           (values t track-x track-y track-height thumb-y thumb-height max-offset)))))
 
 (defun normalize-tree-view-scroll-offset (widget)
-  "Clamp tree-view scroll offset to valid row range." 
-  (setf (tree-view-scroll-offset widget)
+  "Clamp <tree-view> scroll offset to valid row range." 
+  (setf (<tree-view>-scroll-offset widget)
         (max 0
-             (min (tree-view-scroll-offset widget)
+             (min (<tree-view>-scroll-offset widget)
                   (tree-view-max-scroll-offset widget)))))
 
 (defun ensure-tree-view-selection-visible (widget)
-  "Adjust tree-view scroll so selected node is within visible viewport." 
+  "Adjust <tree-view> scroll so selected node is within visible viewport." 
   (let* ((rows (tree-view-visible-rows widget))
-         (selected (tree-view-selected-node widget))
+         (selected (<tree-view>-selected-node widget))
          (selected-index (position selected rows :key #'first :test #'eq))
          (visible-count (tree-view-visible-row-count widget))
          (max-offset (tree-view-max-scroll-offset widget))
-         (scroll-offset (max 0 (min (tree-view-scroll-offset widget) max-offset))))
+         (scroll-offset (max 0 (min (<tree-view>-scroll-offset widget) max-offset))))
     (when selected-index
       (cond
         ((< selected-index scroll-offset)
          (setf scroll-offset selected-index))
         ((>= selected-index (+ scroll-offset visible-count))
          (setf scroll-offset (1+ (- selected-index visible-count))))))
-    (setf (tree-view-scroll-offset widget)
+    (setf (<tree-view>-scroll-offset widget)
           (max 0 (min scroll-offset max-offset)))))
 
-;; `tree-view-scroll-by` moved to methods/scroll-by.lisp (defgeneric `scroll-by` and per-type methods).
+;; `<tree-view>-scroll-by` moved to methods/scroll-by.lisp (defgeneric `scroll-by` and per-type methods).
 
 (defun tree-view-parent-node (widget target)
-  "Return parent node of TARGET inside TREE-VIEW WIDGET, or NIL." 
-  (<label>s ((find-parent (nodes parent)
+  "Return parent node of TARGET inside <TREE-VIEW> WIDGET, or NIL." 
+  (labels ((find-parent (nodes parent)
              (loop for node in nodes do
                (when (eq node target)
                  (return-from find-parent parent))
                (when (tree-node-has-children-p node)
-                 (let ((found (find-parent (tree-node-children node) node)))
+                 (let ((found (find-parent (<tree-node>-children node) node)))
                    (when found
                      (return found))))
                finally (return nil))))
-    (find-parent (tree-view-roots widget) nil)))
+    (find-parent (<tree-view>-roots widget) nil)))
 
 (defun tree-view-select-node (widget node)
-  "Select NODE in TREE-VIEW WIDGET and trigger update callback." 
-  (setf (tree-view-selected-node widget) node)
+  "Select NODE in <TREE-VIEW> WIDGET and trigger update callback." 
+  (setf (<tree-view>-selected-node widget) node)
   (ensure-tree-view-selection-visible widget)
   (update-<widget>-value widget node)
   node)
@@ -754,7 +757,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 (defun widget-effective-z-order (widget)
   "Return effective z-order for WIDGET, keeping expanded combo-box popups on top."
   (+ (<widget>-z-order widget)
-     (if (and (typep widget 'combo-box)
+     (if (and (typep widget '<combo-box>)
               (<combo-box>-expanded-p widget))
          1000000
          0)))
@@ -773,9 +776,9 @@ present the popup's renderer."
   (let* ((sorted (stable-sort (copy-list widgets) #'< :key #'widget-effective-z-order))
          (popups '()))
     (dolist (w sorted)
-      (when (and (typep w 'combo-box)
+      (when (and (typep w '<combo-box>)
                  (<combo-box-popup>-window-enabled-p w))
-        (push (make-instance 'combo-box-popup :owner w) popups)))
+        (push (make-instance '<combo-box-popup> :owner w) popups)))
     (append sorted (nreverse popups))))
 
 (defun widgets-in-hit-test-order (widgets)

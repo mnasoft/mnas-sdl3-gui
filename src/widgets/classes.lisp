@@ -3,6 +3,7 @@
 (in-package :mnas-sdl3-gui/widgets)
 
 ;;;; [^A-Za-z-><]widget[^A-Za-z-><]
+;;;; [^A-Za-z-><]button[^A-Za-z-><]
 
 ;;; Widget classes
 
@@ -212,7 +213,7 @@
     :documentation "SDL window id for the popup window.")
    (visible-p
     :initarg :visible-p
-    :initform nil :accessor combo-box-popup-visible-p
+    :initform nil :accessor <combo-box-popup>-visible-p
     :documentation "Whether the popup window is currently shown.")
    (layer-manager
     :initarg :layer-manager
@@ -233,7 +234,7 @@
     :accessor <combo-box-header>-display-text
     :documentation "Text shown in the collapsed header (reflects selected item)."))
   (:documentation
-   "Collapsed header of a combo-box; clicking toggles the associated popup."))
+   "Collapsed header of a combo-box; clicking <toggle>s the associated popup."))
 
 (defclass <combo-box> (<widget>)
   ((header
@@ -369,23 +370,35 @@ its children."))
     :documentation "Callback function called on button click"))
   (:documentation "Clickable button widget"))
 
-(defclass toggle (<widget>)
+(defclass <toggle> (<widget>)
   ((state
-    :initarg :state :initform nil :accessor toggle-state
-    :documentation "Current toggle state (selected or NIL)")
+    :initarg :state
+    :initform nil
+    :accessor <toggle>-state
+    :documentation "Current <toggle> state (selected or NIL)")
    (group
-    :initarg :group :initform nil :accessor toggle-group
-    :documentation "Group identifier for mutually exclusive toggles")
-   (<label>
-    :initarg :<label> :initform "Toggle" :accessor toggle-<label>
-    :documentation "<Label> for toggle"))
-  (:documentation "Radio-style toggle widget (single selection per group)"))
+    :initarg :group
+    :initform nil
+    :accessor <toggle>-group
+    :documentation "Group identifier for mutually exclusive <toggle>s")
+   (label
+    :initarg :label
+    :initform "<Toggle>"
+    :accessor <toggle>-label
+    :documentation "Label for <toggle>"))
+  (:documentation "Radio-style <toggle> widget (single selection per group)"))
 
-(defclass check-box (<widget>)
-  ((checked :initarg :checked :initform nil :accessor check-box-checked
-            :documentation "Whether checkbox is checked")
-   (<label> :initarg :<label> :initform "Check" :accessor check-box-<label>
-          :documentation "<Label> for checkbox"))
+(defclass <check-box> (<widget>)
+  ((checked
+    :initarg :checked
+    :initform nil
+    :accessor <check-box>-checked
+    :documentation "Whether checkbox is checked")
+   (label
+    :initarg :label
+    :initform "Check"
+    :accessor <check-box>-label
+    :documentation "<Label> for checkbox"))
   (:documentation "Checkbox widget"))
 
 (defclass <entry> (<widget>)
@@ -445,78 +458,125 @@ its children."))
   ()
   (:documentation "<Entry> widget specialized for real number input."))
 
-(defclass tree-node ()
+(defclass <tree-node> ()
   ((id
-    :initarg :id :initform nil :accessor tree-node-id
+    :initarg :id
+    :initform nil
+    :accessor <tree-node>-id
     :documentation "Optional node identifier.")
    (text
-    :initarg :text :initform "" :accessor tree-node-text
-    :documentation "Display <label> for the node.")
+    :initarg :text
+    :initform ""
+    :accessor <tree-node>-text
+    :documentation "Display label for the node.")
    (kind
-    :initarg :kind :initform :item :accessor tree-node-kind
+    :initarg :kind
+    :initform :item
+    :accessor <tree-node>-kind
     :documentation "Node kind keyword, e.g. :directory or :file.")
-   (path :initarg :path :initform nil :accessor tree-node-path
-         :documentation "Optional filesystem path associated with node.")
+   (path
+    :initarg :path
+    :initform nil
+    :accessor <tree-node>-path
+    :documentation "Optional filesystem path associated with node.")
    (children-loaded-p
-    :initarg :children-loaded-p :initform nil :accessor tree-node-children-loaded-p
+    :initarg :children-loaded-p
+    :initform nil
+    :accessor <tree-node>-children-loaded-p
     :documentation "Whether children are already loaded for this node.")
    (modified-time
-    :initarg :modified-time :initform nil :accessor tree-node-modified-time
+    :initarg :modified-time
+    :initform nil
+    :accessor <tree-node>-modified-time
     :documentation "Optional filesystem write timestamp.")
    (children
-    :initarg :children :initform nil :accessor tree-node-children
+    :initarg :children
+    :initform nil
+    :accessor <tree-node>-children
     :documentation "Child nodes list.")
    (expanded-p
-    :initarg :expanded-p :initform nil :accessor tree-node-expanded-p
+    :initarg :expanded-p
+    :initform nil :accessor <tree-node>-expanded-p
     :documentation "Whether children are visible.")
    (data
-    :initarg :data :initform nil :accessor tree-node-data
+    :initarg :data
+    :initform nil
+    :accessor <tree-node>-data
     :documentation "Optional user payload for the node."))
-  (:documentation "Node model used by tree-view widget."))
+  (:documentation "Node model used by <tree-view> widget."))
 
-(defclass tree-view (<widget>)
-  ((roots :initarg :roots :initform nil :accessor tree-view-roots
-          :documentation "Top-level tree-node list.")
-   (selected-node :initarg :selected-node :initform nil :accessor tree-view-selected-node
-                  :documentation "Currently selected node object.")
-   (root-path :initarg :root-path :initform nil :accessor tree-view-root-path
-              :documentation "Filesystem root path used to build tree roots.")
-   (show-hidden-p :initarg :show-hidden-p :initform nil :accessor tree-view-show-hidden-p
-                  :documentation "Whether to show hidden filesystem entries.")
-  (filter-extensions :initarg :filter-extensions :initform nil :accessor tree-view-filter-extensions
-               :documentation "List of allowed file extensions (e.g. '(\"lisp\" \"asd\")); NIL means all.")
-  (sort-mode :initarg :sort-mode :initform :name :accessor tree-view-sort-mode
-          :documentation "Filesystem sort mode: :name, :type, or :date.")
-  (max-depth :initarg :max-depth :initform nil :accessor tree-view-max-depth
-          :documentation "Optional depth limit for filesystem tree expansion.")
-     (scroll-offset :initarg :scroll-offset :initform 0 :accessor tree-view-scroll-offset
-        :documentation "Index of the first visible tree row.")
-   (row-height :initarg :row-height :initform 22 :accessor tree-view-row-height
-               :documentation "Single visible row height in pixels.")
-   (indent-width :initarg :indent-width :initform 16 :accessor tree-view-indent-width
-                 :documentation "Indent width per depth level."))
+(defclass <tree-view> (<widget>)
+  ((roots
+    :initarg :roots
+    :initform nil
+    :accessor <tree-view>-roots
+    :documentation "Top-level <tree-node> list.")
+   (selected-node
+    :initarg :selected-node
+    :initform nil :accessor <tree-view>-selected-node
+    :documentation "Currently selected node object.")
+   (root-path
+    :initarg :root-path
+    :initform nil
+    :accessor <tree-view>-root-path
+    :documentation "Filesystem root path used to build tree roots.")
+   (show-hidden-p
+    :initarg :show-hidden-p
+    :initform nil :accessor <tree-view>-show-hidden-p
+    :documentation "Whether to show hidden filesystem entries.")
+   (filter-extensions
+    :initarg :filter-extensions
+    :initform nil
+    :accessor <tree-view>-filter-extensions
+    :documentation "List of allowed file extensions (e.g. '(\"lisp\" \"asd\")); NIL means all.")
+   (sort-mode
+    :initarg :sort-mode
+    :initform :name
+    :accessor <tree-view>-sort-mode
+    :documentation "Filesystem sort mode: :name, :type, or :date.")
+   (max-depth
+    :initarg :max-depth
+    :initform nil :accessor <tree-view>-max-depth
+    :documentation "Optional depth limit for filesystem tree expansion.")
+   (scroll-offset
+    :initarg :scroll-offset
+    :initform 0
+    :accessor <tree-view>-scroll-offset
+    :documentation "Index of the first visible tree row.")
+   (row-height
+    :initarg :row-height
+    :initform 22
+    :accessor <tree-view>-row-height
+    :documentation "Single visible row height in pixels.")
+   (indent-width
+    :initarg :indent-width
+    :initform 16
+    :accessor <tree-view>-indent-width
+    :documentation "Indent width per depth level."))
   (:documentation "Tree widget with expandable/collapsible nodes."))
 
-(defclass editable-combo-box (<entry> combo-box)
-  ((placeholder :initarg :placeholder :initform ""
-                :accessor editable-combo-box-placeholder
-                :documentation "Placeholder text shown when the input is empty."))
+(defclass <editable-combo-box> (<entry> <combo-box>)
+  ((placeholder
+    :initarg :placeholder
+    :initform ""
+    :accessor <editable-combo-box>-placeholder
+    :documentation "Placeholder text shown when the input is empty."))
   (:documentation "Editable combo-box with inline text <entry> and drop-down item selection."))
 
 ;;; Rendering style classes
 
-(defclass widget-style ()
+(defclass <widget-style> ()
   ()
   (:documentation "Base rendering style for widgets."))
 
-(defclass flat-widget-style (widget-style)
+(defclass <flat-widget-style> (<widget-style>)
   ()
   (:documentation "Flat widget rendering style."))
 
-(defclass windows-widget-style (widget-style)
+(defclass <windows-widget-style> (<widget-style>)
   ()
   (:documentation "Windows-like beveled widget rendering style."))
 
-(defclass motif-widget-style (widget-style)
+(defclass <motif-widget-style> (<widget-style>)
   ()
   (:documentation "Motif-like beveled widget rendering style."))

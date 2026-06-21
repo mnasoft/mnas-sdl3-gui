@@ -54,7 +54,7 @@
     (is (= 43 (event-target-window-id manager 43)))))
 
 (test widget-root-hit-test-and-focus-lifecycle
-  (let* ((button (make-instance 'mnas-sdl3-gui/widgets:button
+  (let* ((button (make-instance 'mnas-sdl3-gui/widgets:<button>
                                 :x 60 :y 60 :width 80 :height 40
                                 :text "Button"))
          (entry (make-instance 'mnas-sdl3-gui/widgets:entry
@@ -101,9 +101,9 @@
     (is (= 500 (focused-window-id manager)))
     ;; run a small layout test to keep previous coverage
     (test grid-layout-basic-measure-arrange
-      (let* ((a (make-instance 'mnas-sdl3-gui/widgets:label :text "A"))
-             (b (make-instance 'mnas-sdl3-gui/widgets:label :text "BBBBBBBB"))
-             (c (make-instance 'mnas-sdl3-gui/widgets:button :text "Btn"))
+      (let* ((a (make-instance 'mnas-sdl3-gui/widgets:<label> :text "A"))
+             (b (make-instance 'mnas-sdl3-gui/widgets:<label> :text "BBBBBBBB"))
+             (c (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Btn"))
              (d (make-instance 'mnas-sdl3-gui/widgets:entry :text "entry"))
              (g (mnas-sdl3-gui/widgets:make-grid :rows 2 :cols 2)))
         (mnas-sdl3-gui/widgets:grid-add-child g a :row 0 :col 0)
@@ -120,8 +120,8 @@
         (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width d)))))))
 
 (test split-pane-layout-basic-measure-arrange
-  (let* ((first-pane (make-instance 'mnas-sdl3-gui/widgets:label :text "First"))
-         (second-pane (make-instance 'mnas-sdl3-gui/widgets:label :text "Second"))
+  (let* ((first-pane (make-instance 'mnas-sdl3-gui/widgets:<label> :text "First"))
+         (second-pane (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Second"))
          (split-pane (mnas-sdl3-gui/widgets:make-split-pane
                       :orientation :horizontal
                       :split-ratio 0.25

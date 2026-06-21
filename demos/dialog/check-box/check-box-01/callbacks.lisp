@@ -2,13 +2,13 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/check-box-01)
 
-(sdl3:def-app-init check-box-demo-init (argc argv)
+(sdl3:def-app-init callback-init (argc argv)
   (declare (ignore argc argv))
   (sdl3:set-app-metadata "Check-Box Demo" "1.0"
                          "com.mna.sdl3.gui.check-box.demo")
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
-    (return-from check-box-demo-init :failure))
+    (return-from callback-init :failure))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer
        "Check-Box Demo"
@@ -18,7 +18,7 @@
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
-          (return-from check-box-demo-init :failure))
+          (return-from callback-init :failure))
         (progn
           (setf *window* window
                 *renderer* renderer
@@ -26,21 +26,24 @@
                 *open* t)
           (check-box-register-commands)
           (check-box-register-shortcuts)
-          (setf *toolbar* (check-box-create-toolbar window))
+          (setf *toolbar* (create-toolbar window))
           #+nil (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
-          (create-check-box-widgets window)
+          (create-widgets window)
           (mnas-sdl3-gui/widgets:move-widget-focus (check-box-content-widgets)))))
   :continue)
 
-(sdl3:def-app-iterate check-box-demo-iterate ()
+(sdl3:def-app-iterate callback-iterate ()
   (unless *open*
-    (return-from check-box-demo-iterate :success))
+    (return-from callback-iterate :success))
   (sdl3:set-render-draw-color *renderer* 240 240 240 255)
   (sdl3:render-clear *renderer*)
   (check-box-01-sync-command-state)
-  (mnas-sdl3-gui/widgets:render *renderer* *toolbar* mnas-sdl3-gui/widgets:*widget-style*)
+  (mnas-sdl3-gui/widgets:render
+   *renderer*
+   *toolbar*
+   mnas-sdl3-gui/widgets:*widget-style*)
   (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (check-box-content-widgets))
         do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
@@ -54,7 +57,7 @@
   (sdl3:render-present *renderer*)
   :continue)
 
-(sdl3:def-app-event check-box-demo-event (type event)
+(sdl3:def-app-event callback-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
     (mnas-debug:with
@@ -92,7 +95,7 @@
        :continue)
       (t :continue))))
 
-(sdl3:def-app-quit check-box-demo-quit (result)
+(sdl3:def-app-quit callback-quit (result)
   (declare (ignore result))
   (when *window*
     (sdl3:destroy-renderer *renderer*))

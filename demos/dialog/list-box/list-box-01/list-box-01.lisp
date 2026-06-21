@@ -125,14 +125,14 @@
 (defun create-list-box-01-demo-widgets ()
   "Create widgets for the list-box-01 demo."
   (let ((title (make-instance
-                'mnas-sdl3-gui/widgets:label
+                'mnas-sdl3-gui/widgets:<label>
                 :x 20
                 :y 18
                 :width 600
                 :height 24
                 :text "Two List-Boxes Demo"))
         (subtitle (make-instance
-                   'mnas-sdl3-gui/widgets:label
+                   'mnas-sdl3-gui/widgets:<label>
                    :x 20
                    :y 42
                    :width 600
@@ -156,7 +156,7 @@
            :window *window*)
           *ok*
           (make-instance
-           'mnas-sdl3-gui/widgets:button
+           'mnas-sdl3-gui/widgets:<button>
            :x 350 :y 264 :width 120 :height 34
            :text "Ок"
            :on-click (lambda (widget)
@@ -168,7 +168,7 @@
                                                (mnas-sdl3-gui/widgets:list-box-items *right*)))
                              *open* nil)))
           *cancel*
-          (make-instance 'mnas-sdl3-gui/widgets:button
+          (make-instance 'mnas-sdl3-gui/widgets:<button>
                          :x 490 :y 264 :width 130 :height 34
                          :text "Cancel"
                          :on-click (lambda (widget)

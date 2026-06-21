@@ -9,7 +9,7 @@ forwards other keys to the focused widget."
   (declare (ignore char ctrl shift alt))
   (let ((focused (focused-widget widgets)))
     (cond
-      ((and (typep focused 'combo-box)
+      ((and (typep focused '<combo-box>)
             (<combo-box>-expanded-p focused)
             (member key '(:escape :return)))
        (handle-widget-key-event focused key nil

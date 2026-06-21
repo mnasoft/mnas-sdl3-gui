@@ -2,8 +2,8 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-(defmethod initialize-instance :after ((widget toggle) &key &allow-other-keys)
-  (register-toggle-group-member widget))
+(defmethod initialize-instance :after ((widget <toggle>) &key &allow-other-keys)
+  (register-<toggle>-group-member widget))
 
 (defmethod initialize-instance :after ((widget <widget>) &key &allow-other-keys)
   "Auto-register WIDGET in global window->widgets registry when :window slot is provided."
@@ -13,7 +13,11 @@
         (when (and wid (numberp wid) (> wid 0))
           (ignore-errors (register-widget-for-window-id wid widget)))))))
 
-(defmethod initialize-instance :after ((widget combo-box) &key popup-host-window popup-layer-manager &allow-other-keys)
+(defmethod initialize-instance :after ((widget <combo-box>)
+                                       &key
+                                         popup-host-window
+                                         popup-layer-manager
+                                       &allow-other-keys)
   ;; Ensure header and popup instances exist and are linked.
   (unless (<combo-box>-header-widget widget)
     (let* ((hdr (make-instance '<combo-box-header> :owner widget))
@@ -66,7 +70,7 @@
 ;; Finalize-instance hooks to cleanup registry and widget-specific resources
 ;; when instances are finalized (MOP finalization). Keep calls robust with
 ;; ignore-errors to avoid throwing during GC/finalization.
-(defmethod finalize-instance :before ((widget combo-box))
+(defmethod finalize-instance :before ((widget <combo-box>))
   (let ((popup (<combo-box>-popup-widget widget)))
     (when (or (and popup (<combo-box-popup>-visible-p popup))
               (and popup (<combo-box-popup>-window popup)))

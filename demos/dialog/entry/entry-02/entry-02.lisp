@@ -129,10 +129,10 @@
 
 (defun create-entry-02-widgets ()
   "Create several entry widgets demonstrating common input scenarios."
-  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
+  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:<label>
                                :x 40 :y 20 :width 420 :height 28
                                :text "Entry Widget Scenarios"))
-         (hint (make-instance 'mnas-sdl3-gui/widgets:label
+         (hint (make-instance 'mnas-sdl3-gui/widgets:<label>
                               :x 40 :y 48 :width 420 :height 22
                               :text "Name, password, integer, real, path, command, and filters."))
          (name (make-instance 'mnas-sdl3-gui/widgets:entry
@@ -161,7 +161,7 @@
                                :text "/tmp/output"
                                :max-length 120
                                :on-change #'entry-02-on-change))
-         (browse (make-instance 'mnas-sdl3-gui/widgets:button
+         (browse (make-instance 'mnas-sdl3-gui/widgets:<button>
                :x 330 :y 290 :width 100 :height 32
                                  :text "Browse..."
                                  :on-click (lambda (widget)
@@ -174,7 +174,7 @@
                                   :text "ls -la"
                                   :max-length 128
                                   :on-change #'entry-02-on-change))
-         (show-values (make-instance 'mnas-sdl3-gui/widgets:button
+         (show-values (make-instance 'mnas-sdl3-gui/widgets:<button>
                     :x 40 :y 390 :width 150 :height 32
                                       :text "Show values"
                                       :on-click (lambda (widget)
@@ -194,7 +194,7 @@
                       (mnas-sdl3-gui/widgets:entry-text *entry-02-real*)
                                                                 (mnas-sdl3-gui/widgets:entry-text *entry-02-path*)
                                                                 (mnas-sdl3-gui/widgets:entry-text *entry-02-command*))))))
-         (status-label (make-instance 'mnas-sdl3-gui/widgets:label
+         (status-label (make-instance 'mnas-sdl3-gui/widgets:<label>
                     :x 40 :y 440 :width 420 :height 22
                                       :text *entry-02-status*)))
     (setf *entry-02-name* name
@@ -229,7 +229,7 @@
           (entry-02-register-commands)
           (entry-02-register-shortcuts)
           (setf *entry-02-toolbar* (entry-02-create-toolbar))
-          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *entry-02-toolbar*)
+          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *entry-02-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *entry-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)

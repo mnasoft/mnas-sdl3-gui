@@ -450,8 +450,11 @@
   :components ((:module "demos/dialog/toggle/toggle-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "toggle-01")))))
+                             (:file "callbacks")
+                             (:file "toggle-01")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/font"
   :description "Demos for mnas-sdl3-gui"

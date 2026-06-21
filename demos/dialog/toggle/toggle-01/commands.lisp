@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/toggle-01)
 
-(defparameter +toggle-01-command-map+
+(defparameter +command-map+
   '((:toggle-01/group-1-option-1 :group-1 "Вариант 1" :one)
     (:toggle-01/group-1-option-2 :group-1 "Вариант 2" :two)
     (:toggle-01/group-1-option-3 :group-1 "Вариант 3" :three)
@@ -26,10 +26,10 @@
     :shortcut :escape
     :execute (lambda (context)
                (declare (ignore context))
-               (setf *toggle-01-open* nil)
+               (setf *open* nil)
                t))
    :replace t)
-  (dolist (spec +toggle-01-command-map+)
+  (dolist (spec +command-map+)
     (destructuring-bind (id group label shortcut) spec
       (mnas-sdl3-gui/commands:register-command
        (mnas-sdl3-gui/commands:make-command
@@ -47,7 +47,7 @@
 (defun toggle-01-register-shortcuts ()
   "Register keyboard shortcuts for toggle commands." 
   (mnas-sdl3-gui/commands:register-shortcut :toggle-01/quit :escape :replace t)
-  (dolist (spec +toggle-01-command-map+)
+  (dolist (spec +command-map+)
     (destructuring-bind (id group label shortcut) spec
       (declare (ignore group label))
       (mnas-sdl3-gui/commands:register-shortcut id shortcut :replace t)))

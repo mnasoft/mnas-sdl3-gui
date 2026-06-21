@@ -47,14 +47,14 @@
                       :divider-size 8
                       :padding 10
                       :children (list left-pane right-pane)))
-         (title (make-instance 'mnas-sdl3-gui/widgets:label :text "Split Pane Demo"))
-         (description (make-instance 'mnas-sdl3-gui/widgets:label :text "Each side is a separate pane.") )
+         (title (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Split Pane Demo"))
+         (description (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Each side is a separate pane.") )
          (left-entry (make-instance 'mnas-sdl3-gui/widgets:entry :text "Left pane" :cursor 0 :max-length 128))
          (right-entry (make-instance 'mnas-sdl3-gui/widgets:entry :text "Right pane" :cursor 0 :max-length 128))
-         (left-button (make-instance 'mnas-sdl3-gui/widgets:button :text "Left Action"
+         (left-button (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Left Action"
                                      :on-click (lambda (w) (declare (ignore w))
                                                  (setf *split-pane-demo-status* "Left action activated"))))
-         (right-button (make-instance 'mnas-sdl3-gui/widgets:button :text "Right Action"
+         (right-button (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Right Action"
                                       :on-click (lambda (w) (declare (ignore w))
                                                   (setf *split-pane-demo-status* "Right action activated")))))
     (setf (mnas-sdl3-gui/widgets:children left-pane)

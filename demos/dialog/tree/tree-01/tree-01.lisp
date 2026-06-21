@@ -125,36 +125,36 @@
 
 (defun create-tree-01-widgets ()
   "Create widgets for filesystem tree demo." 
-  (let ((title (make-instance 'mnas-sdl3-gui/widgets:label
+  (let ((title (make-instance 'mnas-sdl3-gui/widgets:<label>
                               :x 20 :y 16 :width 920 :height 24
                               :text "Filesystem Tree Demo"))
-        (root-label (make-instance 'mnas-sdl3-gui/widgets:label
+        (root-label (make-instance 'mnas-sdl3-gui/widgets:<label>
                                    :x 20 :y 48 :width 90 :height 24
                                    :text "Root path:"))
         (root-entry (make-instance 'mnas-sdl3-gui/widgets:entry
                                    :x 110 :y 48 :width 560 :height 30
                                    :text (tree-01-default-root)
                                    :max-length 512))
-        (reload-button (make-instance 'mnas-sdl3-gui/widgets:button
+        (reload-button (make-instance 'mnas-sdl3-gui/widgets:<button>
                                       :x 680 :y 48 :width 80 :height 30
                                       :text "Load"
                                       :on-click (lambda (widget)
                                                   (declare (ignore widget))
                                                   (tree-01-command :tree-01/load))))
-        (refresh-button (make-instance 'mnas-sdl3-gui/widgets:button
+        (refresh-button (make-instance 'mnas-sdl3-gui/widgets:<button>
                                        :x 770 :y 48 :width 90 :height 30
                                        :text "Refresh"
                                        :on-click (lambda (widget)
                                                    (declare (ignore widget))
                                                    (tree-01-command :tree-01/load))))
-        (filter-label (make-instance 'mnas-sdl3-gui/widgets:label
+        (filter-label (make-instance 'mnas-sdl3-gui/widgets:<label>
                                      :x 20 :y 84 :width 90 :height 24
                                      :text "Ext filter:"))
         (filter-entry (make-instance 'mnas-sdl3-gui/widgets:entry
                                      :x 110 :y 84 :width 280 :height 30
                                      :text "lisp,asd,md,txt"
                                      :max-length 256))
-        (sort-label (make-instance 'mnas-sdl3-gui/widgets:label
+        (sort-label (make-instance 'mnas-sdl3-gui/widgets:<label>
                                    :x 402 :y 84 :width 90 :height 24
                                    :text "Sort:"))
         (sort-combo (make-instance 'mnas-sdl3-gui/widgets:combo-box
@@ -165,7 +165,7 @@
                                     :x 580 :y 84 :width 130 :height 30
                                     :label "Show hidden"
                                     :checked nil))
-        (apply-button (make-instance 'mnas-sdl3-gui/widgets:button
+        (apply-button (make-instance 'mnas-sdl3-gui/widgets:<button>
                                      :x 720 :y 84 :width 140 :height 30
                                      :text "Apply filter/sort"
                                      :on-click (lambda (widget)
@@ -176,7 +176,7 @@
                              :row-height 22
                              :indent-width 18
                              :on-change #'tree-01-on-tree-change))
-        (status-label (make-instance 'mnas-sdl3-gui/widgets:label
+        (status-label (make-instance 'mnas-sdl3-gui/widgets:<label>
                                      :x 20 :y 564 :width 920 :height 24
                                      :text *tree-01-status*)))
     (setf *tree-01-root-entry* root-entry
@@ -226,7 +226,7 @@
           (tree-01-register-commands)
           (tree-01-register-shortcuts)
           (setf *tree-01-toolbar* (make-tree-01-toolbar))
-          (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *tree-01-toolbar*)
+          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *tree-01-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *tree-01-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)

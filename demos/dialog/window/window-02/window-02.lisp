@@ -236,7 +236,7 @@
   (window-02-register-commands)
   (window-02-register-shortcuts)
   (setf *window-02-toolbar* (make-window-02-toolbar))
-  (mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *window-02-toolbar*)
+  #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *window-02-toolbar*)
   (window-02-hide-popup)
   (setf *window-02-open* t
         *window-02-pin-popup* nil

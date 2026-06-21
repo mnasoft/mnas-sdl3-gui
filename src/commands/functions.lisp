@@ -31,7 +31,7 @@
     :initarg :checked
     :initform nil
     :accessor command-checked
-    :documentation "Toggle/radio checked state.")
+    :documentation "<Toggle>/radio checked state.")
    (shortcut
     :initarg :shortcut
     :initform nil

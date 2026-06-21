@@ -49,7 +49,7 @@
                                    (normalize-scroll-container-scroll-offset widget)
                                    (/= old-offset (<scroll-container>-scroll-offset widget)))))))))
 
-(defmethod handle-mouse-wheel-event ((widget combo-box) (ev sdl3:mouse-wheel-event))
+(defmethod handle-mouse-wheel-event ((widget <combo-box>) (ev sdl3:mouse-wheel-event))
   "Handle mouse-wheel for combo-box popups: adjust list-box scroll offset." 
   (declare (ignore ev))
   (let* ((raw-dy (handler-case (slot-value ev 'sdl3:%yrel)

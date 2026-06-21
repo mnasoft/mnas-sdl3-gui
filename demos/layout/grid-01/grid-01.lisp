@@ -38,15 +38,15 @@
   "Create a grid container with example widgets and return (values widgets window-width window-height)."
   #+nil (break "create-grid-demo-widgets:")
   (let* ((g (mnas-sdl3-gui/widgets:make-grid :rows 6 :cols 3 :row-spacing 8 :col-spacing 8 :padding 8))
-         (title (make-instance 'mnas-sdl3-gui/widgets:label :text "Grid Layout Demo"))
-         (name-label (make-instance 'mnas-sdl3-gui/widgets:label :text "Name:"))
+         (title (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Grid Layout Demo"))
+         (name-label (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Name:"))
          (name-entry (make-instance 'mnas-sdl3-gui/widgets:entry :text "" :cursor 0 :max-length 128))
-         (email-label (make-instance 'mnas-sdl3-gui/widgets:label :text "Email:"))
+         (email-label (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Email:"))
          (email-entry (make-instance 'mnas-sdl3-gui/widgets:entry :text "" :cursor 0 :max-length 128))
-         (options-label (make-instance 'mnas-sdl3-gui/widgets:label :text "Options:"))
+         (options-label (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Options:"))
          (options-list (make-instance 'mnas-sdl3-gui/widgets:list-box :items '("One" "Two" "Three" "Four") :selected-index 0 :item-height 20))
-         (ok-button (make-instance 'mnas-sdl3-gui/widgets:button :text "OK" :on-click (lambda (w) (declare (ignore w)) (setf *grid-demo-status* "OK pressed"))))
-         (cancel-button (make-instance 'mnas-sdl3-gui/widgets:button :text "Cancel" :on-click (lambda (w) (declare (ignore w)) (setf *grid-demo-open* nil)))))
+         (ok-button (make-instance 'mnas-sdl3-gui/widgets:<button> :text "OK" :on-click (lambda (w) (declare (ignore w)) (setf *grid-demo-status* "OK pressed"))))
+         (cancel-button (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Cancel" :on-click (lambda (w) (declare (ignore w)) (setf *grid-demo-open* nil)))))
 
     ;; register children with constraints
     (mnas-sdl3-gui/widgets:grid-add-child g title :row 0 :col 0 :col-span 3 :halign :center :valign :start)

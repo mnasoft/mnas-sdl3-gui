@@ -112,21 +112,21 @@
   ;; Dialog centered at 320x240 with size 300x150
   ;; OK button: bottom left
   ;; Cancel button: bottom right
-  (setf *ok-button* (make-instance 'mnas-sdl3-gui/widgets:button
+  (setf *ok-button* (make-instance 'mnas-sdl3-gui/widgets:<button>
                                    :x 70 :y 370 :width 80 :height 40
                                    :text "OK"
                                    :on-click (lambda (widget)
                                               (declare (ignore widget))
                                               (setf *dialog-result* :ok
                                                     *dialog-open* nil))))
-  (setf *cancel-button* (make-instance 'mnas-sdl3-gui/widgets:button
+  (setf *cancel-button* (make-instance 'mnas-sdl3-gui/widgets:<button>
                                        :x 250 :y 370 :width 80 :height 40
                                        :text "Cancel"
                                        :on-click (lambda (widget)
                                                   (declare (ignore widget))
                                                   (setf *dialog-result* :cancel
                                                         *dialog-open* nil))))
-  (setf *extra-button* (make-instance 'mnas-sdl3-gui/widgets:button
+  (setf *extra-button* (make-instance 'mnas-sdl3-gui/widgets:<button>
                                       :x 160 :y 320 :width 130 :height 34
                                       :text "Кнопка_1"
                                       :on-click (lambda (widget)

@@ -40,28 +40,28 @@
 
 
 ;; For combo-box instances forward to the popup instance.
-(defmethod list-box-items ((w combo-box))
+(defmethod list-box-items ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (list-box-items p))))
 
-(defmethod list-box-selected-index ((w combo-box))
+(defmethod list-box-selected-index ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (list-box-selected-index p))))
 
-(defmethod list-box-scroll-offset ((w combo-box))
+(defmethod list-box-scroll-offset ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (list-box-scroll-offset p))))
 
-(defmethod list-box-item-height ((w combo-box))
+(defmethod list-box-item-height ((w <combo-box>))
       (let ((p (<combo-box>-popup-widget w)))
         (when p (list-box-item-height p))))
 
-(defmethod list-box-scrollbar-dragging-p ((w combo-box))
+(defmethod list-box-scrollbar-dragging-p ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (list-box-scrollbar-dragging-p p))))
 
 
-(defmethod list-box-scrollbar-drag-offset ((w combo-box))
+(defmethod list-box-scrollbar-drag-offset ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (list-box-scrollbar-drag-offset p))))
 
@@ -96,22 +96,22 @@
   new-value)
 
 ;; Forwarding setf methods for combo-box that delegate to popup widget.
-(defmethod (setf list-box-selected-index) (new-value (w combo-box))
+(defmethod (setf list-box-selected-index) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (setf (list-box-selected-index p) new-value))
     new-value))
 
-(defmethod (setf list-box-scroll-offset) (new-value (w combo-box))
+(defmethod (setf list-box-scroll-offset) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
     (when p (setf (list-box-scroll-offset p) new-value))
     new-value))
 
-    (defmethod (setf list-box-scrollbar-dragging-p) (new-value (w combo-box))
+(defmethod (setf list-box-scrollbar-dragging-p) (new-value (w <combo-box>))
       (let ((p (<combo-box>-popup-widget w)))
         (when p (setf (list-box-scrollbar-dragging-p p) new-value))
         new-value))
 
-    (defmethod (setf list-box-scrollbar-drag-offset) (new-value (w combo-box))
+(defmethod (setf list-box-scrollbar-drag-offset) (new-value (w <combo-box>))
       (let ((p (<combo-box>-popup-widget w)))
         (when p (setf (list-box-scrollbar-drag-offset p) new-value))
         new-value))

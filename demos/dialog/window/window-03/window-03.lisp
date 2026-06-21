@@ -83,7 +83,7 @@
         (window-03-register-commands)
         (window-03-register-shortcuts)
         (setf *window-03-toolbar* (make-window-03-toolbar))
-        (mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-03-toolbar*)
+        #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-03-toolbar*)
     (window-03-apply-opacity)
         (window-03-sync-command-state)
     (mnas-sdl3-gui/widgets:init-ttf-font))

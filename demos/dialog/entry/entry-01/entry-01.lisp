@@ -83,7 +83,7 @@
                          :max-length 128
                          :focused t)))
   (setf *entry-01-ok-button*
-        (make-instance 'mnas-sdl3-gui/widgets:button
+        (make-instance 'mnas-sdl3-gui/widgets:<button>
                        :x 150 :y 150 :width 100 :height 34
                        :text "ОК"
                        :on-click (lambda (widget)

@@ -8,7 +8,7 @@
     (when (<widget>-on-change widget)
       (funcall (<widget>-on-change widget) widget new-value))))
 
-(defmethod update-<widget>-value ((widget combo-box) new-value)
+(defmethod update-<widget>-value ((widget <combo-box>) new-value)
   "When a combo-box value changes, update header display text as well."  
   (call-next-method)
   (let ((hdr (<combo-box>-header-widget widget)))

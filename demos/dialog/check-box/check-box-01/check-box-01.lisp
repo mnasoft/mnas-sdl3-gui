@@ -5,17 +5,17 @@
 (defun check-box-content-widgets ()
   "Return non-toolbar widgets of the demo window for generic widget flows." 
   (remove-if (lambda (widget)
-               (or (typep widget 'mnas-sdl3-gui/widgets:toolbar)
-                   (typep widget 'mnas-sdl3-gui/widgets:toolbar-button)))
+               (or (typep widget 'mnas-sdl3-gui/widgets:<toolbar>)
+                   (typep widget 'mnas-sdl3-gui/widgets:<toolbar-button>)))
              (mnas-sdl3-gui/widgets:widgets-for-window *window*)))
 
-(defun check-box-create-toolbar (window)
+(defun create-toolbar (window)
   "Create toolbar for the check-box demo." 
-  (let ((toolbar     (make-instance 'mnas-sdl3-gui/widgets:toolbar
+  (let ((toolbar     (make-instance 'mnas-sdl3-gui/widgets:<toolbar>
                                     :layout :horizontal
                                     :height +check-box-toolbar-height+
                                     :window window))
-        (tb-btn-quit (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
+        (tb-btn-quit (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
                                     :command-id :check-box-01/quit
                                     :label "Quit"
                                     :width 64
@@ -24,14 +24,14 @@
     (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar) (list tb-btn-quit))
     toolbar))
 
-(defun check-box-labels-in-column (prefix)
+(defun labels-in-column (prefix)
   "Return labels of checked check-box widgets whose label starts with PREFIX."
   (loop for widget in (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-        when (and (typep widget 'mnas-sdl3-gui/widgets:check-box)
-                  (mnas-sdl3-gui/widgets:check-box-checked widget)
-                  (search prefix (mnas-sdl3-gui/widgets:check-box-label widget)
+        when (and (typep widget 'mnas-sdl3-gui/widgets:<check-box>)
+                  (mnas-sdl3-gui/widgets:<check-box>-checked widget)
+                  (search prefix (mnas-sdl3-gui/widgets:<check-box>-label widget)
                           :start1 0 :end1 (length prefix)))
-        collect (mnas-sdl3-gui/widgets:check-box-label widget)))
+          collect (mnas-sdl3-gui/widgets:<check-box>-label widget)))
 
 (defun join-labels (labels)
   "Join LABELS with comma, or return dash when empty."
@@ -41,15 +41,15 @@
 
 (defun refresh-check-box-status ()
   "Update status line from selected check-box values in both columns."
-  (let ((left (join-labels (check-box-labels-in-column "Л")))
-        (right (join-labels (check-box-labels-in-column "П"))))
+  (let ((left (join-labels (labels-in-column "Л")))
+        (right (join-labels (labels-in-column "П"))))
     (setf *status*
           (format nil "Левая колонка: ~a   Правая колонка: ~a" left right))))
 
 (defun make-demo-check-box (x y label checked-p window)
   "Create one check-box for demo and attach status update callback."
   (let ((check-box (make-instance
-                    'mnas-sdl3-gui/widgets:check-box
+                    'mnas-sdl3-gui/widgets:<check-box>
                     :x       x
                     :y       y
                     :width   190
@@ -65,23 +65,23 @@
             (refresh-check-box-status)))
     check-box))
 
-(defun create-check-box-widgets (window)
+(defun create-widgets (window)
   "Create demo widgets for two columns of check-box controls."
   (list
-   (make-instance 'mnas-sdl3-gui/widgets:label
+   (make-instance 'mnas-sdl3-gui/widgets:<label>
                   :x 20
                   :y 16
                   :width 420
                   :height 28
                   :text "Check-box demo"
                   :window window)
-   (make-instance 'mnas-sdl3-gui/widgets:label
+   (make-instance 'mnas-sdl3-gui/widgets:<label>
                   :x 40 :y 56
                   :width 190
                   :height 22
                   :text "Левая колонка"
                   :window window)
-   (make-instance 'mnas-sdl3-gui/widgets:label
+   (make-instance 'mnas-sdl3-gui/widgets:<label>
                   :x 250
                   :y 56
                   :width 190

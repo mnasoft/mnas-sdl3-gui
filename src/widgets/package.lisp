@@ -71,30 +71,30 @@
            #:normalize-scroll-container-scroll-offset
 
 ;;; style classes and helpers
-           #:widget-style
-           #:flat-widget-style
-           #:windows-widget-style
-           #:motif-widget-style
+           #:<widget-style>
+           #:<flat-widget-style>
+           #:<windows-widget-style>
+           #:<motif-widget-style>
            #:*widget-style*
            #:make-widget-style
            #:set-widget-style
-           #:widget-style-name
+           #:<widget-style>-name
 ;;; concrete widgets
            #:<label>
            #:<button>
-           #:toggle
-           #:check-box
+           #:<toggle>
+           #:<check-box>
            #:<entry>
            #:<password-entry>
            #:<integer-entry>
            #:<real-entry>
-           #:tree-node
-           #:tree-view
-           #:list-box
+           #:<tree-node>
+           #:<tree-view>
+           #:<list-box>
            #:<combo-box>
-           #:editable-combo-box
-;;; toolbar widgets
-           #:toolbar
+           #:<editable-combo-box>)
+;;; toolbar widgets  
+  (:export #:<toolbar>
            #:<toolbar-button>
 ;;; toolbar accessors
            #:<toolbar-button>s
@@ -104,12 +104,15 @@
            #:toolbar-height
            #:toolbar-x
            #:toolbar-y
+           #:<toolbar-button>-command-id
+           )
 ;;; button accessors
+    (:export
            #:button-width
            #:button-height
            #:button-x
            #:button-y
-           #:<toolbar-button>-command-id
+
 ;;; <label> accessors
            #:<label>-text
 ;;; button accessors
@@ -117,13 +120,13 @@
            #:<button>-pressed-p
            #:<button>-armed-p
            #:<button>-on-click
-;;; toggle accessors
-           #:toggle-state
-           #:toggle-group
-           #:toggle-<label>
-;;; check-box accessors
-           #:check-box-checked
-           #:check-box-<label>
+;;; <toggle> accessors
+           #:<toggle>-state
+           #:<toggle>-group
+           #:<toggle>-label
+;;; <check-box> accessors
+           #:<check-box>-checked
+           #:<check-box>-label
 ;;; <entry> accessors
            #:<entry>-text
            #:<entry>-cursor
@@ -133,31 +136,31 @@
            #:<entry>-validate
            #:<entry>-selection-start
            #:<entry>-selection-end
-;;; tree-node accessors
-           #:tree-node-id
-           #:tree-node-text
-           #:tree-node-kind
-           #:tree-node-path
-           #:tree-node-children-loaded-p
-           #:tree-node-modified-time
-           #:tree-node-children
-           #:tree-node-expanded-p
-           #:tree-node-data
-;;; tree-view accessors/helpers
-           #:tree-view-roots
-           #:tree-view-selected-node
-           #:tree-view-root-path
-           #:tree-view-show-hidden-p
-           #:tree-view-filter-extensions
-           #:tree-view-sort-mode
-           #:tree-view-max-depth
-           #:tree-view-scroll-offset
-           #:tree-view-row-height
-           #:tree-view-indent-width
+;;; <tree-node> accessors
+           #:<tree-node>-id
+           #:<tree-node>-text
+           #:<tree-node>-kind
+           #:<tree-node>-path
+           #:<tree-node>-children-loaded-p
+           #:<tree-node>-modified-time
+           #:<tree-node>-children
+           #:<tree-node>-expanded-p
+           #:<tree-node>-data
+;;; <tree-view> accessors/helpers
+           #:<tree-view>-roots
+           #:<tree-view>-selected-node
+           #:<tree-view>-root-path
+           #:<tree-view>-show-hidden-p
+           #:<tree-view>-filter-extensions
+           #:<tree-view>-sort-mode
+           #:<tree-view>-max-depth
+           #:<tree-view>-scroll-offset
+           #:<tree-view>-row-height
+           #:<tree-view>-indent-width
            #:make-tree-node
-           #:tree-node-directory-p
-           #:tree-node-file-p
-           #:tree-node-children-sorted
+           #:<tree-node>-directory-p
+           #:<tree-node>-file-p
+           #:<tree-node>-children-sorted
            #:make-filesystem-tree-node
            #:tree-view-normalize-extensions
            #:build-filesystem-tree
@@ -221,7 +224,7 @@
            #:*combo-box-expanded-callback*
            #:combo-box-add-item)
 ;;; editable combo-box accessors
-  (:export #:editable-combo-box-placeholder)
+  (:export #:<editable-combo-box>-placeholder)
 ;;; layout managers
   (:export #:pack-widget
            #:unpack-widget
@@ -256,9 +259,8 @@
            #:cleanup-ttf
            )
 ;;; Cyrillic approximation
-  (:export           
-   #:approximate-cyrillic-text
-   )
+  (:export #:approximate-cyrillic-text
+           )
 ;;; event handling
   (:export #:handle-widget-click
            #:handle-mouse-button-event
@@ -286,7 +288,7 @@
            #:set-widget-focus
            #:move-widget-focus
            #:activate-widget
-;;; toggle group helpers
+;;; <toggle> group helpers
            #:clear-toggle-group-registry))
 
 (in-package :mnas-sdl3-gui/widgets)

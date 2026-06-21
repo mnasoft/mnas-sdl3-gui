@@ -24,10 +24,10 @@
         collect (format nil "~A ~D" prefix index)))
 
 (defun create-combo-box-01-widgets (&optional window)
-  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:label
+  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:<label>
                                :x 20 :y 18 :width 520 :height 24
                                :text "Combo-Box Demo"))
-         (hint (make-instance 'mnas-sdl3-gui/widgets:label
+         (hint (make-instance 'mnas-sdl3-gui/widgets:<label>
                               :x 20 :y 42 :width 560 :height 24
                               :text "Return confirms, Escape closes popup, wheel scrolls expanded lists."))
          (small (make-instance 'mnas-sdl3-gui/widgets:combo-box
@@ -43,7 +43,7 @@
                                :max-visible-items 7
                                :popup-host-window window
                                :window window))
-         (action (make-instance 'mnas-sdl3-gui/widgets:button
+         (action (make-instance 'mnas-sdl3-gui/widgets:<button>
                                 :x 20 :y 196 :width 140 :height 34
                                 :text "Report Value"
                                 :on-click (lambda (widget)

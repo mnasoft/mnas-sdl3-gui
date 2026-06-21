@@ -4,24 +4,24 @@
 
 ;;; Rendering style helpers
 
-(defparameter *widget-style* (make-instance 'flat-widget-style)
+(defparameter *widget-style* (make-instance '<flat-widget-style>)
   "Current widget rendering style.")
 
 (defun widget-style-name (style)
   "Return keyword designator for STYLE instance."
   (typecase style
-    (windows-widget-style :windows)
-    (motif-widget-style :motif)
-    (flat-widget-style :flat)
+    (<windows-widget-style> :windows)
+    (<motif-widget-style> :motif)
+    (<flat-widget-style> :flat)
     (t :flat)))
 
 (defun make-widget-style (style-designator)
   "Create widget style object from keyword or return existing instance."
   (typecase style-designator
-    (widget-style style-designator)
-    ((eql :windows) (make-instance 'windows-widget-style))
-    ((eql :motif) (make-instance 'motif-widget-style))
-    ((or (eql :flat) null) (make-instance 'flat-widget-style))
+    (<widget-style> style-designator)
+    ((eql :windows) (make-instance '<windows-widget-style>))
+    ((eql :motif) (make-instance '<motif-widget-style>))
+    ((or (eql :flat) null) (make-instance '<flat-widget-style>))
     (t (error "Unknown widget style: ~a" style-designator))))
 
 (defun set-widget-style (style-designator)
