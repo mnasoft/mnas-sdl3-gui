@@ -17,6 +17,19 @@
                                :width 64 :height 24)))
     (is (string= "Quit" (mnas-sdl3-gui/widgets:<toolbar-button>-label button)))))
 
+(test keyboard-event-dispatches-to-focused-widget
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                 :x 0 :y 0 :width 10 :height 10))
+         (event (make-instance 'sdl3:keyboard-event
+                               :%key :space
+                               :%down t
+                               :%repeat nil
+                               :%mod 0
+                               :%window-id 1))
+         (widgets (list widget)))
+    (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
+    (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
+
 (test window-manager-modal-keyboard-target
   (let ((manager (make-window-layer-manager)))
     (register-window manager 100 :main :open-p t)
@@ -63,7 +76,7 @@
   (let* ((button (make-instance 'mnas-sdl3-gui/widgets:<button>
                                 :x 60 :y 60 :width 80 :height 40
                                 :text "Button"))
-         (entry (make-instance 'mnas-sdl3-gui/widgets:entry
+         (entry (make-instance 'mnas-sdl3-gui/widgets:<entry>
                                :x 160 :y 60 :width 100 :height 30
                                :text ""))
          (root (mnas-sdl3-gui/widgets:make-widget-container
@@ -104,26 +117,26 @@
     (mnas-sdl3-gui/window-manager:close-window manager 501 :close-children t)
     (mnas-sdl3-gui/window-manager:set-focused-window manager 500)
     ;; main window should be focused after closing popup
-    (is (= 500 (focused-window-id manager)))
-    ;; run a small layout test to keep previous coverage
-    (test grid-layout-basic-measure-arrange
-      (let* ((a (make-instance 'mnas-sdl3-gui/widgets:<label> :text "A"))
-             (b (make-instance 'mnas-sdl3-gui/widgets:<label> :text "BBBBBBBB"))
-             (c (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Btn"))
-             (d (make-instance 'mnas-sdl3-gui/widgets:entry :text "entry"))
-             (g (mnas-sdl3-gui/widgets:make-grid :rows 2 :cols 2)))
-        (mnas-sdl3-gui/widgets:grid-add-child g a :row 0 :col 0)
-        (mnas-sdl3-gui/widgets:grid-add-child g b :row 0 :col 1)
-        (mnas-sdl3-gui/widgets:grid-add-child g c :row 1 :col 0)
-        (mnas-sdl3-gui/widgets:grid-add-child g d :row 1 :col 1)
-        (multiple-value-bind (pw ph) (mnas-sdl3-gui/widgets:widget-measure g)
-          (is (> pw 0))
-          (is (> ph 0)))
-        (mnas-sdl3-gui/widgets:widget-arrange g 0 0 400 200)
-        (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width a)))
-        (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width b)))
-        (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width c)))
-        (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width d)))))))
+    (is (= 500 (focused-window-id manager)))))
+
+(test grid-layout-basic-measure-arrange
+  (let* ((a (make-instance 'mnas-sdl3-gui/widgets:<label> :text "A"))
+         (b (make-instance 'mnas-sdl3-gui/widgets:<label> :text "BBBBBBBB"))
+         (c (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Btn"))
+         (d (make-instance 'mnas-sdl3-gui/widgets:<entry> :text "entry"))
+         (g (mnas-sdl3-gui/widgets:make-grid :rows 2 :cols 2)))
+    (mnas-sdl3-gui/widgets:grid-add-child g a :row 0 :col 0)
+    (mnas-sdl3-gui/widgets:grid-add-child g b :row 0 :col 1)
+    (mnas-sdl3-gui/widgets:grid-add-child g c :row 1 :col 0)
+    (mnas-sdl3-gui/widgets:grid-add-child g d :row 1 :col 1)
+    (multiple-value-bind (pw ph) (mnas-sdl3-gui/widgets:widget-measure g)
+      (is (> pw 0))
+      (is (> ph 0)))
+    (mnas-sdl3-gui/widgets:widget-arrange g 0 0 400 200)
+    (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width a)))
+    (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width b)))
+    (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width c)))
+    (is (< 0 (mnas-sdl3-gui/widgets:<widget>-width d)))))
 
 (test split-pane-layout-basic-measure-arrange
   (let* ((first-pane (make-instance 'mnas-sdl3-gui/widgets:<label> :text "First"))

@@ -93,35 +93,25 @@
        :continue)
       (sdl3:keyboard-event
        (update-modifier-state ev)
-       (if (slot-value ev 'sdl3:%down)
-           (if (slot-value ev 'sdl3:%repeat)
-               :continue
-               (let ((key (slot-value ev 'sdl3:%key)))
-                 (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                          key
-                          :mods (key-modifiers ev)
-                          :context (list :window-id *window-id*))
-                   (let ((result
-                           (mnas-sdl3-gui/widgets:handle-widget-key-event
-                            (widgets)
-                            key
-                            nil
-                            :mods (key-modifiers ev)
-                            :on-escape (lambda ()
-                                         (setf *result* nil
-                                               *open* nil)
-                                         :success)
-                            :on-return (lambda ()
-                                         (setf *result*
-                                               (mnas-sdl3-gui/widgets:<entry>-text *input*)
-                                               *open* nil)
-                                         :success))))
-                     (log-key-event ev :action :down)
-                     result))))
-           (progn
-             (when (key->modifier (slot-value ev 'sdl3:%key))
-               (log-key-event ev :action :up))
-             :continue)))
+       (let ((result
+               (mnas-sdl3-gui/widgets:handle-keyboard-event
+                (widgets)
+                ev
+                :on-escape (lambda ()
+                             (setf *result* nil
+                                   *open* nil)
+                             :success)
+                :on-return (lambda ()
+                             (setf *result*
+                                   (mnas-sdl3-gui/widgets:<entry>-text *input*)
+                                   *open* nil)
+                             :success))))
+         (when (slot-value ev 'sdl3:%down)
+           (log-key-event ev :action :down))
+         (when (and (not (slot-value ev 'sdl3:%down))
+                    (key->modifier (slot-value ev 'sdl3:%key)))
+           (log-key-event ev :action :up))
+         result))
       (sdl3:text-input-event
        ;; SDL text input already respects the current keyboard layout/IME.
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input

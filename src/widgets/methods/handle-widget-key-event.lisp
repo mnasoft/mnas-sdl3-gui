@@ -2,6 +2,44 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
+(defmethod handle-keyboard-event (null (ev sdl3:keyboard-event) &key on-escape on-return)
+  (declare (ignore ev on-escape on-return))
+  :continue)
+
+(defmethod handle-keyboard-event ((widgets cons) (ev sdl3:keyboard-event) &key on-escape on-return)
+  (let* ((down (slot-value ev 'sdl3:%down))
+         (repeat (slot-value ev 'sdl3:%repeat))
+         (key (slot-value ev 'sdl3:%key))
+         (mods (slot-value ev 'sdl3:%mod)))
+    (cond
+      ((not down)
+       :continue)
+      (repeat
+       :continue)
+      (t
+       (let* ((ctrl (key-modifier-active-p mods :ctrl))
+              (shift (key-modifier-active-p mods :shift))
+              (alt (key-modifier-active-p mods :alt))
+              (active-mods (remove nil (list (when ctrl :ctrl)
+                                             (when shift :shift)
+                                             (when alt :alt))))
+              (shortcut-handled-p (mnas-sdl3-gui/commands:dispatch-shortcut
+                                   key
+                                   :mods active-mods
+                                   :context (list :window-id (slot-value ev 'sdl3:%window-id)))))
+         (if shortcut-handled-p
+             :continue
+             (let ((result (handle-widget-key-event widgets key nil
+                                                    :mods mods
+                                                    :ctrl ctrl
+                                                    :shift shift
+                                                    :alt alt
+                                                    :on-escape on-escape
+                                                    :on-return on-return)))
+               (if (or (eq result :continue) (eq result :success))
+                   result
+                   :continue))))))))
+
 (defmethod handle-widget-key-event (null key char &key mods ctrl shift alt on-escape on-return)
   "Default no-op for generic widgets unless specialized." 
   (declare (ignore mods ctrl shift alt on-escape on-return))

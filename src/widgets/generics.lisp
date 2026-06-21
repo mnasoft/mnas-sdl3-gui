@@ -262,6 +262,10 @@ Default behavior is based on widget bounds."))
 For top-level widget lists provide :mods (raw modifier mask) and optional
 :on-escape/:on-return callbacks.") )
 
+(defgeneric handle-keyboard-event (widgets ev &key on-escape on-return)
+  (:documentation
+   "Handle an sdl3:keyboard-event and dispatch it to the focused widget or app-level handlers."))
+
 (defgeneric handle-mouse-button-event (widgets ev)
   (:documentation
    "Handle an sdl3:mouse-button-event and dispatch to widget handlers."))

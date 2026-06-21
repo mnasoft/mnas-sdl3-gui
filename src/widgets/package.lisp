@@ -5,6 +5,7 @@
   (:use #:cl)
 ;;; base widget class
   (:export #:widget
+           #:<widget>
            #:<widget>-x
            #:<widget>-y
            #:<widget>-width
@@ -104,7 +105,8 @@
            #:toolbar-x
            #:toolbar-y
            #:<toolbar-button>-command-id
-           )
+           #:<toolbar-button>-label
+           #:<toolbar-button>-hotkey)
 ;;; button accessors
     (:export
            #:button-width
@@ -276,6 +278,7 @@
            #:destroy-window-and-unregister
            #:handle-widget-key-press
            #:handle-widget-key-event
+           #:handle-keyboard-event
            #:focusable-widget-p
            #:focused-widget
            #:focused-<entry>
