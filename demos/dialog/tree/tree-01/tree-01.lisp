@@ -333,16 +333,8 @@
                 :mods (slot-value ev 'sdl3:%mod)
                 :context (list :window-id target-window-id))
                     (mnas-sdl3-gui/widgets:handle-keyboard-event
-                 *tree-01-widgets*
-                 (slot-value ev 'sdl3:%key)
-                 nil
-                 :mods (slot-value ev 'sdl3:%mod)
-                 :on-escape (lambda ()
-                  (tree-01-command :tree-01/quit)
-                  :success)
-                 :on-return (lambda ()
-                  (tree-01-command :tree-01/load)
-                  :continue)))))
+                     *tree-01-widgets*
+                     ev))))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input

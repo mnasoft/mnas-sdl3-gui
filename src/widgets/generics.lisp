@@ -254,7 +254,7 @@ Default behavior is based on widget bounds."))
 ;; `handle-mouse-wheel-event` and `handle-mouse-device-event` instead.
 
 (defgeneric handle-keyboard-event (widget ev)
-  (:documentation "Handle keyboard input for WIDGET using a normalized EV object."))
+  (:documentation "Handle keyboard input for WIDGET using a normalized event object."))
 
 (defgeneric handle-mouse-button-event (widgets ev)
   (:documentation

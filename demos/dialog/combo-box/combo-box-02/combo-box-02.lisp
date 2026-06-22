@@ -280,12 +280,7 @@
                       :context (list :window-id *combo-box-02-window-id*))
                (mnas-sdl3-gui/widgets:handle-keyboard-event
                 *combo-box-02-widgets*
-                (slot-value ev 'sdl3:%key)
-                nil
-                :mods (slot-value ev 'sdl3:%mod)
-                :on-escape (lambda ()
-                             (setf *combo-box-02-open* nil)
-                             :success))))
+                ev)))
            :continue)
           (sdl3:text-input-event
            (mnas-sdl3-gui/widgets:dispatch-focused-text-input

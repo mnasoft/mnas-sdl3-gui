@@ -38,6 +38,14 @@
     (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
     (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
 
+(test legacy-keyboard-call-style-is-rejected
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                 :x 0 :y 0 :width 10 :height 10))
+         (widgets (list widget)))
+    (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
+    (signals error
+      (mnas-sdl3-gui/widgets:handle-keyboard-event widgets :space nil))))
+
 (test window-manager-modal-keyboard-target
   (let ((manager (make-window-layer-manager)))
     (register-window manager 100 :main :open-p t)

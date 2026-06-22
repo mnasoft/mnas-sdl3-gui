@@ -92,36 +92,11 @@
         ev)
        :continue)
       (sdl3:keyboard-event
-       (update-modifier-state ev)
-       (let ((result
-               (mnas-sdl3-gui/widgets:handle-keyboard-event
-                (widgets)
-                ev
-                :on-escape (lambda ()
-                             (setf *result* nil
-                                   *open* nil)
-                             :success)
-                :on-return (lambda ()
-                             (setf *result*
-                                   (mnas-sdl3-gui/widgets:<entry>-text *input*)
-                                   *open* nil)
-                             :success))))
-         (when (slot-value ev 'sdl3:%down)
-           (log-key-event ev :action :down))
-         (when (and (not (slot-value ev 'sdl3:%down))
-                    (key->modifier (slot-value ev 'sdl3:%key)))
-           (log-key-event ev :action :up))
-         result))
+       (mnas-sdl3-gui/widgets:handle-keyboard-event (widgets) ev))
       (sdl3:text-input-event
-       ;; SDL text input already respects the current keyboard layout/IME.
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input
         (widgets)
         (slot-value ev 'sdl3:%text))
-       (format t "[DEBUG] action=~A key=~A mods=~S char=~A | ~A | selected='~A'~%"
-               :text-input nil (copy-list *active-modifiers*)
-               (slot-value ev 'sdl3:%text)
-               *input*
-               (mnas-sdl3-gui/widgets:get-<entry>-selected-text *input*))
        :continue)
       (t :continue))))
 

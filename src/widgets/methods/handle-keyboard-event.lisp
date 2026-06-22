@@ -99,10 +99,10 @@
        :continue))))
 
 (defmethod handle-keyboard-event ((widgets cons) (ev symbol))
-  (handle-keyboard-event widgets (make-widget-keyboard-input ev nil)))
+  (handle-keyboard-event widgets (normalize-keyboard-event ev)))
 
 (defmethod handle-keyboard-event ((widgets cons) (ev character))
-  (handle-keyboard-event widgets (make-widget-keyboard-input nil ev)))
+  (handle-keyboard-event widgets (normalize-keyboard-event ev)))
 
 (defmethod handle-keyboard-event :around ((widget <widget>) ev)
   (declare (ignore ev))

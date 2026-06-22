@@ -386,12 +386,7 @@
                     :context (list :window-id target-window-id))
              (mnas-sdl3-gui/widgets:handle-keyboard-event
               *pack-demo-widgets*
-              (slot-value ev 'sdl3:%key)
-              nil
-              :mods (slot-value ev 'sdl3:%mod)
-              :on-escape (lambda ()
-                           (setf *pack-demo-open* nil)
-                           :success)))
+              ev))
            :continue)))
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input

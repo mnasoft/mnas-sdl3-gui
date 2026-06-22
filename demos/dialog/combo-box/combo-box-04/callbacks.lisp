@@ -93,9 +93,7 @@
                    (not (slot-value ev 'sdl3:%repeat)))
           (mnas-sdl3-gui/widgets:handle-keyboard-event
            (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-           (slot-value ev 'sdl3:%key)
-           nil
-           :mods (slot-value ev 'sdl3:%mod)))
+           ev))
         :continue)
        (t :continue))))
 

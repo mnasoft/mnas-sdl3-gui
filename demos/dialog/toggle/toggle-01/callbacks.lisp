@@ -135,12 +135,7 @@
                   :context (list :window-id *window-id*))
            (mnas-sdl3-gui/widgets:handle-keyboard-event
             *widgets*
-            (slot-value ev 'sdl3:%key)
-            nil
-            :mods (slot-value ev 'sdl3:%mod)
-            :on-escape (lambda ()
-                         (toggle-01-command :toggle-01/quit)
-                         :success)))
+            ev))
          (unless *open*
            (return-from callback-event :success)))
        :continue)

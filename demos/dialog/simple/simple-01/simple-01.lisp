@@ -270,12 +270,7 @@
                   :context (list :window-id *window-id*))
            (mnas-sdl3-gui/widgets:handle-keyboard-event
             (simple-01-root-widgets)
-            (slot-value ev 'sdl3:%key)
-            nil
-            :mods (slot-value ev 'sdl3:%mod)
-            :on-escape (lambda ()
-                         (setf *dialog-open* nil)
-                         :success))))
+            ev)))
        :continue)
       (t :continue))))
 

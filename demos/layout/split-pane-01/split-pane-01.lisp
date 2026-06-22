@@ -155,9 +155,7 @@
                   (not (slot-value ev 'sdl3:%repeat)))
          (mnas-sdl3-gui/widgets:handle-keyboard-event
           (split-pane-demo-focus-widgets)
-          (slot-value ev 'sdl3:%key) nil
-          :mods (slot-value ev 'sdl3:%mod)
-          :on-escape (lambda () (setf *split-pane-demo-open* nil))))
+          ev))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input

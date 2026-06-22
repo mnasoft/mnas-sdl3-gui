@@ -70,17 +70,7 @@
       (sdl3:keyboard-event
        (mnas-sdl3-gui/widgets:handle-keyboard-event
             (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-            (slot-value ev 'sdl3:%key)
-            nil
-            :mods (key-modifiers ev)
-            :on-escape (lambda ()
-                         (setf *open* nil)
-                         :success)
-            :on-return (lambda ()
-                         (setf *status*
-                               (format nil "Command executed: ~A"
-                                       (mnas-sdl3-gui/widgets:<entry>-text *command*)))
-                         :success)))
+            ev))
       #+nil
       (sdl3:keyboard-event
        (update-modifier-state ev)
