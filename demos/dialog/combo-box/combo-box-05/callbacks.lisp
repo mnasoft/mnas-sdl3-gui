@@ -70,7 +70,7 @@
          :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down) (not (slot-value ev 'sdl3:%repeat)))
-         (mnas-sdl3-gui/widgets:handle-widget-key-event *widgets* (slot-value ev 'sdl3:%key) nil :mods (slot-value ev 'sdl3:%mod)))
+         (mnas-sdl3-gui/widgets:handle-keyboard-event *widgets* (slot-value ev 'sdl3:%key) nil :mods (slot-value ev 'sdl3:%mod)))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:dispatch-focused-text-input *widgets* (slot-value ev 'sdl3:%text))

@@ -248,7 +248,7 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (slot-value ev 'sdl3:%mod)
                   :context nil)
-             (mnas-sdl3-gui/widgets:handle-widget-key-event
+             (mnas-sdl3-gui/widgets:handle-keyboard-event
             (or (mnas-sdl3-gui/window-manager:window-root-widgets
                *layer-manager*
                (sdl3:get-window-id *window-dialog*))

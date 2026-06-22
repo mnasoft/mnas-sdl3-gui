@@ -8,16 +8,18 @@
   "Send KEY/CHAR event to the currently focused widget from WIDGETS."
   (let ((widget (focused-widget widgets)))
     (when widget
-      (handle-widget-key-event widget key char
-                               :ctrl ctrl
-                               :shift shift
-                               :alt alt))))
+      (handle-keyboard-event widget
+                             (make-widget-keyboard-input key char
+                                                         :ctrl ctrl
+                                                         :shift shift
+                                                         :alt alt)))))
 
 (defun dispatch-focused-text-input (widgets text)
   "Insert TEXT into the currently focused <entry> from WIDGETS."
   (let ((widget (focused-<entry> widgets)))
     (when widget
       (loop for char across text
-            do (handle-widget-key-event widget nil char)))))
+            do (handle-keyboard-event widget
+                                      (make-widget-keyboard-input nil char))))))
 
-;; `dispatch-widget-keyboard-event` removed: use `handle-widget-key-event` directly.
+;; `dispatch-widget-keyboard-event` removed: use `handle-keyboard-event` directly.

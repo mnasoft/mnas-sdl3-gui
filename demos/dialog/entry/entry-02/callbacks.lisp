@@ -68,7 +68,7 @@
         ev)
        :continue)
       (sdl3:keyboard-event
-       (mnas-sdl3-gui/widgets:handle-widget-key-event
+       (mnas-sdl3-gui/widgets:handle-keyboard-event
             (mnas-sdl3-gui/widgets:widgets-for-window *window*)
             (slot-value ev 'sdl3:%key)
             nil
@@ -90,7 +90,7 @@
                   (slot-value ev 'sdl3:%key)
                   :mods (key-modifiers ev)
                   :context (list :window-id *window-id*))
-           (mnas-sdl3-gui/widgets:handle-widget-key-event
+           (mnas-sdl3-gui/widgets:handle-keyboard-event
             *widgets*
             (slot-value ev 'sdl3:%key)
             nil

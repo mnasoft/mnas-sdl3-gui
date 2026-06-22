@@ -148,8 +148,7 @@
                              (:file "activate-widget")
                              
                              (:file "handle-mouse-button-event")
-                             (:file "handle-widget-key-press")
-                             (:file "handle-widget-key-event")
+                             (:file "handle-keyboard-event")
 
                              #+nil (:file "handle-widget-mouse-down")
                              #+nil (:file "handle-widget-mouse-up")

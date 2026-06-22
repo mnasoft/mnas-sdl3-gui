@@ -384,7 +384,7 @@
                     (slot-value ev 'sdl3:%key)
                     :mods (slot-value ev 'sdl3:%mod)
                     :context (list :window-id target-window-id))
-             (mnas-sdl3-gui/widgets:handle-widget-key-event
+             (mnas-sdl3-gui/widgets:handle-keyboard-event
               *pack-demo-widgets*
               (slot-value ev 'sdl3:%key)
               nil

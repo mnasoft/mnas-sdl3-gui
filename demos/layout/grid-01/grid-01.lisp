@@ -171,7 +171,7 @@
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down) (not (slot-value ev 'sdl3:%repeat)))
          (unless (mnas-sdl3-gui/commands:dispatch-shortcut (slot-value ev 'sdl3:%key) :mods (slot-value ev 'sdl3:%mod))
-           (mnas-sdl3-gui/widgets:handle-widget-key-event
+           (mnas-sdl3-gui/widgets:handle-keyboard-event
             (grid-demo-focus-widgets)
             (slot-value ev 'sdl3:%key) nil
             :mods (slot-value ev 'sdl3:%mod)

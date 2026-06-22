@@ -30,6 +30,14 @@
     (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
     (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
 
+(test keyboard-input-wrapper-dispatches-to-focused-widget
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                 :x 0 :y 0 :width 10 :height 10))
+         (event (mnas-sdl3-gui/widgets::make-widget-keyboard-input :space nil))
+         (widgets (list widget)))
+    (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
+    (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
+
 (test window-manager-modal-keyboard-target
   (let ((manager (make-window-layer-manager)))
     (register-window manager 100 :main :open-p t)
@@ -97,10 +105,9 @@
         (is (or hit2 (mnas-sdl3-gui/widgets:<widget>-focused entry)))
         (is (mnas-sdl3-gui/widgets:<widget>-focused entry)))
       (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) entry))
-      (mnas-sdl3-gui/widgets:handle-widget-key-event
+      (mnas-sdl3-gui/widgets:handle-keyboard-event
        (list button entry)
-       :tab
-       nil)
+       (mnas-sdl3-gui/widgets:make-widget-keyboard-input :tab nil))
       (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) button)))))
 
 

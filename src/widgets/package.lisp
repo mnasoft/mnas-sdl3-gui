@@ -276,9 +276,8 @@
            #:unregister-widgets-for-window
            #:clear-window-widget-registry
            #:destroy-window-and-unregister
-           #:handle-widget-key-press
-           #:handle-widget-key-event
            #:handle-keyboard-event
+           #:make-widget-keyboard-input
            #:focusable-widget-p
            #:focused-widget
            #:focused-<entry>
