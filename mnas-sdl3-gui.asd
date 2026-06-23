@@ -149,6 +149,7 @@
                              
                              (:file "handle-mouse-button-event")
                              (:file "handle-keyboard-event")
+                             (:file "handle-text-input-event")
 
                              #+nil (:file "handle-widget-mouse-down")
                              #+nil (:file "handle-widget-mouse-up")

@@ -277,12 +277,12 @@
            #:clear-window-widget-registry
            #:destroy-window-and-unregister
            #:handle-keyboard-event
+           #:handle-text-input-event
            #:make-widget-keyboard-input
            #:focusable-widget-p
            #:focused-widget
            #:focused-<entry>
            #:dispatch-focused-widget-key-event
-           #:dispatch-focused-text-input
            #:tab-navigation-backward-p
            #:start-widget-text-input
            #:stop-widget-text-input

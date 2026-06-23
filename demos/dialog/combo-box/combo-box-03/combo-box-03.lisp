@@ -107,7 +107,7 @@
         (mnas-sdl3-gui/widgets:handle-keyboard-event *combo-box-03-widgets* ev))
        :continue)
       (sdl3:text-input-event
-       (mnas-sdl3-gui/widgets:dispatch-focused-text-input *combo-box-03-widgets* (slot-value ev 'sdl3:%text))
+       (mnas-sdl3-gui/widgets:handle-text-input-event *combo-box-03-widgets* ev)
        :continue)
       (t :continue))))
 

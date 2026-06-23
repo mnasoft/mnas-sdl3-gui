@@ -259,12 +259,12 @@
        :continue)
           (sdl3:text-input-event
            ;; Text input comes from current keyboard layout/IME and is UTF-8 safe.
-           (mnas-sdl3-gui/widgets:dispatch-focused-text-input
+           (mnas-sdl3-gui/widgets:handle-text-input-event
             (or (mnas-sdl3-gui/window-manager:window-root-widgets
                  *layer-manager*
                  (sdl3:get-window-id *window-dialog*))
                 (list *widget-root*))
-            (slot-value ev 'sdl3:%text))
+            ev)
            :continue)
       (t
        :continue))))

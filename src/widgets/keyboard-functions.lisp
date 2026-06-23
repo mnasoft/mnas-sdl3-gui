@@ -14,12 +14,4 @@
                                                          :shift shift
                                                          :alt alt)))))
 
-(defun dispatch-focused-text-input (widgets text)
-  "Insert TEXT into the currently focused <entry> from WIDGETS."
-  (let ((widget (focused-<entry> widgets)))
-    (when widget
-      (loop for char across text
-            do (handle-keyboard-event widget
-                                      (make-widget-keyboard-input nil char))))))
-
 ;; `dispatch-widget-keyboard-event` removed: use `handle-keyboard-event` directly.

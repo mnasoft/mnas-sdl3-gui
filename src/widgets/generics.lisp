@@ -256,6 +256,9 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-keyboard-event (widget ev)
   (:documentation "Handle keyboard input for WIDGET using a normalized event object."))
 
+(defgeneric handle-text-input-event (widget ev)
+  (:documentation "Handle text input for WIDGET using the provided text payload."))
+
 (defgeneric handle-mouse-button-event (widgets ev)
   (:documentation
    "Handle an sdl3:mouse-button-event and dispatch to widget handlers."))

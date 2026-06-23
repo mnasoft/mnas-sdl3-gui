@@ -337,9 +337,9 @@
                      ev))))
        :continue)
       (sdl3:text-input-event
-       (mnas-sdl3-gui/widgets:dispatch-focused-text-input
+       (mnas-sdl3-gui/widgets:handle-text-input-event
         *tree-01-widgets*
-        (slot-value ev 'sdl3:%text))
+        ev)
        :continue)
       (t :continue))))
 

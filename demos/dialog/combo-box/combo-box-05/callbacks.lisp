@@ -73,7 +73,7 @@
          (mnas-sdl3-gui/widgets:handle-keyboard-event *widgets* ev))
        :continue)
       (sdl3:text-input-event
-       (mnas-sdl3-gui/widgets:dispatch-focused-text-input *widgets* (slot-value ev 'sdl3:%text))
+       (mnas-sdl3-gui/widgets:handle-text-input-event *widgets* ev)
        :continue)
       (t :continue))))
 

@@ -38,6 +38,15 @@
     (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
     (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
 
+(test text-input-event-dispatches-to-focused-entry
+  (let* ((entry (make-instance 'mnas-sdl3-gui/widgets:<entry>
+                                :x 0 :y 0 :width 100 :height 24
+                                :text ""))
+         (event (make-instance 'sdl3:text-input-event :%text "ab"))
+         (widgets (list entry)))
+    (setf (mnas-sdl3-gui/widgets:<widget>-focused entry) t)
+    (is (eq :continue (mnas-sdl3-gui/widgets:handle-text-input-event widgets event)))))
+
 (test legacy-keyboard-call-style-is-rejected
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
                                  :x 0 :y 0 :width 10 :height 10))
