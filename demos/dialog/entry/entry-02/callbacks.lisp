@@ -71,29 +71,6 @@
        (mnas-sdl3-gui/widgets:handle-keyboard-event
             (mnas-sdl3-gui/widgets:widgets-for-window *window*)
             ev))
-      #+nil
-      (sdl3:keyboard-event
-       (update-modifier-state ev)
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value ev 'sdl3:%key)
-                  :mods (key-modifiers ev)
-                  :context (list :window-id *window-id*))
-           (mnas-sdl3-gui/widgets:handle-keyboard-event
-            *widgets*
-            (slot-value ev 'sdl3:%key)
-            nil
-            :mods (key-modifiers ev)
-            :on-escape (lambda ()
-                         (setf *open* nil)
-                         :success)
-            :on-return (lambda ()
-                         (setf *status*
-                               (format nil "Command executed: ~A"
-                                       (mnas-sdl3-gui/widgets:<entry>-text *command*)))
-                         :success))))
-       :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:handle-text-input-event
         *widgets*

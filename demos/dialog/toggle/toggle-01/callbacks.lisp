@@ -37,8 +37,6 @@
           (toggle-01-register-commands)
           (toggle-01-register-shortcuts)
           (setf *toolbar* (toggle-01-create-toolbar window))
-          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toolbar*)
-          #+nil(setf *widgets* widgets)
           (mnas-sdl3-gui/widgets:set-widget-style *style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-widgets window)
@@ -56,11 +54,11 @@
   (toggle-01-sync-command-state)
   (when *toolbar*
     (mnas-sdl3-gui/widgets:render
-          *renderer*
-          *toolbar*
-          mnas-sdl3-gui/widgets:*widget-style*))
+     *renderer*
+     *toolbar*
+     mnas-sdl3-gui/widgets:*widget-style*))
 
-      (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *widgets*)
+  (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *widgets*)
         do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (mnas-sdl3-gui/widgets:render-text *renderer*
@@ -83,11 +81,11 @@
        :success)
       (sdl3:window-event
        (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
-         (let ((window-id (slot-value ev 'sdl3:%window-id))
-               (action (and *layer-manager*
-                            (mnas-sdl3-gui/window-manager:close-action
-                             *layer-manager*
-                             window-id))))
+         (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                (action (and *layer-manager*
+                             (mnas-sdl3-gui/window-manager:close-action
+                              *layer-manager*
+                              window-id))))
            (case action
              (:close-root
               (setf *open* nil)
@@ -97,47 +95,16 @@
               (return-from callback-event :success)))))
        :continue)
       (sdl3:mouse-motion-event
-         (mnas-sdl3-gui/widgets:handle-mouse-motion-event
+       (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         *widgets*
         ev)
        :continue)
       (sdl3:mouse-button-event
        (mnas-sdl3-gui/widgets:handle-mouse-button-event
-        (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-        ev)
-       :continue)
-      #+nil
-      (sdl3:mouse-button-event
-       (when (= (slot-value ev 'sdl3:%button) 1)
-         (let ((mx (round (slot-value ev 'sdl3:%x)))
-               (my (round (slot-value ev 'sdl3:%y))))
-           (if (slot-value ev 'sdl3:%down)
-               (let ((button (and *toolbar*
-                                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                                   *toolbar*
-                                   mx
-                                   my))))
-                    (if button
-                    (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                     *toolbar*
-                     button
-                     (list :window-id *window-id*))
-                    (mnas-sdl3-gui/widgets:handle-mouse-button-event
-                     *widgets* ev)))
-                   (mnas-sdl3-gui/widgets:handle-mouse-button-event *widgets* ev))))
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
        :continue)
       (sdl3:keyboard-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value ev 'sdl3:%key)
-                  :mods (slot-value ev 'sdl3:%mod)
-                  :context (list :window-id *window-id*))
-           (mnas-sdl3-gui/widgets:handle-keyboard-event
-            *widgets*
-            ev))
-         (unless *open*
-           (return-from callback-event :success)))
+       (mnas-sdl3-gui/widgets:handle-keyboard-event *widgets* ev)
        :continue)
       (t :continue))))
 

@@ -5,14 +5,28 @@
 (defun register-toolbar-demo-commands ()
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
-    :toolbar/demo-new
-    "New"
+    :toolbar/demo-hide
+    "Hide"
     :execute (lambda (ctx)
                (declare (ignore ctx))
                (format t "[toolbar-demo] New~%")
-               (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) nil)
-               ))
-   :replace t)
+               (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) nil))
+    :shortcut "H"
+    )
+   :replace t
+   )
+  (mnas-sdl3-gui/commands:register-command
+   (mnas-sdl3-gui/commands:make-command
+    :toolbar/demo-show
+    "Show"
+    :execute (lambda (ctx)
+               (declare (ignore ctx))
+               (format t "[toolbar-demo] Show~%")
+               (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) t))
+    :shortcut "S"
+    )
+   :replace t
+   )
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
     :toolbar/demo-open

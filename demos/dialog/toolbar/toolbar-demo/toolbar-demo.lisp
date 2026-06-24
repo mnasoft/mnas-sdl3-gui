@@ -3,28 +3,28 @@
 (in-package :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 
 (defun make-toolbar-demo-widget (window)
-  (let ((tb (make-instance 'mnas-sdl3-gui/widgets:toolbar
+  (let ((tb (make-instance 'mnas-sdl3-gui/widgets:<toolbar>
                            :layout :horizontal
                            :height 34
                            :window window
                            )))
     (setf (mnas-sdl3-gui/widgets:<widget-container>-children tb)
           (list
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
-                          :command-id :toolbar/demo-new
+           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                          :command-id :toolbar/demo-hide
                           :label "New"
                           :width 66
                           :height 32
                           :window window
                           )
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
+           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
                           :command-id :toolbar/demo-open
                           :label "Open"
                           :width 70
                           :height 32
                           :window window
                           )
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button
+           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
                           :command-id :toolbar/demo-quit
                           :label "Quit"
                           :width 64
@@ -74,8 +74,10 @@
        :success)
       (sdl3:mouse-button-event
        (mnas-sdl3-gui/widgets:handle-mouse-button-event
-              (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-              ev)
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
+       :continue)
+      (sdl3:keyboard-event
+       (mnas-sdl3-gui/widgets:handle-keyboard-event (list *toolbar*) ev)
        :continue)
       (t :continue))))
 
@@ -89,7 +91,7 @@
   (sdl3:quit)
   :success)
 
-(defun toolbar-demo ()
+(defun main ()
   "Run toolbar demo."
   (sdl3:enter-app-main-callbacks
    'toolbar-demo-init
@@ -98,7 +100,9 @@
    'toolbar-demo-quit))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toolbar-demo)
-;;;; (toolbar-demo)
+
+;;;; (mnas-sdl3-gui/demos/dialog/toolbar-demo:main)
+;;;; (main)
 
 ;;;; (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) t)
 ;;;; (setf (mnas-sdl3-gui/widgets:<widget>-x  *toolbar*) 50)

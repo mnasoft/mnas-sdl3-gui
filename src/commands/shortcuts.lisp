@@ -5,6 +5,20 @@
 (defparameter *shortcut-registry* (make-hash-table :test #'equal)
   "Registry mapping (key mods) to command ids.")
 
+(defun normalize-shortcut-key (key)
+  "Normalize KEY to a stable keyword form for shortcut lookup."
+  (cond
+    ((null key) nil)
+    ((keywordp key)
+     (intern (string-downcase (string key)) :keyword))
+    ((symbolp key)
+     (intern (string-downcase (symbol-name key)) :keyword))
+    ((characterp key)
+     (intern (string-downcase (string key)) :keyword))
+    ((stringp key)
+     (intern (string-downcase key) :keyword))
+    (t key)))
+
 (defun normalize-shortcut-mods (mods)
   "Normalize MODS to :ANY, NIL, or a stable list form." 
   (cond
@@ -16,7 +30,7 @@
 
 (defun shortcut-key (key mods)
   "Build registry key pair for shortcut mapping." 
-  (list key (normalize-shortcut-mods mods)))
+  (list (normalize-shortcut-key key) (normalize-shortcut-mods mods)))
 
 (defun clear-shortcut-registry ()
   "Clear all shortcuts." 
@@ -35,10 +49,11 @@ If REPLACE is NIL and mapping exists, signal an error."
 
 (defun find-shortcut-command (key &key mods)
   "Find command id mapped to KEY and MODS with fallback to :any." 
-  (let* ((mods* (normalize-shortcut-mods mods))
+  (let* ((key* (normalize-shortcut-key key))
+         (mods* (normalize-shortcut-mods mods))
          (candidates (remove-duplicates
-                      (list (shortcut-key key mods*)
-                            (shortcut-key key :any))
+                      (list (shortcut-key key* mods*)
+                            (shortcut-key key* :any))
                       :test #'equal)))
     (loop for k in candidates
           for cmd = (gethash k *shortcut-registry*)
@@ -48,6 +63,6 @@ If REPLACE is NIL and mapping exists, signal an error."
 (defun dispatch-shortcut (key &key mods context)
   "Dispatch KEY through command dispatcher.
 Returns non-NIL when a mapped command was executed." 
-  (let ((command-id (find-shortcut-command key :mods mods)))
+  (let ((command-id (find-shortcut-command (normalize-shortcut-key key) :mods mods)))
     (when command-id
       (execute-command command-id :context context))))

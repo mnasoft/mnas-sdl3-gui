@@ -30,6 +30,21 @@
     (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
     (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
 
+(test command-registration-automatically-registers-shortcuts
+  (mnas-sdl3-gui/commands:clear-command-registry)
+  (mnas-sdl3-gui/commands:clear-shortcut-registry)
+  (let* ((command (mnas-sdl3-gui/commands:make-command
+                   :toolbar/demo-new
+                   "New"
+                   :shortcut "N"
+                   :execute (lambda (ctx)
+                              (declare (ignore ctx))
+                              t))))
+    (mnas-sdl3-gui/commands:register-command command :replace t)
+    (is (not (null (mnas-sdl3-gui/commands:find-shortcut-command :n))))
+    (is (not (null (mnas-sdl3-gui/commands:dispatch-shortcut :n :context nil))))
+    (is (functionp (mnas-sdl3-gui/commands:command-execute (mnas-sdl3-gui/commands:find-command :toolbar/demo-new))))))
+
 (test keyboard-input-wrapper-dispatches-to-focused-widget
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
                                  :x 0 :y 0 :width 10 :height 10))

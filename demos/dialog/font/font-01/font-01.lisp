@@ -24,10 +24,10 @@
 
 (defun make-font-01-toolbar ()
   "Create toolbar as a presenter for font-01 commands."
-  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height +cyrillic-font-toolbar-height+)))
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:<toolbar> :layout :horizontal :height +cyrillic-font-toolbar-height+)))
     (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
+           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button> :command-id :label "Quit"
                                                    :width 64)))
     toolbar))
 
@@ -81,12 +81,11 @@
   (sdl3:render-clear *cyrillic-font-renderer*)
 
   (font-01-sync-command-state)
-  (when *cyrillic-font-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
-     *cyrillic-font-toolbar*
-     *cyrillic-font-renderer*
-     0.0
-     0.0))
+  #+nl (when *cyrillic-font-toolbar*
+    (mnas-sdl3-gui/toolbar:render *cyrillic-font-renderer* *cyrillic-font-toolbar*
+     
+
+     ))
 
   ;; Заголовок
   (sdl3:set-render-draw-color *cyrillic-font-renderer* 255 220 50 255)
@@ -153,6 +152,7 @@
               (setf *cyrillic-font-open* nil)
               (return-from cyrillic-font-demo-event :success)))))
        :continue)
+      #+nil
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) 1)
          (let* ((window-id (slot-value ev 'sdl3:%window-id))
@@ -219,4 +219,5 @@
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/font)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/font-01)
+
 ;;;; (font-01)

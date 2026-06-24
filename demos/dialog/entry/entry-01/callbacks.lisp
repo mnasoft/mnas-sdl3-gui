@@ -91,8 +91,7 @@
         (mnas-sdl3-gui/widgets:widgets-for-window *window*)
         ev)
        :continue)
-      (sdl3:keyboard-event
-       (mnas-sdl3-gui/widgets:handle-keyboard-event (widgets) ev))
+      (sdl3:keyboard-event (mnas-sdl3-gui/widgets:handle-keyboard-event (widgets) ev))
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:handle-text-input-event
         (widgets)

@@ -86,6 +86,8 @@ exists, signal an error."
     (when (and existing (not replace))
       (error "Command ~S already registered." id))
     (setf (gethash id *command-registry*) cmd)
+    (when (command-shortcut cmd)
+      (mnas-sdl3-gui/commands:register-shortcut id (command-shortcut cmd) :replace t))
     cmd))
 
 (defun find-command (id)

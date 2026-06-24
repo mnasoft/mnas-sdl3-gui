@@ -65,13 +65,13 @@
     :can-execute (lambda (context)
                    (declare (ignore context))
                    (let ((entry (entry-widget)))
-                     (and entry (> (length (mnas-sdl3-gui/widgets:entry-text entry)) 0))))
+                     (and entry (> (length (mnas-sdl3-gui/widgets:<entry>-text entry)) 0))))
     :execute (lambda (context)
                (declare (ignore context))
                (let ((entry (entry-widget)))
                  (when entry
-                   (setf (mnas-sdl3-gui/widgets:entry-text entry) ""
-                         (mnas-sdl3-gui/widgets:entry-cursor entry) 0)
+                   (setf (mnas-sdl3-gui/widgets:<entry>-text entry) ""
+                         (mnas-sdl3-gui/widgets:<entry>-cursor entry) 0)
                    (setf *status-message* "Entry text cleared from command toolbar.")
                    t))))
    :replace t))
