@@ -53,6 +53,16 @@
     (setf (mnas-sdl3-gui/widgets:<widget>-focused widget) t)
     (is (eq :continue (mnas-sdl3-gui/widgets:handle-keyboard-event widgets event)))))
 
+(test list-box-keyboard-navigation-uses-visible-item-count
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
+                                 :x 0 :y 0 :width 120 :height 72
+                                 :items '("alpha" "beta" "gamma" "delta")
+                                 :selected-index 0
+                                 :item-height 24))
+         (event (mnas-sdl3-gui/widgets::make-widget-keyboard-input :down nil)))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-keyboard-event widget event)))
+    (is (= 1 (mnas-sdl3-gui/widgets::<list-box>-selected-index widget)))))
+
 (test text-input-event-dispatches-to-focused-entry
   (let* ((entry (make-instance 'mnas-sdl3-gui/widgets:<entry>
                                 :x 0 :y 0 :width 100 :height 24

@@ -503,6 +503,8 @@
   :components ((:module "demos/dialog/list-box/list-box-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
+                             (:file "commands")
                              (:file "list-box-01")
                              (:file "callbacks")
                              (:file "main")))))

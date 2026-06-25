@@ -177,16 +177,16 @@
       (mnas-debug:%log  "~A~%" widget)
       #+nil (format t "x=~A~%" widget)
       (let* ((scrollbar-width +list-box-scrollbar-width+)
-             (visible-count (<list-box>-visible-item-count widget))
-             (scrollbar-needed-p (<list-box>-scrollbar-needed-p widget))
-             (content-width (<list-box>-content-width widget))
+             (visible-count (list-box-visible-item-count widget))
+             (scrollbar-needed-p (list-box-scrollbar-needed-p widget))
+             (content-width (list-box-content-width widget))
              (item-height (<list-box>-item-height widget))
              (rel-x (- x (<widget>-x widget)))
              (rel-y (- y (<widget>-y widget))))
         (cond
           ((and scrollbar-needed-p (>= rel-x content-width))
            (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
-               (<list-box>-scrollbar-geometry widget)
+               (list-box-scrollbar-geometry widget)
              (declare (ignore needed-p track-x track-height max-offset))
              (let ((thumb-hit-p (<= thumb-y y (+ thumb-y thumb-height))))
                (setf (<list-box>-scrollbar-dragging-p widget) t
@@ -194,7 +194,7 @@
                      (if thumb-hit-p
                          (- y thumb-y)
                          (floor thumb-height 2)))
-               (<list-box>-set-scroll-offset-from-thumb-top
+               (list-box-set-scroll-offset-from-thumb-top
                 widget
                 (- y (<list-box>-scrollbar-drag-offset widget))))))
           ((and (>= rel-y 0) (>= rel-x 0) (< rel-x content-width))

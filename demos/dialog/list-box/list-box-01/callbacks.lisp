@@ -2,23 +2,23 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/list-box-01)
 
-(sdl3:def-app-init list-box-01-demo-init (argc argv)
+(sdl3:def-app-init callback-init (argc argv)
   (declare (ignore argc argv))
   (sdl3:set-app-metadata "Two List-Boxes Demo" "1.0"
                          "com.mna.sdl3.gui.list-box-01.demo")
   (when (not (sdl3:init :video))
     (format t "~a~%" (sdl3:get-error))
-    (return-from list-box-01-demo-init :failure))
+    (return-from callback-init :failure))
   (multiple-value-bind (ok window renderer)
       (sdl3:create-window-and-renderer
        "Two List-Boxes Demo"
        640
-       +list-box-01-window-height+
+       +window-height+
        0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
-          (return-from list-box-01-demo-init :failure))
+          (return-from callback-init :failure))
         (progn
           (setf *window* window
                 *window-id* (sdl3:get-window-id window)
@@ -37,9 +37,9 @@
                                                   *left*))))
   :continue)
 
-(sdl3:def-app-iterate list-box-01-demo-iterate ()
+(sdl3:def-app-iterate callback-iterate ()
   (unless *open*
-    (return-from list-box-01-demo-iterate :success))
+    (return-from callback-iterate :success))
 
   (sdl3:set-render-draw-color *renderer* 236 236 236 255)
   (sdl3:render-clear *renderer*)
@@ -58,7 +58,7 @@
   (sdl3:render-present *renderer*)
   :continue)
 
-(sdl3:def-app-event list-box-01-demo-event (type event)
+(sdl3:def-app-event callback-event (type event)
   (declare (ignore type))
   (mnas-debug:with
     (mnas-sdl3-gui/events:update-from-sdl-event ev)
@@ -79,42 +79,14 @@
         ev)
        :continue)
       (sdl3:mouse-wheel-event
-       ;; Temporary debug: log received mouse-wheel events at app level
-       (handler-case
-           (let ((mx (handler-case (slot-value ev 'sdl3:%x) (error () nil)))
-                 (my (handler-case (slot-value ev 'sdl3:%y) (error () nil)))
-                 (myrel (handler-case (slot-value ev 'sdl3:%yrel) (error () nil))))
-             (format t "[app-event] mouse-wheel x=~S y=~S yrel=~S~%" mx my myrel)
-             (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
-              (mnas-sdl3-gui/widgets:widgets-for-window *window*)
-              ev))
-         (error (e)
-           (format t "[app-event] mouse-wheel: error inspecting event: ~S~%" e)))
+       (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*)
+        ev)
        :continue)
       (sdl3:keyboard-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value ev 'sdl3:%key)
-                  :mods (slot-value ev 'sdl3:%mod)
-                  :context (list :window-id *window-id*))
-           (mnas-sdl3-gui/widgets:handle-keyboard-event
-            *widgets*
-            (slot-value ev 'sdl3:%key)
-            nil
-            :mods (slot-value ev 'sdl3:%mod)
-            :on-escape (lambda ()
-                         (setf *result* nil
-                               *open* nil)
-                         :success)
-            :on-return (lambda ()
-                         (setf *result*
-                               (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *left*)
-                                                (mnas-sdl3-gui/widgets:list-box-items *left*))
-                                     :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *right*)
-                                                 (mnas-sdl3-gui/widgets:list-box-items *right*)))
-                               *open* nil)
-                         :success))))
+       (mnas-sdl3-gui/widgets:handle-keyboard-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*)
+        ev)
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:handle-text-input-event
@@ -123,7 +95,7 @@
        :continue)
       (t :continue))))
 
-(sdl3:def-app-quit list-box-01-demo-quit (result)
+(sdl3:def-app-quit callback-quit (result)
   (declare (ignore result))
   (mnas-sdl3-gui/widgets:stop-widget-text-input *window*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
