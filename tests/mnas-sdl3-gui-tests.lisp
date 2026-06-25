@@ -63,6 +63,16 @@
     (is (eq t (mnas-sdl3-gui/widgets:handle-keyboard-event widget event)))
     (is (= 1 (mnas-sdl3-gui/widgets::<list-box>-selected-index widget)))))
 
+(test list-box-mouse-wheel-handles-normal-direction
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
+                                 :x 0 :y 0 :width 120 :height 72
+                                 :items '("alpha" "beta" "gamma" "delta")
+                                 :selected-index 0
+                                 :item-height 24))
+         (event (make-instance 'sdl3:mouse-wheel-event
+                               :%x 10 :%y 10 :%mouse-x 10 :%mouse-y 10)))
+    (is (not (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event))))))
+
 (test text-input-event-dispatches-to-focused-entry
   (let* ((entry (make-instance 'mnas-sdl3-gui/widgets:<entry>
                                 :x 0 :y 0 :width 100 :height 24

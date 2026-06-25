@@ -85,16 +85,21 @@
 
 (defmethod handle-mouse-wheel-event ((widget <list-box>) (ev sdl3:mouse-wheel-event))
   "Handle mouse-wheel for list-box: adjust scroll offset when pointer is over the widget."
-    (let* ((mx (ignore-errors (slot-value ev 'sdl3:%mouse-x)))
-      (my (ignore-errors (slot-value ev 'sdl3:%mouse-y)))
-      (fallback (and (boundp '*last-mouse-pos*) *last-mouse-pos*))
-      (x (cond (mx (round mx)) (fallback (car fallback)) (t (round (slot-value ev 'sdl3:%x)))))
-      (y (cond (my (round my)) (fallback (cdr fallback)) (t (round (slot-value ev 'sdl3:%y)))))
-      (raw-dy (or (ignore-errors (slot-value ev 'sdl3:%yrel))
-        (ignore-errors (slot-value ev 'sdl3:%y))
-        0))
-      (dir (ignore-errors (slot-value ev 'sdl3:%direction)))
-      (dy (if (and dir (= dir 1)) (- raw-dy) raw-dy)))
+  (let* ((mx (ignore-errors (slot-value ev 'sdl3:%mouse-x)))
+         (my (ignore-errors (slot-value ev 'sdl3:%mouse-y)))
+         (fallback (and (boundp '*last-mouse-pos*) *last-mouse-pos*))
+         (x (cond (mx (round mx)) (fallback (car fallback)) (t (round (slot-value ev 'sdl3:%x)))))
+         (y (cond (my (round my)) (fallback (cdr fallback)) (t (round (slot-value ev 'sdl3:%y)))))
+         (raw-dy (or (ignore-errors (slot-value ev 'sdl3:%yrel))
+                     (ignore-errors (slot-value ev 'sdl3:%y))
+                     0))
+         (dir (ignore-errors (slot-value ev 'sdl3:%direction)))
+         (dir-flipped?
+          (cond
+            ((numberp dir) (= dir 1))
+            ((symbolp dir) (string= (string-downcase (symbol-name dir)) "flipped"))
+            (t nil)))
+         (dy (if dir-flipped? (- raw-dy) raw-dy)))
     (let ((inside (contains-point-p widget x y)))
       (when *debug-mouse-wheel-events*
         (format t "[mouse-wheel] widget=~S x=~D y=~D raw-dy=~S dir=~S dy=~S inside=~S~%" widget x y raw-dy dir dy inside))
