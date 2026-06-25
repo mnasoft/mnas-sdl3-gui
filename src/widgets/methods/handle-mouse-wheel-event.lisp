@@ -99,7 +99,7 @@
             ((numberp dir) (= dir 1))
             ((symbolp dir) (string= (string-downcase (symbol-name dir)) "flipped"))
             (t nil)))
-         (dy (if dir-flipped? (- raw-dy) raw-dy)))
+         (dy (if dir-flipped? raw-dy (- raw-dy))))
     (let ((inside (contains-point-p widget x y)))
       (when *debug-mouse-wheel-events*
         (format t "[mouse-wheel] widget=~S x=~D y=~D raw-dy=~S dir=~S dy=~S inside=~S~%" widget x y raw-dy dir dy inside))

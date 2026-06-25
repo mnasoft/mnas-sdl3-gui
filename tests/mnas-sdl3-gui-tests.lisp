@@ -68,10 +68,12 @@
                                  :x 0 :y 0 :width 120 :height 72
                                  :items '("alpha" "beta" "gamma" "delta")
                                  :selected-index 0
+                                 :scroll-offset 1
                                  :item-height 24))
          (event (make-instance 'sdl3:mouse-wheel-event
                                :%x 10 :%y 10 :%mouse-x 10 :%mouse-y 10)))
-    (is (not (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event))))))
+    (is (not (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event))))
+    (is (= 0 (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget)))))
 
 (test text-input-event-dispatches-to-focused-entry
   (let* ((entry (make-instance 'mnas-sdl3-gui/widgets:<entry>
