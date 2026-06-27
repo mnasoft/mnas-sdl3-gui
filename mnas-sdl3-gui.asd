@@ -489,8 +489,11 @@
   :components ((:module "demos/dialog/pack/pack-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "pack-01")))))
+                             (:file "pack-01")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/list-box"
   :description "Demos for mnas-sdl3-gui"

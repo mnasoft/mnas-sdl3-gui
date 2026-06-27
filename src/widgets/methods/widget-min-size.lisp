@@ -47,7 +47,7 @@
           (max 96 (<widget>-height obj))))
 
 (defmethod widget-min-size ((obj <list-box>))
-  (let* ((longest-item (or (loop for item in (<list-box>-items widget)
+  (let* ((longest-item (or (loop for item in (<list-box>-items obj)
                                  maximize (length (format nil "~a" item)))
                           8))
          (lines (max 3 (min 8 (length (<list-box>-items obj)))))

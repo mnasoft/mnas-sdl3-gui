@@ -2,11 +2,11 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/pack-01)
 
-(defun pack-01-command (id &rest context-plist)
+(defun command (id &rest context-plist)
   "Execute demo command ID with plist CONTEXT-PLIST." 
   (mnas-sdl3-gui/commands:execute-command id :context context-plist))
 
-(defun pack-01-register-commands ()
+(defun register-commands ()
   "Register pack-01 demo commands in shared command registry." 
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
@@ -16,7 +16,7 @@
     :shortcut :escape
     :execute (lambda (context)
                (declare (ignore context))
-               (setf *pack-demo-open* nil)
+               (setf *open* nil)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -27,7 +27,7 @@
     :shortcut :p
     :execute (lambda (context)
                (declare (ignore context))
-               (setf *pack-demo-status* "Нажата кнопка: Применить")
+               (setf *status* "Нажата кнопка: Применить")
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -38,7 +38,7 @@
     :shortcut :r
     :execute (lambda (context)
                (declare (ignore context))
-               (pack-01-reset-settings)
+               (reset-settings)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -50,7 +50,7 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (pack-01-apply-style :flat)
+               (apply-style :flat)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -62,7 +62,7 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (pack-01-apply-style :windows)
+               (apply-style :windows)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -74,7 +74,7 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (pack-01-toggle-logs)
+               (toggle-logs)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -86,11 +86,11 @@
     :checked nil
     :execute (lambda (context)
                (declare (ignore context))
-               (pack-01-toggle-backup)
+               (toggle-backup)
                t))
    :replace t))
 
-(defun pack-01-register-shortcuts ()
+(defun register-shortcuts ()
   "Register keyboard shortcut routes for pack-01 demo." 
   (mnas-sdl3-gui/commands:register-shortcut :pack-01/quit :escape :replace t)
   (mnas-sdl3-gui/commands:register-shortcut :pack-01/apply :p :replace t)
