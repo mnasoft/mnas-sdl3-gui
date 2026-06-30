@@ -2,21 +2,6 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/widget-01)
                               
-(defparameter *window-dialog* nil)
-(defparameter *renderer-dialog* nil)
-(defparameter *layer-manager* nil)
-(defparameter *widgets* nil)
-(defparameter *widget-root* nil)
-(defparameter *toolbar* nil)
-(defparameter *open* t)
-(defparameter *status-message* "Widget demo. Click, type, and interact with controls.")
-(defparameter *dialog-style* :flat)
-
-(defparameter +toolbar-x+ 20.0)
-(defparameter +toolbar-y+ 400.0)
-(defparameter +toolbar-width+ 300.0)
-(defparameter +toolbar-height+ 34.0)
-
 (defun entry-widget ()
   "Return first entry-like widget from the demo list." 
   (find-if (lambda (widget)
@@ -25,20 +10,52 @@
 
 (defun apply-style (style)
   "Apply STYLE to current widget set and keep status synchronized." 
-  (setf *dialog-style* style)
+  (setf *style* style)
   (mnas-sdl3-gui/widgets:set-widget-style style)
   (setf *status-message* (format nil "Style switched to ~(~A~)." style)))
 
-(defun make-toolbar ()
+(defun make-toolbar (window)
   "Create toolbar as a secondary presenter of widget-01 commands." 
-  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:<toolbar> :layout :horizontal :height 34)))
+  (let ((toolbar
+          (make-instance
+           'mnas-sdl3-gui/widgets:<toolbar>
+           :window window
+           :layout :horizontal
+           :height 34)))
     (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
-           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button> :command-id :label "Flat" :width 58 :type :radio :group :style)
-           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button> :command-id :label "Windows" :width 78 :type :radio :group :style)
-           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button> :command-id :label "Motif" :width 62 :type :radio :group :style)
-           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button> :command-id :label "Clear" :width 56)
-           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button> :command-id :label "Quit" :width 52)))
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :widget-01/style-flat
+            :label "Flat" :width 58 :type :radio :group :style)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :widget-01/style-windows
+            :label "Windows"
+            :width 78
+            :type :radio :group :style)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :widget-01/style-motif
+            :label "Motif"
+            :width 62
+            :type :radio
+            :group :style)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :widget-01/clear-entry
+            :label "Clear"
+            :width 56)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :widget-01/quit
+            :label "Quit"
+            :width 52)))
     toolbar))
 
 (defun sync-command-state ()
@@ -49,11 +66,11 @@
         (clear (mnas-sdl3-gui/commands:find-command :widget-01/clear-entry))
         (entry (entry-widget)))
     (when flat
-      (mnas-sdl3-gui/commands:set-command-checked flat (eq *dialog-style* :flat)))
+      (mnas-sdl3-gui/commands:set-command-checked flat (eq *style* :flat)))
     (when windows
-      (mnas-sdl3-gui/commands:set-command-checked windows (eq *dialog-style* :windows)))
+      (mnas-sdl3-gui/commands:set-command-checked windows (eq *style* :windows)))
     (when motif
-      (mnas-sdl3-gui/commands:set-command-checked motif (eq *dialog-style* :motif)))
+      (mnas-sdl3-gui/commands:set-command-checked motif (eq *style* :motif)))
     (when clear
       (mnas-sdl3-gui/commands:set-command-visible
        clear
@@ -121,177 +138,4 @@
                    :selected-index 0
                    :item-height 24)))
 
-;;; SDL3 demo callbacks
 
-(sdl3:def-app-init dialog-init (argc argv)
-  (declare (ignore argc argv))
-  (sdl3:set-app-metadata "mnas-sdl3-gui widget demo" "1.0"
-                         "com.mna.sdl3.gui.widgets.demo")
-  (when (not (sdl3:init :video))
-    (format t "~a~%" (sdl3:get-error))
-    (return-from dialog-init :failure))
-  (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer "Widget Controls Demo" 400 500 0)
-    (if (not ok)
-        (progn
-          (format t "~a~%" (sdl3:get-error))
-          (return-from dialog-init :failure))
-        (progn
-          (setf *window-dialog* window
-                *renderer-dialog* renderer
-                *layer-manager* (mnas-sdl3-gui/window-manager:make-window-layer-manager)
-                *widgets* (create-demo-widgets)
-                *widget-root* (mnas-sdl3-gui/widgets:make-widget-container
-                               :x 0 :y 0 :width 400 :height 500
-                               :children *widgets*)
-                *open* t
-                *status-message* "Widget demo. Click, type, and interact with controls.")
-          (mnas-sdl3-gui/window-manager:register-window
-           *layer-manager*
-           (sdl3:get-window-id window)
-           :host
-           :payload *widget-root*)
-          ;; Apply selected widget style and initialize TTF for Unicode text rendering.
-          (register-commands)
-          (register-shortcuts)
-          (setf *toolbar* (make-toolbar))
-          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toolbar*)
-          (apply-style *dialog-style*)
-          (sync-command-state)
-          (mnas-sdl3-gui/widgets:set-widget-focus (list *widget-root*) *widget-root*)
-          (mnas-sdl3-gui/widgets:init-ttf-font)
-          (mnas-sdl3-gui/widgets:start-widget-text-input *window-dialog*))))
-  :continue)
-
-(sdl3:def-app-iterate dialog-iterate ()
-  (unless *open*
-    (return-from dialog-iterate :success))
-
-  ;; Clear screen with light gray background
-  (sdl3:set-render-draw-color *renderer-dialog* 245 245 245 255)
-  (sdl3:render-clear *renderer-dialog*)
-
-  (sync-command-state)
-  
-  ;; Render all widgets through the root container.
-  (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order (list *widget-root*))
-        do (mnas-sdl3-gui/widgets:render *renderer-dialog* widget mnas-sdl3-gui/widgets:*widget-style*))
-
-  #+nil(mnas-sdl3-gui/toolbar:render
-        *toolbar*
-        *renderer-dialog*
-        +toolbar-x+
-        +toolbar-y+)
-  
-  ;; Render style and status text through SDL3_ttf-aware pipeline.
-  (mnas-sdl3-gui/widgets:render-text
-   *renderer-dialog*
-   (format nil "Style: ~(~a~)" *dialog-style*)
-   20.0 440.0 '(32 32 32 255))
-  (mnas-sdl3-gui/widgets:render-text
-   *renderer-dialog* *status-message* 20.0 464.0 '(52 52 52 255))
-
-  (sdl3:render-present *renderer-dialog*)
-  :continue)
-
-(sdl3:def-app-event dialog-event (type event)
-  (declare (ignore type))
-  (let ((ev (sdl3:event-unmarshal event)))
-    (typecase ev
-      (sdl3:quit-event
-       (command :widget-01/quit)
-       :success)
-      (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:handle-mouse-motion-event
-        (list *widget-root*)
-        ev)
-       :continue)
-      #+nil(sdl3:mouse-button-event
-            (when (= (slot-value ev 'sdl3:%button) 1)
-              (let ((x (round (slot-value ev 'sdl3:%x)))
-                    (y (round (slot-value ev 'sdl3:%y))))
-                (if (slot-value ev 'sdl3:%down)
-                    (if (and (>= x (round +toolbar-x+))
-                             (<= x (+ (round +toolbar-x+) (round +toolbar-width+)))
-                             (>= y (round +toolbar-y+))
-                             (<= y (+ (round +toolbar-y+) (round +toolbar-height+))))
-                        (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                                       *toolbar*
-                                       (- x (round +toolbar-x+))
-                                       (- y (round +toolbar-y+)))))
-                          (when button
-                            (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                             *toolbar*
-                             button
-                             (list :x x :y y))))
-                        (mnas-sdl3-gui/widgets:handle-mouse-button-event
-                         (or (mnas-sdl3-gui/window-manager:window-root-widgets
-                              *layer-manager*
-                              (sdl3:get-window-id *window-dialog*))
-                             (list *widget-root*)) ev))
-                    (mnas-sdl3-gui/widgets:handle-mouse-button-event
-                     (or (mnas-sdl3-gui/window-manager:window-root-widgets
-                          *layer-manager*
-                          (sdl3:get-window-id *window-dialog*))
-                         (list *widget-root*)) ev))))
-            :continue)
-      (sdl3:mouse-wheel-event
-       (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
-        (or (mnas-sdl3-gui/window-manager:window-root-widgets
-             *layer-manager*
-             (sdl3:get-window-id *window-dialog*))
-            (list *widget-root*))
-        ev)
-       :continue)
-      (sdl3:keyboard-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value ev 'sdl3:%key)
-                  :mods (slot-value ev 'sdl3:%mod)
-                  :context nil)
-           (mnas-sdl3-gui/widgets:handle-keyboard-event
-            (or (mnas-sdl3-gui/window-manager:window-root-widgets
-                 *layer-manager*
-                 (sdl3:get-window-id *window-dialog*))
-                (list *widget-root*))
-            ev))
-         (unless *open*
-           (return-from dialog-event :success)))
-       :continue)
-      (sdl3:text-input-event
-       ;; Text input comes from current keyboard layout/IME and is UTF-8 safe.
-       (mnas-sdl3-gui/widgets:handle-text-input-event
-        (or (mnas-sdl3-gui/window-manager:window-root-widgets
-             *layer-manager*
-             (sdl3:get-window-id *window-dialog*))
-            (list *widget-root*))
-        ev)
-       :continue)
-      (t
-       :continue))))
-
-(sdl3:def-app-quit dialog-quit (result)
-  (declare (ignore result))
-  (mnas-sdl3-gui/widgets:stop-widget-text-input *window-dialog*)
-  (mnas-sdl3-gui/widgets:cleanup-ttf)
-  (sdl3:destroy-renderer *renderer-dialog*)
-  (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window-dialog*)
-  (sdl3:pump-events)
-  (sdl3:quit-sub-system :video)
-  (sdl3:quit))
-
-(defun widget-01 (&optional (style :flat))
-  "Run the widget dialog demo with STYLE (:flat, :windows, :motif)."
-  (setf *dialog-style* style
-        *open* t)
-  (sdl3:enter-app-main-callbacks
-   'dialog-init
-   'dialog-iterate
-   'dialog-event
-   'dialog-quit))
-
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget)
-;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget-01)
-;;;; (widget-01)

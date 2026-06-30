@@ -402,15 +402,16 @@
 
 (defsystem "mnas-sdl3-gui/demos/dialog/window-01"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on (#:mnas-sdl3-gui
-               #:mnas-sdl3-gui/demos/dialog/window-02
-               #:mnas-sdl3-gui/demos/dialog/window-03)
+  :depends-on ("mnas-sdl3-gui")
   :serial t
   :components ((:module "demos/dialog/window/window-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "window-01")))))
+                             (:file "window-01")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/window-02"
   :description "Popup-menu window demo for mnas-sdl3-gui"
@@ -419,8 +420,11 @@
   :components ((:module "demos/dialog/window/window-02"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "window-02")))))
+                             (:file "window-02")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/window-03"
   :description "Transparent window demo for mnas-sdl3-gui"
@@ -429,8 +433,25 @@
   :components ((:module "demos/dialog/window/window-03"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "window-03")))))
+                             (:file "window-03")
+                             (:file "callbacks")
+                             (:file "main")
+                             ))))
+
+(defsystem "mnas-sdl3-gui/demos/dialog/window-04"
+  :description "Transparent window demo with layer-manager experiment for mnas-sdl3-gui"
+  :depends-on ("mnas-sdl3-gui")
+  :serial t
+  :components ((:module "demos/dialog/window/window-04"
+                :serial t
+                :components ((:file "package")
+                             (:file "parameters")
+                             (:file "commands")
+                             (:file "window-04")
+                             (:file "callbacks")
+                             (:file "main")))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/widget"
   :description "Demos for mnas-sdl3-gui"
@@ -443,8 +464,12 @@
   :components ((:module "demos/dialog/widget/widget-01"
                 :serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "commands")
-                             (:file "widget-01")))))
+                             (:file "widget-01")
+                             (:file "callbacks")
+                             (:file "main")
+                             ))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/toggle"
   :description "Demos for mnas-sdl3-gui"

@@ -8,12 +8,12 @@
 
 (defun make-event-tracker (&optional init)
   "Create and make the global event-tracker instance."
-  (let ((et (or init (make-instance 'event-tracker))))
+  (let ((et (or init (make-instance '<event-tracker>))))
     (setf *event-tracker* et)
     et))
 
 (defun clear-event-tracker ()
-  (setf *event-tracker* (make-instance 'event-tracker)))
+  (setf *event-tracker* (make-instance '<event-tracker>)))
 
 (defun modifiers->list (mod)
   "Convert SDL keymod value to a readable list of keywords.

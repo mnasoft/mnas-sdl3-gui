@@ -17,6 +17,26 @@
                                :width 64 :height 24)))
     (is (string= "Quit" (mnas-sdl3-gui/widgets:<toolbar-button>-label button)))))
 
+(test toolbar-button-toggle-click-toggles-checked-state
+  (let* ((button (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                                :type :toggle
+                                :width 40 :height 24))
+         (down-event (make-instance 'sdl3:mouse-button-event
+                                    :%x 5 :%y 5 :%down t :%window-id 1))
+         (up-event (make-instance 'sdl3:mouse-button-event
+                                  :%x 5 :%y 5 :%down nil :%window-id 1)))
+    (setf (mnas-sdl3-gui/widgets:<widget>-x button) 0
+          (mnas-sdl3-gui/widgets:<widget>-y button) 0
+          (mnas-sdl3-gui/widgets:<widget>-width button) 40
+          (mnas-sdl3-gui/widgets:<widget>-height button) 24)
+    (is (null (mnas-sdl3-gui/widgets:<toolbar-button>-checked-p button)))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-mouse-button-event button down-event)))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-mouse-button-event button up-event)))
+    (is (eq t (mnas-sdl3-gui/widgets:<toolbar-button>-checked-p button)))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-mouse-button-event button down-event)))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-mouse-button-event button up-event)))
+    (is (null (mnas-sdl3-gui/widgets:<toolbar-button>-checked-p button)))))
+
 (test keyboard-event-dispatches-to-focused-widget
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
                                  :x 0 :y 0 :width 10 :height 10))
@@ -56,7 +76,7 @@
 (test list-box-keyboard-navigation-uses-visible-item-count
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
                                  :x 0 :y 0 :width 120 :height 72
-                                 :items '("alpha" "beta" "gamma" "delta")
+                                 :children '("alpha" "beta" "gamma" "delta")
                                  :selected-index 0
                                  :item-height 24))
          (event (mnas-sdl3-gui/widgets::make-widget-keyboard-input :down nil)))
@@ -66,7 +86,7 @@
 (test list-box-mouse-wheel-handles-normal-direction
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
                                  :x 0 :y 0 :width 120 :height 72
-                                 :items '("alpha" "beta" "gamma" "delta")
+                                 :children '("alpha" "beta" "gamma" "delta")
                                  :selected-index 0
                                  :scroll-offset 1
                                  :item-height 24))
@@ -74,6 +94,72 @@
                                :%x 10 :%y 10 :%mouse-x 10 :%mouse-y 10)))
     (is (not (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event))))
     (is (= 0 (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget)))))
+
+(test mouse-wheel-handler-ignores-button-events
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                 :x 0 :y 0 :width 10 :height 10))
+         (event (make-instance 'sdl3:mouse-button-event
+                               :%x 5 :%y 5 :%down t :%window-id 1)))
+    (is (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event)))))
+
+(test list-box-items-resolve-from-container-children
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
+                                :x 0 :y 0 :width 120 :height 72
+                                :children '("alpha" "beta"))))
+    (is (equal '("alpha" "beta") (mnas-sdl3-gui/widgets:list-box-items widget)))
+    (setf (mnas-sdl3-gui/widgets:list-box-items widget) '("gamma"))
+    (is (equal '("gamma") (mnas-sdl3-gui/widgets:<widget-container>-children widget)))))
+
+(test list-box-items-work-for-generic-widget-container
+  (let ((container (make-instance 'mnas-sdl3-gui/widgets:<widget-container>
+                                  :x 0 :y 0 :width 120 :height 72
+                                  :children '("alpha" "beta"))))
+    (is (equal '("alpha" "beta") (mnas-sdl3-gui/widgets:list-box-items container)))))
+
+(test combo-box-scroll-offset-compatibility-accessor
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta"))))
+    (setf (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget) 3)
+    (is (= 3 (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget)))))
+
+(test combo-box-popup-scrollbar-geometry-compatibility
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta" "gamma" "delta"))))
+    (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
+        (mnas-sdl3-gui/widgets::<combo-box-popup>-scrollbar-geometry widget 0 0)
+      (declare (ignore track-x track-y track-height thumb-y thumb-height))
+      (is (or (null needed-p) (integerp max-offset))))))
+
+(test combo-box-popup-host-window-compatibility-setter
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                 :x 0 :y 0 :width 120 :height 24
+                                 :items '("alpha" "beta")))
+         (host-window (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                     :x 10 :y 10 :width 200 :height 100)))
+    (setf (mnas-sdl3-gui/widgets:combo-box-popup-host-window widget) host-window)
+    (is (eq host-window (mnas-sdl3-gui/widgets:combo-box-popup-host-window widget)))))
+
+(test combo-box-popup-mouse-down-does-not-hit-unknown-editable-type
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta" "gamma"))))
+    (is (eq t (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down widget 5 5)))))
+
+(test combo-box-popup-scroll-offset-thumb-compatibility
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta" "gamma" "delta"))))
+    (is (eq widget (mnas-sdl3-gui/widgets::<combo-box-popup>-set-scroll-offset-from-thumb-top widget 0 0 10)))))
+
+(test combo-box-02-toolbar-creates-buttons
+  (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box-02)
+  (let* ((pkg (find-package "MNAS-SDL3-GUI/DEMOS/DIALOG/COMBO-BOX-02"))
+         (sym (and pkg (find-symbol "COMBO-BOX-02-CREATE-TOOLBAR" pkg)))
+         (toolbar (and sym (funcall (symbol-function sym)))))
+    (is (not (null toolbar)))
+    (is (= 2 (length (mnas-sdl3-gui/widgets:<widget-container>-children toolbar))))))
 
 (test text-input-event-dispatches-to-focused-entry
   (let* ((entry (make-instance 'mnas-sdl3-gui/widgets:<entry>

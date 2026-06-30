@@ -2,420 +2,163 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-01)
 
-(defparameter *window-01-window* nil)
-(defparameter *window-01-renderer* nil)
-(defparameter *window-01-window-id* 0)
-(defparameter *window-01-layer-manager* nil)
-(defparameter *window-01-toolbar* nil)
-(defparameter *window-01-open* t)
-(defparameter +window-01-default-width+ 640)
-(defparameter +window-01-default-height+ 360)
-(defparameter *window-01-width* +window-01-default-width+)
-(defparameter *window-01-height* +window-01-default-height+)
-(defparameter *window-01-demo-title* "Resizable Window Demo")
-(defparameter *window-01-demo-flags* :resizable)
 
-(defparameter +window-01-modal-1-id+ 10001)
-(defparameter +window-01-modal-2-id+ 10002)
-(defparameter *window-01-modal-1-open* nil)
-(defparameter *window-01-modal-2-open* nil)
-(defparameter *window-01-show-grid* nil)
+(defun flags-as-list ()
+  "Return demo flags as a list for printing and passing to SDL."
+  (if (listp *demo-flags*)
+      *demo-flags*
+      (list *demo-flags*)))
 
-(defparameter +window-01-toolbar-x+ 24.0)
-(defparameter +window-01-toolbar-y+ 208.0)
-(defparameter +window-01-toolbar-width+ 592.0)
-(defparameter +window-01-toolbar-height+ 40.0)
-(defparameter +window-01-mouse-left+ 1)
-
-(defparameter *window-01-all-flags*
-  '(:fullscreen
-    :opengl
-    :occluded
-    :hidden
-    :borderless
-    :resizable
-    :minimized
-    :maximized
-    :mouse-grabbed
-    :input-focus
-    :mouse-focus
-    :external
-    :modal
-    :high-pixel-density
-    :mouse-capture
-    :mouse-relative-mode
-    :always-on-top
-    :utility
-    :tooltip
-    :popup-menu
-    :keyboard-grabbed
-    :vulkan
-    :metal
-    :transparent
-    :not-focusable))
-
-(defun window-01-flags-as-list ()
-  "Return demo flags as a list for printing and passing to SDL." 
-  (if (listp *window-01-demo-flags*)
-      *window-01-demo-flags*
-      (list *window-01-demo-flags*)))
-
-(defun run-window-01-demo (title flags)
-  "Run window demo with custom title and SDL window flags." 
-  (setf *window-01-demo-title* title
-        *window-01-demo-flags* flags
-        *window-01-window* nil
-        *window-01-renderer* nil
-    *window-01-window-id* 0
-    *window-01-layer-manager* nil
-        *window-01-toolbar* nil
-    *window-01-modal-1-open* nil
-    *window-01-modal-2-open* nil
-        *window-01-show-grid* nil
-        *window-01-open* t
-        *window-01-width* +window-01-default-width+
-        *window-01-height* +window-01-default-height+)
+(defun run-demo (title flags)
+  "Run window demo with custom title and SDL window flags."
+  (setf *demo-title* title
+        *demo-flags* flags
+        *window* nil
+        *renderer* nil
+        *window-id* 0
+        *layer-manager* nil
+        *toolbar* nil
+        *modal-1-open* nil
+        *modal-2-open* nil
+        *show-grid* nil
+        *open* t
+        *width* +default-width+
+        *height* +default-height+)
   (sdl3:enter-app-main-callbacks
-   'window-01-window-demo-init
-   'window-01-window-demo-iterate
-   'window-01-window-demo-event
-   'window-01-window-demo-quit)
+   'callback-init
+   'callback-iterate
+   'callback-event
+   'callback-quit)
   :done)
 
-(defmacro define-window-01-flag-demo (name flag)
-  "Define a small wrapper demo for a single window flag." 
+(defmacro define-flag-demo (name flag)
+  "Define a small wrapper demo for a single window flag."
   `(defun ,name ()
      ,(format nil "Run a window demo using the ~S flag." flag)
-     (run-window-01-demo
+     (run-demo
       ,(format nil "Window Flag Demo: ~S" flag)
       ,flag)))
 
-(defun update-window-01-window-size ()
+(defun update-window-size ()
   "Query current window client size and update demo state."
-  (when *window-01-window*
+  (when *window*
     (multiple-value-bind (ok width height)
-        (sdl3:get-window-size *window-01-window*)
+        (sdl3:get-window-size *window*)
       (when ok
-        (setf *window-01-width* width
-              *window-01-height* height)))))
+        (setf *width* width
+              *height* height)))))
 
-(defun make-window-01-toolbar ()
-  "Create toolbar for runtime modal/focus demo commands." 
-  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar :layout :horizontal :height 40)))
-    (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
+(defun make-toolbar (window)
+  "Create toolbar for runtime modal/focus demo commands."
+  (let ((toolbar
+          (make-instance
+           'mnas-sdl3-gui/widgets:<toolbar>
+           :window window
+           :layout :horizontal :height 40)))
+    (setf
+     (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Modal-1" :width 72)
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Modal-2" :width 72)
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Close Top" :width 84)
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Reset" :width 62)
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Grid" :width 56 :type :toggle)
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit" :width 52)))
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :window-01/open-modal-1
+            :label "Modal-1" :width 72)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :window-01/open-modal-2
+            :label "Modal-2" :width 72)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :window-01/close-top-modal
+            :label "Close Top" :width 84)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :window-01/reset-size
+            :label "Reset"
+            :width 62)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :window-01/toggle-grid
+            :label "Grid"
+            :width 56
+            :type :toggle)
+           (make-instance
+            'mnas-sdl3-gui/widgets:<toolbar-button>
+            :window window
+            :command-id :window-01/quit
+            :label "Quit"
+            :width 52)))
     toolbar))
 
-(defun window-01-sync-command-state ()
-  "Sync dynamic visible/checked command state for full-state toolbar." 
+(defun sync-command-state ()
+  "Sync dynamic visible/checked command state for full-state toolbar."
   (let ((reset-cmd (mnas-sdl3-gui/commands:find-command :window-01/reset-size))
         (grid-cmd (mnas-sdl3-gui/commands:find-command :window-01/toggle-grid)))
     (when reset-cmd
       (mnas-sdl3-gui/commands:set-command-visible reset-cmd
-                                                  (or (/= *window-01-width* +window-01-default-width+)
-                                                      (/= *window-01-height* +window-01-default-height+))))
+                                                  (or (/= *width* +default-width+)
+                                                      (/= *height* +default-height+))))
     (when grid-cmd
-      (mnas-sdl3-gui/commands:set-command-checked grid-cmd *window-01-show-grid*))))
+      (mnas-sdl3-gui/commands:set-command-checked grid-cmd *show-grid*))))
 
-(defun window-01-open-modal-1 ()
-  "Open first modal layer for runtime focus-trap demo." 
-  (when (and *window-01-layer-manager*
-             (not *window-01-modal-1-open*))
+(defun open-modal-1 ()
+  "Open first modal layer for runtime focus-trap demo."
+  (when (and *layer-manager*
+             (not *modal-1-open*))
     (mnas-sdl3-gui/window-manager:register-window
-     *window-01-layer-manager*
-     +window-01-modal-1-id+
+     *layer-manager*
+     +modal-1-id+
      :modal
-     :parent-id *window-01-window-id*
+     :parent-id *window-id*
      :open-p t)
-    (setf *window-01-modal-1-open* t)
+    (setf *modal-1-open* t)
     (mnas-sdl3-gui/window-manager:set-focused-window
-     *window-01-layer-manager*
-     +window-01-modal-1-id+)
+     *layer-manager*
+     +modal-1-id+)
     t))
 
-(defun window-01-open-modal-2 ()
-  "Open second nested modal layer for runtime focus-trap demo." 
-  (when (and *window-01-layer-manager*
-             *window-01-modal-1-open*
-             (not *window-01-modal-2-open*))
+(defun open-modal-2 ()
+  "Open second nested modal layer for runtime focus-trap demo."
+  (when (and *layer-manager*
+             *modal-1-open*
+             (not *modal-2-open*))
     (mnas-sdl3-gui/window-manager:register-window
-     *window-01-layer-manager*
-     +window-01-modal-2-id+
+     *layer-manager*
+     +modal-2-id+
      :modal
-     :parent-id +window-01-modal-1-id+
+     :parent-id +modal-1-id+
      :open-p t)
-    (setf *window-01-modal-2-open* t)
+    (setf *modal-2-open* t)
     (mnas-sdl3-gui/window-manager:set-focused-window
-     *window-01-layer-manager*
-     +window-01-modal-2-id+)
+     *layer-manager*
+     +modal-2-id+)
     t))
 
-(defun window-01-close-top-modal ()
-  "Close top-most modal layer if any was opened in runtime demo." 
+(defun close-top-modal ()
+  "Close top-most modal layer if any was opened in runtime demo."
   (cond
-    (*window-01-modal-2-open*
+    (*modal-2-open*
      (mnas-sdl3-gui/window-manager:close-window
-      *window-01-layer-manager*
-      +window-01-modal-2-id+)
-     (setf *window-01-modal-2-open* nil)
+      *layer-manager*
+      +modal-2-id+)
+     (setf *modal-2-open* nil)
      t)
-    (*window-01-modal-1-open*
+    (*modal-1-open*
      (mnas-sdl3-gui/window-manager:close-window
-      *window-01-layer-manager*
-      +window-01-modal-1-id+)
-     (setf *window-01-modal-1-open* nil
-           *window-01-modal-2-open* nil)
+      *layer-manager*
+      +modal-1-id+)
+     (setf *modal-1-open* nil
+           *modal-2-open* nil)
      t)
     (t nil)))
 
-(sdl3:def-app-init window-01-window-demo-init (argc argv)
-  (declare (ignore argc argv))
-  (sdl3:set-app-metadata *window-01-demo-title* "1.0"
-                         "com.mna.sdl3.gui.window-01-window.demo")
-  (when (not (sdl3:init :video))
-    (format t "~a~%" (sdl3:get-error))
-    (return-from window-01-window-demo-init :failure))
-
-  (setf *window-01-layer-manager*
-        (mnas-sdl3-gui/window-manager:make-window-layer-manager))
-
-  (multiple-value-bind (ok window renderer)
-      (sdl3:create-window-and-renderer *window-01-demo-title*
-                                       *window-01-width*
-                                       *window-01-height*
-                                       (window-01-flags-as-list))
-    (if (not ok)
-        (progn
-          (format t "~a~%" (sdl3:get-error))
-          (return-from window-01-window-demo-init :failure))
-        (progn
-          (setf *window-01-window* window
-                *window-01-renderer* renderer
-                *window-01-window-id* (sdl3:get-window-id window)
-                *window-01-open* t)
-          (mnas-sdl3-gui/window-manager:register-window
-           *window-01-layer-manager*
-           *window-01-window-id*
-           :main
-           :open-p t)
-          (mnas-sdl3-gui/window-manager:set-focused-window
-           *window-01-layer-manager*
-           *window-01-window-id*)
-            (window-01-register-commands)
-            (window-01-register-shortcuts)
-            (setf *window-01-toolbar* (make-window-01-toolbar))
-            #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *window-01-toolbar*)
-            (window-01-sync-command-state)
-          (mnas-sdl3-gui/widgets:init-ttf-font))))
-  :continue)
-
-(sdl3:def-app-iterate window-01-window-demo-iterate ()
-  (unless *window-01-open*
-    (return-from window-01-window-demo-iterate :success))
-  (update-window-01-window-size)
-  (window-01-sync-command-state)
-  (sdl3:set-render-draw-color *window-01-renderer* 32 34 37 255)
-  (sdl3:render-clear *window-01-renderer*)
-
-  (when *window-01-show-grid*
-    (sdl3:set-render-draw-color *window-01-renderer* 44 48 54 255)
-    (loop for x from 0 below *window-01-width* by 24
-          do (sdl3:render-line *window-01-renderer*
-                               (float x 1.0) 0.0
-                               (float x 1.0) (float *window-01-height* 1.0)))
-    (loop for y from 0 below *window-01-height* by 24
-          do (sdl3:render-line *window-01-renderer*
-                               0.0 (float y 1.0)
-                               (float *window-01-width* 1.0) (float y 1.0))))
-
-  (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-               *window-01-demo-title*
-                                     24.0 24.0 '(220 220 220 255))
-  (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-                                     (format nil "Size: ~Dx~D"
-                                             *window-01-width*
-                                             *window-01-height*)
-                                     24.0 56.0 '(180 180 180 255))
-  (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-               (format nil "Flags: ~{~S~^ ~}"
-                 (window-01-flags-as-list))
-               24.0 96.0 '(160 160 160 255))
-    (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-               "M: open modal-1  N: open modal-2  Backspace/Escape: close top modal"
-               24.0 128.0 '(160 160 160 255))
-    (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-               "Escape with empty stack exits demo."
-               24.0 152.0 '(160 160 160 255))
-
-    (mnas-sdl3-gui/toolbar:render-toolbar
-     *window-01-toolbar*
-     *window-01-renderer*
-     +window-01-toolbar-x+
-     +window-01-toolbar-y+)
-
-    (when *window-01-layer-manager*
-      (mnas-sdl3-gui/widgets:render-text
-       *window-01-renderer*
-       (format nil "Focused: ~A  Active modal: ~A  Trap: ~A"
-         (or (mnas-sdl3-gui/window-manager:focused-window-id *window-01-layer-manager*) :none)
-         (or (mnas-sdl3-gui/window-manager:active-modal-id *window-01-layer-manager*) :none)
-         (if (mnas-sdl3-gui/window-manager:modal-trap-active-p *window-01-layer-manager*) :on :off))
-       24.0 184.0 '(246 214 102 255)))
-
-    (when *window-01-modal-1-open*
-      (sdl3:set-render-draw-color *window-01-renderer* 48 62 96 255)
-      (sdl3:render-fill-rect *window-01-renderer*
-           (make-instance 'sdl3:frect :%x 120.0 :%y 210.0 :%w 380.0 :%h 100.0))
-      (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-                 "Modal-1 active"
-                 140.0 236.0 '(232 240 255 255)))
-
-    (when *window-01-modal-2-open*
-      (sdl3:set-render-draw-color *window-01-renderer* 86 52 98 255)
-      (sdl3:render-fill-rect *window-01-renderer*
-           (make-instance 'sdl3:frect :%x 190.0 :%y 236.0 :%w 260.0 :%h 86.0))
-      (mnas-sdl3-gui/widgets:render-text *window-01-renderer*
-                 "Modal-2 active (nested)"
-                 208.0 262.0 '(255 238 255 255)))
-
-  (sdl3:render-present *window-01-renderer*)
-  :continue)
-
-(sdl3:def-app-event window-01-window-demo-event (type event)
-  (declare (ignore type))
-  (let ((ev (sdl3:event-unmarshal event)))
-    (typecase ev
-      (sdl3:quit-event
-       (setf *window-01-open* nil)
-       :success)
-      (sdl3:window-event
-       (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
-         (let* ((window-id (slot-value ev 'sdl3:%window-id))
-                (action (and *window-01-layer-manager*
-                             (mnas-sdl3-gui/window-manager:close-action
-                              *window-01-layer-manager*
-                              window-id))))
-           (declare (ignore action))
-           (unless (window-01-close-top-modal)
-             (setf *window-01-open* nil)
-             (return-from window-01-window-demo-event :success))))
-       :continue)
-      (sdl3:mouse-button-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (= (slot-value ev 'sdl3:%button) +window-01-mouse-left+))
-         (let* ((window-id (slot-value ev 'sdl3:%window-id))
-                (target-window-id (if *window-01-layer-manager*
-                                      (or (mnas-sdl3-gui/window-manager:event-target-window-id
-                                           *window-01-layer-manager*
-                                           window-id)
-                                          window-id)
-                                      window-id))
-                (x (round (slot-value ev 'sdl3:%x)))
-                (y (round (slot-value ev 'sdl3:%y))))
-           (when *window-01-layer-manager*
-             (mnas-sdl3-gui/window-manager:set-focused-window
-              *window-01-layer-manager*
-              target-window-id))
-           (when (and (= target-window-id *window-01-window-id*)
-                      (>= x (round +window-01-toolbar-x+))
-                      (<= x (+ (round +window-01-toolbar-x+) (round +window-01-toolbar-width+)))
-                      (>= y (round +window-01-toolbar-y+))
-                      (<= y (+ (round +window-01-toolbar-y+) (round +window-01-toolbar-height+))))
-             (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
-                            *window-01-toolbar*
-                            (- x (round +window-01-toolbar-x+))
-                            (- y (round +window-01-toolbar-y+)))))
-               (when button
-                 (mnas-sdl3-gui/toolbar:toolbar-button-clicked
-                  *window-01-toolbar*
-                  button
-                  (list :window-id target-window-id)))))))
-       :continue)
-      (sdl3:keyboard-event
-       (when (and (slot-value ev 'sdl3:%down)
-                  (not (slot-value ev 'sdl3:%repeat)))
-         (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
-                (target-window-id (if *window-01-layer-manager*
-                                      (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
-                                           *window-01-layer-manager*
-                                           event-window-id)
-                                          event-window-id)
-                                      event-window-id)))
-           (when *window-01-layer-manager*
-             (mnas-sdl3-gui/window-manager:set-focused-window
-              *window-01-layer-manager*
-              target-window-id))
-           (when (mnas-sdl3-gui/commands:dispatch-shortcut
-                  (slot-value ev 'sdl3:%key)
-                  :mods (slot-value ev 'sdl3:%mod)
-                  :context (list :window-id target-window-id))
-             (unless *window-01-open*
-               (return-from window-01-window-demo-event :success)))))
-       :continue)
-      (t :continue))))
-
-(sdl3:def-app-quit window-01-window-demo-quit (result)
-  (declare (ignore result))
-  (mnas-sdl3-gui/widgets:cleanup-ttf)
-  (when *window-01-renderer*
-    (sdl3:destroy-renderer *window-01-renderer*))
-  (when *window-01-window*
-    (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window-01-window*))
-  (sdl3:pump-events)
-  (sdl3:quit-sub-system :video)
-  (sdl3:quit))
-
 (defun window-01 ()
   "Run a resizable window demo."
-  (run-window-01-demo "Resizable Window Demo" :resizable))
+  (run-demo "Resizable Window Demo" :resizable))
 
-(define-window-01-flag-demo window-01-fullscreen :fullscreen)
-(define-window-01-flag-demo window-01-opengl :opengl)
-(define-window-01-flag-demo window-01-occluded :occluded)
-(define-window-01-flag-demo window-01-hidden :hidden)
-(define-window-01-flag-demo window-01-borderless :borderless)
-(define-window-01-flag-demo window-01-resizable :resizable)
-(define-window-01-flag-demo window-01-minimized :minimized)
-(define-window-01-flag-demo window-01-maximized :maximized)
-(define-window-01-flag-demo window-01-mouse-grabbed :mouse-grabbed)
-(define-window-01-flag-demo window-01-input-focus :input-focus)
-(define-window-01-flag-demo window-01-mouse-focus :mouse-focus)
-(define-window-01-flag-demo window-01-external :external)
-(define-window-01-flag-demo window-01-modal :modal)
-(define-window-01-flag-demo window-01-high-pixel-density :high-pixel-density)
-(define-window-01-flag-demo window-01-mouse-capture :mouse-capture)
-(define-window-01-flag-demo window-01-mouse-relative-mode :mouse-relative-mode)
-(define-window-01-flag-demo window-01-always-on-top :always-on-top)
-(define-window-01-flag-demo window-01-utility :utility)
-(define-window-01-flag-demo window-01-tooltip :tooltip)
-(define-window-01-flag-demo window-01-keyboard-grabbed :keyboard-grabbed)
-(define-window-01-flag-demo window-01-vulkan :vulkan)
-(define-window-01-flag-demo window-01-metal :metal)
-(define-window-01-flag-demo window-01-not-focusable :not-focusable)
-
-(defun window-01-transparent ()
-  "Run dedicated transparent-window demo from window-03."
-  (mnas-sdl3-gui/demos/dialog/window-03:window-03))
-
-(defun window-01-popup-menu ()
-  "Run dedicated popup-menu demo from window-02."
-  (mnas-sdl3-gui/demos/dialog/window-02:window-02))
-
-(defun window-01-all-flags ()
-  "Run demo with all available window flags combined." 
-  (run-window-01-demo "Window Flag Demo: ALL" *window-01-all-flags*))
-
-(defun window-01-modal-stack-runtime ()
-  "Run visual runtime demo for nested modal focus-trap policy." 
-  (run-window-01-demo "Window Modal Stack Runtime Demo" :resizable))
-
-;;;; (ql:quickload :mnas-sdl3-gui/demos)
-;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-01)
-;;;; (window-01)
+;;;; (mnas-sdl3-gui/demos/dialog/window-01:window-01)

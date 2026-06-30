@@ -2,6 +2,6 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/widget-01
   (:use #:cl)
-  (:export #:widget-01))
+  (:export #:main))
 
 (in-package :mnas-sdl3-gui/demos/dialog/widget-01)

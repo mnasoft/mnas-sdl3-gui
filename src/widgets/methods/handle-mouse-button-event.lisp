@@ -92,19 +92,28 @@
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))
-         (inside (contains-point-p widget x y)))
-    (when down
-      (setf (<widget>-focused widget) inside)
-      inside)
-    (unless down
-      (when inside
-        (let ((cmd-id (<toolbar-button>-command-id widget)))
-          (when cmd-id
-            (handler-case
-                (mnas-sdl3-gui/commands:execute-command cmd-id :context widget)
-              (error (e)
-                (format *error-output* "Error executing toolbar command ~S: ~S~%" cmd-id e)))))
-        t))))
+         (inside (contains-point-p widget x y))
+         (cmd-id (or (<toolbar-button>-command-id widget) :none)))
+    (cond
+      (down
+       (setf (<widget>-focused widget) inside)
+       (when inside
+         (when (not (eql :none cmd-id))
+           (handler-case
+               (mnas-sdl3-gui/commands:execute-command cmd-id :context widget)
+             (error (e)
+               (format *error-output* "Error executing toolbar command ~S: ~S~%" cmd-id e))))
+         (when (eql :toggle (<toolbar-button>-type widget))
+           (setf (<toolbar-button>-checked-p widget)
+                 (not (<toolbar-button>-checked-p widget))))
+         (when (and (not (eql :none cmd-id))
+                    (eql :toggle (<toolbar-button>-type widget)))
+           (let ((cmd (mnas-sdl3-gui/commands:find-command cmd-id)))
+             (when cmd
+               (mnas-sdl3-gui/commands:set-command-checked cmd (<toolbar-button>-checked-p widget))))))
+       inside)
+      (inside t)
+      (t nil))))
 
 
 (defmethod handle-mouse-button-event ((widget <toggle>) (ev sdl3:mouse-button-event))
@@ -202,14 +211,14 @@
            (let* ((row (floor rel-y item-height))
                   (new-index (+ (<list-box>-scroll-offset widget) row)))
              (when (and (< row visible-count)
-                        (< new-index (length (<list-box>-items widget))))
+                        (< new-index (length (list-box-items widget))))
                (setf (<list-box>-selected-index widget) new-index)
                (when *debug-mouse-wheel-events*
                  (format t "[click] widget=~S clicked-x=~D clicked-y=~D rel-x=~D rel-y=~D row=~D new-index=~D~%"
                          widget x y rel-x rel-y row new-index))
                (update-<widget>-value
                 widget
-                (nth new-index (<list-box>-items widget))))))
+                (nth new-index (list-box-items widget))))))
           (t
            (setf (<list-box>-scrollbar-dragging-p widget) nil)))))
     (when (not down)
@@ -277,13 +286,13 @@
               (let* ((row (floor rel-y item-height))
                      (new-index (+ (<list-box>-scroll-offset widget) row)))
                 (when (and (< row visible-count)
-                           (< new-index (length (<list-box>-items widget))))
+                           (< new-index (length (list-box-items widget))))
                   (setf (<list-box>-selected-index widget) new-index
-                        (<entry>-text widget) (format nil "~a" (nth new-index (<list-box>-items widget)))
+                        (<entry>-text widget) (format nil "~a" (nth new-index (list-box-items widget)))
                         (<entry>-cursor widget) (length (<entry>-text widget)))
                   (sync-combo-box-expanded-state widget nil)
                   (update-<widget>-value widget
-                                       (nth new-index (<list-box>-items widget))))))
+                                       (nth new-index (list-box-items widget))))))
              (t
               (setf (<list-box>-scrollbar-dragging-p widget) nil)
               (sync-combo-box-expanded-state widget nil)))))))
@@ -343,11 +352,11 @@
               (let* ((row (floor rel-y item-height))
                      (new-index (+ (<list-box>-scroll-offset widget) row)))
                 (when (and (< row visible-count)
-                           (< new-index (length (<list-box>-items widget))))
+                           (< new-index (length (list-box-items widget))))
                   (setf (<list-box>-selected-index widget) new-index)
                   (sync-combo-box-expanded-state widget nil)
                   (update-<widget>-value widget
-                                       (nth new-index (<list-box>-items widget))))))
+                                       (nth new-index (list-box-items widget))))))
              (t
               (setf (<list-box>-scrollbar-dragging-p widget) nil)
               (sync-combo-box-expanded-state widget nil)))))))

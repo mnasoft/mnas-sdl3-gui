@@ -1,90 +1,66 @@
-;;;; ./demos/dialog/window/window-03/window-03.lisp
+;;;; ./demos/dialog/window/window-04/window-04.lisp
 
-(in-package :mnas-sdl3-gui/demos/dialog/window-03)
+(in-package :mnas-sdl3-gui/demos/dialog/window-04)
 
-
-
-(defun window-03-clamp-opacity (value)
+(defun window-04-clamp-opacity (value)
   (min 1.0 (max 0.15 value)))
 
-(defun window-03-apply-opacity ()
+(defun window-04-apply-opacity ()
   (when *window*
-    (setf *opacity* (window-03-clamp-opacity *opacity*))
+    (setf *opacity* (window-04-clamp-opacity *opacity*))
     (sdl3:set-window-opacity *window* *opacity*)))
 
-(defun make-toolbar (window)
+(defun make-window-04-toolbar (window)
   "Create toolbar for the transparent-window demo."
   (let ((toolbar
           (make-instance
            'mnas-sdl3-gui/widgets:<toolbar>
            :window window
-           :layout :horizontal
-           :height 40)))
+           :layout :horizontal :height 40)))
     (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
            (make-instance
             'mnas-sdl3-gui/widgets:<toolbar-button>
-            :window window
-            :command-id :window-03/decrease-opacity
+            :command-id :window-04/decrease-opacity
             :label "-"
             :width 34)
            (make-instance
             'mnas-sdl3-gui/widgets:<toolbar-button>
-            :window window
-            :command-id :window-03/increase-opacity
+            :command-id :window-04/increase-opacity
             :label "+" :width 34)
            (make-instance
             'mnas-sdl3-gui/widgets:<toolbar-button>
-            :window window
-            :command-id :window-03/reset-opacity
+            :command-id :window-04/reset-opacity
             :label "Reset"
             :width 62)
            (make-instance
             'mnas-sdl3-gui/widgets:<toolbar-button>
-            :window window
-            :command-id :window-03/toggle-frost
+            :command-id :window-04/toggle-frost
             :label "Frost"
             :width 62
             :type :toggle)
            (make-instance
             'mnas-sdl3-gui/widgets:<toolbar-button>
-            :window window
-            :command-id :window-03/quit
+            :command-id :window-04/quit
             :label "Quit" :width 52)))
     toolbar))
 
-(defun window-03-toggle-frost ()
-  "Toggle the frosted-panel style for the window-03 demo."
-  (setf *frost* (not *frost*))
-  (let ((cmd (mnas-sdl3-gui/commands:find-command :window-03/toggle-frost)))
-    (when cmd
-      (mnas-sdl3-gui/commands:set-command-checked cmd *frost*)))
-  (when *renderer*
-    (window-03-render-content))
-  *frost*)
-
-(defun window-03-sync-command-state ()
+(defun window-04-sync-command-state ()
   "Sync dynamic visible/checked command state for toolbar rendering."
-  (let ((reset-cmd (mnas-sdl3-gui/commands:find-command :window-03/reset-opacity))
-        (frost-cmd (mnas-sdl3-gui/commands:find-command :window-03/toggle-frost)))
+  (let ((reset-cmd (mnas-sdl3-gui/commands:find-command :window-04/reset-opacity))
+        (frost-cmd (mnas-sdl3-gui/commands:find-command :window-04/toggle-frost)))
     (when reset-cmd
-      (mnas-sdl3-gui/commands:set-command-visible
-       reset-cmd
-       (> (abs (- *opacity* +default-opacity+)) 0.001)))
+      (mnas-sdl3-gui/commands:set-command-visible reset-cmd
+                                                  (> (abs (- *opacity* +default-opacity+)) 0.001)))
     (when frost-cmd
       (mnas-sdl3-gui/commands:set-command-checked frost-cmd *frost*))))
 
-(defun window-03-frost-state-label ()
-  (if *frost*
-      "Frost: ON (glass blur)"
-      "Frost: OFF (solid paint)"))
-
-(defun window-03-render-content ()
+(defun window-04-render-content ()
   "Render the transparent window demo content and toolbar."
   (sdl3:set-render-draw-color *renderer* 0 0 0 0)
   (sdl3:render-clear *renderer*)
 
-  (window-03-sync-command-state)
+  (window-04-sync-command-state)
 
   (let* ((panel-alpha (max 40 (min 255 (round (* 255 *opacity*)))))
          (border-alpha (max 40 (min 255 (round (* 220 *opacity*)))))
@@ -101,15 +77,15 @@
      panel-r panel-g panel-b panel-alpha)
     (sdl3:render-fill-rect
      *renderer*
-     (make-instance 'sdl3:frect :%x 28.0f0 :%y 72.0f0 :%w 624.0f0 :%h 266.0f0))
+     (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 266.0))
     (sdl3:set-render-draw-color *renderer* 120 180 255 highlight-a)
     (sdl3:render-fill-rect
      *renderer*
-     (make-instance 'sdl3:frect :%x 28.0f0 :%y 72.0f0 :%w 624.0f0 :%h 16.0f0))
+     (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 16.0))
     (sdl3:set-render-draw-color *renderer* border-r border-g border-b border-alpha)
     (sdl3:render-rect
      *renderer*
-     (make-instance 'sdl3:frect :%x 28.0f0 :%y 72.0f0 :%w 624.0f0 :%h 266.0f0))
+     (make-instance 'sdl3:frect :%x 28.0 :%y 72.0 :%w 624.0 :%h 266.0))
 
     (let* ((square-x 352.0)
            (square-y 118.0)
@@ -122,32 +98,35 @@
       (sdl3:set-render-draw-color *renderer* square-bg-r square-bg-g square-bg-b square-bg-a)
       (sdl3:render-fill-rect
        *renderer*
-       (make-instance 'sdl3:frect :%x (float square-x 1.0) :%y (float square-y 1.0) :%w (float square-size 1.0) :%h (float square-size 1.0)))
+       (make-instance 'sdl3:frect :%x square-x :%y square-y :%w square-size :%h square-size))
       (sdl3:set-render-draw-color *renderer* 255 255 255 square-line-a)
       (if *frost*
           (progn
             (dotimes (i 5)
               (sdl3:render-fill-rect
                *renderer*
-               (make-instance 'sdl3:frect :%x (float (+ square-x 24 (* i 24)) 1.0) :%y (float (+ square-y 24) 1.0) :%w 16.0f0 :%h 132.0f0)))
+               (make-instance 'sdl3:frect :%x (+ square-x 24 (* i 24)) :%y (+ square-y 24) :%w 16 :%h 132)))
             (sdl3:render-rect
              *renderer*
-             (make-instance 'sdl3:frect :%x (float square-x 1.0) :%y (float square-y 1.0) :%w (float square-size 1.0) :%h (float square-size 1.0))))
+             (make-instance 'sdl3:frect :%x square-x :%y square-y :%w square-size :%h square-size)))
           (progn
             (sdl3:set-render-draw-color *renderer* 255 224 132 180)
             (sdl3:render-fill-rect
              *renderer*
-             (make-instance 'sdl3:frect :%x (float (+ square-x 34) 1.0) :%y (float (+ square-y 32) 1.0) :%w 112.0f0 :%h 112.0f0))
+             (make-instance 'sdl3:frect :%x (+ square-x 34) :%y (+ square-y 32) :%w 112 :%h 112))
             (sdl3:set-render-draw-color *renderer* 255 255 255 120)
             (sdl3:render-fill-rect
              *renderer*
-             (make-instance 'sdl3:frect :%x (float (+ square-x 72) 1.0) :%y (float (+ square-y 24) 1.0) :%w 20.0f0 :%h 140.0f0))
+             (make-instance 'sdl3:frect :%x (+ square-x 72) :%y (+ square-y 24) :%w 20 :%h 140))
             (sdl3:render-fill-rect
              *renderer*
-             (make-instance 'sdl3:frect :%x (float (+ square-x 24) 1.0) :%y (float (+ square-y 72) 1.0) :%w 140.0f0 :%h 20.0f0)))))
+             (make-instance 'sdl3:frect :%x (+ square-x 24) :%y (+ square-y 72) :%w 140 :%h 20)))))
 
-    (gui/widgets:render *renderer* *toolbar*
-                        gui/widgets:*widget-style*)
+    (mnas-sdl3-gui/widgets:render-toolbar
+     *toolbar*
+     *renderer*
+     +toolbar-x+
+     +toolbar-y+)
 
     (mnas-sdl3-gui/widgets:render-text
      *renderer*
@@ -159,7 +138,7 @@
      48.0 126.0 (list 182 206 245 text-alpha))
     (mnas-sdl3-gui/widgets:render-text
      *renderer*
-     (window-03-frost-state-label)
+     (format nil "Frost: ~a" (if *frost* "ON (glass)" "OFF (solid)"))
      48.0 212.0 (list 255 224 132 text-alpha))
     (mnas-sdl3-gui/widgets:render-text
      *renderer*
@@ -172,7 +151,34 @@
 
   (sdl3:render-present *renderer*))
 
+(defun window-04-handle-toolbar-click (target-window-id x y)
+  (when (= target-window-id *window-id*)
+    (let ((button (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
+                   *toolbar*
+                   (- x (round +toolbar-x+))
+                   (- y (round +toolbar-y+)))))
+      (when button
+        (mnas-sdl3-gui/widgets:toolbar-button-clicked
+         *toolbar*
+         button
+         (list :window-id target-window-id))))))
 
-  
+(defun window-04-handle-window-event (window-id)
+  (let ((action (and *layer-manager*
+                     (mnas-sdl3-gui/window-manager:close-action
+                      *layer-manager*
+                      window-id))))
+    (case action
+      (:close-root
+       (window-04-command :window-04/quit)
+       t)
+      (otherwise
+       (window-04-command :window-04/quit)
+       t))))
 
-
+(defun window-04-handle-mouse-event (window-id x y)
+  (when *layer-manager*
+    (mnas-sdl3-gui/window-manager:set-focused-window
+     *layer-manager*
+     window-id))
+  (window-04-handle-toolbar-click window-id x y))

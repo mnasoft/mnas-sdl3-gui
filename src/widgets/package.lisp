@@ -105,6 +105,7 @@
            #:toolbar-x
            #:toolbar-y
            #:<toolbar-button>-command-id
+           #:<toolbar-button>-checked-p
            #:<toolbar-button>-label
            #:<toolbar-button>-hotkey)
 ;;; button accessors
@@ -207,11 +208,14 @@
 ;;; popup compatibility/accessors
            #:<combo-box-popup>-mode
            #:<combo-box-popup>-host-window
+           #:<combo-box-popup>-scrollbar-geometry
+           #:<combo-box-popup>-set-scroll-offset-from-thumb-top
            #:<combo-box-popup>-window
            #:<combo-box-popup>-renderer
            #:<combo-box-popup>-window-id
            #:<combo-box-popup>-visible-p
            #:combo-box-selected-item
+           #:combo-box-popup-host-window
            #:<combo-box-popup>-layer-manager
            #:<combo-box-popup>-window-enabled-p
            #:combo-box-enable-popup-window
@@ -249,6 +253,9 @@
 ;;; rendering
   (:export #:render
            #:render-text
+           #:render-toolbar
+           #:toolbar-buttons-at-position
+           #:toolbar-button-clicked
            )
 ;;; TTF/font rendering
   (:export #:render-text-with-ttf

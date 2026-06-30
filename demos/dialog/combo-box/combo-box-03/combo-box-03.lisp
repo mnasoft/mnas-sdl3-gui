@@ -11,7 +11,7 @@
 (defparameter *combo-box-03-open* t)
 
 (defun create-combo-box-03-widgets ()
-  (let ((editable (make-instance 'mnas-sdl3-gui/widgets:editable-combo-box
+  (let ((editable (make-instance 'mnas-sdl3-gui/widgets:<editable-combo-box>
                                  :x 20 :y 40 :width 320 :height 34
                                  :main-height 34
                                  :items '("Item 01" "Item 02" "Item 03" "Item 04" "Item 05"
@@ -56,9 +56,9 @@
      *combo-box-03-renderer*
      (format nil "expanded=~A popup=~A enabled=~A popup-id=~S"
        (mnas-sdl3-gui/widgets:<combo-box>-expanded-p *combo-box-03-editable*)
-       (mnas-sdl3-gui/widgets:combo-box-popup-visible-p *combo-box-03-editable*)
-       (mnas-sdl3-gui/widgets:combo-box-popup-window-enabled-p *combo-box-03-editable*)
-       (mnas-sdl3-gui/widgets:combo-box-popup-window-id *combo-box-03-editable*))
+       (mnas-sdl3-gui/widgets:<combo-box-popup>-visible-p (mnas-sdl3-gui/widgets:<combo-box>-popup-widget *combo-box-03-editable*))
+       (mnas-sdl3-gui/widgets:<combo-box-popup>-window (mnas-sdl3-gui/widgets:<combo-box>-popup-widget *combo-box-03-editable*))
+       (mnas-sdl3-gui/widgets:<combo-box-popup>-window-id (mnas-sdl3-gui/widgets:<combo-box>-popup-widget *combo-box-03-editable*)))
      20.0 84.0 '(120 120 120 255))
   ;; popup windows are rendered via transient popup proxies appended by
   ;; `widgets-in-render-order', so no explicit popup calls are needed here.

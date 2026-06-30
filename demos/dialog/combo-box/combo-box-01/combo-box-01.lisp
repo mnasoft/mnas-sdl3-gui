@@ -30,13 +30,13 @@
          (hint (make-instance 'mnas-sdl3-gui/widgets:<label>
                               :x 20 :y 42 :width 560 :height 24
                               :text "Return confirms, Escape closes popup, wheel scrolls expanded lists."))
-         (small (make-instance 'mnas-sdl3-gui/widgets:combo-box
+         (small (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                :x 20 :y 86 :width 240 :height 32
                                :items '("Flat" "Windows" "Motif" "Experimental")
                                :selected-index 1
                                :popup-host-window window
                                :window window))
-         (large (make-instance 'mnas-sdl3-gui/widgets:combo-box
+         (large (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                :x 20 :y 136 :width 320 :height 32
                                :items (combo-box-01-items "Preset" 18)
                                :selected-index 4

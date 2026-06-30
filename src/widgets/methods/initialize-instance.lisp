@@ -30,7 +30,7 @@
   ;; Forward any initial items passed via :items initarg to popup
   (let ((init-items (<combo-box>-initial-items widget)))
     (when init-items
-      (setf (<list-box>-items (<combo-box>-popup-widget widget)) init-items)
+      (setf (children (<combo-box>-popup-widget widget)) init-items)
       (setf (<list-box>-selected-index (<combo-box>-popup-widget widget))
             (<combo-box-initial>-selected-index widget))))
   (setf (<combo-box>-main-height widget) (<widget>-height widget))

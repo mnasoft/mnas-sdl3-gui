@@ -38,7 +38,7 @@
             :window window)
            (make-instance
             'mnas-sdl3-gui/widgets:<toolbar-button>
-            :command-id :toggle-01/group-1-option-1
+            :command-id :toggle-01/group-1-option-4
             :label "4"
             :width 40
             :type :radio
@@ -114,12 +114,21 @@
   "Create demo widgets for two grouped toggle columns using pack layout."
   (mnas-sdl3-gui/widgets:clear-pack-layout)
   (mnas-sdl3-gui/widgets:clear-toggle-group-registry)
-  (let* ((title (make-instance 'mnas-sdl3-gui/widgets:<label>
-                               :text "Toggle groups demo"))
-         (group-1-label (make-instance 'mnas-sdl3-gui/widgets:<label>
-                                       :text "Группа 1"))
-         (group-2-label (make-instance 'mnas-sdl3-gui/widgets:<label>
-                                       :text "Группа 2"))
+  (let* ((title
+           (make-instance
+            'mnas-sdl3-gui/widgets:<label>
+            :window window
+            :text "Toggle groups demo"))
+         (group-1-label
+           (make-instance
+            'mnas-sdl3-gui/widgets:<label>
+            :window window
+            :text "Группа 1"))
+         (group-2-label
+           (make-instance
+            'mnas-sdl3-gui/widgets:<label>
+            :window window
+            :text "Группа 2"))
          (toggle-1 (make-group-toggle nil nil "Вариант 1" :group-1 t   window))
          (toggle-2 (make-group-toggle nil nil "Вариант 2" :group-1 nil window))
          (toggle-3 (make-group-toggle nil nil "Вариант 3" :group-1 nil window))
@@ -142,40 +151,42 @@
                  (,toggle-4 ,toggle-d))))
     (setf *widgets* widgets)
 
-    (mnas-sdl3-gui/widgets:pack-widget title
-                                       :side :top
-                                       :fill :x
-                                       :padx 8
-                                       :pady 6
-                                       :use-content-size t)
-
-    (mnas-sdl3-gui/widgets:pack-widget group-1-label
-                                       :side :left
-                                       :fill :x
-                                       :expand t
-                                       :padx 8
-                                       :pady 4
-                                       :use-content-size t)
-    (mnas-sdl3-gui/widgets:pack-widget group-2-label
-                                       :side :left
-                                       :fill :x
-                                       :expand t
-                                       :padx 8
-                                       :pady 4
-                                       :use-content-size t)
-
+    (mnas-sdl3-gui/widgets:pack-widget
+     title
+     :side :top
+     :fill :x
+     :padx 8
+     :pady 6
+     :use-content-size t)
+    (mnas-sdl3-gui/widgets:pack-widget
+     group-1-label
+     :side :left
+     :fill :x
+     :expand t
+     :padx 8
+     :pady 4
+     :use-content-size t)
+    (mnas-sdl3-gui/widgets:pack-widget
+     group-2-label
+     :side :left
+     :fill :x
+     :expand t
+     :padx 8
+     :pady 4
+     :use-content-size t)
     (dolist (row (list (list toggle-1 toggle-a)
                        (list toggle-2 toggle-b)
                        (list toggle-3 toggle-c)
                        (list toggle-4 toggle-d)))
       (dolist (widget row)
-        (mnas-sdl3-gui/widgets:pack-widget widget
-                                           :side :left
-                                           :fill :x
-                                           :expand t
-                                           :padx 8
-                                           :pady 4
-                                           :use-content-size t)))
+        (mnas-sdl3-gui/widgets:pack-widget
+         widget
+         :side :left
+         :fill :x
+         :expand t
+         :padx 8
+         :pady 4
+         :use-content-size t)))
 
     ;; Calculate required size and apply pack layout.
     (let ((content-width 0)
@@ -199,11 +210,12 @@
         (dolist (row rows)
           (multiple-value-bind (req-w req-h)
               (mnas-sdl3-gui/widgets:pack-layout-required-size row)
-            (mnas-sdl3-gui/widgets:pack-layout-widgets row
-                                                       +margin+
-                                                       current-y
-                                                       usable-width
-                                                       req-h)
+            (mnas-sdl3-gui/widgets:pack-layout-widgets
+             row
+             +margin+
+             current-y
+             usable-width
+             req-h)
             (incf current-y (+ req-h +section-gap+))))
         (setf *status-y*
               (+ current-y 4))

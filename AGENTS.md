@@ -39,6 +39,7 @@ This file provides project-specific guidance for AI coding agents working on `mn
 - `src/menu/` — menu models, controller, and renderer.
 - `src/widgets/` — widget classes, rendering, and event handling.
 - `tests/` — FiveAM tests for the system.
+- `.github/skills/common-lisp-project-style.md` — local conventions for Common Lisp naming, packages, and style.
 
 ## Notes for agents
 - Keep local changes consistent with existing package and file-layout conventions.

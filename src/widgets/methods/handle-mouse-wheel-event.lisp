@@ -32,6 +32,11 @@
   (declare (ignore ev))
   nil)
 
+(defmethod handle-mouse-wheel-event ((widget <widget>) (ev t))
+  "Ignore non-wheel events gracefully so demo event handlers can call this generic without errors."
+  (declare (ignore widget ev))
+  nil)
+
 (defmethod handle-mouse-wheel-event ((widget <scroll-container>) (ev sdl3:mouse-wheel-event))
   "Try children first; if none consume the event, scroll the container by the vertical delta." 
     (let* ((x (round (slot-value ev 'sdl3:%x)))

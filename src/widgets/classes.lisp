@@ -151,12 +151,7 @@
    "Container widget that divides available area into two panes with a movable split ratio."))
 
 (defclass <list-box> (<widget-container>)
-  ((items
-    :initarg :items
-    :initform nil
-    :accessor <list-box>-items
-    :documentation "List of items in the box")
-   (selected-index
+  ((selected-index
     :initarg :selected-index
     :initform 0
     :accessor <list-box>-selected-index
@@ -197,6 +192,11 @@
     :initarg :owner
     :accessor <combo-box-popup>-owner
     :documentation "Owner widget (header or combo) for this popup instance.")
+   (host-window
+    :initarg :host-window
+    :initform nil
+    :accessor <combo-box-popup>-host-window
+    :documentation "Host SDL window that owns this popup.")
    (window
     :initarg :window
     :initform nil
@@ -309,11 +309,16 @@
 (defclass <toolbar-button> (<widget>)
   ((command-id
     :initarg :command-id
+    :initform nil
     :accessor <toolbar-button>-command-id)
    (type
     :initarg :type
     :initform :push
     :accessor <toolbar-button>-type)
+   (checked-p
+    :initarg :checked-p
+    :initform nil
+    :accessor <toolbar-button>-checked-p)
    (group
     :initarg :group
     :initform nil

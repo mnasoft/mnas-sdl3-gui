@@ -40,7 +40,7 @@
     :shortcut :enter
     :execute (lambda (context)
                (declare (ignore context))
-               (let ((text (mnas-sdl3-gui/widgets:entry-text *combo-box-02-editable*)))
+               (let ((text (mnas-sdl3-gui/widgets:<entry>-text *combo-box-02-editable*)))
                  (when (and text (not (string= text "")))
                    (mnas-sdl3-gui/widgets:combo-box-add-item *combo-box-02-editable* text)
                    (setf *combo-box-02-status*
@@ -56,22 +56,26 @@
 
 (defun combo-box-02-create-toolbar ()
   "Create toolbar for the combo-box-02 demo."
-  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:toolbar
+  (let ((toolbar (make-instance 'mnas-sdl3-gui/widgets:<toolbar>
                   :layout :horizontal
                   :height +combo-box-02-toolbar-height+)))
     (setf (mnas-sdl3-gui/widgets:<widget-container>-children toolbar)
           (list
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Add"
-                                                   :width 56)
-           (make-instance 'mnas-sdl3-gui/widgets:toolbar-button :command-id :label "Quit"
-                                                   :width 64)))
+           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                          :command-id :combo-box-02/add-current
+                          :label "Add"
+                          :width 56)
+           (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                          :command-id :combo-box-02/quit
+                          :label "Quit"
+                          :width 64)))
     toolbar))
 
 (defun combo-box-02-sync-command-state ()
   "Sync command state for combo-box-02 toolbar." 
   (let ((add-cmd (mnas-sdl3-gui/commands:find-command :combo-box-02/add-current))
         (text (and *combo-box-02-editable*
-                   (mnas-sdl3-gui/widgets:entry-text *combo-box-02-editable*))))
+                   (mnas-sdl3-gui/widgets:<entry>-text *combo-box-02-editable*))))
     (when add-cmd
       (mnas-sdl3-gui/commands:set-command-enabled
        add-cmd
@@ -84,7 +88,7 @@
          (hint (make-instance 'mnas-sdl3-gui/widgets:<label>
                               :x 20 :y 42 :width 560 :height 24
                               :text "Type a value or choose from the list. Press buttons to report or add the current text."))
-         (editable (make-instance 'mnas-sdl3-gui/widgets:editable-combo-box
+         (editable (make-instance 'mnas-sdl3-gui/widgets:<editable-combo-box>
                                   :x 20 :y 86 :width 380 :height 36
                                   :main-height 36
                                   :items '("Preset A" "Preset B" "Preset C")
@@ -102,13 +106,13 @@
                                              (setf *combo-box-02-status*
                                                    (format nil "Value: ~A  Text: ~A"
                                                            (mnas-sdl3-gui/widgets:<widget>-value editable)
-                                                           (mnas-sdl3-gui/widgets:entry-text editable))))))
+                                                           (mnas-sdl3-gui/widgets:<entry>-text editable))))))
          (add-item (make-instance 'mnas-sdl3-gui/widgets:<button>
                                   :x 220 :y 140 :width 180 :height 34
                                   :text "Add current text"
                                   :on-click (lambda (widget)
                                               (declare (ignore widget))
-                                              (let ((text (mnas-sdl3-gui/widgets:entry-text editable)))
+                                              (let ((text (mnas-sdl3-gui/widgets:<entry>-text editable)))
                                                 (if (and text (not (string= text "")))
                                                     (progn
                                                       (mnas-sdl3-gui/widgets:combo-box-add-item editable text)
@@ -148,7 +152,7 @@
           (combo-box-02-register-commands)
           (combo-box-02-register-shortcuts)
           (setf *combo-box-02-toolbar* (combo-box-02-create-toolbar))
-          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *combo-box-02-toolbar*)
+          #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *combo-box-02-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *combo-box-02-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (create-combo-box-02-demo-widgets)
@@ -171,7 +175,7 @@
   (sdl3:render-clear *combo-box-02-renderer*)
   (combo-box-02-sync-command-state)
   (when *combo-box-02-toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
+    (mnas-sdl3-gui/widgets:render-toolbar
      *combo-box-02-toolbar*
      *combo-box-02-renderer*
      0.0
@@ -238,12 +242,12 @@
                       (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up w x y))))
                ((and down (= button 1) (= win-id main-id))
                 (let ((button-spec (and *combo-box-02-toolbar*
-                                        (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                        (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                          *combo-box-02-toolbar*
                                          x
                                          (- y toolbar-y-offset)))))
                   (if button-spec
-                      (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                      (mnas-sdl3-gui/widgets:toolbar-button-clicked
                        *combo-box-02-toolbar* button-spec (list :window-id *combo-box-02-window-id* :x x :y y))
                       (mnas-sdl3-gui/widgets:handle-mouse-button-event
                        (mnas-sdl3-gui/widgets:widgets-for-window *combo-box-02-window*) ev))))

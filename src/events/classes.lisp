@@ -5,95 +5,165 @@
 ;; Event info class hierarchy: store last parsed event as an
 ;; instance of one of these classes. This keeps event data structured
 ;; and extensible.
-(defclass event-info ()
-  ((timestamp :initform nil :accessor info-timestamp :initarg :timestamp)))
+(defclass <event-info> ()
+  ((timestamp
+    :initform nil
+    :accessor <event-info>-timestamp
+    :initarg :timestamp)))
 
-(defclass mouse-motion-info (event-info)
+(defclass <mouse-motion-info> (<event-info>)
   ((window-id
-    :initform nil :accessor info-mm-window-id :initarg :window-id)
+    :initform nil
+    :accessor <mouse-motion-info>-window-id
+    :initarg :window-id)
    (which
-    :initform nil :accessor info-mm-which :initarg :which)
+    :initform nil
+    :accessor <mouse-motion-info>-which
+    :initarg :which)
    (state
-    :initform nil :accessor info-mm-state :initarg :state)
+    :initform nil
+    :accessor <mouse-motion-info>-state
+    :initarg :state)
    (x
-    :initform 0.0 :accessor info-mm-x :initarg :x)
+    :initform 0.0
+    :accessor <mouse-motion-info>-x
+    :initarg :x)
    (y
-    :initform 0.0 :accessor info-mm-y :initarg :y)
+    :initform 0.0
+    :accessor <mouse-motion-info>-y
+    :initarg :y)
    (xrel
-    :initform 0.0 :accessor info-mm-xrel :initarg :xrel)
+    :initform 0.0
+    :accessor <mouse-motion-info>-xrel
+    :initarg :xrel)
    (yrel
-    :initform 0.0 :accessor info-mm-yrel :initarg :yrel)))
+    :initform 0.0
+    :accessor <mouse-motion-info>-yrel
+    :initarg :yrel)))
 
-(defclass mouse-button-info (event-info)
+(defclass <mouse-button-info> (<event-info>)
   ((window-id
-    :initform nil :accessor info-mb-window-id :initarg :window-id)
+    :initform nil
+    :accessor <mouse-button-info>-window-id
+    :initarg :window-id)
    (which
-    :initform nil :accessor info-mb-which :initarg :which)
+    :initform nil
+    :accessor <mouse-button-info>-which
+    :initarg :which)
    (button
-    :initform nil :accessor info-mb-button :initarg :button)
+    :initform nil
+    :accessor <mouse-button-info>-button
+    :initarg :button)
    (down
-    :initform nil :accessor info-mb-down :initarg :down)
+    :initform nil
+    :accessor <mouse-button-info>-down
+    :initarg :down)
    (clicks
-    :initform nil :accessor info-mb-clicks :initarg :clicks)
+    :initform nil
+    :accessor <mouse-button-info>-clicks
+    :initarg :clicks)
    (x
-    :initform 0.0 :accessor info-mb-x :initarg :x)
+    :initform 0.0
+    :accessor <mouse-button-info>-x
+    :initarg :x)
    (y
-    :initform 0.0 :accessor info-mb-y :initarg :y)))
+    :initform 0.0
+    :accessor <mouse-button-info>-y
+    :initarg :y)))
 
-(defclass mouse-wheel-info (event-info)
+(defclass <mouse-wheel-info> (<event-info>)
   ((window-id
-    :initform nil :accessor info-wl-window-id :initarg :window-id)
+    :initform nil
+    :accessor <mouse-wheel-info>-window-id
+    :initarg :window-id)
    (which
-    :initform nil :accessor info-wl-which :initarg :which)
+    :initform nil
+    :accessor <mouse-wheel-info>-which
+    :initarg :which)
    (x
-    :initform 0.0 :accessor info-wl-x :initarg :x)
+    :initform 0.0
+    :accessor <mouse-wheel-info>-x
+    :initarg :x)
    (y
-    :initform 0.0 :accessor info-wl-y :initarg :y)
+    :initform 0.0
+    :accessor <mouse-wheel-info>-y
+    :initarg :y)
    (direction
-    :initform nil :accessor info-wl-direction :initarg :direction)
+    :initform nil
+    :accessor <mouse-wheel-info>-direction
+    :initarg :direction)
    (mouse-x
-    :initform 0.0 :accessor info-wl-mouse-x :initarg :mouse-x)
+    :initform 0.0
+    :accessor <mouse-wheel-info>-mouse-x
+    :initarg :mouse-x)
    (mouse-y
-    :initform 0.0 :accessor info-wl-mouse-y :initarg :mouse-y)))
+    :initform 0.0
+    :accessor <mouse-wheel-info>-mouse-y
+    :initarg :mouse-y)))
 
-(defclass keyboard-info (event-info)
+(defclass <keyboard-info> (<event-info>)
   ((window-id
-    :initform nil :accessor info-kb-window-id :initarg :window-id)
+    :initform nil
+    :accessor <keyboard-info>-window-id
+    :initarg :window-id)
    (which
-    :initform nil :accessor info-kb-which :initarg :which)
+    :initform nil
+    :accessor <keyboard-info>-which
+    :initarg :which)
    (scancode
-    :initform nil :accessor info-kb-scancode :initarg :scancode)
+    :initform nil
+    :accessor <keyboard-info>-scancode
+    :initarg :scancode)
    (key
-    :initform nil :accessor info-kb-key :initarg :key)
+    :initform nil
+    :accessor <keyboard-info>-key
+    :initarg :key)
    (mod
-    :initform 0 :accessor info-kb-mod :initarg :mod)
+    :initform 0
+    :accessor <keyboard-info>-mod
+    :initarg :mod)
    (raw
-    :initform nil :accessor info-kb-raw :initarg :raw)
+    :initform nil
+    :accessor <keyboard-info>-raw
+    :initarg :raw)
    (down
-    :initform nil :accessor info-kb-down :initarg :down)
+    :initform nil
+    :accessor <keyboard-info>-down
+    :initarg :down)
    (repeat
-    :initform nil :accessor info-kb-repeat :initarg :repeat)))
+    :initform nil
+    :accessor <keyboard-info>-repeat
+    :initarg :repeat)))
 
 ;; tracker stores only structured references to event-info instances
 ;; instead of many scalar compatibility slots. This simplifies the
 ;; model and encourages consumers to inspect the `last-event` or the
 ;; typed `last-*-event` slots.
-(defclass event-tracker ()
+(defclass <event-tracker> ()
   ((last-type
-    :initform nil :accessor last-event-type)
+    :initform nil
+    :accessor <event-tracker>-last-type)
    (last-event
-    :initform nil :accessor last-event)
+    :initform nil
+    :accessor <event-tracker>-last-event)
    (last-motion
-    :initform nil :accessor last-motion-event)   ; mouse-motion-info
+    :initform nil
+    :accessor <event-tracker>-last-motion)   ; mouse-motion-info
    (last-button
-    :initform nil :accessor last-button-event)   ; mouse-button-info
+    :initform nil
+    :accessor <event-tracker>-last-button)   ; mouse-button-info
    (last-wheel
-    :initform nil :accessor last-wheel-event)     ; mouse-wheel-info
+    :initform nil
+    :accessor <event-tracker>-last-wheel)     ; mouse-wheel-info
    (last-keyboard
-    :initform nil :accessor last-keyboard-event) ; keyboard-info
+    :initform nil
+    :accessor <event-tracker>-last-keyboard) ; keyboard-info
    (buttons-down
-    :initform nil :accessor event-buttons-down) ; pressed mouse buttons
+    :initform nil
+    :accessor <event-tracker>-buttons-down) ; pressed mouse buttons
    (keys-down
-    :initform nil :accessor event-keys-down)       ; pressed keyboard keys
+    :initform nil
+    :accessor <event-tracker>-keys-down)       ; pressed keyboard keys
    (timestamp
-    :initform nil :accessor event-timestamp)))
+    :initform nil
+    :accessor <event-tracker>-timestamp)))

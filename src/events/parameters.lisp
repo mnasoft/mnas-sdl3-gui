@@ -2,4 +2,4 @@
 
 (in-package :mnas-sdl3-gui/events)
  
-(defparameter *event-tracker* (make-instance 'event-tracker))
+(defparameter *event-tracker* (make-instance '<event-tracker>))

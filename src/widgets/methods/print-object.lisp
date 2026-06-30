@@ -97,7 +97,7 @@
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
     (format stream " items=~A selected=~A scroll=~A drag=~A item-height=~A"
-            (length (<list-box>-items obj))
+            (length (list-box-items obj))
             (<list-box>-selected-index obj)
             (<list-box>-scroll-offset obj)
             (<list-box>-scrollbar-dragging-p obj)
@@ -111,7 +111,7 @@
           (selected -1)
           (scroll 0))
       (when popup
-        (let ((items (<list-box>-items popup)))
+        (let ((items (list-box-items popup)))
           (setq items-len (if items (length items) 0))
           (setq selected (<list-box>-selected-index popup))
           (setq scroll (<list-box>-scroll-offset popup))))
@@ -130,7 +130,7 @@
 (defmethod print-object ((obj <combo-box-popup>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (let ((items (<list-box>-items obj))
+    (let ((items (list-box-items obj))
           (sel (<list-box>-selected-index obj))
           (wid (and (<combo-box-popup>-window obj) (<combo-box-popup>-window-id obj))))
       (format stream " items=~A selected=~A scroll=~A window-id=~S visible=~A"

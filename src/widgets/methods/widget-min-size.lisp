@@ -47,18 +47,20 @@
           (max 96 (<widget>-height obj))))
 
 (defmethod widget-min-size ((obj <list-box>))
-  (let* ((longest-item (or (loop for item in (<list-box>-items obj)
+  (let* ((items (list-box-items obj))
+         (longest-item (or (loop for item in items
                                  maximize (length (format nil "~a" item)))
                           8))
-         (lines (max 3 (min 8 (length (<list-box>-items obj)))))
-      (scrollbar-width (if (> (length (<list-box>-items obj)) lines) 12 0))
+         (lines (max 3 (min 8 (length items))))
+         (scrollbar-width (if (> (length items) lines) 12 0))
          (text-width (* longest-item +layout-font-char-width+))
          (min-height (+ (* lines (<list-box>-item-height obj)) 4)))
     (values (max 120 (+ text-width 12 scrollbar-width))
             (max min-height 72))))
 
 (defmethod widget-min-size ((obj <combo-box>))
-  (let* ((longest-item (or (loop for item in (<list-box>-items obj)
+  (let* ((items (list-box-items obj))
+         (longest-item (or (loop for item in items
                                  maximize (length (format nil "~a" item)))
                           8))
          (text-width (* longest-item +layout-font-char-width+))

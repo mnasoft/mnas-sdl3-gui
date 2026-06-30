@@ -50,15 +50,8 @@
 
   (sdl3:set-render-draw-color *renderer* 240 240 240 255)
   (sdl3:render-clear *renderer*)
-
   (toggle-01-sync-command-state)
-  (when *toolbar*
-    (mnas-sdl3-gui/widgets:render
-     *renderer*
-     *toolbar*
-     mnas-sdl3-gui/widgets:*widget-style*))
-
-  (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *widgets*)
+  (loop for widget in (mnas-sdl3-gui/widgets:widgets-for-window *window*)
         do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
 
   (mnas-sdl3-gui/widgets:render-text *renderer*
@@ -94,18 +87,9 @@
               (setf *open* nil)
               (return-from callback-event :success)))))
        :continue)
-      (sdl3:mouse-motion-event
-       (mnas-sdl3-gui/widgets:handle-mouse-motion-event
-        *widgets*
-        ev)
-       :continue)
-      (sdl3:mouse-button-event
-       (mnas-sdl3-gui/widgets:handle-mouse-button-event
-        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
-       :continue)
-      (sdl3:keyboard-event
-       (mnas-sdl3-gui/widgets:handle-keyboard-event *widgets* ev)
-       :continue)
+      (sdl3:mouse-motion-event (mnas-sdl3-gui/widgets:handle-mouse-motion-event (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev) :continue)
+      (sdl3:mouse-button-event (mnas-sdl3-gui/widgets:handle-mouse-button-event (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev) :continue)
+      (sdl3:keyboard-event     (mnas-sdl3-gui/widgets:handle-keyboard-event (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev) :continue)
       (t :continue))))
 
 (sdl3:def-app-quit callback-quit (result)

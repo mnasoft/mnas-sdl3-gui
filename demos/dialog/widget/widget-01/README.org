@@ -28,12 +28,8 @@
 #+end_src
 
 #+RESULTS:
-: my/org-expand-defsystem-line
+: go-to-string
 
 * Область переходов
-** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/pack\"")][mnas-sdl3-gui/demos/dialog/pack]]
-*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/pack-01\"")][mnas-sdl3-gui/demos/dialog/pack-01]]
-
-* ToDo
-В демострации упаковщика пока не понятно как сделать так, чтоб размер
-окна вычислялся на основании вставленных виджетов.
+** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/widget\"")][mnas-sdl3-gui/demos/dialog/widget]]
+*** [[elisp:(go-to-string mnas-sdl3-gui.asd "(defsystem \"mnas-sdl3-gui/demos/dialog/widget-01\"")][mnas-sdl3-gui/demos/dialog/widget-01]]
