@@ -11,6 +11,21 @@
 (test hello-smoke
   (is (search "mnas-sdl3-gui" (hello))))
 
+(test application-base-class-stores-lifecycle-state
+  (let ((app (make-instance 'mnas-sdl3-gui/app:<application>
+                            :title "Demo"
+                            :width 640
+                            :height 360
+                            :style :flat)))
+    (setf (mnas-sdl3-gui/app:app-status app) "Ready"
+          (mnas-sdl3-gui/app:app-open-p app) nil)
+    (is (string= "Demo" (mnas-sdl3-gui/app:app-title app)))
+    (is (= 640 (mnas-sdl3-gui/app:app-width app)))
+    (is (eq :flat (mnas-sdl3-gui/app:app-style app)))
+    (is (null (mnas-sdl3-gui/app:app-window app)))
+    (is (string= "Ready" (mnas-sdl3-gui/app:app-status app)))
+    (is (not (mnas-sdl3-gui/app:app-open-p app)))))
+
 (test toolbar-button-label-initarg
   (let ((button (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
                                :label "Quit"

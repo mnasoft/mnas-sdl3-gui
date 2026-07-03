@@ -63,6 +63,7 @@
   :components ((:module "src/app"
 		:serial t
                 :components ((:file "package")
+                             (:file "classes")
                              (:file "functions")))))
 
 (defsystem "mnas-sdl3-gui/window-manager"
@@ -246,6 +247,7 @@
                              (:file "commands")
                              (:file "toolbar")
                              (:file "shortcuts")
+                             (:file "application")
                              (:file "combo-box-01")
                              (:file "callbacks")
                              (:file "main")))))

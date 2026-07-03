@@ -6,7 +6,7 @@
   "Execute command ID with CONTEXT-PLIST."
   (mnas-sdl3-gui/commands:execute-command id :context context-plist))
 
-(defun combo-box-01-register-commands ()
+(defun combo-box-01-register-commands (app)
   "Register commands for the combo-box-01 demo."
   (mnas-sdl3-gui/commands:register-command
    (mnas-sdl3-gui/commands:make-command
@@ -16,7 +16,7 @@
     :shortcut :escape
     :execute (lambda (context)
                (declare (ignore context))
-               (setf *open* nil)
+               (setf (mnas-sdl3-gui/app:app-open-p app) nil)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command
@@ -27,7 +27,7 @@
     :shortcut :enter
     :execute (lambda (context)
                (declare (ignore context))
-               (combo-box-01-report-value)
+               (report-value app)
                t))
    :replace t))
 
