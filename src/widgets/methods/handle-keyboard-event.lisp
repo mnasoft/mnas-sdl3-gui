@@ -69,7 +69,7 @@
              (handle-keyboard-event widgets input)))))))
 
 (defmethod handle-keyboard-event ((widgets cons) (input widget-keyboard-input))
-  (let* ((focused (focused-widget widgets))
+  (let* ((focused (focused widgets))
          (key (widget-keyboard-input-key input))
          (mods (widget-keyboard-input-mods input)))
     (cond

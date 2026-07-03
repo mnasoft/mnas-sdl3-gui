@@ -11,6 +11,10 @@
            #:<widget>-width
            #:<widget>-height
            #:<widget>-z-order
+           #:<widget>-padding
+           #:<widget>-border-width
+           #:<widget>-margin
+           #:widget-content-box
            #:<widget>-enabled
            #:enabled-p
            #:<widget>-focused
@@ -35,11 +39,7 @@
            #:<scroll-container>-content-height
            )
   (:export #:<row-stack>
-           #:<row-stack>-spacing
-           #:<row-stack>-padding)
-  (:export #:<column-stack>
-           #:<column-stack>-spacing
-           #:<column-stack>-padding)
+           #:<column-stack>)
   (:export #:<split-pane>
            #:<split-pane>-orientation
            #:<split-pane>-ratio
@@ -82,6 +82,7 @@
            #:<widget-style>-name
 ;;; concrete widgets
            #:<label>
+           #:<list-box-item>
            #:<button>
            #:<toggle>
            #:<check-box>
@@ -117,6 +118,7 @@
 
 ;;; <label> accessors
            #:<label>-text
+           #:<list-box-item>-text
 ;;; button accessors
            #:<button>-text
            #:<button>-pressed-p
@@ -285,10 +287,9 @@
            #:handle-keyboard-event
            #:handle-text-input-event
            #:make-widget-keyboard-input
-           #:focusable-widget-p
-           #:focused-widget
-           #:focused-<entry>
-           #:dispatch-focused-widget-key-event
+           #:focusable-p
+           #:focused
+           #:focused
            #:tab-navigation-backward-p
            #:start-widget-text-input
            #:stop-widget-text-input

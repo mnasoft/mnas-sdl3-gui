@@ -122,7 +122,7 @@
         (down (slot-value ev 'sdl3:%down)))
     (when (and down (contains-point-p widget x y))
       (setf (<widget>-focused widget) t)
-      (select-<toggle>-in-group widget)
+      (select-toggle-in-group widget)
       t)))
 
 

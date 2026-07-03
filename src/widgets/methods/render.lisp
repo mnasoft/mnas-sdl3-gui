@@ -503,7 +503,7 @@
                  (fill-rect renderer (<widget>-x widget) item-y
                             content-width (<list-box>-item-height widget)
                             +color-highlight+))
-               (render-text renderer (format nil "~a" item)
+               (render-text renderer (format nil "~a" (list-box-item-display-value item))
                             (+ (<widget>-x widget) +widget-padding+)
                             (+ item-y (/ (- (<list-box>-item-height widget) +font-text-height+) 2))
                             +color-text+)))
@@ -539,7 +539,7 @@
                  (fill-rect renderer popup-x item-y
                             content-width (<list-box>-item-height widget)
                             +color-highlight+))
-               (render-text renderer (format nil "~a" item)
+               (render-text renderer (format nil "~a" (list-box-item-display-value item))
                             (+ popup-x +widget-padding+)
                             (+ item-y (/ (- (<list-box>-item-height widget) +font-text-height+) 2))
                             +color-text+)))

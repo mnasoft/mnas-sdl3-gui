@@ -20,8 +20,19 @@
     (setf (<button>-armed-p widget) nil
           (<button>-pressed-p widget) nil)))
 
+(defmethod select-toggle-in-group ((widget <toggle>))
+  (let ((group (<toggle>-group widget)))
+    (setf (<toggle>-state widget) t)
+    (update-<widget>-value widget t)
+    (when group
+      (dolist (member (gethash group *toggle-groups*))
+        (unless (eq member widget)
+          (when (<toggle>-state member)
+            (setf (<toggle>-state member) nil)
+            (update-<widget>-value member nil)))))))
+
 (defmethod activate-widget ((widget <toggle>))
-  (select-<toggle>-in-group widget)
+  (select-toggle-in-group widget)
   t)
 
 (defmethod activate-widget ((widget <check-box>))

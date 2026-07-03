@@ -107,8 +107,7 @@
                              (:file "rendering-primitives")
                              (:file "toggle-functions")
                              (:file "focus-functions")
-                             (:file "entry-functions")
-                             (:file "keyboard-functions")))
+                             (:file "entry-functions")))
                (:module "src/widgets/methods"
 		:serial t
                 :components ((:file "render")
@@ -149,6 +148,9 @@
                              (:file "contains-point-p")
                              (:file "visible-p")
                              (:file "enabled-p")
+                             (:file "focusable-widget-p")
+                             (:file "focused")
+                             (:file "set-widget-focus")
                              (:file "children")
                              (:file "update-widget-value")
                              (:file "widget-min-size")

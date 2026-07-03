@@ -28,6 +28,26 @@
     :initform 30
     :accessor <widget>-height
     :documentation "Height of widget")
+   (padding
+    :initarg :padding
+    :initform 0
+    :accessor <widget>-padding
+    :documentation "Inner padding around widget content")
+   (spacing
+    :initarg :spacing
+    :initform 0
+    :accessor <widget>-spacing
+    :documentation "Inter-item spacing used by stack-like containers")
+   (border-width
+    :initarg :border-width
+    :initform 0
+    :accessor <widget>-border-width
+    :documentation "Border thickness around widget content")
+   (margin
+    :initarg :margin
+    :initform 0
+    :accessor <widget>-margin
+    :documentation "Outer margin around widget box")
    (window
     :initarg :window
     :initform nil
@@ -97,29 +117,11 @@
   (:documentation "Scrollable container widget for vertically stacked child widgets."))
 
 (defclass <row-stack> (<widget-container>)
-  ((spacing
-    :initarg :spacing
-    :initform 4
-    :accessor <row-stack>-spacing
-    :documentation "Horizontal spacing between child widgets.")
-   (padding
-    :initarg :padding
-    :initform 4
-    :accessor <row-stack>-padding
-    :documentation "Padding inside the row stack bounds."))
+  ()
   (:documentation "Container widget that arranges children in a horizontal row."))
 
 (defclass <column-stack> (<widget-container>)
-  ((spacing
-    :initarg :spacing
-    :initform 4
-    :accessor <column-stack>-spacing
-    :documentation "Vertical spacing between child widgets.")
-   (padding
-    :initarg :padding
-    :initform 4
-    :accessor <column-stack>-padding
-    :documentation "Padding inside the column stack bounds."))
+  ()
   (:documentation "Container widget that arranges children in a vertical column."))
 
 (defclass <split-pane> (<widget-container>)
@@ -278,6 +280,14 @@
     :accessor <label>-text
     :documentation "Text content of <label>"))
   (:documentation "Simple text <label> widget"))
+
+(defclass <list-box-item> (<widget>)
+  ((text
+    :initarg :text
+    :initform ""
+    :accessor <list-box-item>-text
+    :documentation "Text content rendered for the list-box item."))
+  (:documentation "Simple list-box item widget that renders a text label."))
 
 ;;; Toolbar widgets moved here so they integrate with widget hierarchy.
 (defclass <toolbar-button> (<widget>)

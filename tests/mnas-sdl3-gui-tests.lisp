@@ -5,6 +5,12 @@
 (def-suite :mnas-sdl3-gui-tests)
 (in-suite :mnas-sdl3-gui-tests)
 
+(defclass focusable-test-widget (mnas-sdl3-gui/widgets:<widget>) ()
+  (:documentation "Widget used to verify method-based focusability dispatch."))
+
+(defmethod mnas-sdl3-gui/widgets:focusable-p ((widget focusable-test-widget))
+  t)
+
 (test project-name-smoke
   (is (string= (project-name) "mnas-sdl3-gui")))
 
@@ -52,7 +58,13 @@
     (is (eq t (mnas-sdl3-gui/widgets:handle-mouse-button-event button up-event)))
     (is (null (mnas-sdl3-gui/widgets:<toolbar-button>-checked-p button)))))
 
-(test keyboard-event-dispatches-to-focused-widget
+(test focusable-p-dispatches-to-specific-method
+  (let ((widget (make-instance 'focusable-test-widget
+                                :x 0 :y 0 :width 10 :height 10
+                                :enabled nil :visible t :focusable t)))
+    (is (eq t (mnas-sdl3-gui/widgets:focusable-p widget)))))
+
+(test keyboard-event-dispatches-to-focused
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
                                  :x 0 :y 0 :width 10 :height 10))
          (event (make-instance 'sdl3:keyboard-event
@@ -80,7 +92,7 @@
     (is (not (null (mnas-sdl3-gui/commands:dispatch-shortcut :n :context nil))))
     (is (functionp (mnas-sdl3-gui/commands:command-execute (mnas-sdl3-gui/commands:find-command :toolbar/demo-new))))))
 
-(test keyboard-input-wrapper-dispatches-to-focused-widget
+(test keyboard-input-wrapper-dispatches-to-focused
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
                                  :x 0 :y 0 :width 10 :height 10))
          (event (mnas-sdl3-gui/widgets::make-widget-keyboard-input :space nil))
@@ -123,13 +135,27 @@
                                 :children '("alpha" "beta"))))
     (is (equal '("alpha" "beta") (mnas-sdl3-gui/widgets:list-box-items widget)))
     (setf (mnas-sdl3-gui/widgets:list-box-items widget) '("gamma"))
-    (is (equal '("gamma") (mnas-sdl3-gui/widgets:<widget-container>-children widget)))))
+    (let ((children (mnas-sdl3-gui/widgets:<widget-container>-children widget)))
+      (is (= 1 (length children)))
+      (is (typep (first children) 'mnas-sdl3-gui/widgets:<list-box-item>))
+      (is (equal "gamma" (mnas-sdl3-gui/widgets:<list-box-item>-text (first children)))))))
 
 (test list-box-items-work-for-generic-widget-container
   (let ((container (make-instance 'mnas-sdl3-gui/widgets:<widget-container>
                                   :x 0 :y 0 :width 120 :height 72
                                   :children '("alpha" "beta"))))
     (is (equal '("alpha" "beta") (mnas-sdl3-gui/widgets:list-box-items container)))))
+
+(test widget-box-model-content-box-uses-padding-and-border
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                :x 10 :y 20 :width 100 :height 60
+                                :padding 4 :border-width 2 :margin 3)))
+    (multiple-value-bind (cx cy cw ch)
+        (mnas-sdl3-gui/widgets:widget-content-box widget)
+      (is (= 16 cx))
+      (is (= 26 cy))
+      (is (= 88 cw))
+      (is (= 48 ch)))))
 
 (test combo-box-scroll-offset-compatibility-accessor
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
@@ -274,11 +300,11 @@
                    (hit2 (mnas-sdl3-gui/widgets:handle-mouse-button-event root-widgets ev2)))
         (is (or hit2 (mnas-sdl3-gui/widgets:<widget>-focused entry)))
         (is (mnas-sdl3-gui/widgets:<widget>-focused entry)))
-      (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) entry))
+      (is (eq (mnas-sdl3-gui/widgets:focused (list button entry)) entry))
       (mnas-sdl3-gui/widgets:handle-keyboard-event
        (list button entry)
        (mnas-sdl3-gui/widgets:make-widget-keyboard-input :tab nil))
-      (is (eq (mnas-sdl3-gui/widgets:focused-widget (list button entry)) button)))))
+      (is (eq (mnas-sdl3-gui/widgets:focused (list button entry)) button)))))
 
 
 (test window-02-hide-popup-focus-regression

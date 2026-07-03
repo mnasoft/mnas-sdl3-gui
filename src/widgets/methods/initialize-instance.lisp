@@ -2,8 +2,13 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
+(defmethod register-toggle-group-member ((widget <toggle>))
+  (let ((group (<toggle>-group widget)))
+    (when group
+      (pushnew widget (gethash group *toggle-groups*) :test #'eq))))
+
 (defmethod initialize-instance :after ((widget <toggle>) &key &allow-other-keys)
-  (register-<toggle>-group-member widget))
+  (register-toggle-group-member widget))
 
 (defmethod initialize-instance :after ((widget <widget>) &key &allow-other-keys)
   "Auto-register WIDGET in global window->widgets registry when :window slot is provided."

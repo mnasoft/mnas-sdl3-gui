@@ -6,7 +6,10 @@
   nil)
 
 (defmethod handle-text-input-event ((widgets cons) ev)
-  (let ((widget (focused-<entry> widgets)))
+  (let ((widget (find-if (lambda (candidate)
+                           (and (typep candidate '<entry>)
+                                (focused candidate)))
+                         widgets)))
     (when widget
       (handle-text-input-event widget ev))))
 
@@ -18,6 +21,6 @@
     :continue))
 
 (defmethod handle-text-input-event ((widget <widget-container>) (ev sdl3:text-input-event))
-  (let ((focused-child (focused-widget (children widget))))
+  (let ((focused-child (focused (children widget))))
     (when focused-child
       (handle-text-input-event focused-child ev))))

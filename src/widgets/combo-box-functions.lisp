@@ -20,6 +20,25 @@
 (defgeneric list-box-items (widget)
   (:documentation "Return items list for LIST-BOX or combo-box via its popup."))
 
+(defun normalize-list-box-item (item)
+  "Convert ITEM into a <list-box-item> object when needed."
+  (cond
+    ((typep item '<list-box-item>) item)
+    ((typep item '<widget>) item)
+    (t (make-instance '<list-box-item> :text (format nil "~a" item)))))
+
+(defun normalize-list-box-items (items)
+  "Normalize a list of list-box items into <list-box-item> objects."
+  (mapcar #'normalize-list-box-item items))
+
+(defun list-box-item-display-value (item)
+  "Return a compatibility-friendly value for ITEM.
+For <list-box-item> instances this exposes the item text; other widget values
+remain intact so existing callers can still work with strings or widgets."
+  (if (typep item '<list-box-item>)
+      (<list-box-item>-text item)
+      item))
+
 (defgeneric (setf list-box-items) (new-value widget)
   (:documentation "Set items list for LIST-BOX or combo-box via its popup."))
 
@@ -36,17 +55,17 @@
   (:documentation "Return scrollbar drag offset for LIST-BOX or combo-box via its popup."))
 
 (defmethod list-box-items ((w <widget-container>))
-  (<widget-container>-children w))
+  (mapcar #'list-box-item-display-value (<widget-container>-children w)))
 
 (defmethod (setf list-box-items) (new-value (w <widget-container>))
-  (setf (<widget-container>-children w) new-value)
+  (setf (<widget-container>-children w) (normalize-list-box-items new-value))
   new-value)
 
 (defmethod list-box-items ((w <list-box>))
-  (<list-box>-items w))
+  (mapcar #'list-box-item-display-value (<list-box>-items w)))
 
 (defmethod (setf list-box-items) (new-value (w <list-box>))
-  (setf (<list-box>-items w) new-value)
+  (setf (<list-box>-items w) (normalize-list-box-items new-value))
   new-value)
 
 (defmethod list-box-selected-index ((w <list-box>))
