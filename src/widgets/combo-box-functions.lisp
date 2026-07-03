@@ -209,10 +209,25 @@
   (:documentation "Update popup scroll offset from a scrollbar thumb drag for WIDGET."))
 
 (defmethod <combo-box-popup>-host-window ((widget <combo-box-popup>))
-  (slot-value widget 'host-window))
+  (let ((owner (<widget>-owner widget)))
+    (and owner (<widget>-window owner))))
 
 (defmethod (setf <combo-box-popup>-host-window) (new-value (widget <combo-box-popup>))
-  (setf (slot-value widget 'host-window) new-value))
+  (let ((owner (<widget>-owner widget)))
+    (when owner
+      (setf (<widget>-window owner) new-value)))
+  new-value)
+
+(defmethod <combo-box-popup>-host-window ((widget <combo-box>))
+  (let ((popup (<combo-box>-popup-widget widget)))
+    (and popup (<combo-box-popup>-host-window popup))))
+
+(defmethod (setf <combo-box-popup>-host-window) (new-value (widget <combo-box>))
+  (let ((popup (<combo-box>-popup-widget widget)))
+    (if popup
+        (setf (<combo-box-popup>-host-window popup) new-value)
+        (setf (<widget>-window widget) new-value)))
+  new-value)
 
 (defmethod <combo-box-popup>-x ((widget <combo-box-popup>))
   (<widget>-x widget))
@@ -230,7 +245,11 @@
   (slot-value widget 'renderer))
 
 (defmethod <combo-box-popup>-visible-p ((widget <combo-box-popup>))
-  (slot-value widget 'visible-p))
+  (<widget>-visible widget))
+
+(defmethod (setf <combo-box-popup>-visible-p) (new-value (widget <combo-box-popup>))
+  (setf (<widget>-visible widget) new-value)
+  new-value)
 
 (defmethod <combo-box-popup>-x ((widget <combo-box>))
   (<widget>-x widget))
@@ -263,16 +282,6 @@
 
 (defmethod <combo-box-popup>-set-scroll-offset-from-thumb-top ((widget <combo-box>) popup-x popup-y thumb-top)
   (combo-box-popup-set-scroll-offset-from-thumb-top widget popup-x popup-y thumb-top))
-
-(defmethod <combo-box-popup>-host-window ((widget <combo-box>))
-  (let ((popup (<combo-box>-popup-widget widget)))
-    (and popup (<combo-box-popup>-host-window popup))))
-
-(defmethod (setf <combo-box-popup>-host-window) (new-value (widget <combo-box>))
-  (let ((popup (<combo-box>-popup-widget widget)))
-    (when popup
-      (setf (<combo-box-popup>-host-window popup) new-value))
-    new-value))
 
 (defun combo-box-popup-host-window (widget)
   "Compatibility accessor: return host SDL window for combo-box WIDGET.
@@ -518,8 +527,8 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                       (setf (<combo-box>-popup-widget widget) p)
                       p))))
     (cond
-      ((and popup (<combo-box-popup>-window popup))
-       (<combo-box-popup>-window popup))
+      ((and popup (<widget>-window popup))
+       (<widget>-window popup))
       ((and (<combo-box-popup>-window-enabled-p widget)
             (<combo-box-popup>-host-window widget))
        (format t "[combo-box] ensure-popup host=~S size=~Dx~D~%"
@@ -541,7 +550,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
            (when (or (null popup-renderer) (cffi:null-pointer-p popup-renderer))
              (format t "Failed to create combo-box popup renderer: ~A~%" (sdl3:get-error))
              (return-from combo-box-ensure-popup-window nil))
-           (setf (<combo-box-popup>-window popup) popup-window
+           (setf (<widget>-window popup) popup-window
                  (<combo-box-popup>-renderer popup) popup-renderer
                  (<combo-box-popup>-window-id popup) (sdl3:get-window-id popup-window))
            ;; Register mapping from the SDL popup window id to this widget so
@@ -562,14 +571,14 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
               :dropdown-host
               :parent-id (sdl3:get-window-id (combo-box-popup-host-window widget))
               :open-p nil))
-           (<combo-box-popup>-window popup)))))))
+           (<widget>-window popup)))))))
 
 (defun combo-box-show-popup-window (widget)
   "Show popup window for WIDGET if popup mode is enabled."
   (let ((popup (<combo-box>-popup-widget widget)))
     (format t "[combo-box] show-popup enter host=~S popup=~S~%"
             (<combo-box-popup>-host-window widget)
-            (and popup (<combo-box-popup>-window popup)))
+            (and popup (<widget>-window popup)))
     (finish-output)
     (when (combo-box-ensure-popup-window widget)
       (multiple-value-bind (ok wx wy)
@@ -585,9 +594,9 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                   (<combo-box>-expanded-p widget))
           (finish-output)
           (when popup
-            (sdl3:set-window-position (<combo-box-popup>-window popup) global-x global-y)
-            (sdl3:show-window (<combo-box-popup>-window popup))
-            (sdl3:raise-window (<combo-box-popup>-window popup))
+            (sdl3:set-window-position (<widget>-window popup) global-x global-y)
+            (sdl3:show-window (<widget>-window popup))
+            (sdl3:raise-window (<widget>-window popup))
             (when (<combo-box-popup>-layer-manager popup)
               (mnas-sdl3-gui/window-manager:open-dropdown-host
                (<combo-box-popup>-layer-manager popup)
@@ -602,8 +611,8 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   (let ((popup (<combo-box>-popup-widget widget)))
     (when popup
       (setf (<combo-box-popup>-visible-p popup) nil)
-      (when (<combo-box-popup>-window popup)
-        (ignore-errors (sdl3:hide-window (<combo-box-popup>-window popup))))
+      (when (<widget>-window popup)
+        (ignore-errors (sdl3:hide-window (<widget>-window popup))))
       (when (<combo-box-popup>-layer-manager popup)
         (mnas-sdl3-gui/window-manager:close-window
          (<combo-box-popup>-layer-manager popup)
@@ -633,11 +642,11 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
       (setf old-id (<combo-box-popup>-window-id popup))
       (when (<combo-box-popup>-renderer popup)
         (sdl3:destroy-renderer (<combo-box-popup>-renderer popup)))
-      (when (<combo-box-popup>-window popup)
-        (destroy-window-and-unregister (<combo-box-popup>-window popup)
+      (when (<widget>-window popup)
+        (destroy-window-and-unregister (<widget>-window popup)
                                        :layer-manager (<combo-box-popup>-layer-manager popup))))
     (when popup
-      (setf (<combo-box-popup>-window popup) nil
+      (setf (<widget>-window popup) nil
             (<combo-box-popup>-renderer popup) nil
             (<combo-box-popup>-window-id popup) 0
             (<combo-box-popup>-layer-manager popup) nil

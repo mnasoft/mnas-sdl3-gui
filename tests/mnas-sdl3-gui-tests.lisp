@@ -12,19 +12,19 @@
   (is (search "mnas-sdl3-gui" (hello))))
 
 (test application-base-class-stores-lifecycle-state
-  (let ((app (make-instance 'mnas-sdl3-gui/app:<application>
+  (let ((app (make-instance 'mnas-sdl3-gui/app:<app>
                             :title "Demo"
                             :width 640
                             :height 360
                             :style :flat)))
-    (setf (mnas-sdl3-gui/app:app-status app) "Ready"
-          (mnas-sdl3-gui/app:app-open-p app) nil)
-    (is (string= "Demo" (mnas-sdl3-gui/app:app-title app)))
-    (is (= 640 (mnas-sdl3-gui/app:app-width app)))
-    (is (eq :flat (mnas-sdl3-gui/app:app-style app)))
-    (is (null (mnas-sdl3-gui/app:app-window app)))
-    (is (string= "Ready" (mnas-sdl3-gui/app:app-status app)))
-    (is (not (mnas-sdl3-gui/app:app-open-p app)))))
+    (setf (mnas-sdl3-gui/app:<app>-status app) "Ready"
+          (mnas-sdl3-gui/app:<app>-open-p app) nil)
+    (is (string= "Demo" (mnas-sdl3-gui/app:<app>-title app)))
+    (is (= 640 (mnas-sdl3-gui/app:<app>-width app)))
+    (is (eq :flat (mnas-sdl3-gui/app:<app>-style app)))
+    (is (null (mnas-sdl3-gui/app:<app>-window app)))
+    (is (string= "Ready" (mnas-sdl3-gui/app:<app>-status app)))
+    (is (not (mnas-sdl3-gui/app:<app>-open-p app)))))
 
 (test toolbar-button-label-initarg
   (let ((button (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
@@ -138,6 +138,15 @@
     (setf (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget) 3)
     (is (= 3 (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget)))))
 
+(test combo-box-items-initarg-uses-popup-children
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta" "gamma"))))
+    (is (not (slot-exists-p widget 'initial-items)))
+    (is (equal '("alpha" "beta" "gamma")
+               (mnas-sdl3-gui/widgets:<widget-container>-children
+                (mnas-sdl3-gui/widgets:<combo-box>-popup-widget widget))))))
+
 (test combo-box-popup-scrollbar-geometry-compatibility
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
@@ -154,7 +163,13 @@
          (host-window (make-instance 'mnas-sdl3-gui/widgets:<widget>
                                      :x 10 :y 10 :width 200 :height 100)))
     (setf (mnas-sdl3-gui/widgets:combo-box-popup-host-window widget) host-window)
+    (is (eq host-window (mnas-sdl3-gui/widgets::<widget>-window widget)))
     (is (eq host-window (mnas-sdl3-gui/widgets:combo-box-popup-host-window widget)))))
+
+(test combo-box-popup-visible-p-uses-widget-visible
+  (let ((popup (make-instance 'mnas-sdl3-gui/widgets::<combo-box-popup>)))
+    (setf (mnas-sdl3-gui/widgets:<combo-box-popup>-visible-p popup) t)
+    (is (eq t (mnas-sdl3-gui/widgets:<widget>-visible popup)))))
 
 (test combo-box-popup-mouse-down-does-not-hit-unknown-editable-type
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>

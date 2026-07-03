@@ -37,7 +37,7 @@
 
 (defmethod activate-widget ((widget <combo-box-header>))
   "Activate header by toggling owner combo-box expansion state." 
-  (let ((owner (<combo-box-header>-owner widget)))
+  (let ((owner (<widget>-owner widget)))
     (when owner
       (sync-combo-box-expanded-state owner (not (<combo-box>-expanded-p owner)))
       (when (<combo-box>-expanded-p owner)

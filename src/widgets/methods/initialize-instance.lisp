@@ -17,6 +17,8 @@
                                        &key
                                          popup-host-window
                                          popup-layer-manager
+                                         selected-index
+                                         items
                                        &allow-other-keys)
   ;; Ensure header and popup instances exist and are linked.
   (unless (<combo-box>-header-widget widget)
@@ -24,15 +26,15 @@
            (pop (make-instance '<combo-box-popup> :owner widget)))
       (setf (<combo-box>-header-widget widget) hdr
             (<combo-box>-popup-widget widget) pop
-            (<combo-box-popup>-owner pop) widget
-            (<combo-box-header>-owner hdr) widget
+            (<widget>-owner pop) widget
+            (<widget>-owner hdr) widget
             )))
-  ;; Forward any initial items passed via :items initarg to popup
-  (let ((init-items (<combo-box>-initial-items widget)))
-    (when init-items
-      (setf (children (<combo-box>-popup-widget widget)) init-items)
-      (setf (<list-box>-selected-index (<combo-box>-popup-widget widget))
-            (<combo-box-initial>-selected-index widget))))
+  ;; Forward the initial items passed via :items initarg to the popup.
+  ;; The popup keeps its own children as the single source of truth.
+  (let ((popup (<combo-box>-popup-widget widget)))
+    (when (and popup items)
+      (setf (children popup) items
+            (<list-box>-selected-index popup) (or selected-index 0))))
   (setf (<combo-box>-main-height widget) (<widget>-height widget))
   (ensure-combo-box-selection-visible widget)
   (sync-combo-box-expanded-state widget (<combo-box>-expanded-p widget))
@@ -73,7 +75,7 @@
 (defmethod finalize-instance :before ((widget <combo-box>))
   (let ((popup (<combo-box>-popup-widget widget)))
     (when (or (and popup (<combo-box-popup>-visible-p popup))
-              (and popup (<combo-box-popup>-window popup)))
+              (and popup (<widget>-window popup)))
       (ignore-errors (combo-box-disable-popup-window widget)))))
 
 (defmethod finalize-instance :after ((widget <widget>))

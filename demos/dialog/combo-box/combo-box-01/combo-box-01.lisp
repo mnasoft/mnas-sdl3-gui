@@ -9,7 +9,7 @@
          (status (format nil "Selected: ~A / ~A"
                          (mnas-sdl3-gui/widgets:<widget>-value small)
                          (mnas-sdl3-gui/widgets:<widget>-value large))))
-    (setf (mnas-sdl3-gui/app:app-status app) status)
+    (setf (mnas-sdl3-gui/app:<app>-status app) status)
     (setf (<combo-box-01-app>-demo-status app) status)))
 
 (defun sync-command-state (app)
@@ -55,12 +55,12 @@
                                             (let ((status (format nil "Selected: ~A / ~A"
                                                                   (mnas-sdl3-gui/widgets:<widget>-value small)
                                                                   (mnas-sdl3-gui/widgets:<widget>-value large))))
-                                              (setf (mnas-sdl3-gui/app:app-status app) status)
+                                              (setf (mnas-sdl3-gui/app:<app>-status app) status)
                                               (setf (<combo-box-01-app>-demo-status app) status)))))
          (widgets (list title hint small large action)))
     (setf (<combo-box-01-app>-small-widget app) small
           (combo-box-01-large-widget app) large
-          (mnas-sdl3-gui/app:app-widgets app) widgets)
+          (mnas-sdl3-gui/app:<app>-widgets app) widgets)
     (when window
       (mnas-sdl3-gui/widgets:register-widgets-for-window window widgets))
     widgets))

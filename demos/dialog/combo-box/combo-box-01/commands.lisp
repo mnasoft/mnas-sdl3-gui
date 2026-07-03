@@ -16,7 +16,7 @@
     :shortcut :escape
     :execute (lambda (context)
                (declare (ignore context))
-               (setf (mnas-sdl3-gui/app:app-open-p app) nil)
+               (setf (mnas-sdl3-gui/app:<app>-open-p app) nil)
                t))
    :replace t)
   (mnas-sdl3-gui/commands:register-command

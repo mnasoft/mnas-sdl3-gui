@@ -64,7 +64,13 @@
 		:serial t
                 :components ((:file "package")
                              (:file "classes")
-                             (:file "functions")))))
+                             (:file "generics")
+                             (:file "functions")
+                             (:file "methods/print-object")
+                             (:file "methods/initialize-application")
+                             (:file "methods/render-application")
+                             (:file "methods/handle-application-event")
+                             (:file "methods/finalize-application")))))
 
 (defsystem "mnas-sdl3-gui/window-manager"
   :description "mnas-sdl3-gui Common Lisp system"

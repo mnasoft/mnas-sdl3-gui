@@ -805,7 +805,7 @@
 
 (defmethod render (renderer (popup <combo-box-popup>) (style <windows-widget-style>))
   (declare (ignore renderer))
-  (let ((owner (<combo-box-popup>-owner popup)))
+  (let ((owner (<widget>-owner popup)))
     (when owner
       (let* ((popup-renderer (or (and (typep popup '<combo-box-popup>)
                                       (<combo-box-popup>-renderer popup))
@@ -828,7 +828,7 @@
 
 (defmethod render (renderer (popup <combo-box-popup>) (style <motif-widget-style>))
   (declare (ignore renderer))
-  (let ((owner (<combo-box-popup>-owner popup)))
+  (let ((owner (<widget>-owner popup)))
     (when owner
       (let* ((popup-renderer (or (and (typep popup '<combo-box-popup>)
                                       (<combo-box-popup>-renderer popup))
@@ -851,7 +851,7 @@
 
 (defmethod render (renderer (popup <combo-box-popup>) style)
   (declare (ignore renderer style))
-  (let ((owner (<combo-box-popup>-owner popup)))
+  (let ((owner (<widget>-owner popup)))
     (when owner
       (let* ((popup-renderer (or (and (typep popup '<combo-box-popup>)
                                       (<combo-box-popup>-renderer popup))

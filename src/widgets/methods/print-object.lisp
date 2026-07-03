@@ -132,7 +132,7 @@
     (%print-widget-core obj stream)
     (let ((items (list-box-items obj))
           (sel (<list-box>-selected-index obj))
-          (wid (and (<combo-box-popup>-window obj) (<combo-box-popup>-window-id obj))))
+          (wid (and (<widget>-window obj) (<combo-box-popup>-window-id obj))))
       (format stream " items=~A selected=~A scroll=~A window-id=~S visible=~A"
               (if items (length items) 0)
               (if (and (numberp sel) (plusp sel)) sel nil)

@@ -7,27 +7,27 @@
   (let ((app *combo-box-01-current-application*))
     (unless app
       (return-from  :failure))
-    (sdl3:set-app-metadata (mnas-sdl3-gui/app:app-title app) "1.0"
+    (sdl3:set-app-metadata (mnas-sdl3-gui/app:<app>-title app) "1.0"
                            "com.mna.sdl3.gui.combo-box.demo")
     (unless (sdl3:init :video)
       (format t "~a~%" (sdl3:get-error))
       (return-from  :failure))
     (let ((layer-manager (mnas-sdl3-gui/window-manager:make-window-layer-manager)))
-      (setf (mnas-sdl3-gui/app:app-layer-manager app) layer-manager)
+      (setf (mnas-sdl3-gui/app:<app>-layer-manager app) layer-manager)
       (multiple-value-bind (ok window renderer)
           (sdl3:create-window-and-renderer
-           (mnas-sdl3-gui/app:app-title app)
-           (mnas-sdl3-gui/app:app-width app)
-           (mnas-sdl3-gui/app:app-height app)
+           (mnas-sdl3-gui/app:<app>-title app)
+           (mnas-sdl3-gui/app:<app>-width app)
+           (mnas-sdl3-gui/app:<app>-height app)
            0)
         (if ok
             (let ((window-id (sdl3:get-window-id window))
                   (status "Use mouse, arrows, PgUp/PgDown, Return and Escape."))
-              (setf (mnas-sdl3-gui/app:app-window app) window
-                    (mnas-sdl3-gui/app:app-window-id app) window-id
-                    (mnas-sdl3-gui/app:app-renderer app) renderer
-                    (mnas-sdl3-gui/app:app-open-p app) t
-                    (mnas-sdl3-gui/app:app-status app) status)
+              (setf (mnas-sdl3-gui/app:<app>-window app) window
+                    (mnas-sdl3-gui/app:<app>-window-id app) window-id
+                    (mnas-sdl3-gui/app:<app>-renderer app) renderer
+                    (mnas-sdl3-gui/app:<app>-open-p app) t
+                    (mnas-sdl3-gui/app:<app>-status app) status)
               (mnas-sdl3-gui/window-manager:register-window
                layer-manager
                window-id
@@ -35,8 +35,8 @@
                :open-p t)
               (combo-box-01-register-commands app)
               (combo-box-01-register-shortcuts)
-              (setf (mnas-sdl3-gui/app:app-toolbar app) (combo-box-01-create-toolbar window))
-              (mnas-sdl3-gui/widgets:set-widget-style (mnas-sdl3-gui/app:app-style app))
+              (setf (mnas-sdl3-gui/app:<app>-toolbar app) (combo-box-01-create-toolbar window))
+              (mnas-sdl3-gui/widgets:set-widget-style (mnas-sdl3-gui/app:<app>-style app))
               (mnas-sdl3-gui/widgets:init-ttf-font)
               (create-widgets app window)
               (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
@@ -59,12 +59,12 @@
   (let ((app *combo-box-01-current-application*))
     (unless app
       (return-from callback-iterate :success))
-    (unless (mnas-sdl3-gui/app:app-open-p app)
+    (unless (mnas-sdl3-gui/app:<app>-open-p app)
       (return-from callback-iterate :success))
-    (let ((renderer (mnas-sdl3-gui/app:app-renderer app))
-          (window (mnas-sdl3-gui/app:app-window app))
-          (toolbar (mnas-sdl3-gui/app:app-toolbar app))
-          (status (mnas-sdl3-gui/app:app-status app)))
+    (let ((renderer (mnas-sdl3-gui/app:<app>-renderer app))
+          (window (mnas-sdl3-gui/app:<app>-window app))
+          (toolbar (mnas-sdl3-gui/app:<app>-toolbar app))
+          (status (mnas-sdl3-gui/app:<app>-status app)))
       (sdl3:set-render-draw-color renderer 240 240 240 255)
       (sdl3:render-clear renderer)
       (sync-command-state app)
@@ -89,13 +89,13 @@
   (let ((app *combo-box-01-current-application*))
     (unless app
       (return-from callback-event :continue))
-    (let* ((window (mnas-sdl3-gui/app:app-window app))
+    (let* ((window (mnas-sdl3-gui/app:<app>-window app))
            (ev (sdl3:event-unmarshal event))
            (main-id (and window (sdl3:get-window-id window)))
            (event-window-id (ignore-errors (slot-value ev 'sdl3:%window-id))))
       (typecase ev
         (sdl3:quit-event
-         (setf (mnas-sdl3-gui/app:app-open-p app) nil)
+         (setf (mnas-sdl3-gui/app:<app>-open-p app) nil)
          :success)
         (sdl3:window-event
          (let* ((associated (and event-window-id
@@ -165,7 +165,7 @@
            (unless (mnas-sdl3-gui/commands:dispatch-shortcut
                     (ignore-errors (slot-value ev 'sdl3:%key))
                     :mods (ignore-errors (slot-value ev 'sdl3:%mod))
-                    :context (list :window-id (mnas-sdl3-gui/app:app-window-id app)))
+                    :context (list :window-id (mnas-sdl3-gui/app:<app>-window-id app)))
              (mnas-sdl3-gui/widgets:handle-keyboard-event
               (mnas-sdl3-gui/widgets:widgets-for-window window)
               ev)))
@@ -175,7 +175,7 @@
 (sdl3:def-app-quit callback-quit (result)
   (let ((app *combo-box-01-current-application*))
     (when app
-      (setf (mnas-sdl3-gui/app:app-result app) result)
+      (setf (mnas-sdl3-gui/app:<app>-result app) result)
       (mnas-sdl3-gui/app:finalize-application app result))
     (mnas-sdl3-gui/app:run-quit-hooks result)
     (sdl3:pump-events)

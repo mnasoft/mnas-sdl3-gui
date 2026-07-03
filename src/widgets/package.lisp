@@ -203,7 +203,6 @@
 ;;; header/popup accessors
            #:<combo-box>-header-widget
            #:<combo-box>-popup-widget
-           #:<combo-box>-initial-items
            #:<combo-box-header>-display-text
 ;;; popup compatibility/accessors
            #:<combo-box-popup>-mode

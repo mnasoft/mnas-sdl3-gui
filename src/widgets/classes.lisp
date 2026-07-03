@@ -33,6 +33,12 @@
     :initform nil
     :accessor <widget>-window
     :documentation "SDL window object or integer id associated with this widget")
+   (owner
+    :initarg :owner
+    :initform nil
+    :accessor <widget>-owner
+    :type (or null <widget-container>)
+    :documentation "Parent widget container that owns this widget")
    (z-order
     :initarg :z-order
     :initform 0
@@ -188,21 +194,7 @@
   (:documentation "Scrollable list box widget implemented as a container with vertical layout."))
 
 (defclass <combo-box-popup> (<list-box>)
-  ((owner
-    :initarg :owner
-    :accessor <combo-box-popup>-owner
-    :documentation "Owner widget (header or combo) for this popup instance.")
-   (host-window
-    :initarg :host-window
-    :initform nil
-    :accessor <combo-box-popup>-host-window
-    :documentation "Host SDL window that owns this popup.")
-   (window
-    :initarg :window
-    :initform nil
-    :accessor <combo-box-popup>-window
-    :documentation "SDL window handle used by this popup (popups always use their own window).")
-   (renderer
+  ((renderer
     :initarg :renderer
     :initform nil
     :accessor <combo-box-popup>-renderer
@@ -211,10 +203,6 @@
     :initarg :window-id
     :initform 0 :accessor <combo-box-popup>-window-id
     :documentation "SDL window id for the popup window.")
-   (visible-p
-    :initarg :visible-p
-    :initform nil :accessor <combo-box-popup>-visible-p
-    :documentation "Whether the popup window is currently shown.")
    (layer-manager
     :initarg :layer-manager
     :initform nil
@@ -224,11 +212,7 @@
    "Popup list displayed in its own transient window; subclass of `list-box`.") )
 
 (defclass <combo-box-header> (<widget>)
-  ((owner
-    :initarg :owner
-    :accessor <combo-box-header>-owner
-    :documentation "Owner combo-box container for this header.")
-   (display-text
+  ((display-text
     :initarg :display-text
     :initform ""
     :accessor <combo-box-header>-display-text
@@ -246,16 +230,6 @@
     :initarg :popup
     :initform nil :accessor <combo-box>-popup-widget
     :documentation "Popup widget instance (a `combo-box-popup`).")
-   (initial-items
-    :initarg :items
-    :initform nil
-    :accessor <combo-box>-initial-items
-    :documentation "Compatibility initarg to supply initial items for the popup.")
-   (initial-selected-index
-    :initarg :selected-index
-    :initform 0
-    :accessor <combo-box-initial>-selected-index
-    :documentation "Compatibility initarg to set initial selected index on popup.")
    (main-height
     :initarg :main-height
     :initform 30
