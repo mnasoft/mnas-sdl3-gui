@@ -575,7 +575,7 @@
 (defun %render-combo-box-popup (renderer widget border-color popup-bg track-bg thumb-bg thumb-border)
   (%render-combo-box-popup-at renderer widget
                               (<widget>-x widget)
-                              (<combo-box-popup>-y widget)
+                              (<widget>-y widget)
                               border-color popup-bg track-bg thumb-bg thumb-border))
 
 (defun %render-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width)

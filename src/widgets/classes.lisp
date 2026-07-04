@@ -209,7 +209,22 @@
     :initarg :layer-manager
     :initform nil
     :accessor <combo-box-popup>-layer-manager
-    :documentation "Optional window-layer-manager for popup focus/z-order."))
+    :documentation "Optional window-layer-manager for popup focus/z-order.")
+   (main-height
+    :initarg :main-height
+    :initform 30
+    :accessor <combo-box>-main-height
+    :documentation "Collapsed header height used by popup compatibility paths.")
+   (expanded-p
+    :initarg :expanded-p
+    :initform nil
+    :accessor <combo-box>-expanded-p
+    :documentation "Whether popup is currently expanded.")
+   (max-visible-items
+    :initarg :max-visible-items
+    :initform 6
+    :accessor <combo-box>-max-visible-items
+    :documentation "Maximum visible rows for popup compatibility paths."))
   (:documentation
    "Popup list displayed in its own transient window; subclass of `list-box`.") )
 
@@ -246,7 +261,12 @@
     :initarg :max-visible-items
     :initform 6
     :accessor <combo-box>-max-visible-items
-    :documentation "Maximum number of visible rows in the popup list"))
+    :documentation "Maximum number of visible rows in the popup list")
+   (ignore-next-popup-mouse-down-p
+    :initarg :ignore-next-popup-mouse-down-p
+    :initform nil
+    :accessor <combo-box>-ignore-next-popup-mouse-down-p
+    :documentation "Ignore the first popup-window mouse-down after opening so a header click does not immediately collapse the popup."))
   (:documentation "Combined combo-box that manages a header and a popup list (popup always uses its own window)."))
 
 (defclass canvas-2d-widget (<widget>)

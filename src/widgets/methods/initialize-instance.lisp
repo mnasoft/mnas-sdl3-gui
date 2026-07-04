@@ -18,6 +18,11 @@
         (when (and wid (numberp wid) (> wid 0))
           (ignore-errors (register-widget-for-window-id wid widget)))))))
 
+(defmethod initialize-instance :after ((widget <combo-box-popup>)
+                                       &key (visible nil visible-supplied)
+                                       &allow-other-keys)
+  (setf (<widget>-visible widget) (if visible-supplied visible nil)))
+
 (defmethod initialize-instance :after ((widget <combo-box>)
                                        &key
                                          popup-host-window

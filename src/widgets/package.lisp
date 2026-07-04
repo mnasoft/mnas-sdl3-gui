@@ -220,6 +220,7 @@
 ;;; combo-box accessors
   (:export #:<combo-box>-expanded-p
            #:<combo-box>-max-visible-items
+           #:<combo-box>-ignore-next-popup-mouse-down-p
            #:combo-box-visible-item-count
            #:<combo-box>-main-height
            #:combo-box-content-width
@@ -242,6 +243,8 @@
            #:<combo-box-popup>-window-enabled-p
            #:combo-box-enable-popup-window
            #:combo-box-disable-popup-window
+           #:combo-box-show-popup-window
+           #:combo-box-hide-popup-window
            #:combo-box-handle-popup-mouse-down
            #:combo-box-handle-popup-mouse-up
            #:combo-box-handle-popup-mouse-motion

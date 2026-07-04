@@ -16,12 +16,17 @@
 (defmethod handle-mouse-button-event ((widgets cons) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
-         (down (slot-value ev 'sdl3:%down)))
+         (down (slot-value ev 'sdl3:%down))
+         (event-window-id (slot-value ev 'sdl3:%window-id)))
     ;; Close expanded combo-box popups that are not under the pointer (mouse-down behaviour).
+    ;; Keep popup-window events on the popup path instead of collapsing the combo-box.
     (when down
       (loop for widget in widgets
             when (and (typep widget '<combo-box>)
                       (<combo-box>-expanded-p widget)
+                      (not (and (typep (slot-value widget 'popup) '<combo-box-popup>)
+                                (= event-window-id
+                                   (<combo-box-popup>-window-id (slot-value widget 'popup)))))
                       (not (contains-point-p widget x y)))
               do (progn
                    (sync-combo-box-expanded-state widget nil)
@@ -332,7 +337,7 @@
                 (content-width (combo-box-content-width widget))
                 (item-height (item-height widget))
                 (rel-x (- x (<widget>-x widget)))
-                (rel-y (- y (<combo-box-popup>-y widget))))
+                (rel-y (- y (<widget>-y widget))))
            (cond
              ((and scrollbar-needed-p (>= rel-x content-width))
               (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
