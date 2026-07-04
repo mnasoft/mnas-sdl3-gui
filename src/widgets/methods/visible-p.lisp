@@ -11,3 +11,10 @@
 
 (defmethod visible-p ((obj <widget-container>))
   (<widget>-visible obj))
+
+(defmethod visible-p ((obj <combo-box-popup>))
+  (let ((owner (<widget>-owner obj)))
+    (or (<widget>-visible obj)
+        (and owner
+             (<combo-box>-expanded-p owner)
+             (<combo-box-popup>-window-enabled-p owner)))))

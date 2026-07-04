@@ -229,7 +229,7 @@
     (setf (mnas-sdl3-gui/widgets:<combo-box-popup>-visible-p popup) t)
     (is (eq t (mnas-sdl3-gui/widgets:<widget>-visible popup)))))
 
-(test combo-box-render-order-creates-visible-popup-proxy
+(test combo-box-render-order-creates-hidden-popup-proxy
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta")))
@@ -239,7 +239,7 @@
                                  (typep item 'mnas-sdl3-gui/widgets::<combo-box-popup>))
                                widgets)))
     (is (not (null popup-proxy)))
-    (is (eq t (mnas-sdl3-gui/widgets:<widget>-visible popup-proxy)))))
+    (is (eq nil (mnas-sdl3-gui/widgets:<widget>-visible popup-proxy)))))
 
 (test combo-box-root-handler-does-not-close-expanded-popup-for-popup-window-events
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>

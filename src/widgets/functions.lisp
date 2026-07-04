@@ -826,7 +826,7 @@ present the popup's renderer."
     (dolist (w sorted)
       (when (and (typep w '<combo-box>)
                  (<combo-box-popup>-window-enabled-p w))
-        (push (make-instance '<combo-box-popup> :owner w :visible t) popups)))
+        (push (make-instance '<combo-box-popup> :owner w) popups)))
     (append sorted (nreverse popups))))
 
 (defun widgets-in-hit-test-order (widgets)

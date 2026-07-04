@@ -263,6 +263,15 @@ Default behavior is based on widget bounds."))
   (when (visible-p widget)
     (call-next-method)))
 
+(defmethod render :around ((renderer t) (popup <combo-box-popup>) style)
+  (let ((owner (<widget>-owner popup)))
+    (if (and owner
+             (<combo-box>-expanded-p owner)
+             (<combo-box-popup>-window-enabled-p owner))
+        (call-next-method)
+        (when (visible-p popup)
+          (call-next-method)))))
+
 
 (defgeneric children (widget)
   (:documentation "Return a list of child widgets for WIDGET."))
