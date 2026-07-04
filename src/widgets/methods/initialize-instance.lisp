@@ -39,7 +39,7 @@
   (let ((popup (<combo-box>-popup-widget widget)))
     (when (and popup items)
       (setf (children popup) items
-            (<list-box>-selected-index popup) (or selected-index 0))))
+            (selected-index popup) (or selected-index 0))))
   (setf (<combo-box>-main-height widget) (<widget>-height widget))
   (ensure-combo-box-selection-visible widget)
   (sync-combo-box-expanded-state widget (<combo-box>-expanded-p widget))

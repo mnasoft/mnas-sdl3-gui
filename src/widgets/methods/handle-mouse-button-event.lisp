@@ -25,8 +25,8 @@
                       (not (contains-point-p widget x y)))
               do (progn
                    (sync-combo-box-expanded-state widget nil)
-                   (setf (<list-box>-scrollbar-dragging-p widget) nil
-                         (<list-box>-scrollbar-drag-offset widget) 0))))
+                   (setf (scrollbar-dragging-p widget) nil
+                         (scrollbar-drag-offset widget) 0))))
     ;; Dispatch to children in hit-test order. For mouse-down return the widget
     ;; that consumed the event (and set focus). For mouse-up return the widget
     ;; that consumed the up event or NIL.
@@ -189,7 +189,7 @@
              (visible-count (list-box-visible-item-count widget))
              (scrollbar-needed-p (list-box-scrollbar-needed-p widget))
              (content-width (list-box-content-width widget))
-             (item-height (<list-box>-item-height widget))
+             (item-height (item-height widget))
              (rel-x (- x (<widget>-x widget)))
              (rel-y (- y (<widget>-y widget))))
         (cond
@@ -198,21 +198,21 @@
                (list-box-scrollbar-geometry widget)
              (declare (ignore needed-p track-x track-height max-offset))
              (let ((thumb-hit-p (<= thumb-y y (+ thumb-y thumb-height))))
-               (setf (<list-box>-scrollbar-dragging-p widget) t
-                     (<list-box>-scrollbar-drag-offset widget)
+               (setf (scrollbar-dragging-p widget) t
+                     (scrollbar-drag-offset widget)
                      (if thumb-hit-p
                          (- y thumb-y)
                          (floor thumb-height 2)))
                (list-box-set-scroll-offset-from-thumb-top
                 widget
-                (- y (<list-box>-scrollbar-drag-offset widget))))))
+                (- y (scrollbar-drag-offset widget))))))
           ((and (>= rel-y 0) (>= rel-x 0) (< rel-x content-width))
-           (setf (<list-box>-scrollbar-dragging-p widget) nil)
+           (setf (scrollbar-dragging-p widget) nil)
            (let* ((row (floor rel-y item-height))
-                  (new-index (+ (<list-box>-scroll-offset widget) row)))
+                  (new-index (+ (scroll-offset widget) row)))
              (when (and (< row visible-count)
                         (< new-index (length (list-box-items widget))))
-               (setf (<list-box>-selected-index widget) new-index)
+               (setf (selected-index widget) new-index)
                (when *debug-mouse-wheel-events*
                  (format t "[click] widget=~S clicked-x=~D clicked-y=~D rel-x=~D rel-y=~D row=~D new-index=~D~%"
                          widget x y rel-x rel-y row new-index))
@@ -220,11 +220,11 @@
                 widget
                 (nth new-index (list-box-items widget))))))
           (t
-           (setf (<list-box>-scrollbar-dragging-p widget) nil)))))
+           (setf (scrollbar-dragging-p widget) nil)))))
     (when (not down)
-      (let ((dragging-p (<list-box>-scrollbar-dragging-p widget)))
-        (setf (<list-box>-scrollbar-dragging-p widget) nil
-              (<list-box>-scrollbar-drag-offset widget) 0)
+      (let ((dragging-p (scrollbar-dragging-p widget)))
+        (setf (scrollbar-dragging-p widget) nil
+              (scrollbar-drag-offset widget) 0)
         dragging-p))))
 
 (defmethod handle-mouse-button-event ((widget <editable-combo-box>) (ev sdl3:mouse-button-event))
@@ -264,7 +264,7 @@
                 (visible-count (combo-box-visible-item-count widget))
                 (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
                 (content-width (combo-box-content-width widget))
-                (item-height (<list-box>-item-height widget))
+                (item-height (item-height widget))
                 (rel-x (- x (<widget>-x widget)))
                 (rel-y (- y popup-y)))
            (cond
@@ -273,34 +273,34 @@
                   (combo-box-scrollbar-geometry widget)
                 (declare (ignore needed-p track-x track-height max-offset))
                 (let ((thumb-hit-p (<= thumb-y y (+ thumb-y thumb-height))))
-                  (setf (<list-box>-scrollbar-dragging-p widget) t
-                        (<list-box>-scrollbar-drag-offset widget)
+                  (setf (scrollbar-dragging-p widget) t
+                        (scrollbar-drag-offset widget)
                         (if thumb-hit-p
                             (- y thumb-y)
                             (floor thumb-height 2)))
                   (combo-box-set-scroll-offset-from-thumb-top
                    widget
-                   (- y (<list-box>-scrollbar-drag-offset widget))))))
+                   (- y (scrollbar-drag-offset widget))))))
              ((and (>= rel-y 0) (>= rel-x 0))
-              (setf (<list-box>-scrollbar-dragging-p widget) nil)
+              (setf (scrollbar-dragging-p widget) nil)
               (let* ((row (floor rel-y item-height))
-                     (new-index (+ (<list-box>-scroll-offset widget) row)))
+                     (new-index (+ (scroll-offset widget) row)))
                 (when (and (< row visible-count)
                            (< new-index (length (list-box-items widget))))
-                  (setf (<list-box>-selected-index widget) new-index
+                  (setf (selected-index widget) new-index
                         (<entry>-text widget) (format nil "~a" (nth new-index (list-box-items widget)))
                         (<entry>-cursor widget) (length (<entry>-text widget)))
                   (sync-combo-box-expanded-state widget nil)
                   (update-<widget>-value widget
                                        (nth new-index (list-box-items widget))))))
              (t
-              (setf (<list-box>-scrollbar-dragging-p widget) nil)
+              (setf (scrollbar-dragging-p widget) nil)
               (sync-combo-box-expanded-state widget nil)))))))
     ;; mouse-up: clear dragging state
     (unless down
-      (let ((dragging-p (<list-box>-scrollbar-dragging-p widget)))
-        (setf (<list-box>-scrollbar-dragging-p widget) nil
-              (<list-box>-scrollbar-drag-offset widget) 0)
+      (let ((dragging-p (scrollbar-dragging-p widget)))
+        (setf (scrollbar-dragging-p widget) nil
+              (scrollbar-drag-offset widget) 0)
         dragging-p))))
 
 #+nil (mnas-debug:disable)
@@ -330,7 +330,7 @@
                 (visible-count (combo-box-visible-item-count widget))
                 (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
                 (content-width (combo-box-content-width widget))
-                (item-height (<list-box>-item-height widget))
+                (item-height (item-height widget))
                 (rel-x (- x (<widget>-x widget)))
                 (rel-y (- y (<combo-box-popup>-y widget))))
            (cond
@@ -339,26 +339,26 @@
                   (combo-box-scrollbar-geometry widget)
                 (declare (ignore needed-p track-x track-height max-offset))
                 (let ((thumb-hit-p (<= thumb-y y (+ thumb-y thumb-height))))
-                  (setf (<list-box>-scrollbar-dragging-p widget) t
-                        (<list-box>-scrollbar-drag-offset widget)
+                  (setf (scrollbar-dragging-p widget) t
+                        (scrollbar-drag-offset widget)
                         (if thumb-hit-p
                             (- y thumb-y)
                             (floor thumb-height 2)))
                   (combo-box-set-scroll-offset-from-thumb-top
                    widget
-                   (- y (<list-box>-scrollbar-drag-offset widget))))))
+                   (- y (scrollbar-drag-offset widget))))))
              ((and (>= rel-y 0) (>= rel-x 0))
-              (setf (<list-box>-scrollbar-dragging-p widget) nil)
+              (setf (scrollbar-dragging-p widget) nil)
               (let* ((row (floor rel-y item-height))
-                     (new-index (+ (<list-box>-scroll-offset widget) row)))
+                     (new-index (+ (scroll-offset widget) row)))
                 (when (and (< row visible-count)
                            (< new-index (length (list-box-items widget))))
-                  (setf (<list-box>-selected-index widget) new-index)
+                  (setf (selected-index widget) new-index)
                   (sync-combo-box-expanded-state widget nil)
                   (update-<widget>-value widget
                                        (nth new-index (list-box-items widget))))))
              (t
-              (setf (<list-box>-scrollbar-dragging-p widget) nil)
+              (setf (scrollbar-dragging-p widget) nil)
               (sync-combo-box-expanded-state widget nil)))))))
         ;; If event comes from popup's own SDL window, translate to popup handlers.
         (when (and (not down) nil))
@@ -370,8 +370,8 @@
             (combo-box-handle-popup-mouse-down widget x y)
             (combo-box-handle-popup-mouse-up widget x y)))
     (unless down
-      (let ((dragging-p (<list-box>-scrollbar-dragging-p widget)))
-        (setf (<list-box>-scrollbar-dragging-p widget) nil
-              (<list-box>-scrollbar-drag-offset widget) 0)
+      (let ((dragging-p (scrollbar-dragging-p widget)))
+        (setf (scrollbar-dragging-p widget) nil
+              (scrollbar-drag-offset widget) 0)
         dragging-p))))
 

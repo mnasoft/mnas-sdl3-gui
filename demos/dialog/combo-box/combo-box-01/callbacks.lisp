@@ -2,16 +2,16 @@
 
 (defvar *combo-box-01-current-application* nil)
 
-(sdl3:def-app-init  (argc argv)
+(sdl3:def-app-init callback-init (argc argv)
   (declare (ignore argc argv))
   (let ((app *combo-box-01-current-application*))
     (unless app
-      (return-from  :failure))
+      (return-from callback-init :failure))
     (sdl3:set-app-metadata (mnas-sdl3-gui/app:<app>-title app) "1.0"
                            "com.mna.sdl3.gui.combo-box.demo")
     (unless (sdl3:init :video)
       (format t "~a~%" (sdl3:get-error))
-      (return-from  :failure))
+      (return-from callback-init :failure))
     (let ((layer-manager (mnas-sdl3-gui/window-manager:make-window-layer-manager)))
       (setf (mnas-sdl3-gui/app:<app>-layer-manager app) layer-manager)
       (multiple-value-bind (ok window renderer)

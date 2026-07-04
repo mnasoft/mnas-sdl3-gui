@@ -67,7 +67,7 @@
 (defun polyhedron-04-sync-command-state ()
   "Sync toolbar button state with polyhedron-04 commands."
   (when *polyhedron-solid-toolbar*
-    (mnas-sdl3-gui/toolbar:update-toolbar-command-state *polyhedron-solid-toolbar*)))
+    (mnas-sdl3-gui/widgets:update-toolbar-command-state *polyhedron-solid-toolbar*)))
 
 (defparameter *icosahedron-vertices*
   (let ((phi (/ (+ 1.0 (sqrt 5.0)) 2.0)))
@@ -484,7 +484,7 @@
       (polyhedron-04-register-commands)
       (polyhedron-04-register-shortcuts)
       (setf *polyhedron-solid-toolbar* (polyhedron-04-create-toolbar))
-      #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *polyhedron-solid-toolbar*)
+      #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *polyhedron-solid-toolbar*)
       (mnas-sdl3-gui/widgets:init-ttf-font)
       :continue))
 
@@ -517,10 +517,10 @@
              (let* ((mx (round (slot-value parsed 'sdl3:%x)))
                     (my (round (slot-value parsed 'sdl3:%y)))
                     (button (and *polyhedron-solid-toolbar*
-                                 (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                 (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                   *polyhedron-solid-toolbar* mx my))))
                (when button
-                 (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                 (mnas-sdl3-gui/widgets:toolbar-button-clicked
                   *polyhedron-solid-toolbar*
                   button
                   (list :window-id *polyhedron-solid-window-id*))))))

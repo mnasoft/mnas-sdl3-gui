@@ -31,7 +31,7 @@
 
 (defun tree-01-current-sort-mode ()
   "Return selected sort mode keyword from combo-box." 
-  (let* ((index (mnas-sdl3-gui/widgets:list-box-selected-index *tree-01-sort-combo*))
+  (let* ((index (mnas-sdl3-gui/widgets:selected-index *tree-01-sort-combo*))
          (items (mnas-sdl3-gui/widgets:list-box-items *tree-01-sort-combo*))
          (selected (and (<= 0 index) (< index (length items))
                         (nth index items))))
@@ -226,7 +226,7 @@
           (tree-01-register-commands)
           (tree-01-register-shortcuts)
           (setf *tree-01-toolbar* (make-tree-01-toolbar))
-          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *tree-01-toolbar*)
+          #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *tree-01-toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *tree-01-style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)
@@ -243,7 +243,7 @@
     (tree-01-sync-command-state)
       (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *tree-01-widgets*)
         do (mnas-sdl3-gui/widgets:render *tree-01-renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
-  (mnas-sdl3-gui/toolbar:render-toolbar
+  (mnas-sdl3-gui/widgets:render-toolbar
    *tree-01-toolbar*
    *tree-01-renderer*
    +tree-01-toolbar-x+
@@ -259,25 +259,21 @@
        (tree-01-command :tree-01/quit)
        :success)
       (sdl3:window-event
-       (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
-         (let* ((window-id (slot-value ev 'sdl3:%window-id))
-                (action (and *tree-01-layer-manager*
-                             (mnas-sdl3-gui/window-manager:close-action
-                              *tree-01-layer-manager*
-                              window-id))))
-           (case action
-             (:close-root
-              (tree-01-command :tree-01/quit)
-              (return-from tree-01-event :success))
-             (otherwise
-              (tree-01-command :tree-01/quit)
-              (return-from tree-01-event :success)))))
-       :continue)
+       (let ((result :continue))
+         (when (eq (slot-value ev 'sdl3:%type) :window-close-requested)
+           (let* ((window-id (slot-value ev 'sdl3:%window-id))
+                  (action (and *tree-01-layer-manager*
+                               (mnas-sdl3-gui/window-manager:close-action
+                                *tree-01-layer-manager*
+                                window-id))))
+             (when action
+               (tree-01-command :tree-01/quit)
+               (setf result :success))))
+         result))
       (sdl3:mouse-motion-event
        (mnas-sdl3-gui/widgets:handle-mouse-motion-event
         *tree-01-widgets*
         ev)
-       )
        :continue)
       (sdl3:mouse-button-event
        (when (= (slot-value ev 'sdl3:%button) +tree-01-mouse-left+)
@@ -295,13 +291,13 @@
            (when (= target-window-id *tree-01-window-id*)
              (if (and (slot-value ev 'sdl3:%down)
                       (and *tree-01-toolbar*
-                           (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                           (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                             *tree-01-toolbar*
                             (- (round (slot-value ev 'sdl3:%x)) (round +tree-01-toolbar-x+))
-                            (- (round (slot-value ev 'sdl3:%y)) (round +tree-01-toolbar-y+)))) )
-                 (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                            (- (round (slot-value ev 'sdl3:%y)) (round +tree-01-toolbar-y+)))))
+                 (mnas-sdl3-gui/widgets:toolbar-button-clicked
                   *tree-01-toolbar*
-                  (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                  (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                    *tree-01-toolbar*
                    (- (round (slot-value ev 'sdl3:%x)) (round +tree-01-toolbar-x+))
                    (- (round (slot-value ev 'sdl3:%y)) (round +tree-01-toolbar-y+)))
@@ -312,29 +308,28 @@
        (mnas-sdl3-gui/widgets:handle-mouse-wheel-event
         *tree-01-widgets*
         ev)
-       )
        :continue)
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
                   (not (slot-value ev 'sdl3:%repeat)))
-          (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
-            (target-window-id (if *tree-01-layer-manager*
-                   (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
-                   *tree-01-layer-manager*
-                   event-window-id)
-                  event-window-id)
-                   event-window-id)))
-            (when *tree-01-layer-manager*
-              (mnas-sdl3-gui/window-manager:set-focused-window
-          *tree-01-layer-manager*
-          target-window-id))
-            (unless (mnas-sdl3-gui/commands:dispatch-shortcut
-                (slot-value ev 'sdl3:%key)
-                :mods (slot-value ev 'sdl3:%mod)
-                :context (list :window-id target-window-id))
-                    (mnas-sdl3-gui/widgets:handle-keyboard-event
-                     *tree-01-widgets*
-                     ev))))
+         (let* ((event-window-id (slot-value ev 'sdl3:%window-id))
+                (target-window-id (if *tree-01-layer-manager*
+                                       (or (mnas-sdl3-gui/window-manager:keyboard-target-window-id
+                                            *tree-01-layer-manager*
+                                            event-window-id)
+                                           event-window-id)
+                                       event-window-id)))
+           (when *tree-01-layer-manager*
+             (mnas-sdl3-gui/window-manager:set-focused-window
+              *tree-01-layer-manager*
+              target-window-id))
+           (unless (mnas-sdl3-gui/commands:dispatch-shortcut
+                    (slot-value ev 'sdl3:%key)
+                    :mods (slot-value ev 'sdl3:%mod)
+                    :context (list :window-id target-window-id))
+             (mnas-sdl3-gui/widgets:handle-keyboard-event
+              *tree-01-widgets*
+              ev))))
        :continue)
       (sdl3:text-input-event
        (mnas-sdl3-gui/widgets:handle-text-input-event

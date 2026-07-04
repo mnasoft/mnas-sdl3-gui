@@ -103,6 +103,54 @@ Returns the window id that was processed or NIL."
 (defparameter +layout-font-text-height+ 16)
 (defparameter +list-box-scrollbar-width+ 12)
 
+(defun check-box-checked (widget)
+  "Compatibility wrapper for old demos using check-box-checked."
+  (if (typep widget '<check-box>)
+      (<check-box>-checked widget)
+      nil))
+
+(defun entry-text (widget)
+  "Compatibility wrapper for old demos using entry-text."
+  (if (typep widget '<entry>)
+      (<entry>-text widget)
+      nil))
+
+(defun entry-cursor (widget)
+  "Compatibility wrapper for old demos using entry-cursor."
+  (if (typep widget '<entry>)
+      (<entry>-cursor widget)
+      nil))
+
+(defun label-text (widget)
+  "Compatibility wrapper for old demos using label-text."
+  (if (typep widget '<label>)
+      (<label>-text widget)
+      nil))
+
+(defun tree-node-path (node)
+  "Compatibility wrapper for old demos using tree-node-path."
+  (if (typep node '<tree-node>)
+      (<tree-node>-path node)
+      nil))
+
+(defun tree-node-text (node)
+  "Compatibility wrapper for old demos using tree-node-text."
+  (if (typep node '<tree-node>)
+      (<tree-node>-text node)
+      nil))
+
+(defun tree-node-children (node)
+  "Compatibility wrapper for old demos using tree-node-children."
+  (if (typep node '<tree-node>)
+      (<tree-node>-children node)
+      nil))
+
+(defun tree-node-kind (node)
+  "Compatibility wrapper for old demos using tree-node-kind."
+  (if (typep node '<tree-node>)
+      (<tree-node>-kind node)
+      nil))
+
 (defun make-tree-node (&key id text kind path children children-loaded-p
                             modified-time expanded-p data)
   "Create a <TREE-NODE> instance." 
@@ -668,7 +716,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   "Return how many list-box rows fit into WIDGET's current height."
   (max 1
        (floor (max 1 (- (<widget>-height widget) 4))
-              (max 1 (list-box-item-height widget)))))
+              (max 1 (item-height widget)))))
 
 (defun list-box-max-scroll-offset (widget)
   "Return the largest valid first-visible row index for WIDGET."
@@ -683,9 +731,9 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
 
 (defun normalize-list-box-scroll-offset (widget)
   "Clamp WIDGET scroll offset to the visible item range."
-  (setf (list-box-scroll-offset widget)
+  (setf (scroll-offset widget)
         (max 0
-             (min (list-box-scroll-offset widget)
+             (min (scroll-offset widget)
                   (list-box-max-scroll-offset widget)))))
 
 (defun ensure-list-box-selection-visible (widget)
@@ -694,16 +742,16 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
          (visible-count (list-box-visible-item-count widget))
          (max-offset (list-box-max-scroll-offset widget))
          (selected-index (if (plusp item-count)
-                             (max 0 (min (list-box-selected-index widget) (1- item-count)))
+                             (max 0 (min (selected-index widget) (1- item-count)))
                              0))
-         (scroll-offset (max 0 (min (list-box-scroll-offset widget) max-offset))))
+         (scroll-offset (max 0 (min (scroll-offset widget) max-offset))))
     (cond
       ((< selected-index scroll-offset)
        (setf scroll-offset selected-index))
       ((>= selected-index (+ scroll-offset visible-count))
        (setf scroll-offset (1+ (- selected-index visible-count)))))
-    (setf (list-box-selected-index widget) selected-index
-          (list-box-scroll-offset widget) (max 0 (min scroll-offset max-offset)))))
+    (setf (selected-index widget) selected-index
+          (scroll-offset widget) (max 0 (min scroll-offset max-offset)))))
 
 (defun list-box-content-width (widget)
   "Return the drawable content width of WIDGET excluding scrollbar if present."
@@ -730,7 +778,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                            (if (zerop max-offset)
                                0
                                (round (* thumb-travel
-                                         (/ (list-box-scroll-offset widget) max-offset)))))))
+                                         (/ (scroll-offset widget) max-offset)))))))
           (values t track-x track-y track-height thumb-y thumb-height max-offset)))))
 
 (defun list-box-set-scroll-offset-from-thumb-top (widget thumb-top)
@@ -744,7 +792,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                                      (min thumb-top
                       (+ track-y thumb-travel))))
              (relative-top (- clamped-thumb-top track-y)))
-        (setf (list-box-scroll-offset widget)
+        (setf (scroll-offset widget)
               (if (zerop max-offset)
                   0
                   (round (* max-offset (/ relative-top thumb-travel))))))

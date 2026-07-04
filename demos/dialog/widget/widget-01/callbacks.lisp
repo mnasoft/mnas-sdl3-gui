@@ -86,12 +86,12 @@
                              (<= x (+ (round +toolbar-x+) (round +toolbar-width+)))
                              (>= y (round +toolbar-y+))
                              (<= y (+ (round +toolbar-y+) (round +toolbar-height+))))
-                        (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                        (let ((button (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                        *toolbar*
                                        (- x (round +toolbar-x+))
                                        (- y (round +toolbar-y+)))))
                           (when button
-                            (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                            (mnas-sdl3-gui/widgets:toolbar-button-clicked
                              *toolbar*
                              button
                              (list :x x :y y))))

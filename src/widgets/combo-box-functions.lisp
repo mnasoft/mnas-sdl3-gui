@@ -2,24 +2,8 @@
 
 (in-package :mnas-sdl3-gui/widgets)
 
-;; Compatibility generics for list-box slot accessors so callers can pass
-;; either a `list-box`/`combo-box-popup` or the owning `combo-box`.
-(defgeneric <list-box>-items (widget)
-  (:documentation "Return the item list from the inherited children container state."))
-
-(defgeneric (setf <list-box>-items) (new-value widget)
-  (:documentation "Store the item list into the inherited children container state."))
-
-(defmethod <list-box>-items ((w <widget-container>))
-  (<widget-container>-children w))
-
-(defmethod (setf <list-box>-items) (new-value (w <widget-container>))
-  (setf (<widget-container>-children w) new-value)
-  new-value)
-
-(defgeneric list-box-items (widget)
-  (:documentation "Return items list for LIST-BOX or combo-box via its popup."))
-
+;; Compatibility helpers for list-box items operate directly on the
+;; inherited children container state.
 (defun normalize-list-box-item (item)
   "Convert ITEM into a <list-box-item> object when needed."
   (cond
@@ -39,178 +23,155 @@ remain intact so existing callers can still work with strings or widgets."
       (<list-box-item>-text item)
       item))
 
-(defgeneric (setf list-box-items) (new-value widget)
-  (:documentation "Set items list for LIST-BOX or combo-box via its popup."))
+(defun list-box-items (widget)
+  "Return items list for LIST-BOX or combo-box via its popup."
+  (cond
+    ((typep widget '<combo-box>)
+     (let ((popup (<combo-box>-popup-widget widget)))
+       (when popup (list-box-items popup))))
+    ((typep widget '<widget-container>)
+     (mapcar #'list-box-item-display-value (<widget-container>-children widget)))
+    (t nil)))
 
-(defgeneric list-box-scroll-offset (widget)
-  (:documentation "Return scroll offset for LIST-BOX or combo-box via its popup."))
+(defun (setf list-box-items) (new-value widget)
+  "Set items list for LIST-BOX or combo-box via its popup."
+  (cond
+    ((typep widget '<combo-box>)
+     (let ((popup (<combo-box>-popup-widget widget)))
+       (when popup (setf (list-box-items popup) new-value))))
+    ((typep widget '<widget-container>)
+     (setf (<widget-container>-children widget) (normalize-list-box-items new-value)))
+    (t nil))
+  new-value)
 
-(defgeneric list-box-item-height (widget)
+(defgeneric item-height (widget)
   (:documentation "Return per-item height for LIST-BOX or combo-box via its popup."))
 
-(defgeneric list-box-scrollbar-dragging-p (widget)
+(defgeneric scrollbar-dragging-p (widget)
   (:documentation "Return scrollbar dragging flag for LIST-BOX or combo-box via its popup."))
 
-(defgeneric list-box-scrollbar-drag-offset (widget)
+(defgeneric scrollbar-drag-offset (widget)
   (:documentation "Return scrollbar drag offset for LIST-BOX or combo-box via its popup."))
 
-(defmethod list-box-items ((w <widget-container>))
-  (mapcar #'list-box-item-display-value (<widget-container>-children w)))
+(defmethod selected-index ((w <list-box>))
+  (selected-index w))
 
-(defmethod (setf list-box-items) (new-value (w <widget-container>))
-  (setf (<widget-container>-children w) (normalize-list-box-items new-value))
-  new-value)
-
-(defmethod list-box-items ((w <list-box>))
-  (mapcar #'list-box-item-display-value (<list-box>-items w)))
-
-(defmethod (setf list-box-items) (new-value (w <list-box>))
-  (setf (<list-box>-items w) (normalize-list-box-items new-value))
-  new-value)
-
-(defmethod list-box-selected-index ((w <list-box>))
-  (slot-value w 'selected-index))
-
-(defmethod list-box-scroll-offset ((w <list-box>))
-  (slot-value w 'scroll-offset))
-
-(defmethod list-box-item-height ((w <list-box>))
+(defmethod item-height ((w <list-box>))
   (slot-value w 'item-height))
 
-(defmethod list-box-scrollbar-dragging-p ((w <list-box>))
+(defmethod (setf item-height) (new-value (w <list-box>))
+  (setf (slot-value w 'item-height) new-value)
+  new-value)
+
+(defmethod scrollbar-dragging-p ((w <list-box>))
   (slot-value w 'scrollbar-dragging-p))
 
-(defmethod list-box-scrollbar-drag-offset ((w <list-box>))
+(defmethod scrollbar-drag-offset ((w <list-box>))
   (slot-value w 'scrollbar-drag-offset))
 
-(defmethod <list-box>-selected-index ((w <combo-box>))
+(defmethod selected-index ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (if p (slot-value p 'selected-index) 0)))
+    (if p (selected-index p) 0)))
 
-(defmethod (setf <list-box>-selected-index) (new-value (w <combo-box>))
+(defmethod (setf selected-index) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (slot-value p 'selected-index) new-value)))
+    (when p (setf (selected-index p) new-value)))
   new-value)
 
-(defmethod <list-box>-scroll-offset ((w <combo-box>))
+(defmethod scroll-offset ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (if p (slot-value p 'scroll-offset) 0)))
+    (if p (scroll-offset p) 0)))
 
-(defmethod (setf <list-box>-scroll-offset) (new-value (w <combo-box>))
+(defmethod (setf scroll-offset) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (slot-value p 'scroll-offset) new-value)))
+    (when p (setf (scroll-offset p) new-value)))
   new-value)
 
-(defmethod <list-box>-item-height ((w <combo-box>))
+(defmethod item-height ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (if p (slot-value p 'item-height) 24)))
+    (if p (item-height p) 24)))
 
-(defmethod (setf <list-box>-item-height) (new-value (w <combo-box>))
+(defmethod (setf item-height) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (slot-value p 'item-height) new-value)))
+    (when p (setf (item-height p) new-value)))
   new-value)
 
-(defmethod <list-box>-scrollbar-dragging-p ((w <combo-box>))
+(defmethod scrollbar-dragging-p ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (if p (slot-value p 'scrollbar-dragging-p) nil)))
+    (if p (scrollbar-dragging-p p) nil)))
 
-(defmethod (setf <list-box>-scrollbar-dragging-p) (new-value (w <combo-box>))
+(defmethod (setf scrollbar-dragging-p) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (slot-value p 'scrollbar-dragging-p) new-value)))
+    (when p (setf (scrollbar-dragging-p p) new-value)))
   new-value)
 
-(defmethod <list-box>-scrollbar-drag-offset ((w <combo-box>))
+(defmethod scrollbar-drag-offset ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (if p (slot-value p 'scrollbar-drag-offset) 0)))
+    (if p (scrollbar-drag-offset p) 0)))
 
-(defmethod (setf <list-box>-scrollbar-drag-offset) (new-value (w <combo-box>))
+(defmethod (setf scrollbar-drag-offset) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (slot-value p 'scrollbar-drag-offset) new-value)))
+    (when p (setf (scrollbar-drag-offset p) new-value)))
   new-value)
 
 
-;; For combo-box instances forward to the popup instance.
-(defmethod list-box-items ((w <combo-box>))
+(defmethod selected-index ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (list-box-items p))))
+    (when p (selected-index p))))
 
-(defmethod list-box-selected-index ((w <combo-box>))
+(defmethod scrollbar-dragging-p ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (list-box-selected-index p))))
+    (when p (scrollbar-dragging-p p))))
 
-(defmethod list-box-scroll-offset ((w <combo-box>))
+
+(defmethod scrollbar-drag-offset ((w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (list-box-scroll-offset p))))
-
-(defmethod list-box-item-height ((w <combo-box>))
-      (let ((p (<combo-box>-popup-widget w)))
-        (when p (list-box-item-height p))))
-
-(defmethod list-box-scrollbar-dragging-p ((w <combo-box>))
-  (let ((p (<combo-box>-popup-widget w)))
-    (when p (list-box-scrollbar-dragging-p p))))
-
-
-(defmethod list-box-scrollbar-drag-offset ((w <combo-box>))
-  (let ((p (<combo-box>-popup-widget w)))
-    (when p (list-box-scrollbar-drag-offset p))))
+    (when p (scrollbar-drag-offset p))))
 
     ;; Setf generics and methods -------------------------------------------------
 
-(defgeneric (setf list-box-selected-index) (new-value widget)
+(defgeneric (setf selected-index) (new-value widget)
   (:documentation "Set selected index for LIST-BOX or combo-box via its popup."))
 
-(defgeneric (setf list-box-scroll-offset) (new-value widget)
-  (:documentation "Set scroll offset for LIST-BOX or combo-box via its popup."))
-
-(defgeneric (setf list-box-scrollbar-dragging-p) (new-value widget)
+(defgeneric (setf scrollbar-dragging-p) (new-value widget)
   (:documentation "Set scrollbar dragging flag for LIST-BOX or combo-box via its popup."))
 
-(defgeneric (setf list-box-scrollbar-drag-offset) (new-value widget)
+(defgeneric (setf scrollbar-drag-offset) (new-value widget)
   (:documentation "Set scrollbar drag offset for LIST-BOX or combo-box via its popup."))
 
-(defmethod (setf list-box-selected-index) (new-value (w <list-box>))
-      (setf (slot-value w 'selected-index) new-value)
-      new-value)
-
-(defmethod (setf list-box-scroll-offset) (new-value (w <list-box>))
-  (setf (slot-value w 'scroll-offset) new-value)
+(defmethod (setf selected-index) (new-value (w <list-box>))
+  (setf (slot-value w 'selected-index) new-value)
   new-value)
 
-(defmethod (setf list-box-scrollbar-dragging-p) (new-value (w <list-box>))
+(defmethod (setf scrollbar-dragging-p) (new-value (w <list-box>))
   (setf (slot-value w 'scrollbar-dragging-p) new-value)
   new-value)
 
-(defmethod (setf list-box-scrollbar-drag-offset) (new-value (w <list-box>))
+(defmethod (setf scrollbar-drag-offset) (new-value (w <list-box>))
   (setf (slot-value w 'scrollbar-drag-offset) new-value)
   new-value)
 
 ;; Forwarding setf methods for combo-box that delegate to popup widget.
-(defmethod (setf list-box-selected-index) (new-value (w <combo-box>))
+(defmethod (setf selected-index) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (list-box-selected-index p) new-value))
+    (when p (setf (selected-index p) new-value))
     new-value))
 
-(defmethod (setf list-box-scroll-offset) (new-value (w <combo-box>))
+(defmethod (setf scrollbar-dragging-p) (new-value (w <combo-box>))
   (let ((p (<combo-box>-popup-widget w)))
-    (when p (setf (list-box-scroll-offset p) new-value))
+    (when p (setf (scrollbar-dragging-p p) new-value))
     new-value))
 
-(defmethod (setf list-box-scrollbar-dragging-p) (new-value (w <combo-box>))
-      (let ((p (<combo-box>-popup-widget w)))
-        (when p (setf (list-box-scrollbar-dragging-p p) new-value))
-        new-value))
-
-(defmethod (setf list-box-scrollbar-drag-offset) (new-value (w <combo-box>))
-      (let ((p (<combo-box>-popup-widget w)))
-        (when p (setf (list-box-scrollbar-drag-offset p) new-value))
-        new-value))
+(defmethod (setf scrollbar-drag-offset) (new-value (w <combo-box>))
+  (let ((p (<combo-box>-popup-widget w)))
+    (when p (setf (scrollbar-drag-offset p) new-value))
+    new-value))
 
 (defun combo-box-selected-item (widget)
   "Return currently selected item of combo-box WIDGET, or NIL when unavailable."
   (let* ((popup (<combo-box>-popup-widget widget))
          (items (and popup (list-box-items popup)))
-         (index (and popup (list-box-selected-index popup))))
+         (index (and popup (selected-index popup))))
     (when (and items (<= 0 index) (< index (length items)))
       (nth index items))))
 
@@ -337,10 +298,10 @@ If ITEM already exists, it becomes selected instead of duplicated."
     (when popup
       (if index
           (when select
-            (setf (list-box-selected-index popup) index))
+            (setf (selected-index popup) index))
           (progn
             (setf (list-box-items popup) (append items (list item))
-                  (list-box-selected-index popup) (1- (length (list-box-items popup))))))))
+                  (selected-index popup) (1- (length (list-box-items popup))))))))
     (when select
       (update-<widget>-value widget item))
   widget)
@@ -419,9 +380,9 @@ New model: popups always use their own window when present."
 (defun normalize-combo-box-scroll-offset (widget)
   "Clamp combo-box popup scroll offset for WIDGET." 
   (let ((popup (<combo-box>-popup-widget widget)))
-    (setf (list-box-scroll-offset popup)
+    (setf (scroll-offset popup)
     (max 0
-      (min (list-box-scroll-offset popup)
+      (min (scroll-offset popup)
         (combo-box-max-scroll-offset widget))))))
 
 (defun ensure-combo-box-selection-visible (widget)
@@ -431,16 +392,16 @@ New model: popups always use their own window when present."
          (visible-count (combo-box-visible-item-count widget))
          (max-offset (combo-box-max-scroll-offset widget))
          (selected-index (if (plusp item-count)
-                             (max 0 (min (list-box-selected-index popup) (1- item-count)))
+                             (max 0 (min (selected-index popup) (1- item-count)))
                              0))
-         (scroll-offset (max 0 (min (list-box-scroll-offset popup) max-offset))))
+         (scroll-offset (max 0 (min (scroll-offset popup) max-offset))))
     (cond
       ((< selected-index scroll-offset)
        (setf scroll-offset selected-index))
       ((>= selected-index (+ scroll-offset visible-count))
        (setf scroll-offset (1+ (- selected-index visible-count)))))
-    (setf (list-box-selected-index popup) selected-index
-          (list-box-scroll-offset popup) (max 0 (min scroll-offset max-offset)))))
+    (setf (selected-index popup) selected-index
+          (scroll-offset popup) (max 0 (min scroll-offset max-offset)))))
 
 (defun combo-box-popup-y (widget)
   "Return popup top Y coordinate for combo-box WIDGET." 
@@ -450,7 +411,7 @@ New model: popups always use their own window when present."
   "Return popup height for combo-box WIDGET." 
   (let ((popup (<combo-box>-popup-widget widget)))
     (+ 2 (* (combo-box-visible-item-count widget)
-            (list-box-item-height popup)))))
+            (item-height popup)))))
 
 (defun combo-box-content-width (widget)
   "Return popup content width excluding scrollbar when present." 
@@ -478,7 +439,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                            (if (zerop max-offset)
                                0
                                (round (* thumb-travel
-                                         (/ (list-box-scroll-offset popup) max-offset)))))))
+                                         (/ (scroll-offset popup) max-offset)))))))
           (values t track-x track-y track-height thumb-y thumb-height max-offset)))))
 
 (defun combo-box-popup-scrollbar-geometry (widget popup-x popup-y)
@@ -499,7 +460,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                            (if (zerop max-offset)
                                0
                                (round (* thumb-travel
-                                         (/ (list-box-scroll-offset popup) max-offset)))))))
+                                         (/ (scroll-offset popup) max-offset)))))))
           (values t track-x track-y track-height thumb-y thumb-height max-offset)))))
 
 (defun combo-box-set-scroll-offset-from-thumb-top (widget thumb-top)
@@ -514,7 +475,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                                      (min thumb-top
                                           (+ track-y thumb-travel))))
              (relative-top (- clamped-thumb-top track-y)))
-        (setf (list-box-scroll-offset popup)
+        (setf (scroll-offset popup)
               (if (zerop max-offset)
                   0
                   (round (* max-offset (/ relative-top thumb-travel)))))
@@ -532,7 +493,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
                                      (min thumb-top
                                           (+ track-y thumb-travel))))
              (relative-top (- clamped-thumb-top track-y)))
-        (setf (list-box-scroll-offset popup)
+        (setf (scroll-offset popup)
               (if (zerop max-offset)
                   0
                   (round (* max-offset (/ relative-top thumb-travel)))))
@@ -676,7 +637,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   "Handle mouse-down inside popup window for WIDGET with local X/Y coords." 
   (normalize-combo-box-scroll-offset widget)
   (let* ((popup (<combo-box>-popup-widget widget))
-         (item-height (and popup (list-box-item-height popup)))
+         (item-height (and popup (item-height popup)))
          (visible-count (combo-box-visible-item-count widget))
          (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
          (content-width (combo-box-content-width widget))
@@ -692,23 +653,23 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
          (declare (ignore needed-p track-x track-height max-offset))
          (let ((thumb-hit-p (<= thumb-y y (+ thumb-y thumb-height))))
            (when popup
-             (setf (list-box-scrollbar-dragging-p popup) t
-                   (list-box-scrollbar-drag-offset popup)
+             (setf (scrollbar-dragging-p popup) t
+                   (scrollbar-drag-offset popup)
                    (if thumb-hit-p
                        (- y thumb-y)
                        (floor thumb-height 2)))
              (<combo-box-popup>-set-scroll-offset-from-thumb-top widget 0 0
-                                                               (- y (list-box-scrollbar-drag-offset popup)))))))
+                                                               (- y (scrollbar-drag-offset popup)))))))
       ((>= rel-y 0)
-       (when popup (setf (list-box-scrollbar-dragging-p popup) nil))
+       (when popup (setf (scrollbar-dragging-p popup) nil))
        (let* ((row (floor rel-y item-height))
-              (new-index (+ (and popup (list-box-scroll-offset popup)) row)))
+              (new-index (+ (and popup (scroll-offset popup)) row)))
        (format t "[combo-box] compute row=~A new-index=~A visible-count=~A items=~A~%"
          row new-index visible-count (and popup (length (list-box-items popup))))
        (finish-output)
          (when (and popup (< row visible-count)
                     (< new-index (length (list-box-items popup))))
-           (setf (list-box-selected-index popup) new-index)
+           (setf (selected-index popup) new-index)
            (when (typep widget '<editable-combo-box>)
              (setf (<entry>-text widget) (format nil "~a" (nth new-index (list-box-items popup)))
                    (<entry>-cursor widget) (length (<entry>-text widget)))
@@ -717,7 +678,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
            (update-<widget>-value widget
                                 (nth new-index (list-box-items popup))))))
       (t
-       (when popup (setf (list-box-scrollbar-dragging-p popup) nil))
+       (when popup (setf (scrollbar-dragging-p popup) nil))
        (sync-combo-box-expanded-state widget nil)))
     t))
 
@@ -727,18 +688,18 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   (let ((popup (<combo-box>-popup-widget widget))
         (dragging-p nil))
     (when popup
-      (setf dragging-p (list-box-scrollbar-dragging-p popup))
-      (setf (list-box-scrollbar-dragging-p popup) nil
-            (list-box-scrollbar-drag-offset popup) 0))
+      (setf dragging-p (scrollbar-dragging-p popup))
+      (setf (scrollbar-dragging-p popup) nil
+            (scrollbar-drag-offset popup) 0))
     dragging-p))
 
 (defun combo-box-handle-popup-mouse-motion (widget x y)
   "Handle mouse-motion inside popup window for WIDGET." 
   (let ((popup (<combo-box>-popup-widget widget)))
-    (when (and popup (list-box-scrollbar-dragging-p popup))
+    (when (and popup (scrollbar-dragging-p popup))
       (<combo-box-popup>-set-scroll-offset-from-thumb-top
        widget 0 0
-       (- y (list-box-scrollbar-drag-offset popup)))
+       (- y (scrollbar-drag-offset popup)))
       t)))
 
 (defun combo-box-handle-popup-mouse-wheel (widget dy)

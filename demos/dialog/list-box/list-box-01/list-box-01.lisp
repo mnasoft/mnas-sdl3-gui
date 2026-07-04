@@ -36,11 +36,11 @@
          (left-index
            (and
             *left*
-            (mnas-sdl3-gui/widgets:list-box-selected-index *left*)))
+            (mnas-sdl3-gui/widgets:selected-index *left*)))
          (right-index
            (and
             *right*
-            (mnas-sdl3-gui/widgets:list-box-selected-index *right*))))
+            (mnas-sdl3-gui/widgets:selected-index *right*))))
     (when ok-cmd
       (mnas-sdl3-gui/commands:set-command-enabled
        ok-cmd
@@ -94,9 +94,9 @@
            :on-click (lambda (widget)
                        (declare (ignore widget))
                        (setf *result*
-                             (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *left*)
+                             (list :left (nth (mnas-sdl3-gui/widgets:selected-index *left*)
                                               (mnas-sdl3-gui/widgets:list-box-items *left*))
-                                   :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *right*)
+                                   :right (nth (mnas-sdl3-gui/widgets:selected-index *right*)
                                                (mnas-sdl3-gui/widgets:list-box-items *right*)))
                              *open* nil)))
           *cancel*

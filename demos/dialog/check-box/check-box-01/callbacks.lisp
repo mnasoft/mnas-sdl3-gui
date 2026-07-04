@@ -76,7 +76,10 @@
         (mnas-sdl3-gui/widgets:widgets-for-window *window*)
         ev)
        :continue)
-      (sdl3:keyboard-event (mnas-sdl3-gui/widgets:handle-keyboard-event (widgets) ev))
+      (sdl3:keyboard-event
+       (mnas-sdl3-gui/widgets:handle-keyboard-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev))
+      
       #+nil
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)

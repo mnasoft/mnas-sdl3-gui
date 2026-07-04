@@ -6,6 +6,17 @@
 ;;; base widget class
   (:export #:widget
            #:<widget>
+           #:toolbar
+           #:toolbar-button
+           #:button
+           #:toggle
+           #:check-box
+           #:entry
+           #:list-box
+           #:combo-box
+           #:editable-combo-box
+           #:label
+           #:tree-view
            #:<widget>-x
            #:<widget>-y
            #:<widget>-width
@@ -191,9 +202,19 @@
            #:<entry>-scroll-to-end)
 ;;; list-box accessors
   (:export #:list-box-items
-           #:list-box-selected-index
+           #:selected-index
+           #:check-box-checked
+           #:entry-text
+           #:entry-cursor
+           #:label-text
+           #:tree-node-path
+           #:tree-node-text
+           #:tree-node-children
+           #:tree-node-kind
+           #:scroll-offset
+           #:scrollbar-drag-offset
+           #:item-height
            #:list-box-scroll-offset
-           #:list-box-item-height
            #:list-box-layout
            #:list-box-has-scrollbar)
 ;;; combo-box accessors
@@ -257,7 +278,8 @@
            #:render-toolbar
            #:toolbar-buttons-at-position
            #:toolbar-button-clicked
-           )
+           #:update-toolbar-command-state
+           #:register-toolbar-for-command-updates)
 ;;; TTF/font rendering
   (:export #:render-text-with-ttf
            #:*ttf-available-p*

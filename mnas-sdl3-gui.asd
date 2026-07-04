@@ -13,7 +13,7 @@
                "mnas-sdl3-gui/menu")
   :serial t
   :components ((:file "src/mnas-sdl3-gui")
-
+               
                
                #+nil (:file "src/toolbar/package")
                #+nil (:file "src/toolbar/methods/compatibility")
@@ -412,7 +412,9 @@
 
 (defsystem "mnas-sdl3-gui/demos/dialog/window-01"
   :description "Demos for mnas-sdl3-gui"
-  :depends-on ("mnas-sdl3-gui")
+  :depends-on ("mnas-sdl3-gui"
+               "mnas-sdl3-gui/demos/dialog/window-02"
+               "mnas-sdl3-gui/demos/dialog/window-03")
   :serial t
   :components ((:module "demos/dialog/window/window-01"
                 :serial t

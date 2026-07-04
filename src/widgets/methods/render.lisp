@@ -149,6 +149,26 @@
             (format *error-output* "Error executing toolbar command ~S: ~S~%" cmd-id e)))))
     button))
 
+(defun update-toolbar-command-state (toolbar)
+  "Synchronize toolbar button state from registered commands."
+  (when (and (typep toolbar '<toolbar>) (children toolbar))
+    (dolist (child (children toolbar))
+      (when (typep child '<toolbar-button>)
+        (let ((cmd-id (<toolbar-button>-command-id child)))
+          (when cmd-id
+            (let ((cmd (mnas-sdl3-gui/commands:find-command cmd-id)))
+              (when cmd
+                (setf (<toolbar-button>-checked-p child)
+                      (mnas-sdl3-gui/commands:command-checked cmd))
+                (setf (<widget>-visible child)
+                      (mnas-sdl3-gui/commands:command-visible cmd))))))))
+    toolbar))
+
+(defun register-toolbar-for-command-updates (toolbar)
+  "Register TOOLBAR as a command-state consumer for future updates."
+  (declare (ignore toolbar))
+  nil)
+
 (defmethod render (renderer (widget canvas-2d-widget) style)
   (declare (ignore style))
   (fill-rect renderer (<widget>-x widget) (<widget>-y widget)
@@ -487,7 +507,7 @@
          (item-count (length items))
          (scrollbar-needed-p (list-box-scrollbar-needed-p widget))
          (content-width (list-box-content-width widget))
-         (scroll-offset (<list-box>-scroll-offset widget)))
+         (scroll-offset (scroll-offset widget)))
     (fill-rect renderer (<widget>-x widget) (<widget>-y widget)
                (<widget>-width widget) (<widget>-height widget)
                +color-bg+)
@@ -497,15 +517,15 @@
     (loop for i from scroll-offset below (min item-count (+ scroll-offset visible-count))
           for item in (nthcdr scroll-offset items)
           for row from 0
-          for item-y = (+ (<widget>-y widget) (* row (<list-box>-item-height widget)))
+          for item-y = (+ (<widget>-y widget) (* row (item-height widget)))
           do (progn
-               (when (= i (<list-box>-selected-index widget))
+               (when (= i (selected-index widget))
                  (fill-rect renderer (<widget>-x widget) item-y
-                            content-width (<list-box>-item-height widget)
+                            content-width (item-height widget)
                             +color-highlight+))
                (render-text renderer (format nil "~a" (list-box-item-display-value item))
                             (+ (<widget>-x widget) +widget-padding+)
-                            (+ item-y (/ (- (<list-box>-item-height widget) +font-text-height+) 2))
+                            (+ item-y (/ (- (item-height widget) +font-text-height+) 2))
                             +color-text+)))
     (when scrollbar-needed-p
       (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
@@ -524,7 +544,7 @@
          (item-count (length items))
          (scrollbar-needed-p (combo-box-scrollbar-needed-p widget))
          (content-width (combo-box-content-width widget))
-         (scroll-offset (<list-box>-scroll-offset widget))
+         (scroll-offset (scroll-offset widget))
          (popup-height (<combo-box-popup>-height widget)))
     (fill-rect renderer popup-x popup-y
                (<widget>-width widget) popup-height popup-bg)
@@ -533,15 +553,15 @@
     (loop for index from scroll-offset below (min item-count (+ scroll-offset visible-count))
           for item in (nthcdr scroll-offset items)
           for row from 0
-          for item-y = (+ popup-y 1 (* row (<list-box>-item-height widget)))
+          for item-y = (+ popup-y 1 (* row (item-height widget)))
           do (progn
-               (when (= index (<list-box>-selected-index widget))
+               (when (= index (selected-index widget))
                  (fill-rect renderer popup-x item-y
-                            content-width (<list-box>-item-height widget)
+                            content-width (item-height widget)
                             +color-highlight+))
                (render-text renderer (format nil "~a" (list-box-item-display-value item))
                             (+ popup-x +widget-padding+)
-                            (+ item-y (/ (- (<list-box>-item-height widget) +font-text-height+) 2))
+                            (+ item-y (/ (- (item-height widget) +font-text-height+) 2))
                             +color-text+)))
     (when scrollbar-needed-p
       (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)

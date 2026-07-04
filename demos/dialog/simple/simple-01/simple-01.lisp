@@ -222,7 +222,7 @@
   
   (simple-01-sync-command-state)
   (when *toolbar*
-    (mnas-sdl3-gui/toolbar:render-toolbar
+    (mnas-sdl3-gui/widgets:render-toolbar
      *toolbar*
      *renderer*
      0.0
@@ -246,13 +246,13 @@
          (let ((toolbar-y-offset (- +simple-dialog-window-height+ +simple-dialog-toolbar-height+)))
            (if (and (slot-value ev 'sdl3:%down)
                     (and *toolbar*
-                         (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                         (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                           *toolbar*
                           (round (slot-value ev 'sdl3:%x))
                           (- (round (slot-value ev 'sdl3:%y)) toolbar-y-offset))))
-               (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+               (mnas-sdl3-gui/widgets:toolbar-button-clicked
                 *toolbar*
-                (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                  *toolbar*
                  (round (slot-value ev 'sdl3:%x))
                  (- (round (slot-value ev 'sdl3:%y)) toolbar-y-offset))

@@ -29,9 +29,9 @@
     :execute (lambda (context)
                (declare (ignore context))
                (setf *result*
-                     (list :left (nth (mnas-sdl3-gui/widgets:list-box-selected-index *left*)
+                     (list :left (nth (mnas-sdl3-gui/widgets:selected-index *left*)
                                       (mnas-sdl3-gui/widgets:list-box-items *left*))
-                           :right (nth (mnas-sdl3-gui/widgets:list-box-selected-index *right*)
+                           :right (nth (mnas-sdl3-gui/widgets:selected-index *right*)
                                        (mnas-sdl3-gui/widgets:list-box-items *right*)))
                      *open* nil)
                t))

@@ -15,7 +15,7 @@
 (defconstant +submenu-min-width+      140)
 
 (defclass menu-<entry> ()
-  ((<label> :initarg :<label> :initform "" :accessor <entry>-<label>)))
+  ((<label> :initarg :<label> :initarg :label :initform "" :accessor <entry>-<label>)))
 
 (defclass command-<entry> (menu-<entry>)
   ((hotkey :initarg :hotkey :initform "" :accessor <entry>-hotkey)
@@ -24,10 +24,16 @@
    ;; Preferred command id used by command dispatcher.
    (command-id :initarg :command-id :initform nil :accessor <entry>-command-id)))
 
+(defclass command-entry (command-<entry>) ())
+
 (defclass separator-<entry> (menu-<entry>) ())
+
+(defclass separator-entry (separator-<entry>) ())
 
 (defclass submenu-<entry> (menu-<entry>)
   ((submenu :initarg :submenu :accessor <entry>-submenu)))
+
+(defclass submenu-entry (submenu-<entry>) ())
 
 (defclass dropdown-menu ()
   ((title        :initarg :title   :accessor menu-title)

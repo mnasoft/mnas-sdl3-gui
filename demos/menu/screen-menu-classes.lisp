@@ -145,7 +145,7 @@
 (defun screen-menu-sync-command-state ()
   "Synchronize toolbar state from the current menu demo commands."
   (when *toolbar-demo*
-    (mnas-sdl3-gui/toolbar:update-toolbar-command-state *toolbar-demo*)))
+    (mnas-sdl3-gui/widgets:update-toolbar-command-state *toolbar-demo*)))
 
 (defun execute-command-action (command-id label)
   (let ((ok (mnas-sdl3-gui/commands:execute-command
@@ -214,7 +214,7 @@
   (screen-menu-sync-command-state)
 
   ;; Render toolbar below menu bar
-  (mnas-sdl3-gui/toolbar:render-toolbar
+  (mnas-sdl3-gui/widgets:render-toolbar
    *toolbar-demo*
    *renderer-screen-menu*
    0.0
@@ -275,13 +275,13 @@
                       (>= y mnas-sdl3-gui/menu/model:+menu-bar-height+)
                       (< y (+ mnas-sdl3-gui/menu/model:+menu-bar-height+
                                (mnas-sdl3-gui/widgets:<widget>-height *toolbar-demo*))))
-                 (let ((button (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                 (let ((button (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                *toolbar-demo*
                                x
                                (- y mnas-sdl3-gui/menu/model:+menu-bar-height+))))
                    (if button
                        (progn
-                         (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                         (mnas-sdl3-gui/widgets:toolbar-button-clicked
                           *toolbar-demo*
                           button
                           (list :label (mnas-sdl3-gui/widgets::button-label button)))

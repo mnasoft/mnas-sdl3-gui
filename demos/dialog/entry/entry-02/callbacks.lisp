@@ -25,7 +25,7 @@
           (register-commands)
           (register-shortcuts)
           (setf *toolbar* (create-toolbar window))
-          #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *toolbar*)
+          #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *toolbar*)
           (mnas-sdl3-gui/widgets:set-widget-style *style*)
           (mnas-sdl3-gui/widgets:init-ttf-font)
           (mnas-sdl3-gui/widgets:start-widget-text-input window)

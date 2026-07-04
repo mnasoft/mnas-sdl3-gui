@@ -49,8 +49,8 @@
                       :children (list left-pane right-pane)))
          (title (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Split Pane Demo"))
          (description (make-instance 'mnas-sdl3-gui/widgets:<label> :text "Each side is a separate pane.") )
-         (left-entry (make-instance 'mnas-sdl3-gui/widgets:entry :text "Left pane" :cursor 0 :max-length 128))
-         (right-entry (make-instance 'mnas-sdl3-gui/widgets:entry :text "Right pane" :cursor 0 :max-length 128))
+         (left-entry (make-instance 'mnas-sdl3-gui/widgets:<entry> :text "Left pane" :cursor 0 :max-length 128))
+         (right-entry (make-instance 'mnas-sdl3-gui/widgets:<entry> :text "Right pane" :cursor 0 :max-length 128))
          (left-button (make-instance 'mnas-sdl3-gui/widgets:<button> :text "Left Action"
                                      :on-click (lambda (w) (declare (ignore w))
                                                  (setf *split-pane-demo-status* "Left action activated"))))
@@ -108,7 +108,7 @@
             (split-pane-demo-relayout window)
             (let* ((focus-widgets (split-pane-demo-focus-widgets))
                    (first-entry (find-if (lambda (w)
-                                           (typep w 'mnas-sdl3-gui/widgets:entry))
+                                           (typep w 'mnas-sdl3-gui/widgets:<entry>))
                                          focus-widgets)))
               (if first-entry
                   (mnas-sdl3-gui/widgets:set-widget-focus focus-widgets first-entry)

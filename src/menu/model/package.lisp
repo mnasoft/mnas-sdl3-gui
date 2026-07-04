@@ -9,8 +9,11 @@
    ;; classes
    #:menu-<entry>
    #:command-<entry>
+   #:command-entry
    #:separator-<entry>
+   #:separator-entry
    #:submenu-<entry>
+   #:submenu-entry
    #:dropdown-menu
    #:menu-bar
    ;; <entry> accessors

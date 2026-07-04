@@ -5,6 +5,7 @@
   (:export #:register-commands
            #:register-shortcuts
            #:main
+           #:window-03
            ))
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-03)

@@ -108,7 +108,7 @@
                                  :item-height 24))
          (event (mnas-sdl3-gui/widgets::make-widget-keyboard-input :down nil)))
     (is (eq t (mnas-sdl3-gui/widgets:handle-keyboard-event widget event)))
-    (is (= 1 (mnas-sdl3-gui/widgets::<list-box>-selected-index widget)))))
+    (is (= 1 (mnas-sdl3-gui/widgets:selected-index widget)))))
 
 (test list-box-mouse-wheel-handles-normal-direction
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
@@ -120,7 +120,21 @@
          (event (make-instance 'sdl3:mouse-wheel-event
                                :%x 10 :%y 10 :%mouse-x 10 :%mouse-y 10)))
     (is (not (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event))))
-    (is (= 0 (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget)))))
+    (is (= 0 (mnas-sdl3-gui/widgets:scroll-offset widget)))))
+
+(test list-box-scrollbar-drag-offset-accessor
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
+                                :x 0 :y 0 :width 120 :height 72)))
+    (setf (mnas-sdl3-gui/widgets:scrollbar-drag-offset widget) 5)
+    (is (= 5 (mnas-sdl3-gui/widgets:scrollbar-drag-offset widget)))))
+
+(test item-height-accessor
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>
+                                :x 0 :y 0 :width 120 :height 72
+                                :item-height 24)))
+    (is (= 24 (mnas-sdl3-gui/widgets:item-height widget)))
+    (setf (mnas-sdl3-gui/widgets:item-height widget) 30)
+    (is (= 30 (mnas-sdl3-gui/widgets:item-height widget)))))
 
 (test mouse-wheel-handler-ignores-button-events
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<widget>
@@ -161,8 +175,8 @@
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta"))))
-    (setf (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget) 3)
-    (is (= 3 (mnas-sdl3-gui/widgets::<list-box>-scroll-offset widget)))))
+    (setf (mnas-sdl3-gui/widgets:scroll-offset widget) 3)
+    (is (= 3 (mnas-sdl3-gui/widgets:scroll-offset widget)))))
 
 (test combo-box-items-initarg-uses-popup-children
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>

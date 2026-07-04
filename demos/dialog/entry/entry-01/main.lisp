@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/entry-01)
 
-(defun main (&optional (style :flat))
+(defun entry-01 (&optional (style :flat))
   "Run entry dialog and return entered text when OK is pressed.
 Returns NIL when dialog is cancelled/closed."
   (setf *style* style)
@@ -12,6 +12,10 @@ Returns NIL when dialog is cancelled/closed."
    'callback-event
    'callback-quit)
   *result*)
+
+(defun main (&optional (style :flat))
+  "Compatibility wrapper for the older demo entrypoint."
+  (entry-01 style))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry)

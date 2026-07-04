@@ -67,7 +67,7 @@
           (font-01-register-commands)
           (font-01-register-shortcuts)
             (setf *cyrillic-font-toolbar* (make-font-01-toolbar))
-            #+nil(mnas-sdl3-gui/toolbar:register-toolbar-for-command-updates *cyrillic-font-toolbar*)))
+            #+nil(mnas-sdl3-gui/widgets:register-toolbar-for-command-updates *cyrillic-font-toolbar*)))
   ;; Инициализируем TTF после SDL3 (именно здесь, не при загрузке файла)
   (mnas-sdl3-gui/widgets:init-ttf-font)
   :continue))
@@ -82,7 +82,7 @@
 
   (font-01-sync-command-state)
   #+nl (when *cyrillic-font-toolbar*
-    (mnas-sdl3-gui/toolbar:render *cyrillic-font-renderer* *cyrillic-font-toolbar*
+    (mnas-sdl3-gui/widgets:render *cyrillic-font-renderer* *cyrillic-font-toolbar*
      
 
      ))
@@ -171,12 +171,12 @@
            (when (= target-window-id *cyrillic-font-window-id*)
              (if (slot-value ev 'sdl3:%down)
                  (let ((button (and *cyrillic-font-toolbar*
-                                    (mnas-sdl3-gui/toolbar:toolbar-buttons-at-position
+                                    (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
                                      *cyrillic-font-toolbar*
                                      mx
                                      my))))
                    (when button
-                     (mnas-sdl3-gui/toolbar:toolbar-button-clicked
+                     (mnas-sdl3-gui/widgets:toolbar-button-clicked
                       *cyrillic-font-toolbar*
                       button
                       (list :window-id target-window-id)))))

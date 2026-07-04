@@ -54,7 +54,7 @@
          (lines (max 3 (min 8 (length items))))
          (scrollbar-width (if (> (length items) lines) 12 0))
          (text-width (* longest-item +layout-font-char-width+))
-         (min-height (+ (* lines (<list-box>-item-height obj)) 4)))
+         (min-height (+ (* lines (item-height obj)) 4)))
     (values (max 120 (+ text-width 12 scrollbar-width))
             (max min-height 72))))
 
