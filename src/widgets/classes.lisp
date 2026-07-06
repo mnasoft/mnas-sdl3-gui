@@ -213,17 +213,17 @@
    (main-height
     :initarg :main-height
     :initform 30
-    :accessor <combo-box>-main-height
+    :accessor main-height
     :documentation "Collapsed header height used by popup compatibility paths.")
    (expanded-p
     :initarg :expanded-p
     :initform nil
-    :accessor <combo-box>-expanded-p
+    :accessor expanded-p
     :documentation "Whether popup is currently expanded.")
    (max-visible-items
     :initarg :max-visible-items
     :initform 6
-    :accessor <combo-box>-max-visible-items
+    :accessor max-visible-items
     :documentation "Maximum visible rows for popup compatibility paths."))
   (:documentation
    "Popup list displayed in its own transient window; subclass of `list-box`.") )
@@ -241,31 +241,32 @@
   ((header
     :initarg :header
     :initform nil
-    :accessor <combo-box>-header-widget
+    :accessor header-widget
     :documentation "Header widget instance (a `<combo-box-header>`).")
    (popup
     :initarg :popup
-    :initform nil :accessor <combo-box>-popup-widget
+    :initform nil
+    :accessor <combo-box>-popup-widget
     :documentation "Popup widget instance (a `combo-box-popup`).")
    (main-height
     :initarg :main-height
     :initform 30
-    :accessor <combo-box>-main-height
+    :accessor main-height
     :documentation "Collapsed header height of the combo-box")
    (expanded-p
     :initarg :expanded-p
     :initform nil
-    :accessor <combo-box>-expanded-p
+    :accessor expanded-p
     :documentation "Whether combo-box popup list is currently visible")
    (max-visible-items
     :initarg :max-visible-items
     :initform 6
-    :accessor <combo-box>-max-visible-items
+    :accessor max-visible-items
     :documentation "Maximum number of visible rows in the popup list")
    (ignore-next-popup-mouse-down-p
     :initarg :ignore-next-popup-mouse-down-p
     :initform nil
-    :accessor <combo-box>-ignore-next-popup-mouse-down-p
+    :accessor ignore-next-popup-mouse-down-p
     :documentation "Ignore the first popup-window mouse-down after opening so a header click does not immediately collapse the popup."))
   (:documentation "Combined combo-box that manages a header and a popup list (popup always uses its own window)."))
 

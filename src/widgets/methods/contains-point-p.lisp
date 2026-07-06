@@ -8,8 +8,8 @@
 
 (defmethod contains-point-p ((widget <combo-box>) x y)
   (or (and (<= (<widget>-x widget) x (+ (<widget>-x widget) (<widget>-width widget)))
-           (<= (<widget>-y widget) y (+ (<widget>-y widget) (<combo-box>-main-height widget))))
-      (and (<combo-box>-expanded-p widget)
+           (<= (<widget>-y widget) y (+ (<widget>-y widget) (main-height widget))))
+      (and (expanded-p widget)
            (not (<combo-box-popup>-window-enabled-p widget))
            (<= (<widget>-x widget) x (+ (<widget>-x widget) (<widget>-width widget)))
            (<= (<widget>-y widget) y

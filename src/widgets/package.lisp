@@ -218,37 +218,37 @@
            #:list-box-layout
            #:list-box-has-scrollbar)
 ;;; combo-box accessors
-  (:export #:<combo-box>-expanded-p
-           #:<combo-box>-max-visible-items
-           #:<combo-box>-ignore-next-popup-mouse-down-p
+  (:export #:expanded-p
+           #:max-visible-items
+           #:ignore-next-popup-mouse-down-p
            #:combo-box-visible-item-count
-           #:<combo-box>-main-height
+           #:main-height
            #:combo-box-content-width
 ;;; header/popup accessors
-           #:<combo-box>-header-widget
-           #:<combo-box>-popup-widget
+           #:header-widget
+           #:popup-widget
            #:<combo-box-header>-display-text
 ;;; popup compatibility/accessors
            #:<combo-box-popup>-mode
-           #:<combo-box-popup>-host-window
-           #:<combo-box-popup>-scrollbar-geometry
-           #:<combo-box-popup>-set-scroll-offset-from-thumb-top
+           #:host-window
+           #:scrollbar-geometry
+           #:scroll-offset-from-thumb-top
            #:<combo-box-popup>-window
            #:<combo-box-popup>-renderer
            #:<combo-box-popup>-window-id
            #:<combo-box-popup>-visible-p
-           #:combo-box-selected-item
+           #:selected-item
            #:combo-box-popup-host-window
            #:<combo-box-popup>-layer-manager
            #:<combo-box-popup>-window-enabled-p
-           #:combo-box-enable-popup-window
-           #:combo-box-disable-popup-window
-           #:combo-box-show-popup-window
-           #:combo-box-hide-popup-window
-           #:combo-box-handle-popup-mouse-down
-           #:combo-box-handle-popup-mouse-up
-           #:combo-box-handle-popup-mouse-motion
-           #:combo-box-handle-popup-mouse-wheel
+           #:enable-popup-window
+           #:disable-popup-window
+           #:show-popup-window
+           #:hide-popup-window
+           #:handle-popup-mouse-down
+           #:handle-popup-mouse-up
+           #:handle-popup-mouse-motion
+           #:handle-popup-mouse-wheel
            #:update-<widget>-value
            #:sync-combo-box-expanded-state
            #:*combo-box-expanded-callback*

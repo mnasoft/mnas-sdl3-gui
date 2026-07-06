@@ -806,7 +806,7 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   "Return effective z-order for WIDGET, keeping expanded combo-box popups on top."
   (+ (<widget>-z-order widget)
      (if (and (typep widget '<combo-box>)
-              (<combo-box>-expanded-p widget))
+              (expanded-p widget))
          1000000
          0)))
 

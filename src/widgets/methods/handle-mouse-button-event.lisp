@@ -23,7 +23,7 @@
     (when down
       (loop for widget in widgets
             when (and (typep widget '<combo-box>)
-                      (<combo-box>-expanded-p widget)
+                      (expanded-p widget)
                       (not (and (typep (slot-value widget 'popup) '<combo-box-popup>)
                                 (= event-window-id
                                    (<combo-box-popup>-window-id (slot-value widget 'popup)))))
@@ -236,7 +236,7 @@
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (down (slot-value ev 'sdl3:%down))
-         (main-height (<combo-box>-main-height widget))
+         (main-height (main-height widget))
          (main-x (<widget>-x widget))
          (main-y (<widget>-y widget))
          (main-width (<widget>-width widget))
@@ -250,17 +250,17 @@
               (< x (+ main-x main-width)))
          (if (>= x (- (+ main-x main-width) arrow-width))
              (progn
-               (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
-               (when (<combo-box>-expanded-p widget)
+               (sync-combo-box-expanded-state widget (not (expanded-p widget)))
+               (when (expanded-p widget)
                  (ensure-combo-box-selection-visible widget)))
              (progn
                (setf (<entry>-cursor widget) (<entry>-position-from-pixel widget x)
                      (<entry>-selection-start widget) nil
                      (<entry>-selection-end widget) nil)
                (<entry>-ensure-cursor-visible widget)
-               (when (<combo-box>-expanded-p widget)
+               (when (expanded-p widget)
                  (sync-combo-box-expanded-state widget nil)))))
-        ((and (<combo-box>-expanded-p widget)
+        ((and (expanded-p widget)
               (not (<combo-box-popup>-window-enabled-p widget))
               (>= y popup-y)
               (< y (+ popup-y (<combo-box-popup>-height widget))))
@@ -324,11 +324,11 @@
       (setf (<widget>-focused widget) t))
     (when (and down inside)
       (cond
-        ((<= (<widget>-y widget) y (+ (<widget>-y widget) (<combo-box>-main-height widget)))
-         (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
-         (when (<combo-box>-expanded-p widget)
+        ((<= (<widget>-y widget) y (+ (<widget>-y widget) (main-height widget)))
+         (sync-combo-box-expanded-state widget (not (expanded-p widget)))
+         (when (expanded-p widget)
            (ensure-combo-box-selection-visible widget)))
-          ((and (<combo-box>-expanded-p widget)
+          ((and (expanded-p widget)
             (not (<combo-box-popup>-window-enabled-p widget)))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
@@ -368,12 +368,12 @@
         ;; If event comes from popup's own SDL window, translate to popup handlers.
         (when (and (not down) nil))
         (when (and (slot-value ev 'sdl3:%window-id)
-               (<combo-box>-popup-widget widget)
+               (popup-widget widget)
                (= (slot-value ev 'sdl3:%window-id)
-                (<combo-box-popup>-window-id (<combo-box>-popup-widget widget))))
+                (<combo-box-popup>-window-id (popup-widget widget))))
           (if down
-            (combo-box-handle-popup-mouse-down widget x y)
-            (combo-box-handle-popup-mouse-up widget x y)))
+            (handle-popup-mouse-down widget x y)
+            (handle-popup-mouse-up widget x y)))
     (unless down
       (let ((dragging-p (scrollbar-dragging-p widget)))
         (setf (scrollbar-dragging-p widget) nil

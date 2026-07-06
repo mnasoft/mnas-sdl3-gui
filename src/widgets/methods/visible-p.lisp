@@ -16,5 +16,5 @@
   (let ((owner (<widget>-owner obj)))
     (or (<widget>-visible obj)
         (and owner
-             (<combo-box>-expanded-p owner)
+             (expanded-p owner)
              (<combo-box-popup>-window-enabled-p owner)))))

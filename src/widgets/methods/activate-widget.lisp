@@ -41,8 +41,8 @@
   t)
 
 (defmethod activate-widget ((widget <combo-box>))
-  (sync-combo-box-expanded-state widget (not (<combo-box>-expanded-p widget)))
-  (when (<combo-box>-expanded-p widget)
+  (sync-combo-box-expanded-state widget (not (expanded-p widget)))
+  (when (expanded-p widget)
     (ensure-combo-box-selection-visible widget))
   t)
 
@@ -50,7 +50,7 @@
   "Activate header by toggling owner combo-box expansion state." 
   (let ((owner (<widget>-owner widget)))
     (when owner
-      (sync-combo-box-expanded-state owner (not (<combo-box>-expanded-p owner)))
-      (when (<combo-box>-expanded-p owner)
+      (sync-combo-box-expanded-state owner (not (expanded-p owner)))
+      (when (expanded-p owner)
         (ensure-combo-box-selection-visible owner))
       t)))

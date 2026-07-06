@@ -17,7 +17,7 @@
     (mnas-sdl3-gui/widgets:init-ttf-font)
     (create-combo-box-05-widgets *window*)
     ;; ensure popup uses host window for global positioning
-    ;(mnas-sdl3-gui/widgets:combo-box-enable-popup-window *widget* *window*)
+    ;(mnas-sdl3-gui/widgets:enable-popup-window *widget* *window*)
     (mnas-sdl3-gui/widgets:set-widget-focus *widgets* *widget*)
     :continue))
 
@@ -28,7 +28,7 @@
   (loop for widget in (mnas-sdl3-gui/widgets:widgets-in-render-order *widgets*)
     do (mnas-sdl3-gui/widgets:render *renderer* widget mnas-sdl3-gui/widgets:*widget-style*))
   (mnas-sdl3-gui/widgets:render-text *renderer*
-    (format nil "selected=~A" (mnas-sdl3-gui/widgets:combo-box-selected-item *widget*))
+    (format nil "selected=~A" (mnas-sdl3-gui/widgets:selected-item *widget*))
     20.0 84.0 '(120 120 120 255))
   (sdl3:render-present *renderer*)
   :continue)
@@ -79,7 +79,7 @@
 
 (sdl3:def-app-quit combo-box-05-demo-quit (result)
   (declare (ignore result))
-  (mnas-sdl3-gui/widgets:combo-box-disable-popup-window *widget*)
+  (mnas-sdl3-gui/widgets:disable-popup-window *widget*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *renderer* (sdl3:destroy-renderer *renderer*))
   (when *window* (mnas-sdl3-gui/widgets:destroy-window-and-unregister *window*))

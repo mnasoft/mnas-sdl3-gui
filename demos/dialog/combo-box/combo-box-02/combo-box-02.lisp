@@ -159,7 +159,7 @@
           (mnas-sdl3-gui/widgets:register-widgets-for-window
            *combo-box-02-window*
            *combo-box-02-widgets*)
-          (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
+          (mnas-sdl3-gui/widgets:enable-popup-window
            *combo-box-02-editable*
            *combo-box-02-window*
            :layer-manager *combo-box-02-layer-manager*)
@@ -237,9 +237,9 @@
                ((and associated (not (= win-id main-id)) (= button 1))
                 (if down
                     (dolist (w associated)
-                      (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down w x y))
+                      (mnas-sdl3-gui/widgets:handle-popup-mouse-down w x y))
                     (dolist (w associated)
-                      (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up w x y))))
+                      (mnas-sdl3-gui/widgets:handle-popup-mouse-up w x y))))
                ((and down (= button 1) (= win-id main-id))
                 (let ((button-spec (and *combo-box-02-toolbar*
                                         (mnas-sdl3-gui/widgets:toolbar-buttons-at-position
@@ -295,7 +295,7 @@
 
 (sdl3:def-app-quit combo-box-02-demo-quit (result)
   (declare (ignore result))
-  (mnas-sdl3-gui/widgets:combo-box-disable-popup-window *combo-box-02-editable*)
+  (mnas-sdl3-gui/widgets:disable-popup-window *combo-box-02-editable*)
   (mnas-sdl3-gui/widgets:stop-widget-text-input *combo-box-02-window*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *combo-box-02-renderer*

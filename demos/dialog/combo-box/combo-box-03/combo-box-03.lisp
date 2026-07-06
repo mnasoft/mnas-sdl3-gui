@@ -39,7 +39,7 @@
     (mnas-sdl3-gui/widgets:set-widget-style :flat)
     (mnas-sdl3-gui/widgets:init-ttf-font)
     (create-combo-box-03-widgets)
-    (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
+    (mnas-sdl3-gui/widgets:enable-popup-window
      *combo-box-03-editable*
      *combo-box-03-window*)
     (mnas-sdl3-gui/widgets:set-widget-focus *combo-box-03-widgets* *combo-box-03-editable*)
@@ -55,10 +55,10 @@
     (mnas-sdl3-gui/widgets:render-text
      *combo-box-03-renderer*
      (format nil "expanded=~A popup=~A enabled=~A popup-id=~S"
-       (mnas-sdl3-gui/widgets:<combo-box>-expanded-p *combo-box-03-editable*)
-       (mnas-sdl3-gui/widgets:<combo-box-popup>-visible-p (mnas-sdl3-gui/widgets:<combo-box>-popup-widget *combo-box-03-editable*))
-       (mnas-sdl3-gui/widgets:<combo-box-popup>-window (mnas-sdl3-gui/widgets:<combo-box>-popup-widget *combo-box-03-editable*))
-       (mnas-sdl3-gui/widgets:<combo-box-popup>-window-id (mnas-sdl3-gui/widgets:<combo-box>-popup-widget *combo-box-03-editable*)))
+       (mnas-sdl3-gui/widgets:expanded-p *combo-box-03-editable*)
+       (mnas-sdl3-gui/widgets:<combo-box-popup>-visible-p (mnas-sdl3-gui/widgets:popup-widget *combo-box-03-editable*))
+       (mnas-sdl3-gui/widgets:<combo-box-popup>-window (mnas-sdl3-gui/widgets:popup-widget *combo-box-03-editable*))
+       (mnas-sdl3-gui/widgets:<combo-box-popup>-window-id (mnas-sdl3-gui/widgets:popup-widget *combo-box-03-editable*)))
      20.0 84.0 '(120 120 120 255))
   ;; popup windows are rendered via transient popup proxies appended by
   ;; `widgets-in-render-order', so no explicit popup calls are needed here.
@@ -113,7 +113,7 @@
 
 (sdl3:def-app-quit combo-box-03-demo-quit (result)
   (declare (ignore result))
-  (mnas-sdl3-gui/widgets:combo-box-disable-popup-window *combo-box-03-editable*)
+  (mnas-sdl3-gui/widgets:disable-popup-window *combo-box-03-editable*)
   (mnas-sdl3-gui/widgets:stop-widget-text-input *combo-box-03-window*)
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *combo-box-03-renderer* (sdl3:destroy-renderer *combo-box-03-renderer*))

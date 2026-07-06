@@ -31,26 +31,26 @@
                                          items
                                        &allow-other-keys)
   ;; Ensure header and popup instances exist and are linked.
-  (unless (<combo-box>-header-widget widget)
+  (unless (header-widget widget)
     (let* ((hdr (make-instance '<combo-box-header> :owner widget))
            (pop (make-instance '<combo-box-popup> :owner widget)))
-      (setf (<combo-box>-header-widget widget) hdr
-            (<combo-box>-popup-widget widget) pop
+      (setf (header-widget widget) hdr
+            (popup-widget widget) pop
             (<widget>-owner pop) widget
             (<widget>-owner hdr) widget
             )))
   ;; Forward the initial items passed via :items initarg to the popup.
   ;; The popup keeps its own children as the single source of truth.
-  (let ((popup (<combo-box>-popup-widget widget)))
+  (let ((popup (popup-widget widget)))
     (when (and popup items)
       (setf (children popup) items
             (selected-index popup) (or selected-index 0))))
-  (setf (<combo-box>-main-height widget) (<widget>-height widget))
+  (setf (main-height widget) (<widget>-height widget))
   (ensure-combo-box-selection-visible widget)
-  (sync-combo-box-expanded-state widget (<combo-box>-expanded-p widget))
-  (setf (<widget>-value widget) (combo-box-selected-item widget))
+  (sync-combo-box-expanded-state widget (expanded-p widget))
+  (setf (<widget>-value widget) (selected-item widget))
   (when popup-host-window
-    (combo-box-enable-popup-window widget popup-host-window :layer-manager popup-layer-manager)))
+    (enable-popup-window widget popup-host-window :layer-manager popup-layer-manager)))
 
 (defmethod initialize-instance :after ((widget <integer-entry>) &key &allow-other-keys)
   (unless (<entry>-validate widget)
@@ -83,10 +83,10 @@
 ;; when instances are finalized (MOP finalization). Keep calls robust with
 ;; ignore-errors to avoid throwing during GC/finalization.
 (defmethod finalize-instance :before ((widget <combo-box>))
-  (let ((popup (<combo-box>-popup-widget widget)))
+  (let ((popup (popup-widget widget)))
     (when (or (and popup (<combo-box-popup>-visible-p popup))
               (and popup (<widget>-window popup)))
-      (ignore-errors (combo-box-disable-popup-window widget)))))
+      (ignore-errors (disable-popup-window widget)))))
 
 (defmethod finalize-instance :after ((widget <widget>))
   (let ((win (<widget>-window widget)))

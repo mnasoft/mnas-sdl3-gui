@@ -103,7 +103,7 @@
     (when widgets
       (dolist (w widgets)
         (when (typep w 'mnas-sdl3-gui/widgets:<combo-box>)
-          (mnas-sdl3-gui/widgets:combo-box-disable-popup-window w)))))
+          (mnas-sdl3-gui/widgets:disable-popup-window w)))))
   (mnas-sdl3-gui/widgets:cleanup-ttf)
   (when *renderer*
     (sdl3:destroy-renderer *renderer*))

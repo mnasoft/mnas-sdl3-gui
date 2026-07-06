@@ -106,7 +106,7 @@
 (defmethod print-object ((obj <combo-box>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (let ((popup (<combo-box>-popup-widget obj))
+    (let ((popup (popup-widget obj))
           (items-len 0)
           (selected -1)
           (scroll 0))
@@ -118,9 +118,9 @@
       (format stream " items=~A selected=~A expanded=~A scroll=~A max-visible=~A"
               items-len
               (if (plusp selected) selected nil)
-              (<combo-box>-expanded-p obj)
+              (expanded-p obj)
               scroll
-              (<combo-box>-max-visible-items obj)))))
+              (max-visible-items obj)))))
 
 (defmethod print-object ((obj <combo-box-header>) stream)
   (print-unreadable-object (obj stream :type t :identity t)

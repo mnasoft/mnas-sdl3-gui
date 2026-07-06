@@ -5,7 +5,7 @@
   combo-box or a combo-box-popup instance. Returns NIL otherwise."
   (cond
     ((typep obj 'combo-box)
-     (let ((popup (<combo-box>-popup-widget obj)))
+     (let ((popup (popup-widget obj)))
        (and popup (slot-value popup 'visible-p))))
     ((typep obj 'combo-box-popup)
      (slot-value obj 'visible-p))
@@ -17,7 +17,7 @@ If OBJ is a `combo-box`, return renderer stored on its popup; if OBJ is
 a `combo-box-popup` return its renderer slot. Returns NIL otherwise."
   (cond
     ((typep obj 'combo-box)
-     (let ((popup (<combo-box>-popup-widget obj)))
+     (let ((popup (popup-widget obj)))
        (when popup (slot-value popup 'renderer))))
     ((typep obj 'combo-box-popup)
      (slot-value obj 'renderer))

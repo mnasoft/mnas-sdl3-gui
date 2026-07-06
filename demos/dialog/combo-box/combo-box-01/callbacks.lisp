@@ -39,11 +39,11 @@
               (mnas-sdl3-gui/widgets:set-widget-style (mnas-sdl3-gui/app:<app>-style app))
               (mnas-sdl3-gui/widgets:init-ttf-font)
               (create-widgets app window)
-              (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
+              (mnas-sdl3-gui/widgets:enable-popup-window
                (<combo-box-01-app>-small-widget app)
                window
                :layer-manager layer-manager)
-              (mnas-sdl3-gui/widgets:combo-box-enable-popup-window
+              (mnas-sdl3-gui/widgets:enable-popup-window
                (combo-box-01-large-widget app)
                window
                :layer-manager layer-manager)
@@ -136,8 +136,8 @@
                ((and associated (not (= event-window-id main-id)))
                 (dolist (widget associated)
                   (if down
-                      (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down widget mx my)
-                      (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-up widget mx my))))
+                      (mnas-sdl3-gui/widgets:handle-popup-mouse-down widget mx my)
+                      (mnas-sdl3-gui/widgets:handle-popup-mouse-up widget mx my))))
                ((and (not down) (= event-window-id main-id))
                 (mnas-sdl3-gui/widgets:handle-mouse-button-event
                  (mnas-sdl3-gui/widgets:widgets-for-window window)

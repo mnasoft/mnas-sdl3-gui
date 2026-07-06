@@ -266,7 +266,7 @@ Default behavior is based on widget bounds."))
 (defmethod render :around ((renderer t) (popup <combo-box-popup>) style)
   (let ((owner (<widget>-owner popup)))
     (if (and owner
-             (<combo-box>-expanded-p owner)
+             (expanded-p owner)
              (<combo-box-popup>-window-enabled-p owner))
         (call-next-method)
         (when (visible-p popup)
@@ -307,3 +307,26 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-mouse-device-event (widgets ev)
   (:documentation
    "Handle an sdl3:mouse-device-event and dispatch to widget handlers.") )
+
+(defgeneric item-height (widget)
+  (:documentation
+   "Return per-item height for LIST-BOX or combo-box via its popup."))
+
+;;;;
+
+(defgeneric scrollbar-dragging-p (widget)
+  (:documentation
+   "Return scrollbar dragging flag for <list-box> or <combo-box> via its <popup>."))
+
+(defgeneric scrollbar-drag-offset (widget)
+  (:documentation
+   "Return scrollbar drag offset for <list-box> or <combo-box> via its <popup>."))
+
+(defgeneric (setf selected-index) (new-value widget)
+  (:documentation "Set selected index for <list-box> or <combo-box> via its <popup>."))
+
+(defgeneric (setf scrollbar-dragging-p) (new-value widget)
+  (:documentation "Set scrollbar dragging flag for LIST-BOX or combo-box via its popup."))
+
+(defgeneric (setf scrollbar-drag-offset) (new-value widget)
+  (:documentation "Set scrollbar drag offset for LIST-BOX or combo-box via its popup."))

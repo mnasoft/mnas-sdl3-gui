@@ -191,14 +191,14 @@
     (is (not (slot-exists-p widget 'initial-items)))
     (is (equal '("alpha" "beta" "gamma")
                (mnas-sdl3-gui/widgets:<widget-container>-children
-                (mnas-sdl3-gui/widgets:<combo-box>-popup-widget widget))))))
+                (mnas-sdl3-gui/widgets:popup-widget widget))))))
 
 (test combo-box-popup-scrollbar-geometry-compatibility
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta" "gamma" "delta"))))
     (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
-        (mnas-sdl3-gui/widgets::<combo-box-popup>-scrollbar-geometry widget 0 0)
+        (mnas-sdl3-gui/widgets::scrollbar-geometry widget 0 0)
       (declare (ignore track-x track-y track-height thumb-y thumb-height))
       (is (or (null needed-p) (integerp max-offset))))))
 
@@ -216,7 +216,7 @@
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta")))
-         (popup (mnas-sdl3-gui/widgets:<combo-box>-popup-widget widget)))
+         (popup (mnas-sdl3-gui/widgets:popup-widget widget)))
     (setf (slot-value popup 'mnas-sdl3-gui/widgets::window) :popup-window)
     (is (eq t (mnas-sdl3-gui/widgets:<combo-box-popup>-window-enabled-p widget)))))
 
@@ -245,42 +245,42 @@
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta")))
-         (popup (mnas-sdl3-gui/widgets:<combo-box>-popup-widget widget))
+         (popup (mnas-sdl3-gui/widgets:popup-widget widget))
          (event (make-instance 'sdl3:mouse-button-event
                                :%x 500 :%y 500 :%down t :%window-id 42)))
-    (setf (mnas-sdl3-gui/widgets:<combo-box>-expanded-p widget) t
+    (setf (mnas-sdl3-gui/widgets:expanded-p widget) t
           (mnas-sdl3-gui/widgets:<combo-box-popup>-window-id popup) 42)
     (mnas-sdl3-gui/widgets:handle-mouse-button-event (list widget) event)
-    (is (eq t (mnas-sdl3-gui/widgets:<combo-box>-expanded-p widget)))))
+    (is (eq t (mnas-sdl3-gui/widgets:expanded-p widget)))))
 
 (test combo-box-ignore-first-popup-mouse-down-after-open
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta"))))
-    (setf (mnas-sdl3-gui/widgets:<combo-box>-expanded-p widget) t)
-    (mnas-sdl3-gui/widgets:combo-box-show-popup-window widget)
-    (is (eq t (mnas-sdl3-gui/widgets:<combo-box>-ignore-next-popup-mouse-down-p widget)))
-    (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down widget 0 0)
-    (is (eq t (mnas-sdl3-gui/widgets:<combo-box>-expanded-p widget)))
-    (is (eq nil (mnas-sdl3-gui/widgets:<combo-box>-ignore-next-popup-mouse-down-p widget)))))
+    (setf (mnas-sdl3-gui/widgets:expanded-p widget) t)
+    (mnas-sdl3-gui/widgets:show-popup-window widget)
+    (is (eq t (mnas-sdl3-gui/widgets:ignore-next-popup-mouse-down-p widget)))
+    (mnas-sdl3-gui/widgets:handle-popup-mouse-down widget 0 0)
+    (is (eq t (mnas-sdl3-gui/widgets:expanded-p widget)))
+    (is (eq nil (mnas-sdl3-gui/widgets:ignore-next-popup-mouse-down-p widget)))))
 
 (test combo-box-popup-mouse-down-does-not-hit-unknown-editable-type
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta" "gamma"))))
-    (is (eq t (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down widget 5 5)))))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-popup-mouse-down widget 5 5)))))
 
 (test combo-box-popup-mouse-down-on-popup-widget-uses-self
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets::<combo-box-popup>
                                 :x 0 :y 0 :width 120 :height 72
                                 :children '("alpha" "beta" "gamma"))))
-    (is (eq t (mnas-sdl3-gui/widgets:combo-box-handle-popup-mouse-down widget 5 5)))))
+    (is (eq t (mnas-sdl3-gui/widgets:handle-popup-mouse-down widget 5 5)))))
 
 (test combo-box-popup-scroll-offset-thumb-compatibility
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
                                 :x 0 :y 0 :width 120 :height 24
                                 :items '("alpha" "beta" "gamma" "delta"))))
-    (is (eq widget (mnas-sdl3-gui/widgets::<combo-box-popup>-set-scroll-offset-from-thumb-top widget 0 0 10)))))
+    (is (eq widget (mnas-sdl3-gui/widgets::scroll-offset-from-thumb-top widget 0 0 10)))))
 
 (test combo-box-02-toolbar-creates-buttons
   (ql:quickload :mnas-sdl3-gui/demos/dialog/combo-box-02)

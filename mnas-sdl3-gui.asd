@@ -166,6 +166,8 @@
                              (:file "widget-measure")
                              (:file "handle-mouse-motion-event")
                              (:file "handle-mouse-device-event")
+                             (:file "selected-index")
+                             (:file "popup-widget")
                              ))))
                
 
