@@ -234,9 +234,9 @@
            #:scrollbar-geometry
            #:scroll-offset-from-thumb-top
            #:<combo-box-popup>-window
-           #:<combo-box-popup>-renderer
+           #:popup-renderer
            #:<combo-box-popup>-window-id
-           #:<combo-box-popup>-visible-p
+           #:popup-visible-p
            #:selected-item
            #:combo-box-popup-host-window
            #:<combo-box-popup>-layer-manager

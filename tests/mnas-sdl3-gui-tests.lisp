@@ -226,7 +226,7 @@
 
 (test combo-box-popup-visible-p-uses-widget-visible
   (let ((popup (make-instance 'mnas-sdl3-gui/widgets::<combo-box-popup>)))
-    (setf (mnas-sdl3-gui/widgets:<combo-box-popup>-visible-p popup) t)
+    (setf (mnas-sdl3-gui/widgets:popup-visible-p popup) t)
     (is (eq t (mnas-sdl3-gui/widgets:<widget>-visible popup)))))
 
 (test combo-box-render-order-creates-hidden-popup-proxy

@@ -138,7 +138,7 @@
               (if (and (numberp sel) (plusp sel)) sel nil)
               (scroll-offset obj)
               wid
-              (<combo-box-popup>-visible-p obj)))))
+              (popup-visible-p obj)))))
 
 (defmethod print-object ((obj <widget-style>) stream)
   (print-unreadable-object (obj stream :type t :identity t)

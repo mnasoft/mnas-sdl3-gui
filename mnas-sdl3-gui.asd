@@ -142,7 +142,7 @@
                              (:file "entry-move-to-previous-word")
                              (:file "entry-move-to-next-word")
                              
-                             (:file "handle-mouse-wheel-event")
+
                              (:file "initialize-instance")
                              (:file "canvas-2d-methods")
                              (:file "contains-point-p")
@@ -155,19 +155,32 @@
                              (:file "update-widget-value")
                              (:file "widget-min-size")
                              (:file "activate-widget")
-                             
+
+                             (:file "handle-mouse-motion-event")
+                             (:file "handle-mouse-device-event")
+                             (:file "handle-mouse-wheel-event")
                              (:file "handle-mouse-button-event")
                              (:file "handle-keyboard-event")
                              (:file "handle-text-input-event")
 
-                             #+nil (:file "handle-widget-mouse-down")
-                             #+nil (:file "handle-widget-mouse-up")
-                             
                              (:file "widget-measure")
-                             (:file "handle-mouse-motion-event")
-                             (:file "handle-mouse-device-event")
+
                              (:file "selected-index")
                              (:file "popup-widget")
+                             (:file "header-widget")
+                             (:file "main-height")
+                             (:file "host-window")
+                             (:file "item-height")
+                             (:file "scrollbar-dragging-p")
+                             (:file "scrollbar-drag-offset")
+                             (:file "scroll-offset")
+                             (:file "max-visible-items")
+                             (:file "normalize-item")
+                             (:file "ignore-next-popup-mouse-down-p")
+                             (:file "scrollbar-geometry")
+                             (:file "popup-width")
+                             (:file "popup-height")
+                             
                              ))))
                
 

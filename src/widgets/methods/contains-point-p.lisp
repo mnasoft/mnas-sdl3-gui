@@ -13,4 +13,4 @@
            (not (<combo-box-popup>-window-enabled-p widget))
            (<= (<widget>-x widget) x (+ (<widget>-x widget) (<widget>-width widget)))
            (<= (<widget>-y widget) y
-               (+ (<widget>-y widget) (<combo-box-popup>-height widget))))))
+               (+ (<widget>-y widget) (popup-height widget))))))

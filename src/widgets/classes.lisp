@@ -199,7 +199,7 @@
   ((renderer
     :initarg :renderer
     :initform nil
-    :accessor <combo-box-popup>-renderer
+    :accessor popup-renderer
     :documentation "Renderer used to draw the popup when it has its own window.")
    (window-id
     :initarg :window-id

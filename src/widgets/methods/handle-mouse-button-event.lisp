@@ -263,7 +263,7 @@
         ((and (expanded-p widget)
               (not (<combo-box-popup>-window-enabled-p widget))
               (>= y popup-y)
-              (< y (+ popup-y (<combo-box-popup>-height widget))))
+              (< y (+ popup-y (popup-height widget))))
          (normalize-combo-box-scroll-offset widget)
          (let* ((scrollbar-width +list-box-scrollbar-width+)
                 (visible-count (combo-box-visible-item-count widget))

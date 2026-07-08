@@ -330,3 +330,23 @@ Default behavior is based on widget bounds."))
 
 (defgeneric (setf scrollbar-drag-offset) (new-value widget)
   (:documentation "Set scrollbar drag offset for LIST-BOX or combo-box via its popup."))
+
+(defgeneric <combo-box-popup>-y (widget))
+
+(defgeneric popup-width (widget))
+
+(defgeneric popup-height (widget))
+
+(defgeneric popup-renderer (widget))
+
+(defgeneric popup-visible-p (widget))
+
+(defgeneric scrollbar-geometry (widget popup-x popup-y)
+  (:documentation "Return popup scrollbar geometry for WIDGET at POPUP-X/POPUP-Y."))
+
+(defgeneric scroll-offset-from-thumb-top (widget popup-x popup-y thumb-top)
+  (:documentation "Update popup scroll offset from a scrollbar thumb drag for WIDGET."))
+
+(defgeneric host-window (widget))
+
+(defgeneric (setf host-window) (new-value widget))

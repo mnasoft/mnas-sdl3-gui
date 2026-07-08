@@ -84,7 +84,7 @@
 ;; ignore-errors to avoid throwing during GC/finalization.
 (defmethod finalize-instance :before ((widget <combo-box>))
   (let ((popup (popup-widget widget)))
-    (when (or (and popup (<combo-box-popup>-visible-p popup))
+    (when (or (and popup (popup-visible-p popup))
               (and popup (<widget>-window popup)))
       (ignore-errors (disable-popup-window widget)))))
 
