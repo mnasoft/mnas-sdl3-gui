@@ -586,17 +586,14 @@
 (defun combo-box-header-render-colors (widget style)
   (let* ((enabled (enabled-p widget))
          (focused (combo-box-header-focused-p widget))
-         (bg-color (cond ((and enabled focused) +color-highlight+)
-                        ((eq style :flat) (if enabled +color-white+ +color-light-gray+))
+         (bg-color (cond ((eq style :flat) (if enabled +color-white+ +color-light-gray+))
                         ((eq style :windows) (if enabled +color-white+ +color-light-gray-2+))
                         (t (if enabled +color-motif-light+ +color-medium-gray+))))
          (border-color (cond ((and enabled focused) +color-focus-border+)
                              ((eq style :flat) +color-border+)
                              ((eq style :windows) +color-dark-gray+)
                              (t +color-motif-border+)))
-         (text-color (cond ((and enabled focused) +color-focus-border+)
-                           (enabled +color-text+)
-                           (t +color-disabled+))))
+         (text-color (if enabled +color-text+ +color-disabled+)))
     (values bg-color border-color text-color)))
 
 (defun %render-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width text-color arrow-color)
@@ -634,8 +631,7 @@
          (w (- (<widget>-width widget) (* 2 inset)))
          (h (- (main-height widget) (* 2 inset))))
     (when (and (> w 6) (> h 6))
-      (stroke-rect renderer x y w h +color-focus-border+ 2)
-      (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-white+ 1))))
+      (stroke-rect renderer x y w h +color-focus-border+ 2))))
 
 (defmethod render (renderer (widget <combo-box-header>) (style <flat-widget-style>))
   (declare (ignore style))
@@ -652,7 +648,7 @@
                             24
                             (if (expanded-p widget) "^" "v")
                             6
-                            :border-width (if (combo-box-header-focused-p widget) 2 1)
+                            :border-width 1
                             :text-color text-color
                             :arrow-color text-color)
     (when (combo-box-header-focused-p widget)
@@ -686,7 +682,7 @@
                               :text-color text-color
                               :arrow-color text-color)
       (when (combo-box-header-focused-p widget)
-        (%render-combo-box-focus-outline renderer widget 3)))))
+        (%render-combo-box-focus-outline renderer widget 1)))))
 
 (defmethod render (renderer (widget <combo-box-header>) (style <motif-widget-style>))
   (declare (ignore style))
@@ -714,7 +710,7 @@
                               :text-color text-color
                               :arrow-color text-color)
       (when (combo-box-header-focused-p widget)
-        (%render-combo-box-focus-outline renderer widget 4)))))
+        (%render-combo-box-focus-outline renderer widget 1)))))
 
 (defmethod render (renderer (widget <combo-box>) (style <widget-style>))
   (when (header-widget widget)
