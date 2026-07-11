@@ -298,7 +298,7 @@ Returns the window id that was processed or NIL."
         (w (<widget>-width widget))
         (h (<widget>-height widget))
         (grid-step 32)
-        (grid-color '(220 220 220 255)))
+        (grid-color +color-canvas-grid+))
     (loop for gx from 0 below w by grid-step
           do (stroke-rect renderer (+ x gx) y 1 h grid-color))
     (loop for gy from 0 below h by grid-step
@@ -316,8 +316,12 @@ Returns the window id that was processed or NIL."
   (let ((x0 (<widget>-x widget))
         (y0 (<widget>-y widget))
         (scale (max 0.01 (canvas-2d-widget-viewport-scale widget))))
-    (fill-circle renderer (+ x0 80) (+ y0 80) (max 8 (floor (* 8 scale))) '(0 128 255 255))
-    (stroke-rect renderer (+ x0 120) (+ y0 40) (max 24 (floor (* 56 scale))) (max 24 (floor (* 40 scale))) '(0 0 0 255))))
+    (fill-circle renderer
+                 (+ x0 80) (+ y0 80)
+                 (max 8 (floor (* 8 scale))) +color-canvas-accent+)
+    (stroke-rect renderer
+                 (+ x0 120) (+ y0 40) (max 24 (floor (* 56 scale)))
+                 (max 24 (floor (* 40 scale))) +color-text+)))
 
 (defun scroll-container-content-height (widget)
   "Return total height of child widgets inside scroll container." 

@@ -73,7 +73,7 @@ by higher-level code that inspects `canvas-2d-widget-scene`."
                 (r  (nth 3 item))
                 (color (nth 4 item)))
             (multiple-value-bind (sx sy) (world-to-screen obj cx cy)
-              (fill-circle renderer sx sy r (or color '(64 128 200 255))))))))))
+              (fill-circle renderer sx sy r (or color +color-canvas-scene+)))))))))
 
 (defmethod widget-min-size ((obj canvas-2d-widget))
   "Minimal size hint for canvas widget - default to current size."

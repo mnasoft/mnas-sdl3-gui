@@ -549,3 +549,4 @@ Values are: needed-p, track-x, track-y, track-height, thumb-y, thumb-height, max
   (when (not (zerop dy))
     (let ((ev (sdl3:mouse-wheel-event :%yrel dy :%y dy :%x 0)))
       (handle-mouse-wheel-event widget ev))))
+  

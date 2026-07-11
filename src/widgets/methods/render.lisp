@@ -95,7 +95,7 @@
             (render renderer child style)
             (incf cx (+ cw spacing))))))))
 
-  (defmethod render (renderer (widget <toolbar-button>) style)
+(defmethod render (renderer (widget <toolbar-button>) style)
     (declare (ignore style))
     (when (visible-p widget)
       (let* ((x (<widget>-x widget))
@@ -106,7 +106,7 @@
              (txt-color (if (enabled-p widget) +color-text+ +color-disabled+))
              (bg-color (if (and (eql :toggle (<toolbar-button>-type widget))
                                (<toolbar-button>-checked-p widget))
-                           '(200 226 255 255)
+                           +color-toolbar-toggle-active+
                            +color-bg+))
              (border-color (if (and (eql :toggle (<toolbar-button>-type widget))
                                     (<toolbar-button>-checked-p widget))
@@ -251,8 +251,8 @@
   (fill-rect renderer (<widget>-x widget) (<widget>-y widget)
              (<widget>-width widget) (<widget>-height widget)
              (if (<widget>-focused widget)
-                 '(255 255 255 255)
-                 '(245 245 245 255)))
+                 +color-white+
+                 +color-light-gray+))
   (stroke-rect renderer (<widget>-x widget) (<widget>-y widget)
                (<widget>-width widget) (<widget>-height widget)
                (if (<widget>-focused widget)
@@ -295,9 +295,9 @@
                                     selected-end)))
                   (fill-rect renderer selection-x (- text-y 2)
                              selection-w (+ +font-text-height+ 4)
-                             '(0 120 215 255))
+                             +color-selection-bg+)
                   (render-visible-segment selected-start selected-end
-                                          '(255 255 255 255))))
+                                          +color-selection-text+)))
               (render-visible-segment after-start after-end +color-text+))
             (progn
               (render-visible-segment visible-start visible-end +color-text+)
@@ -319,10 +319,10 @@
         (y (<widget>-y widget))
         (w (<widget>-width widget))
         (h (<widget>-height widget)))
-    (fill-rect renderer x y w h '(255 255 255 255))
-    (render-bevel-rect renderer x y w h '(128 128 128 255) '(255 255 255 255) 1)
+    (fill-rect renderer x y w h +color-white+)
+    (render-bevel-rect renderer x y w h +color-dark-gray+ +color-white+ 1)
     (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                       '(64 64 64 255) '(224 224 224 255) 1)
+                       +color-darker-gray+ +color-medium-gray+ 1)
     (when (<widget>-focused widget)
       (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-focus-border+ 1)))
   (let* ((text (<entry>-text widget))
@@ -362,9 +362,9 @@
                                     selected-end)))
                   (fill-rect renderer selection-x (- text-y 2)
                              selection-w (+ +font-text-height+ 4)
-                             '(0 120 215 255))
+                             +color-selection-bg+)
                   (render-visible-segment selected-start selected-end
-                                          '(255 255 255 255))))
+                                          +color-selection-text+)))
               (render-visible-segment after-start after-end +color-text+))
             (progn
               (render-visible-segment visible-start visible-end +color-text+)
@@ -387,8 +387,8 @@
         (y (<widget>-y widget))
         (w (<widget>-width widget))
         (h (<widget>-height widget)))
-    (fill-rect renderer x y w h '(250 250 250 255))
-    (render-bevel-rect renderer x y w h '(110 110 110 255) '(238 238 238 255) 2)
+    (fill-rect renderer x y w h +color-motif-panel-bg+)
+    (render-bevel-rect renderer x y w h +color-motif-border+ +color-motif-light+ 2)
     (when (<widget>-focused widget)
       (stroke-rect renderer (+ x 3) (+ y 3) (- w 6) (- h 6) +color-focus-border+ 1)))
   (let* ((text (<entry>-text widget))
@@ -428,9 +428,9 @@
                                     selected-end)))
                   (fill-rect renderer selection-x (- text-y 2)
                              selection-w (+ +font-text-height+ 4)
-                             '(0 120 215 255))
+                             +color-selection-bg+)
                   (render-visible-segment selected-start selected-end
-                                          '(255 255 255 255))))
+                                          +color-selection-text+)))
               (render-visible-segment after-start after-end +color-text+))
             (progn
               (render-visible-segment visible-start visible-end +color-text+)
@@ -493,10 +493,10 @@
       (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
           (tree-view-scrollbar-geometry widget)
         (declare (ignore needed-p max-offset))
-        (fill-rect renderer track-x track-y +list-box-scrollbar-width+ track-height '(232 232 232 255))
-        (stroke-rect renderer track-x track-y +list-box-scrollbar-width+ track-height '(180 180 180 255))
-        (fill-rect renderer (+ track-x 1) thumb-y (- +list-box-scrollbar-width+ 2) thumb-height '(180 180 180 255))
-        (stroke-rect renderer (+ track-x 1) thumb-y (- +list-box-scrollbar-width+ 2) thumb-height '(120 120 120 255))))))
+        (fill-rect renderer track-x track-y +list-box-scrollbar-width+ track-height +color-scrollbar-track+)
+        (stroke-rect renderer track-x track-y +list-box-scrollbar-width+ track-height +color-scrollbar-thumb+)
+        (fill-rect renderer (+ track-x 1) thumb-y (- +list-box-scrollbar-width+ 2) thumb-height +color-scrollbar-thumb+)
+        (stroke-rect renderer (+ track-x 1) thumb-y (- +list-box-scrollbar-width+ 2) thumb-height +color-scrollbar-thumb-border+)))))
 
 (defmethod render (renderer (widget <list-box>) style)
   (declare (ignore style))
@@ -531,10 +531,10 @@
       (multiple-value-bind (needed-p track-x track-y track-height thumb-y thumb-height max-offset)
           (list-box-scrollbar-geometry widget)
         (declare (ignore needed-p max-offset))
-        (fill-rect renderer track-x track-y scrollbar-width track-height '(232 232 232 255))
-        (stroke-rect renderer track-x track-y scrollbar-width track-height '(180 180 180 255))
-        (fill-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height '(180 180 180 255))
-        (stroke-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height '(120 120 120 255))))))
+        (fill-rect renderer track-x track-y scrollbar-width track-height +color-scrollbar-track+)
+        (stroke-rect renderer track-x track-y scrollbar-width track-height +color-scrollbar-thumb+)
+        (fill-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height +color-scrollbar-thumb+)
+        (stroke-rect renderer (+ track-x 1) thumb-y (- scrollbar-width 2) thumb-height +color-scrollbar-thumb-border+)))))
 
 (defun %render-combo-box-popup-at (renderer widget popup-x popup-y border-color popup-bg track-bg thumb-bg thumb-border)
   (normalize-combo-box-scroll-offset widget)
@@ -614,14 +614,14 @@
          (h (- (main-height widget) (* 2 inset))))
     (when (and (> w 6) (> h 6))
       (stroke-rect renderer x y w h +color-focus-border+ 2)
-      (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) '(255 255 255 255) 1))))
+      (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-white+ 1))))
 
 (defmethod render (renderer (widget <combo-box>) (style <widget-style>))
   (declare (ignore style))
   (let* ((arrow-width 24)
          (border-color (if (<widget>-focused widget) +color-focus-border+ +color-border+)))
     (%render-combo-box-main renderer widget
-                            (if (enabled-p widget) '(255 255 255 255) '(245 245 245 255))
+                            (if (enabled-p widget) +color-white+ +color-light-gray+)
                             border-color
                             arrow-width
                             (if (expanded-p widget) "^" "v")
@@ -630,10 +630,10 @@
   (when (and (expanded-p widget)
              (not (<combo-box-popup>-window-enabled-p widget)))
     (%render-combo-box-popup renderer widget +color-border+
-                             '(255 255 255 255)
-                             '(232 232 232 255)
-                             '(180 180 180 255)
-                             '(120 120 120 255))))
+                             +color-white+
+                             +color-scrollbar-track+
+                             +color-scrollbar-thumb+
+                             +color-scrollbar-thumb-border+)))
 
 (defmethod render (renderer (widget <combo-box>) (style <windows-widget-style>))
   (declare (ignore style))
@@ -642,14 +642,14 @@
          (w (<widget>-width widget))
          (h (main-height widget))
          (arrow-width 24)
-         (face (if (enabled-p widget) '(255 255 255 255) '(236 236 236 255))))
+         (face (if (enabled-p widget) +color-white+ +color-light-gray-2+)))
     (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
+    (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
     (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                       '(240 240 240 255) '(64 64 64 255) 1)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(128 128 128 255))
+                       +color-medium-gray+ +color-darker-gray+ 1)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-dark-gray+)
     (%render-combo-box-main renderer widget face
-                            (if (<widget>-focused widget) +color-focus-border+ '(128 128 128 255))
+                            (if (<widget>-focused widget) +color-focus-border+ +color-dark-gray+)
                             arrow-width
                             (if (expanded-p widget) "^" "v")
                             6
@@ -658,11 +658,11 @@
       (%render-combo-box-focus-outline renderer widget 3)))
   (when (and (expanded-p widget)
              (not (<combo-box-popup>-window-enabled-p widget)))
-    (%render-combo-box-popup renderer widget '(128 128 128 255)
-                             '(255 255 255 255)
-                             '(232 232 232 255)
-                             '(180 180 180 255)
-                             '(96 96 96 255))))
+    (%render-combo-box-popup renderer widget +color-dark-gray+
+                             +color-white+
+                             +color-scrollbar-track+
+                             +color-scrollbar-thumb+
+                             +color-scrollbar-thumb-border-motif+)))
 
 (defun %render-editable-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width)
   (let ((main-height (main-height widget)))
@@ -686,7 +686,7 @@
                        (+ (<widget>-x widget) +widget-padding+)
                        (+ (<widget>-y widget)
                           (/ (- main-height +font-text-height+) 2))
-                       '(160 160 160 255))
+                       +color-disabled+)
           (progn
             (let* ((text (<entry>-text widget))
                    (display-text (or (<entry>-show-text widget) text))
@@ -725,9 +725,9 @@
                                               selected-end)))
                             (fill-rect renderer selection-x (- text-y 2)
                                        selection-w (+ +font-text-height+ 4)
-                                       '(0 120 215 255))
+                                       +color-selection-bg+)
                             (render-visible-segment selected-start selected-end
-                                                    '(255 255 255 255))))
+                                                    +color-selection-text+)))
                         (render-visible-segment visible-start visible-end +color-text+))
                       (when (<widget>-focused widget)
                         (let ((cursor-x (segment-x (<entry>-cursor widget))))
@@ -750,7 +750,7 @@
   (let ((arrow-width 24)
         (border-color (if (<widget>-focused widget) +color-focus-border+ +color-border+)))
     (%render-editable-combo-box-main renderer widget
-                                    (if (enabled-p widget) '(255 255 255 255) '(245 245 245 255))
+                                    (if (enabled-p widget) +color-white+ +color-light-gray+)
                                      border-color
                                      arrow-width
                                      (if (expanded-p widget) "^" "v")
@@ -758,10 +758,10 @@
     (when (and (expanded-p widget)
                (not (<combo-box-popup>-window-enabled-p widget)))
       (%render-combo-box-popup renderer widget +color-border+
-                               '(255 255 255 255)
-                               '(232 232 232 255)
-                               '(180 180 180 255)
-                               '(120 120 120 255)))))
+                               +color-white+
+                               +color-scrollbar-track+
+                               +color-scrollbar-thumb+
+                               +color-scrollbar-thumb-border+))))
 
 (defmethod render (renderer (widget <editable-combo-box>) (style <windows-widget-style>))
   (declare (ignore style))
@@ -770,14 +770,14 @@
         (w (<widget>-width widget))
         (h (main-height widget))
         (arrow-width 24)
-        (face (if (enabled-p widget) '(255 255 255 255) '(236 236 236 255))))
+        (face (if (enabled-p widget) +color-white+ +color-light-gray-2+)))
     (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
+    (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
     (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                       '(240 240 240 255) '(64 64 64 255) 1)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(128 128 128 255))
+                       +color-medium-gray+ +color-darker-gray+ 1)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-dark-gray+)
     (%render-editable-combo-box-main renderer widget face
-                                     (if (<widget>-focused widget) +color-focus-border+ '(128 128 128 255))
+                                     (if (<widget>-focused widget) +color-focus-border+ +color-dark-gray+)
                                      arrow-width
                                      (if (expanded-p widget) "^" "v")
                                      6
@@ -786,11 +786,11 @@
       (%render-combo-box-focus-outline renderer widget 3)))
   (when (and (expanded-p widget)
              (not (<combo-box-popup>-window-enabled-p widget)))
-    (%render-combo-box-popup renderer widget '(128 128 128 255)
-                             '(255 255 255 255)
-                             '(232 232 232 255)
-                             '(180 180 180 255)
-                             '(96 96 96 255))))
+    (%render-combo-box-popup renderer widget +color-dark-gray+
+                             +color-white+
+                             +color-scrollbar-track+
+                             +color-scrollbar-thumb+
+                             +color-scrollbar-thumb-border-motif+)))
 
 (defmethod render (renderer (widget <editable-combo-box>) (style <motif-widget-style>))
   (declare (ignore style))
@@ -799,12 +799,12 @@
         (w (<widget>-width widget))
         (h (main-height widget))
         (arrow-width 24)
-        (face (if (enabled-p widget) '(244 244 244 255) '(224 224 224 255))))
+        (face (if (enabled-p widget) +color-motif-light+ +color-medium-gray+)))
     (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(110 110 110 255))
+    (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
     (%render-editable-combo-box-main renderer widget face
-                                     (if (<widget>-focused widget) +color-focus-border+ '(110 110 110 255))
+                                     (if (<widget>-focused widget) +color-focus-border+ +color-motif-border+)
                                      arrow-width
                                      (if (expanded-p widget) "^" "v")
                                      6
@@ -813,11 +813,11 @@
       (%render-combo-box-focus-outline renderer widget 4)))
   (when (and (expanded-p widget)
              (not (<combo-box-popup>-window-enabled-p widget)))
-    (%render-combo-box-popup renderer widget '(110 110 110 255)
-                             '(250 250 250 255)
-                             '(226 226 226 255)
-                             '(176 176 176 255)
-                             '(96 96 96 255))))
+    (%render-combo-box-popup renderer widget +color-motif-border+
+                             +color-motif-panel-bg+
+                             +color-scrollbar-track-motif+
+                             +color-scrollbar-thumb-motif+
+                             +color-scrollbar-thumb-border-motif+)))
 
 ;; popup rendering for combo-boxes that use separate popup windows.
 ;; Implemented as `render` methods on a transient `combo-box-popup` proxy
@@ -839,11 +839,11 @@
           (show-popup-window owner))
         (when (and popup-renderer visible-p)
           (%render-combo-box-popup-at popup-renderer owner 0 0
-                                      '(128 128 128 255)
-                                      '(255 255 255 255)
-                                      '(232 232 232 255)
-                                      '(180 180 180 255)
-                                      '(96 96 96 255))
+                                      +color-dark-gray+
+                                      +color-white+
+                                      +color-scrollbar-track+
+                                      +color-scrollbar-thumb+
+                                      +color-scrollbar-thumb-border-motif+)
           (sdl3:render-present popup-renderer))))))
 
 (defmethod render (renderer (popup <combo-box-popup>) (style <motif-widget-style>))
@@ -862,11 +862,11 @@
           (show-popup-window owner))
         (when (and popup-renderer visible-p)
           (%render-combo-box-popup-at popup-renderer owner 0 0
-                                      '(110 110 110 255)
-                                      '(250 250 250 255)
-                                      '(226 226 226 255)
-                                      '(176 176 176 255)
-                                      '(96 96 96 255))
+                                      +color-motif-border+
+                                      +color-motif-panel-bg+
+                                      +color-scrollbar-track-motif+
+                                      +color-scrollbar-thumb-motif+
+                                      +color-scrollbar-thumb-border-motif+)
           (sdl3:render-present popup-renderer))))))
 
 (defmethod render (renderer (popup <combo-box-popup>) style)
@@ -886,10 +886,10 @@
         (when (and popup-renderer visible-p)
           (%render-combo-box-popup-at popup-renderer owner 0 0
                                       +color-border+
-                                      '(255 255 255 255)
-                                      '(232 232 232 255)
-                                      '(180 180 180 255)
-                                      '(120 120 120 255))
+                                      +color-white+
+                                      +color-scrollbar-track+
+                                      +color-scrollbar-thumb+
+                                      +color-scrollbar-thumb-border+)
           (sdl3:render-present popup-renderer))))))
 
 (defmethod render (renderer (widget <button>) (style <windows-widget-style>))
@@ -899,12 +899,12 @@
          (w (<widget>-width widget))
          (h (main-height widget))
          (arrow-width 24)
-         (face (if (enabled-p widget) '(244 244 244 255) '(224 224 224 255))))
+         (face (if (enabled-p widget) +color-motif-light+ +color-medium-gray+)))
     (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h '(110 110 110 255))
+    (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
     (%render-combo-box-main renderer widget face
-                            (if (<widget>-focused widget) +color-focus-border+ '(110 110 110 255))
+                            (if (<widget>-focused widget) +color-focus-border+ +color-motif-border+)
                             arrow-width
                             (if (expanded-p widget) "^" "v")
                             6
@@ -912,11 +912,11 @@
     (when (<widget>-focused widget)
       (%render-combo-box-focus-outline renderer widget 4)))
   (when (expanded-p widget)
-    (%render-combo-box-popup renderer widget '(110 110 110 255)
-                             '(250 250 250 255)
-                             '(226 226 226 255)
-                             '(176 176 176 255)
-                             '(96 96 96 255))))
+    (%render-combo-box-popup renderer widget +color-motif-border+
+                             +color-motif-panel-bg+
+                             +color-scrollbar-track-motif+
+                             +color-scrollbar-thumb-motif+
+                             +color-scrollbar-thumb-border-motif+)))
 
 (defmethod render (renderer (widget <button>) (style <windows-widget-style>))
   (declare (ignore style))
@@ -925,17 +925,17 @@
         (w (<widget>-width widget))
         (h (<widget>-height widget))
         (pressed (<button>-pressed-p widget))
-        (face (if (enabled-p widget) '(212 208 200 255) '(190 190 190 255))))
+        (face (if (enabled-p widget) +color-button-face-windows+ +color-button-face-disabled-windows+)))
     (fill-rect renderer x y w h face)
     (if pressed
         (progn
-          (render-bevel-rect renderer x y w h '(128 128 128 255) '(255 255 255 255) 1)
+          (render-bevel-rect renderer x y w h +color-dark-gray+ +color-white+ 1)
           (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                             '(64 64 64 255) '(240 240 240 255) 1))
+                             +color-darker-gray+ +color-light-gray+ 1))
         (progn
-          (render-bevel-rect renderer x y w h '(255 255 255 255) '(128 128 128 255) 1)
+          (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
           (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                             '(240 240 240 255) '(64 64 64 255) 1)))
+                             +color-light-gray+ +color-darker-gray+ 1)))
     (when (<widget>-focused widget)
       (render-button-focus-outline renderer widget :inset 2)))
   (render-button-label renderer widget
@@ -950,11 +950,11 @@
         (w (<widget>-width widget))
         (h (<widget>-height widget))
         (pressed (<button>-pressed-p widget))
-        (face (if (enabled-p widget) '(196 196 196 255) '(170 170 170 255))))
+        (face (if (enabled-p widget) +color-button-face-motif+ +color-button-face-disabled-motif+)))
     (fill-rect renderer x y w h face)
     (if pressed
-        (render-bevel-rect renderer x y w h '(90 90 90 255) '(238 238 238 255) 2)
-        (render-bevel-rect renderer x y w h '(238 238 238 255) '(90 90 90 255) 2))
+        (render-bevel-rect renderer x y w h +color-motif-dark+ +color-motif-light+ 2)
+        (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2))
     (when (<widget>-focused widget)
       (render-button-focus-outline renderer widget :inset 4)))
   (render-button-label renderer widget
