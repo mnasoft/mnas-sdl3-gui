@@ -310,18 +310,32 @@
 
 #+nil (mnas-debug:disable)
 #+nil (mnas-debug:enable)
+(defparameter *debug-combo-box-focus* nil
+  "When T, log combo-box mouse-button focus transitions for debugging.")
+
 (defmethod handle-mouse-button-event ((widget <combo-box>) (ev sdl3:mouse-button-event))
   (let* ((x (round (slot-value ev 'sdl3:%x)))
          (y (round (slot-value ev 'sdl3:%y)))
          (win-id (slot-value ev 'sdl3:%window-id))
          (down (slot-value ev 'sdl3:%down))
-         (inside (contains-point-p widget x y))
-         )
+         (inside (contains-point-p widget x y)))
+    (when *debug-combo-box-focus*
+      (format t "[combo-box-mouse-button] down=~S inside=~S x=~D y=~D win-id=~S focused-before=~S~%"
+              down inside x y win-id (<widget>-focused widget)))
     (when (and down inside)
       (mnas-debug:%log "x:~A y:~A window:~A~%" x y (<widget>-window widget))
       (loop :for w :in (mnas-sdl3-gui/widgets:widgets-for-window (<widget>-window widget))
             :do (setf (<widget>-focused w) nil))
-      (setf (<widget>-focused widget) t))
+      (setf (<widget>-focused widget) t)
+      (let ((header (header-widget widget)))
+        (when header
+          (setf (<widget>-focused header) t)
+          (when *debug-combo-box-focus*
+            (format t "[combo-box-mouse-button] set focus on header focused-after=~S~%"
+                    (<widget>-focused header)))))
+      (when *debug-combo-box-focus*
+        (format t "[combo-box-mouse-button] set focus on combo-box focused-after=~S~%"
+                (<widget>-focused widget))))
     (when (and down inside)
       (cond
         ((<= (<widget>-y widget) y (+ (<widget>-y widget) (main-height widget)))

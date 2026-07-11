@@ -578,7 +578,28 @@
                               (<widget>-y widget)
                               border-color popup-bg track-bg thumb-bg thumb-border))
 
-(defun %render-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width)
+(defun combo-box-header-focused-p (widget)
+  (or (<widget>-focused widget)
+      (and (<widget>-owner widget)
+           (<widget>-focused (<widget>-owner widget)))))
+
+(defun combo-box-header-render-colors (widget style)
+  (let* ((enabled (enabled-p widget))
+         (focused (combo-box-header-focused-p widget))
+         (bg-color (cond ((and enabled focused) +color-highlight+)
+                        ((eq style :flat) (if enabled +color-white+ +color-light-gray+))
+                        ((eq style :windows) (if enabled +color-white+ +color-light-gray-2+))
+                        (t (if enabled +color-motif-light+ +color-medium-gray+))))
+         (border-color (cond ((and enabled focused) +color-focus-border+)
+                             ((eq style :flat) +color-border+)
+                             ((eq style :windows) +color-dark-gray+)
+                             (t +color-motif-border+)))
+         (text-color (cond ((and enabled focused) +color-focus-border+)
+                           (enabled +color-text+)
+                           (t +color-disabled+))))
+    (values bg-color border-color text-color)))
+
+(defun %render-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width text-color arrow-color)
   (let* ((selected-item (selected-item widget))
          (<label> (if selected-item
                     (format nil "~a" selected-item)
@@ -597,15 +618,15 @@
                  arrow-width
                  main-height
                  border-color)
-      (render-text renderer <label>
-            (+ (<widget>-x widget) +widget-padding+)
-            (+ (<widget>-y widget)
-              (max 0 (floor (- main-height text-height) 2)))
-            (if (enabled-p widget) +color-text+ +color-disabled+))
+    (render-text renderer <label>
+                 (+ (<widget>-x widget) +widget-padding+)
+                 (+ (<widget>-y widget)
+                    (max 0 (floor (- main-height text-height) 2)))
+                 (or text-color +color-text+))
     (render-text renderer arrow-text
                  (+ (- (+ (<widget>-x widget) (<widget>-width widget)) arrow-width) 8)
                  (+ (<widget>-y widget) offset-y)
-                 +color-text+)))
+                 (or arrow-color +color-text+))))
 
 (defun %render-combo-box-focus-outline (renderer widget inset)
   (let* ((x (+ (<widget>-x widget) inset))
@@ -618,55 +639,82 @@
 
 (defmethod render (renderer (widget <combo-box-header>) (style <flat-widget-style>))
   (declare (ignore style))
-  (%render-combo-box-main renderer widget
-                          (if (enabled-p widget) +color-white+ +color-light-gray+)
-                          (if (<widget>-focused widget) +color-focus-border+ +color-border+)
-                          24
-                          (if (expanded-p widget) "^" "v")
-                          6
-                          :border-width (if (<widget>-focused widget) 2 1)))
+  (when *debug-combo-box-focus*
+    (format t "[combo-box-header-render] flat focused=~S owner-focused=~S enabled=~S expanded=~S~%"
+            (<widget>-focused widget)
+            (and (<widget>-owner widget) (<widget>-focused (<widget>-owner widget)))
+            (enabled-p widget) (expanded-p widget)))
+  (multiple-value-bind (bg-color border-color text-color)
+      (combo-box-header-render-colors widget :flat)
+    (%render-combo-box-main renderer widget
+                            bg-color
+                            border-color
+                            24
+                            (if (expanded-p widget) "^" "v")
+                            6
+                            :border-width (if (combo-box-header-focused-p widget) 2 1)
+                            :text-color text-color
+                            :arrow-color text-color)
+    (when (combo-box-header-focused-p widget)
+      (%render-combo-box-focus-outline renderer widget 1))))
 
 (defmethod render (renderer (widget <combo-box-header>) (style <windows-widget-style>))
   (declare (ignore style))
-  (let* ((x (<widget>-x widget))
-         (y (<widget>-y widget))
-         (w (<widget>-width widget))
-         (h (main-height widget))
-         (arrow-width 24)
-         (face (if (enabled-p widget) +color-white+ +color-light-gray-2+)))
-    (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
-    (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                       +color-medium-gray+ +color-darker-gray+ 1)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-dark-gray+)
-    (%render-combo-box-main renderer widget face
-                            (if (<widget>-focused widget) +color-focus-border+ +color-dark-gray+)
-                            arrow-width
-                            (if (expanded-p widget) "^" "v")
-                            6
-                            :border-width 0)
-    (when (<widget>-focused widget)
-      (%render-combo-box-focus-outline renderer widget 3))))
+  (when *debug-combo-box-focus*
+    (format t "[combo-box-header-render] windows focused=~S owner-focused=~S enabled=~S expanded=~S~%"
+            (<widget>-focused widget)
+            (and (<widget>-owner widget) (<widget>-focused (<widget>-owner widget)))
+            (enabled-p widget) (expanded-p widget)))
+  (multiple-value-bind (face border-color text-color)
+      (combo-box-header-render-colors widget :windows)
+    (let* ((x (<widget>-x widget))
+           (y (<widget>-y widget))
+           (w (<widget>-width widget))
+           (h (main-height widget))
+           (arrow-width 24))
+      (fill-rect renderer x y w h face)
+      (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
+      (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                         +color-medium-gray+ +color-darker-gray+ 1)
+      (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-dark-gray+)
+      (%render-combo-box-main renderer widget face
+                              border-color
+                              arrow-width
+                              (if (expanded-p widget) "^" "v")
+                              6
+                              :border-width 0
+                              :text-color text-color
+                              :arrow-color text-color)
+      (when (combo-box-header-focused-p widget)
+        (%render-combo-box-focus-outline renderer widget 3)))))
 
 (defmethod render (renderer (widget <combo-box-header>) (style <motif-widget-style>))
   (declare (ignore style))
-  (let* ((x (<widget>-x widget))
-         (y (<widget>-y widget))
-         (w (<widget>-width widget))
-         (h (main-height widget))
-         (arrow-width 24)
-         (face (if (enabled-p widget) +color-motif-light+ +color-medium-gray+)))
-    (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
-    (%render-combo-box-main renderer widget face
-                            (if (<widget>-focused widget) +color-focus-border+ +color-motif-border+)
-                            arrow-width
-                            (if (expanded-p widget) "^" "v")
-                            6
-                            :border-width 0)
-    (when (<widget>-focused widget)
-      (%render-combo-box-focus-outline renderer widget 4))))
+  (when *debug-combo-box-focus*
+    (format t "[combo-box-header-render] motif focused=~S owner-focused=~S enabled=~S expanded=~S~%"
+            (<widget>-focused widget)
+            (and (<widget>-owner widget) (<widget>-focused (<widget>-owner widget)))
+            (enabled-p widget) (expanded-p widget)))
+  (multiple-value-bind (face border-color text-color)
+      (combo-box-header-render-colors widget :motif)
+    (let* ((x (<widget>-x widget))
+           (y (<widget>-y widget))
+           (w (<widget>-width widget))
+           (h (main-height widget))
+           (arrow-width 24))
+      (fill-rect renderer x y w h face)
+      (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
+      (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
+      (%render-combo-box-main renderer widget face
+                              border-color
+                              arrow-width
+                              (if (expanded-p widget) "^" "v")
+                              6
+                              :border-width 0
+                              :text-color text-color
+                              :arrow-color text-color)
+      (when (combo-box-header-focused-p widget)
+        (%render-combo-box-focus-outline renderer widget 4)))))
 
 (defmethod render (renderer (widget <combo-box>) (style <widget-style>))
   (when (header-widget widget)

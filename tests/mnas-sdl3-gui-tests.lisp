@@ -247,6 +247,29 @@
     (is (= 120 (mnas-sdl3-gui/widgets:<widget>-width header)))
     (is (= 24 (mnas-sdl3-gui/widgets:<widget>-height header)))))
 
+(test combo-box-header-render-colors-use-focus-state
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box-header>
+                                :enabled t
+                                :focused t)))
+    (multiple-value-bind (bg-color border-color text-color)
+        (mnas-sdl3-gui/widgets::combo-box-header-render-colors widget :flat)
+      (is (equal mnas-sdl3-gui/widgets::+color-highlight+ bg-color))
+      (is (equal mnas-sdl3-gui/widgets::+color-focus-border+ border-color))
+      (is (equal mnas-sdl3-gui/widgets::+color-focus-border+ text-color)))))
+
+(test combo-box-header-focus-clears-when-owner-loses-focus
+  (let* ((combo-box (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                   :x 0 :y 0 :width 120 :height 24
+                                   :items '("alpha" "beta")))
+         (header (mnas-sdl3-gui/widgets:header-widget combo-box))
+         (other (make-instance 'mnas-sdl3-gui/widgets:<widget>
+                                :x 0 :y 0 :width 10 :height 10)))
+    (setf (<widget>-focused combo-box) t)
+    (setf (<widget>-focused header) t)
+    (mnas-sdl3-gui/widgets:set-widget-focus (list combo-box other) other)
+    (is (eq nil (mnas-sdl3-gui/widgets:<widget>-focused combo-box)))
+    (is (eq nil (mnas-sdl3-gui/widgets:<widget>-focused header)))))
+
 (test combo-box-popup-visible-p-uses-widget-visible
   (let ((popup (make-instance 'mnas-sdl3-gui/widgets::<combo-box-popup>)))
     (setf (mnas-sdl3-gui/widgets:popup-visible-p popup) t)
