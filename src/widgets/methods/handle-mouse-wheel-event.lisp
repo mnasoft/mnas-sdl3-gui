@@ -55,37 +55,82 @@
                                    (/= old-offset (<scroll-container>-scroll-offset widget)))))))))
 
 (defmethod handle-mouse-wheel-event ((widget <combo-box>) (ev sdl3:mouse-wheel-event))
-  "Handle mouse-wheel for combo-box popups: adjust list-box scroll offset." 
-  (declare (ignore ev))
-  (let* ((raw-dy (handler-case (slot-value ev 'sdl3:%yrel)
-                   (error ()
-                     (handler-case (slot-value ev 'sdl3:%y)
-                       (error () 0)))))
+  "Handle mouse-wheel for combo-box popups: scroll toward earlier items as the wheel moves up."
+  (let* ((mx (ignore-errors (slot-value ev 'sdl3:%mouse-x)))
+         (my (ignore-errors (slot-value ev 'sdl3:%mouse-y)))
+         (fallback (and (boundp '*last-mouse-pos*) *last-mouse-pos*))
+         (x (cond (mx (round mx)) (fallback (car fallback)) (t (round (slot-value ev 'sdl3:%x)))))
+         (y (cond (my (round my)) (fallback (cdr fallback)) (t (round (slot-value ev 'sdl3:%y)))))
+         (raw-dy (or (ignore-errors (slot-value ev 'sdl3:%yrel))
+                     (ignore-errors (slot-value ev 'sdl3:%y))
+                     0))
          (dir (ignore-errors (slot-value ev 'sdl3:%direction)))
          (dir-flipped?
           (cond
             ((numberp dir) (= dir 1))
             ((symbolp dir) (string= (string-downcase (symbol-name dir)) "flipped"))
             (t nil)))
-         (dy (if dir-flipped? (- raw-dy) raw-dy)))
-    (format t "[combo-box] wheel raw=~A dir=~S dy=~A popup-id=~S~%" raw-dy dir dy
-            (and (popup-widget widget)
-                 (<combo-box-popup>-window-id (popup-widget widget))))
-    (finish-output)
-    (when (not (zerop dy))
+         (dy (if dir-flipped? raw-dy (- raw-dy)))
+         (delta-sign (if (> dy 0) 1 -1))
+         (inside (or (contains-point-p widget x y)
+                     (and (expanded-p widget)
+                          (popup-widget widget)
+                          (visible-p (popup-widget widget))))))
+    (when *debug-mouse-wheel-events*
+      (format t "[combo-box] widget=~S x=~D y=~D raw-dy=~S dir=~S dy=~S inside=~S~%"
+              widget x y raw-dy dir dy inside))
+    (when (and inside (not (zerop dy)))
       (let* ((popup (popup-widget widget))
              (item-h (or (and popup (item-height popup)) 24))
              (old-offset (scroll-offset widget))
              (delta-rows (if (< (abs dy) item-h)
-                             (if (> dy 0) 1 -1)
-                             (round (/ dy item-h)))))
-        (format t "[combo-box] old-offset=~A dy=~A item-h=~A delta-rows=~A~%" old-offset dy item-h delta-rows)
-        (finish-output)
+                             delta-sign
+                             (let ((rows (round (/ dy item-h))))
+                               (* delta-sign (max 1 (abs rows)))))))
         (setf (scroll-offset widget)
               (+ old-offset delta-rows))
         (normalize-list-box-scroll-offset widget)
-        (format t "[combo-box] new-offset=~A~%" (scroll-offset widget))
-        (finish-output)
+        (when *debug-mouse-wheel-events*
+          (format t "[combo-box] old-offset=~D new-offset=~D delta-rows=~D~%"
+                  old-offset (scroll-offset widget) delta-rows))
+        (/= old-offset (scroll-offset widget))))))
+
+(defmethod handle-mouse-wheel-event ((widget <combo-box-popup>) (ev sdl3:mouse-wheel-event))
+  "Handle mouse-wheel for combo-box popup: scroll toward earlier items as the wheel moves up."
+  (let* ((mx (ignore-errors (slot-value ev 'sdl3:%mouse-x)))
+         (my (ignore-errors (slot-value ev 'sdl3:%mouse-y)))
+         (fallback (and (boundp '*last-mouse-pos*) *last-mouse-pos*))
+         (x (cond (mx (round mx)) (fallback (car fallback)) (t (round (slot-value ev 'sdl3:%x)))))
+         (y (cond (my (round my)) (fallback (cdr fallback)) (t (round (slot-value ev 'sdl3:%y)))))
+         (raw-dy (or (ignore-errors (slot-value ev 'sdl3:%yrel))
+                     (ignore-errors (slot-value ev 'sdl3:%y))
+                     0))
+         (dir (ignore-errors (slot-value ev 'sdl3:%direction)))
+         (dir-flipped?
+          (cond
+            ((numberp dir) (= dir 1))
+            ((symbolp dir) (string= (string-downcase (symbol-name dir)) "flipped"))
+            (t nil)))
+         (dy (if dir-flipped? raw-dy (- raw-dy)))
+         (delta-sign (if (> dy 0) 1 -1))
+         (inside (or (contains-point-p widget x y)
+                     (visible-p widget))))
+    (when *debug-mouse-wheel-events*
+      (format t "[combo-box-popup] widget=~S x=~D y=~D raw-dy=~S dir=~S dy=~S inside=~S~%"
+              widget x y raw-dy dir dy inside))
+    (when (and inside (not (zerop dy)))
+      (let* ((item-h (or (item-height widget) 24))
+             (old-offset (scroll-offset widget))
+             (delta-rows (if (< (abs dy) item-h)
+                             delta-sign
+                             (let ((rows (round (/ dy item-h))))
+                               (* delta-sign (max 1 (abs rows)))))))
+        (setf (scroll-offset widget)
+              (+ old-offset delta-rows))
+        (normalize-list-box-scroll-offset widget)
+        (when *debug-mouse-wheel-events*
+          (format t "[combo-box-popup] old-offset=~D new-offset=~D delta-rows=~D~%"
+                  old-offset (scroll-offset widget) delta-rows))
         (/= old-offset (scroll-offset widget))))))
 
 (defmethod handle-mouse-wheel-event ((widget <list-box>) (ev sdl3:mouse-wheel-event))
