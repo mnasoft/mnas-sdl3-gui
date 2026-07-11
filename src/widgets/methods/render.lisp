@@ -616,7 +616,7 @@
       (stroke-rect renderer x y w h +color-focus-border+ 2)
       (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-white+ 1))))
 
-(defmethod render (renderer (widget <combo-box-header>) (style <widget-style>))
+(defmethod render (renderer (widget <combo-box-header>) (style <flat-widget-style>))
   (declare (ignore style))
   (%render-combo-box-main renderer widget
                           (if (enabled-p widget) +color-white+ +color-light-gray+)
@@ -625,10 +625,6 @@
                           (if (expanded-p widget) "^" "v")
                           6
                           :border-width (if (<widget>-focused widget) 2 1)))
-
-(defmethod render (renderer (widget <combo-box-header>) style)
-  (declare (ignore style))
-  (render renderer widget (make-instance '<flat-widget-style>)))
 
 (defmethod render (renderer (widget <combo-box-header>) (style <windows-widget-style>))
   (declare (ignore style))
@@ -673,23 +669,6 @@
       (%render-combo-box-focus-outline renderer widget 4))))
 
 (defmethod render (renderer (widget <combo-box>) (style <widget-style>))
-  (declare (ignore style))
-  (when (header-widget widget)
-    (render renderer (header-widget widget) style))
-  (when (and (expanded-p widget)
-             (popup-widget widget))
-    (render renderer (popup-widget widget) style)))
-
-(defmethod render (renderer (widget <combo-box>) (style <windows-widget-style>))
-  (declare (ignore style))
-  (when (header-widget widget)
-    (render renderer (header-widget widget) style))
-  (when (and (expanded-p widget)
-             (popup-widget widget))
-    (render renderer (popup-widget widget) style)))
-
-(defmethod render (renderer (widget <combo-box>) (style <motif-widget-style>))
-  (declare (ignore style))
   (when (header-widget widget)
     (render renderer (header-widget widget) style))
   (when (and (expanded-p widget)
