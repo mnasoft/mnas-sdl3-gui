@@ -110,7 +110,9 @@
                              (:file "entry-functions")))
                (:module "src/widgets/methods"
 		:serial t
-                :components ((:file "render")
+                :components ((:file "expanded-p")
+                             (:file "popup-widget")
+                             (:file "render")
                              (:file "entry-cursor-pixel-offset")
                              (:file "compute-text-segment-pixel-width")
                              (:file "compute-text-offset-to-position")
@@ -166,7 +168,6 @@
                              (:file "widget-measure")
 
                              (:file "selected-index")
-                             (:file "popup-widget")
                              (:file "header-widget")
                              (:file "main-height")
                              (:file "host-window")
