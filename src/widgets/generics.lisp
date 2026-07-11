@@ -158,120 +158,8 @@ Default behavior is based on widget bounds."))
 (defgeneric handle-viewport-resize (widget width height)
   (:documentation "Handle viewport resize events for WIDGET."))
 
-(defmethod widget-content-box ((widget <widget>))
-  (let* ((padding (or (<widget>-padding widget) 0))
-         (border (or (<widget>-border-width widget) 0))
-         (content-x (+ (<widget>-x widget) border padding))
-         (content-y (+ (<widget>-y widget) border padding))
-         (content-w (max 0 (- (<widget>-width widget) (* 2 (+ border padding)))))
-         (content-h (max 0 (- (<widget>-height widget) (* 2 (+ border padding))))))
-    (values content-x content-y content-w content-h)))
-
-(defmethod widget-arrange ((widget <widget>) x y width height)
-  (place-widget widget :x x :y y :width width :height height))
-
-(defmethod widget-arrange ((widget <scroll-container>) x y width height)
-  (place-widget widget :x x :y y :width width :height height)
-  (let ((offset (scroll-container-scroll-offset widget))
-        (current-y (<widget>-y widget)))
-    (dolist (child (children widget))
-      (widget-arrange child (<widget>-x widget)
-                     (- current-y offset)
-                     (<widget>-width widget)
-                     (<widget>-height child))
-      (incf current-y (<widget>-height child)))))
-
-(defmethod widget-min-size ((widget <scroll-container>))
-  (values (<widget>-width widget)
-          (max 1 (min (<widget>-height widget)
-                      (scroll-container-content-height widget)))))
-
-(defmethod widget-arrange ((widget <row-stack>) x y width height)
-  (place-widget widget :x x :y y :width width :height height)
-  (let* ((padding (or (<widget>-padding widget) 0))
-         (spacing (or (<widget>-spacing widget) 0))
-         (inner-x (+ (<widget>-x widget) padding))
-         (inner-y (+ (<widget>-y widget) padding))
-         (inner-w (max 1 (- width (* 2 padding))))
-         (inner-h (max 1 (- height (* 2 padding))))
-         (current-x inner-x))
-    (dolist (child (children widget))
-      (multiple-value-bind (min-w min-h) (widget-min-size child)
-        (let* ((child-w (max 1 (min min-w (- (+ inner-x inner-w) current-x))))
-               (child-h inner-h))
-          (place-widget child :x current-x :y inner-y :width child-w :height child-h)
-          (incf current-x (+ child-w spacing)))))))
-
-(defmethod widget-min-size ((widget <row-stack>))
-  (let ((spacing (or (<widget>-spacing widget) 0))
-        (padding (or (<widget>-padding widget) 0))
-        (total-width 0)
-        (max-height 0)
-        (firstp t))
-    (dolist (child (children widget))
-      (multiple-value-bind (child-w child-h) (widget-min-size child)
-        (unless firstp
-          (incf total-width spacing))
-        (incf total-width child-w)
-        (setf max-height (max max-height child-h))
-        (setf firstp nil)))
-    (values (max 1 (+ total-width (* 2 padding)))
-            (max 1 (+ max-height (* 2 padding))))))
-
-(defmethod widget-arrange ((widget <column-stack>) x y width height)
-  (place-widget widget :x x :y y :width width :height height)
-  (let* ((padding (or (<widget>-padding widget) 0))
-         (spacing (or (<widget>-spacing widget) 0))
-         (inner-x (+ (<widget>-x widget) padding))
-         (inner-y (+ (<widget>-y widget) padding))
-         (inner-w (max 1 (- width (* 2 padding))))
-         (inner-h (max 1 (- height (* 2 padding))))
-         (current-y inner-y))
-    (dolist (child (children widget))
-      (multiple-value-bind (min-w min-h) (widget-min-size child)
-        (let ((child-w inner-w)
-              (child-h (max 1 min-h)))
-          (place-widget child :x inner-x :y current-y :width child-w :height child-h)
-          (incf current-y (+ child-h spacing)))))))
-
-(defmethod widget-min-size ((widget <column-stack>))
-  (let ((spacing (or (<widget>-spacing widget) 0))
-        (padding (or (<widget>-padding widget) 0))
-        (max-width 0)
-        (total-height 0)
-        (firstp t))
-      (dolist (child (children widget))
-      (multiple-value-bind (child-w child-h) (widget-min-size child)
-        (unless firstp
-          (incf total-height spacing))
-        (incf total-height child-h)
-        (setf max-width (max max-width child-w))
-        (setf firstp nil)))
-    (values (max 1 (+ max-width (* 2 padding)))
-            (max 1 (+ total-height (* 2 padding))))))
-
-;; `widget-paint` method removed. Rendering is performed via `render` generic.
-
-(defmethod widget-hit-test ((widget <widget>) x y)
-  (contains-point-p widget x y))
-
 (defgeneric render (renderer widget style)
   (:documentation "Render WIDGET on RENDERER using STYLE for widget-specific dispatch."))
-
-;; Skip rendering for invisible widgets globally via an :around method.
-(defmethod render :around ((renderer t) (widget <widget>) style)
-  (when (visible-p widget)
-    (call-next-method)))
-
-(defmethod render :around ((renderer t) (popup <combo-box-popup>) style)
-  (let ((owner (<widget>-owner popup)))
-    (if (and owner
-             (expanded-p owner)
-             (<combo-box-popup>-window-enabled-p owner))
-        (call-next-method)
-        (when (visible-p popup)
-          (call-next-method)))))
-
 
 (defgeneric children (widget)
   (:documentation "Return a list of child widgets for WIDGET."))
@@ -281,7 +169,7 @@ Default behavior is based on widget bounds."))
 
 (defgeneric handle-widget-click (widget x y)
   (:documentation "Compatibility helper: emulate click as mouse-down followed by mouse-up."))
-
+ 
 ;; Per-widget low-level mouse handlers removed: use event-level
 ;; `handle-mouse-button-event`, `handle-mouse-motion-event`,
 ;; `handle-mouse-wheel-event` and `handle-mouse-device-event` instead.

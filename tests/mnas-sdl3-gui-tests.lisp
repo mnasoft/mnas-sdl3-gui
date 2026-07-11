@@ -224,6 +224,16 @@
   (let ((popup (make-instance 'mnas-sdl3-gui/widgets::<combo-box-popup>)))
     (is (eq nil (mnas-sdl3-gui/widgets:<widget>-visible popup)))))
 
+(test combo-box-header-uses-owner-geometry
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 10 :y 20 :width 120 :height 24
+                                :items '("alpha" "beta")))
+         (header (mnas-sdl3-gui/widgets:header-widget widget)))
+    (is (= 10 (mnas-sdl3-gui/widgets:<widget>-x header)))
+    (is (= 20 (mnas-sdl3-gui/widgets:<widget>-y header)))
+    (is (= 120 (mnas-sdl3-gui/widgets:<widget>-width header)))
+    (is (= 24 (mnas-sdl3-gui/widgets:<widget>-height header)))))
+
 (test combo-box-popup-visible-p-uses-widget-visible
   (let ((popup (make-instance 'mnas-sdl3-gui/widgets::<combo-box-popup>)))
     (setf (mnas-sdl3-gui/widgets:popup-visible-p popup) t)
@@ -240,6 +250,22 @@
                                widgets)))
     (is (not (null popup-proxy)))
     (is (eq nil (mnas-sdl3-gui/widgets:<widget>-visible popup-proxy)))))
+
+(test combo-box-header-expanded-p-delegates-to-owner
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta")))
+         (header (mnas-sdl3-gui/widgets:header-widget widget)))
+    (setf (mnas-sdl3-gui/widgets:expanded-p widget) t)
+    (is (eq t (mnas-sdl3-gui/widgets:expanded-p header)))))
+
+(test combo-box-header-popup-widget-delegates-to-owner
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta")))
+         (header (mnas-sdl3-gui/widgets:header-widget widget)))
+    (is (eq (mnas-sdl3-gui/widgets:popup-widget widget)
+            (mnas-sdl3-gui/widgets:popup-widget header)))))
 
 (test combo-box-root-handler-does-not-close-expanded-popup-for-popup-window-events
   (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>

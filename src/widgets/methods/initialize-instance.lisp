@@ -18,6 +18,22 @@
         (when (and wid (numberp wid) (> wid 0))
           (ignore-errors (register-widget-for-window-id wid widget)))))))
 
+(defun sync-combo-box-geometry-with-owner (widget)
+  "Copy the owner combo-box geometry onto its header and popup widgets."
+  (let ((header (header-widget widget))
+        (popup (popup-widget widget)))
+    (when header
+      (setf (<widget>-x header) (<widget>-x widget)
+            (<widget>-y header) (<widget>-y widget)
+            (<widget>-width header) (<widget>-width widget)
+            (<widget>-height header) (<widget>-height widget)))
+    (when popup
+      (setf (<widget>-x popup) (<widget>-x widget)
+            (<widget>-y popup) (<widget>-y widget)
+            (<widget>-width popup) (<widget>-width widget)
+            (<widget>-height popup) (<widget>-height widget)))
+    widget))
+
 (defmethod initialize-instance :after ((widget <combo-box-popup>)
                                        &key (visible nil visible-supplied)
                                        &allow-other-keys)
@@ -45,6 +61,7 @@
     (when (and popup items)
       (setf (children popup) items
             (selected-index popup) (or selected-index 0))))
+  (sync-combo-box-geometry-with-owner widget)
   (setf (main-height widget) (<widget>-height widget))
   (ensure-combo-box-selection-visible widget)
   (sync-combo-box-expanded-state widget (expanded-p widget))

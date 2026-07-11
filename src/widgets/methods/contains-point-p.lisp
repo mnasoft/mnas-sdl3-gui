@@ -14,3 +14,6 @@
            (<= (<widget>-x widget) x (+ (<widget>-x widget) (<widget>-width widget)))
            (<= (<widget>-y widget) y
                (+ (<widget>-y widget) (popup-height widget))))))
+
+(defmethod widget-hit-test ((widget <widget>) x y)
+  (contains-point-p widget x y))

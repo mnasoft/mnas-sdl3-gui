@@ -616,26 +616,21 @@
       (stroke-rect renderer x y w h +color-focus-border+ 2)
       (stroke-rect renderer (+ x 2) (+ y 2) (- w 4) (- h 4) +color-white+ 1))))
 
-(defmethod render (renderer (widget <combo-box>) (style <widget-style>))
+(defmethod render (renderer (widget <combo-box-header>) (style <widget-style>))
   (declare (ignore style))
-  (let* ((arrow-width 24)
-         (border-color (if (<widget>-focused widget) +color-focus-border+ +color-border+)))
-    (%render-combo-box-main renderer widget
-                            (if (enabled-p widget) +color-white+ +color-light-gray+)
-                            border-color
-                            arrow-width
-                            (if (expanded-p widget) "^" "v")
-                            6
-                            :border-width (if (<widget>-focused widget) 2 1)))
-  (when (and (expanded-p widget)
-             (not (<combo-box-popup>-window-enabled-p widget)))
-    (%render-combo-box-popup renderer widget +color-border+
-                             +color-white+
-                             +color-scrollbar-track+
-                             +color-scrollbar-thumb+
-                             +color-scrollbar-thumb-border+)))
+  (%render-combo-box-main renderer widget
+                          (if (enabled-p widget) +color-white+ +color-light-gray+)
+                          (if (<widget>-focused widget) +color-focus-border+ +color-border+)
+                          24
+                          (if (expanded-p widget) "^" "v")
+                          6
+                          :border-width (if (<widget>-focused widget) 2 1)))
 
-(defmethod render (renderer (widget <combo-box>) (style <windows-widget-style>))
+(defmethod render (renderer (widget <combo-box-header>) style)
+  (declare (ignore style))
+  (render renderer widget (make-instance '<flat-widget-style>)))
+
+(defmethod render (renderer (widget <combo-box-header>) (style <windows-widget-style>))
   (declare (ignore style))
   (let* ((x (<widget>-x widget))
          (y (<widget>-y widget))
@@ -655,14 +650,51 @@
                             6
                             :border-width 0)
     (when (<widget>-focused widget)
-      (%render-combo-box-focus-outline renderer widget 3)))
+      (%render-combo-box-focus-outline renderer widget 3))))
+
+(defmethod render (renderer (widget <combo-box-header>) (style <motif-widget-style>))
+  (declare (ignore style))
+  (let* ((x (<widget>-x widget))
+         (y (<widget>-y widget))
+         (w (<widget>-width widget))
+         (h (main-height widget))
+         (arrow-width 24)
+         (face (if (enabled-p widget) +color-motif-light+ +color-medium-gray+)))
+    (fill-rect renderer x y w h face)
+    (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
+    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
+    (%render-combo-box-main renderer widget face
+                            (if (<widget>-focused widget) +color-focus-border+ +color-motif-border+)
+                            arrow-width
+                            (if (expanded-p widget) "^" "v")
+                            6
+                            :border-width 0)
+    (when (<widget>-focused widget)
+      (%render-combo-box-focus-outline renderer widget 4))))
+
+(defmethod render (renderer (widget <combo-box>) (style <widget-style>))
+  (declare (ignore style))
+  (when (header-widget widget)
+    (render renderer (header-widget widget) style))
   (when (and (expanded-p widget)
-             (not (<combo-box-popup>-window-enabled-p widget)))
-    (%render-combo-box-popup renderer widget +color-dark-gray+
-                             +color-white+
-                             +color-scrollbar-track+
-                             +color-scrollbar-thumb+
-                             +color-scrollbar-thumb-border-motif+)))
+             (popup-widget widget))
+    (render renderer (popup-widget widget) style)))
+
+(defmethod render (renderer (widget <combo-box>) (style <windows-widget-style>))
+  (declare (ignore style))
+  (when (header-widget widget)
+    (render renderer (header-widget widget) style))
+  (when (and (expanded-p widget)
+             (popup-widget widget))
+    (render renderer (popup-widget widget) style)))
+
+(defmethod render (renderer (widget <combo-box>) (style <motif-widget-style>))
+  (declare (ignore style))
+  (when (header-widget widget)
+    (render renderer (header-widget widget) style))
+  (when (and (expanded-p widget)
+             (popup-widget widget))
+    (render renderer (popup-widget widget) style)))
 
 (defun %render-editable-combo-box-main (renderer widget bg-color border-color arrow-width arrow-text offset-y &key border-width)
   (let ((main-height (main-height widget)))
@@ -824,73 +856,104 @@
 ;; so popup windows are rendered after main widgets in `widgets-in-render-order`.
 
 (defmethod render (renderer (popup <combo-box-popup>) (style <windows-widget-style>))
-  (declare (ignore renderer))
+  (declare (ignore style))
   (let ((owner (<widget>-owner popup)))
     (when owner
-      (let* ((popup-renderer (or (and (typep popup '<combo-box-popup>)
-                                      (popup-renderer popup))
-                                 (popup-renderer owner)))
-             (visible-p (or (and (typep popup '<combo-box-popup>)
-                                 (popup-visible-p popup))
-                            (popup-visible-p owner))))
-        (when (and (expanded-p owner)
-                   (<combo-box-popup>-window-enabled-p owner)
-                   (not visible-p))
-          (show-popup-window owner))
-        (when (and popup-renderer visible-p)
-          (%render-combo-box-popup-at popup-renderer owner 0 0
-                                      +color-dark-gray+
-                                      +color-white+
-                                      +color-scrollbar-track+
-                                      +color-scrollbar-thumb+
-                                      +color-scrollbar-thumb-border-motif+)
-          (sdl3:render-present popup-renderer))))))
+      (if (and (expanded-p owner)
+               (<combo-box-popup>-window-enabled-p owner))
+          (let* ((popup-renderer (or (popup-renderer popup)
+                                     (popup-renderer owner)))
+                 (visible-p (or (popup-visible-p popup)
+                                (popup-visible-p owner))))
+            (when (and (expanded-p owner)
+                       (<combo-box-popup>-window-enabled-p owner)
+                       (not visible-p))
+              (show-popup-window owner))
+            (when (and popup-renderer visible-p)
+              (%render-combo-box-popup-at popup-renderer owner 0 0
+                                          +color-dark-gray+
+                                          +color-white+
+                                          +color-scrollbar-track+
+                                          +color-scrollbar-thumb+
+                                          +color-scrollbar-thumb-border-motif+)
+              (sdl3:render-present popup-renderer)))
+          (when (expanded-p owner)
+            (%render-combo-box-popup-at renderer owner
+                                        (<widget>-x owner)
+                                        (<widget>-y owner)
+                                        +color-dark-gray+
+                                        +color-white+
+                                        +color-scrollbar-track+
+                                        +color-scrollbar-thumb+
+                                        +color-scrollbar-thumb-border-motif+))))))
 
 (defmethod render (renderer (popup <combo-box-popup>) (style <motif-widget-style>))
-  (declare (ignore renderer))
+  (declare (ignore style))
   (let ((owner (<widget>-owner popup)))
     (when owner
-      (let* ((popup-renderer (or (and (typep popup '<combo-box-popup>)
-                                      (popup-renderer popup))
-                                 (popup-renderer owner)))
-             (visible-p (or (and (typep popup '<combo-box-popup>)
-                                 (popup-visible-p popup))
-                            (popup-visible-p owner))))
-        (when (and (expanded-p owner)
-                   (<combo-box-popup>-window-enabled-p owner)
-                   (not visible-p))
-          (show-popup-window owner))
-        (when (and popup-renderer visible-p)
-          (%render-combo-box-popup-at popup-renderer owner 0 0
-                                      +color-motif-border+
-                                      +color-motif-panel-bg+
-                                      +color-scrollbar-track-motif+
-                                      +color-scrollbar-thumb-motif+
-                                      +color-scrollbar-thumb-border-motif+)
-          (sdl3:render-present popup-renderer))))))
+      (if (and (expanded-p owner)
+               (<combo-box-popup>-window-enabled-p owner))
+          (let* ((popup-renderer (or (popup-renderer popup)
+                                     (popup-renderer owner)))
+                 (visible-p (or (popup-visible-p popup)
+                                (popup-visible-p owner))))
+            (when (and (expanded-p owner)
+                       (<combo-box-popup>-window-enabled-p owner)
+                       (not visible-p))
+              (show-popup-window owner))
+            (when (and popup-renderer visible-p)
+              (%render-combo-box-popup-at popup-renderer owner 0 0
+                                          +color-motif-border+
+                                          +color-motif-panel-bg+
+                                          +color-scrollbar-track-motif+
+                                          +color-scrollbar-thumb-motif+
+                                          +color-scrollbar-thumb-border-motif+)
+              (sdl3:render-present popup-renderer)))
+          (when (expanded-p owner)
+            (%render-combo-box-popup-at renderer owner
+                                        (<widget>-x owner)
+                                        (<widget>-y owner)
+                                        +color-motif-border+
+                                        +color-motif-panel-bg+
+                                        +color-scrollbar-track-motif+
+                                        +color-scrollbar-thumb-motif+
+                                        +color-scrollbar-thumb-border-motif+))))))
 
 (defmethod render (renderer (popup <combo-box-popup>) style)
-  (declare (ignore renderer style))
+  (declare (ignore style))
   (let ((owner (<widget>-owner popup)))
     (when owner
-      (let* ((popup-renderer (or (and (typep popup '<combo-box-popup>)
-                                      (popup-renderer popup))
-                                 (popup-renderer owner)))
-             (visible-p (or (and (typep popup '<combo-box-popup>)
-                                 (popup-visible-p popup))
-                            (popup-visible-p owner))))
-        (when (and (expanded-p owner)
-                   (<combo-box-popup>-window-enabled-p owner)
-                   (not visible-p))
-          (show-popup-window owner))
-        (when (and popup-renderer visible-p)
-          (%render-combo-box-popup-at popup-renderer owner 0 0
-                                      +color-border+
-                                      +color-white+
-                                      +color-scrollbar-track+
-                                      +color-scrollbar-thumb+
-                                      +color-scrollbar-thumb-border+)
-          (sdl3:render-present popup-renderer))))))
+      (if (and (expanded-p owner)
+               (<combo-box-popup>-window-enabled-p owner))
+          (let* ((popup-renderer (or (popup-renderer popup)
+                                     (popup-renderer owner)))
+                 (visible-p (or (popup-visible-p popup)
+                                (popup-visible-p owner))))
+            (when (and (expanded-p owner)
+                       (<combo-box-popup>-window-enabled-p owner)
+                       (not visible-p))
+              (show-popup-window owner))
+            (when (and popup-renderer visible-p)
+              (%render-combo-box-popup-at popup-renderer owner 0 0
+                                          +color-border+
+                                          +color-white+
+                                          +color-scrollbar-track+
+                                          +color-scrollbar-thumb+
+                                          +color-scrollbar-thumb-border+)
+              (sdl3:render-present popup-renderer)))
+          (when (expanded-p owner)
+            (%render-combo-box-popup-at renderer owner
+                                        (<widget>-x owner)
+                                        (<widget>-y owner)
+                                        +color-border+
+                                        +color-white+
+                                        +color-scrollbar-track+
+                                        +color-scrollbar-thumb+
+                                        +color-scrollbar-thumb-border+))))))
+
+(defmethod render (renderer (popup <combo-box-popup>) (style <flat-widget-style>))
+  (declare (ignore style))
+  (render renderer popup (make-instance '<flat-widget-style>)))
 
 (defmethod render (renderer (widget <button>) (style <windows-widget-style>))
   (declare (ignore style))
@@ -961,3 +1024,12 @@
                        (if (enabled-p widget) +color-text+ +color-disabled+)
                        :offset-x (if (<button>-pressed-p widget) 1 0)
                        :offset-y (if (<button>-pressed-p widget) 1 0)))
+
+(defmethod render :around ((renderer t) (popup <combo-box-popup>) style)
+  (let ((owner (<widget>-owner popup)))
+    (if (and owner
+             (expanded-p owner)
+             (<combo-box-popup>-window-enabled-p owner))
+        (call-next-method)
+        (when (visible-p popup)
+          (call-next-method)))))
