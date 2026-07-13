@@ -576,7 +576,171 @@ its children."))
 ;;; Rendering style classes
 
 (defclass <widget-style> ()
-  ()
+  ((border-width
+    :initarg :border-width
+    :initform 2
+    :accessor <widget-style>-border-width
+    :documentation "Default border thickness for outlined widgets.")
+   (focus-outline-offset
+    :initarg :focus-outline-offset
+    :initform 1
+    :accessor <widget-style>-focus-outline-offset
+    :documentation "Inset used for focus outlines.")
+   (background-color
+    :initarg :background-color
+    :initform +color-bg+
+    :accessor <widget-style>-background-color
+    :documentation "Default background color used by widgets.")
+   (panel-background-color
+    :initarg :panel-background-color
+    :initform +color-white+
+    :accessor <widget-style>-panel-background-color
+    :documentation "Background color used for panels and entry-like surfaces.")
+   (border-color
+    :initarg :border-color
+    :initform +color-border+
+    :accessor <widget-style>-border-color
+    :documentation "Default border color used by widgets.")
+   (text-color
+    :initarg :text-color
+    :initform +color-text+
+    :accessor <widget-style>-text-color
+    :documentation "Default text color used by widgets.")
+   (disabled-color
+    :initarg :disabled-color
+    :initform +color-disabled+
+    :accessor <widget-style>-disabled-color
+    :documentation "Color used for disabled text and UI elements.")
+   (selection-background-color
+    :initarg :selection-background-color
+    :initform +color-selection-bg+
+    :accessor <widget-style>-selection-background-color
+    :documentation "Background color for text selection highlights.")
+   (selection-text-color
+    :initarg :selection-text-color
+    :initform +color-selection-text+
+    :accessor <widget-style>-selection-text-color
+    :documentation "Text color for selected content.")
+   (focus-border-color
+    :initarg :focus-border-color
+    :initform +color-focus-border+
+    :accessor <widget-style>-focus-border-color
+    :documentation "Color used for focus outlines.")
+   (highlight-color
+    :initarg :highlight-color
+    :initform +color-highlight+
+    :accessor <widget-style>-highlight-color
+    :documentation "Color used for highlighted rows and selection states.")
+   (scrollbar-track-color
+    :initarg :scrollbar-track-color
+    :initform +color-scrollbar-track+
+    :accessor <widget-style>-scrollbar-track-color
+    :documentation "Track color for scrollbars.")
+   (scrollbar-thumb-color
+    :initarg :scrollbar-thumb-color
+    :initform +color-scrollbar-thumb+
+    :accessor <widget-style>-scrollbar-thumb-color
+    :documentation "Thumb color for scrollbars.")
+   (scrollbar-thumb-border-color
+    :initarg :scrollbar-thumb-border-color
+    :initform +color-scrollbar-thumb-border+
+    :accessor <widget-style>-scrollbar-thumb-border-color
+    :documentation "Border color for scrollbar thumbs.")
+   (button-face-color
+    :initarg :button-face-color
+    :initform +color-bg+
+    :accessor <widget-style>-button-face-color
+    :documentation "Default face color for buttons.")
+   (button-face-disabled-color
+    :initarg :button-face-disabled-color
+    :initform +color-light-gray+
+    :accessor <widget-style>-button-face-disabled-color
+    :documentation "Face color for disabled buttons.")
+   (button-active-color
+    :initarg :button-active-color
+    :initform +color-button-active+
+    :accessor <widget-style>-button-active-color
+    :documentation "Color used for pressed or active button state.")
+   (toolbar-toggle-active-color
+    :initarg :toolbar-toggle-active-color
+    :initform +color-toolbar-toggle-active+
+    :accessor <widget-style>-toolbar-toggle-active-color
+    :documentation "Color used for active toolbar toggle buttons.")
+   (text-padding
+    :initarg :text-padding
+    :initform 4
+    :accessor <widget-style>-text-padding
+    :documentation "Padding used for inline text content.")
+   (toolbar-padding
+    :initarg :toolbar-padding
+    :initform 6
+    :accessor <widget-style>-toolbar-padding
+    :documentation "Horizontal padding inside toolbar containers.")
+   (toolbar-spacing
+    :initarg :toolbar-spacing
+    :initform 6
+    :accessor <widget-style>-toolbar-spacing
+    :documentation "Spacing between toolbar children.")
+   (scrollbar-width
+    :initarg :scrollbar-width
+    :initform 12
+    :accessor <widget-style>-scrollbar-width
+    :documentation "Width of the scrollbar track.")
+   (combo-box-arrow-width
+    :initarg :combo-box-arrow-width
+    :initform 24
+    :accessor <widget-style>-combo-box-arrow-width
+    :documentation "Width of the arrow area in combo-box headers.")
+   (combo-box-arrow-offset-y
+    :initarg :combo-box-arrow-offset-y
+    :initform 6
+    :accessor <widget-style>-combo-box-arrow-offset-y
+    :documentation "Vertical offset of the combo-box arrow glyph.")
+   (button-pressed-label-offset
+    :initarg :button-pressed-label-offset
+    :initform 1
+    :accessor <widget-style>-button-pressed-label-offset
+    :documentation "Label offset applied when a button is pressed.")
+   (selection-padding
+    :initarg :selection-padding
+    :initform 2
+    :accessor <widget-style>-selection-padding
+    :documentation "Padding around text selection highlight.")
+   (cursor-offset
+    :initarg :cursor-offset
+    :initform 2
+    :accessor <widget-style>-cursor-offset
+    :documentation "Vertical offset for the text cursor.")
+   (toggle-circle-radius
+    :initarg :toggle-circle-radius
+    :initform 8
+    :accessor <widget-style>-toggle-circle-radius
+    :documentation "Radius of the toggle switch circle.")
+   (toggle-height
+    :initarg :toggle-height
+    :initform 20
+    :accessor <widget-style>-toggle-height
+    :documentation "Height of the toggle switch track.")
+   (toggle-indicator-inner-radius
+    :initarg :toggle-indicator-inner-radius
+    :initform 4
+    :accessor <widget-style>-toggle-indicator-inner-radius
+    :documentation "Radius of the active indicator inside the toggle switch.")
+   (check-box-size
+    :initarg :check-box-size
+    :initform 16
+    :accessor <widget-style>-check-box-size
+    :documentation "Size of the check-box square.")
+   (check-mark-offset
+    :initarg :check-mark-offset
+    :initform 3
+    :accessor <widget-style>-check-mark-offset
+    :documentation "Offset of the check mark inside the box.")
+   (check-mark-size
+    :initarg :check-mark-size
+    :initform 10
+    :accessor <widget-style>-check-mark-size
+    :documentation "Size of the check mark inside the box."))
   (:documentation "Base rendering style for widgets."))
 
 (defclass <flat-widget-style> (<widget-style>)
