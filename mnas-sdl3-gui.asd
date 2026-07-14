@@ -92,6 +92,7 @@
   :components ((:module "src/widgets"
 		:serial t
                 :components ((:file "package")
+                             (:file "parameters")
                              (:file "classes")
                              (:file "classes-grid")
                              (:file "methods/print-object")
