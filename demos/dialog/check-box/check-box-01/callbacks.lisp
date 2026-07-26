@@ -56,10 +56,12 @@
   (sdl3:render-present *renderer*)
   :continue)
 
+
+(mnas-debug:enable :callback-event)
 (sdl3:def-app-event callback-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
-    (mnas-debug:with
+    (mnas-debug:with :callback-event
       (mnas-sdl3-gui/events:update-from-sdl-event ev)
       (mnas-sdl3-gui/events:log-event ev))
     (typecase ev
@@ -79,7 +81,6 @@
       (sdl3:keyboard-event
        (mnas-sdl3-gui/widgets:handle-keyboard-event
         (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev))
-      
       #+nil
       (sdl3:keyboard-event
        (when (and (slot-value ev 'sdl3:%down)
@@ -93,6 +94,8 @@
             ev)))
        :continue)
       (t :continue))))
+
+(mnas-debug:toggle :callback-event)
 
 (sdl3:def-app-quit callback-quit (result)
   (declare (ignore result))

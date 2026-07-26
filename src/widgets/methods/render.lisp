@@ -192,75 +192,103 @@
       (render-canvas-2d-placeholder renderer widget))
   (setf (canvas-2d-widget-redraw-requested widget) nil))
 
-(defmethod render (renderer (obj <button>) (style <widget-style>))
-  (let* ((color
-          (cond
-            ((not (enabled-p obj)) (<widget-style>-disabled-color style))
-            ((<button>-pressed-p obj) (<widget-style>-button-active-color style))
-            (t (<widget-style>-background-color style))))
-         (border-width (<widget-style>-border-width style))
-         (label-offset-y (if (<button>-pressed-p obj)
-                             (<widget-style>-button-pressed-label-offset style)
-                             0)))
-    (fill-rect renderer (<widget>-x obj) (<widget>-y obj)
-               (<widget>-width obj) (<widget>-height obj)
-               color)
-    (stroke-rect renderer (<widget>-x obj) (<widget>-y obj)
-                 (<widget>-width obj) (<widget>-height obj)
-                 (<widget-style>-border-color style)
-                 border-width)
-    (when (<widget>-focused obj)
-      (render-button-focus-outline renderer obj)))
-  (render-button-label renderer obj
-                       (if (enabled-p obj)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod render (renderer (widget <button>) (style <widget-style>))
+  (let ((x (<widget>-x widget))
+        (y (<widget>-y widget))
+        (w (<widget>-width widget))
+        (h (<widget>-height widget))
+        (pressed (<button>-pressed-p widget))
+        (face (if (enabled-p widget)
+                  (<widget-style>-button-face-color style)
+                  (<widget-style>-button-face-disabled-color style))))
+    (fill-rect renderer x y w h face)
+    (if pressed
+        (progn
+          (render-bevel-rect renderer x y w h +color-dark-gray+ +color-white+ 1)
+          (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                             +color-darker-gray+ +color-light-gray+ 1))
+        (progn
+          (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
+          (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
+                             +color-light-gray+ +color-darker-gray+ 1)))
+    (when (<widget>-focused widget)
+      (stroke-rect-outside renderer x y w h +color-focus-border+ 2)))
+  (render-button-label renderer
+                       widget
+                       (if (enabled-p widget)
                            (<widget-style>-text-color style)
                            (<widget-style>-disabled-color style))
-                       :offset-y label-offset-y))
+                       :offset-x (if (<button>-pressed-p widget) 1 0)
+                       :offset-y (if (<button>-pressed-p widget) 1 0)))
 
-(defmethod render (renderer (widget <toggle>) style)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod render (renderer (widget <toggle>) (style <widget-style>))
   (let* ((circle-radius (<widget-style>-toggle-circle-radius style))
          (indicator-width (* 2 circle-radius))
          (toggle-height (<widget-style>-toggle-height style))
          (indicator-inner-radius (<widget-style>-toggle-indicator-inner-radius style))
-         (<toggle>-x (<widget>-x widget))
-         (<toggle>-y (+ (<widget>-y widget) (/ (- (<widget>-height widget) toggle-height) 2)))
-         (circle-cx (+ <toggle>-x circle-radius))
-         (circle-cy (+ <toggle>-y circle-radius))
-         (<label>-height (nth-value 1 (widget-text-pixel-size (<toggle>-label widget))))
-         (<label>-gap (nth-value 0 (widget-text-pixel-size "M")))
-         (<label>-x (+ <toggle>-x indicator-width <label>-gap))
-         (<label>-y (+ <toggle>-y (/ (- indicator-width <label>-height) 2))))
-    (fill-circle renderer circle-cx circle-cy circle-radius (<widget-style>-background-color style))
-    (stroke-circle renderer circle-cx circle-cy circle-radius (<widget-style>-border-color style))
+         (toggle-x (<widget>-x widget))
+         (toggle-y (+ (<widget>-y widget) (/ (- (<widget>-height widget) toggle-height) 2)))
+         (circle-cx (+ toggle-x circle-radius))
+         (circle-cy (+ toggle-y circle-radius))
+         (label-height (nth-value 1 (widget-text-pixel-size (<toggle>-label widget))))
+         (label-gap (nth-value 0 (widget-text-pixel-size "M")))
+         (label-x (+ toggle-x indicator-width label-gap))
+         (label-y (+ toggle-y (/ (- indicator-width label-height) 2))))
+    (fill-circle renderer
+                 circle-cx circle-cy
+                 circle-radius
+                 (<widget-style>-background-color style))
+    (stroke-circle renderer
+                   circle-cx circle-cy
+                   circle-radius
+                   (<widget-style>-border-color style))
     (when (<toggle>-state widget)
-      (fill-circle renderer circle-cx circle-cy indicator-inner-radius (<widget-style>-text-color style)))
+      (fill-circle renderer
+                     circle-cx circle-cy
+                     indicator-inner-radius
+                     (<widget-style>-text-color style)))
     (when (<widget>-focused widget)
-      (stroke-rect renderer (<widget>-x widget) (<widget>-y widget)
-                   (<widget>-width widget) (<widget>-height widget)
-                   (<widget-style>-focus-border-color style) 1))
-    (render-text renderer (<toggle>-label widget) <label>-x <label>-y (<widget-style>-text-color style))))
+      (stroke-rect-outside renderer
+                           (<widget>-x widget) (<widget>-y widget)
+                           (<widget>-width widget) (<widget>-height widget)
+                           (<widget-style>-focus-border-color style)
+                           (<widget-style>-border-width style)))
+    (render-text renderer
+                 (<toggle>-label widget)
+                 label-x label-y
+                 (<widget-style>-text-color style))))
 
-(defmethod render (renderer (widget <check-box>) style)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod render (renderer (widget <check-box>) (style <widget-style>))
   (let* ((box-size (<widget-style>-check-box-size style))
          (box-x (<widget>-x widget))
          (box-y (+ (<widget>-y widget) (/ (- (<widget>-height widget) box-size) 2)))
          (check-mark-offset (<widget-style>-check-mark-offset style))
          (check-mark-size (<widget-style>-check-mark-size style))
-         (<label>-height (nth-value 1 (widget-text-pixel-size (<check-box>-label widget))))
-         (<label>-gap (nth-value 0 (widget-text-pixel-size "M"))))
+         (label-height (nth-value 1 (widget-text-pixel-size (<check-box>-label widget))))
+         (label-gap (nth-value 0 (widget-text-pixel-size "M"))))
     (fill-rect renderer box-x box-y box-size box-size (<widget-style>-background-color style))
     (stroke-rect renderer box-x box-y box-size box-size (<widget-style>-border-color style))
     (when (<check-box>-checked widget)
       (fill-rect renderer (+ box-x check-mark-offset) (+ box-y check-mark-offset)
                  check-mark-size check-mark-size (<widget-style>-text-color style)))
     (when (<widget>-focused widget)
-      (stroke-rect renderer (<widget>-x widget) (<widget>-y widget)
-                   (<widget>-width widget) (<widget>-height widget)
-                   (<widget-style>-focus-border-color style) 1))
+      (stroke-rect-outside renderer
+                           (<widget>-x widget) (<widget>-y widget)
+                           (<widget>-width widget) (<widget>-height widget)
+                           (<widget-style>-focus-border-color style)
+                           (<widget-style>-border-width style)))
     (render-text renderer (<check-box>-label widget)
-                 (+ box-x box-size <label>-gap)
-                 (+ box-y (/ (- box-size <label>-height) 2))
+                 (+ box-x box-size label-gap)
+                 (+ box-y (/ (- box-size label-height) 2))
                  (<widget-style>-text-color style))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod render (renderer (widget <entry>) (style <widget-style>))
   (fill-rect renderer (<widget>-x widget) (<widget>-y widget)
@@ -609,7 +637,8 @@
            (<widget>-focused (<widget>-owner widget)))))
 
 (defun combo-box-header-render-colors (widget style)
-  (let* ((enabled (enabled-p widget))
+  (let* ((style (mnas-sdl3-gui/widgets:make-widget-style style))
+         (enabled (enabled-p widget))
          (focused (combo-box-header-focused-p widget))
          (bg-color (if enabled
                        (<widget-style>-panel-background-color style)
@@ -617,17 +646,17 @@
          (border-color (if (and enabled focused)
                            (<widget-style>-focus-border-color style)
                            (<widget-style>-border-color style)))
-         (text-color (if enabled
+        (text-color (if enabled
                          (<widget-style>-text-color style)
                          (<widget-style>-disabled-color style))))
     (values bg-color border-color text-color)))
 
 (defun %render-combo-box-main (renderer widget style bg-color border-color arrow-width arrow-text offset-y &key border-width text-color arrow-color)
   (let* ((selected-item (selected-item widget))
-         (<label> (if selected-item
+         (label (if selected-item
                     (format nil "~a" selected-item)
                     ""))
-         (text-height (nth-value 1 (widget-text-pixel-size <label>)))
+         (text-height (nth-value 1 (widget-text-pixel-size label)))
          (main-height (main-height widget))
          (text-padding (<widget-style>-text-padding style))
          (arrow-offset-y (<widget-style>-combo-box-arrow-offset-y style)))
@@ -643,7 +672,7 @@
                  arrow-width
                  main-height
                  border-color)
-    (render-text renderer <label>
+    (render-text renderer label
                  (+ (<widget>-x widget) text-padding)
                  (+ (<widget>-y widget)
                     (max 0 (floor (- main-height text-height) 2)))
@@ -661,32 +690,12 @@
     (when (and (> w 6) (> h 6))
       (stroke-rect renderer x y w h (<widget-style>-focus-border-color style) 2))))
 
-(defmethod render (renderer (widget <combo-box-header>) (style <flat-widget-style>))
-  (when *debug-combo-box-focus*
-    (format t "[combo-box-header-render] flat focused=~S owner-focused=~S enabled=~S expanded=~S~%"
-            (<widget>-focused widget)
-            (and (<widget>-owner widget) (<widget>-focused (<widget>-owner widget)))
-            (enabled-p widget) (expanded-p widget)))
-  (multiple-value-bind (bg-color border-color text-color)
-      (combo-box-header-render-colors widget style)
-    (%render-combo-box-main renderer widget style
-                            bg-color
-                            border-color
-                            (<widget-style>-combo-box-arrow-width style)
-                            (if (expanded-p widget) "^" "v")
-                            (<widget-style>-combo-box-arrow-offset-y style)
-                            :border-width 1
-                            :text-color text-color
-                            :arrow-color text-color)
-    (when (combo-box-header-focused-p widget)
-      (%render-combo-box-focus-outline renderer widget style 1))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#+nil (mnas-debug:enable :<combo-box-header>)
+(mnas-debug:disable :<combo-box-header>)
 
-(defmethod render (renderer (widget <combo-box-header>) (style <windows-widget-style>))
-  (when *debug-combo-box-focus*
-    (format t "[combo-box-header-render] windows focused=~S owner-focused=~S enabled=~S expanded=~S~%"
-            (<widget>-focused widget)
-            (and (<widget>-owner widget) (<widget>-focused (<widget>-owner widget)))
-            (enabled-p widget) (expanded-p widget)))
+(defmethod render (renderer (widget <combo-box-header>) (style <widget-style>))
+  (mnas-debug:%log :<combo-box-header> "(renderer <combo-box-header> <widget-style> ~A~%" widget)
   (multiple-value-bind (face border-color text-color)
       (combo-box-header-render-colors widget style)
     (let* ((x (<widget>-x widget))
@@ -695,47 +704,26 @@
            (h (main-height widget))
            (arrow-width 24))
       (fill-rect renderer x y w h face)
-      (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
-      (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                         +color-medium-gray+ +color-darker-gray+ 1)
+      (%render-combo-box-main renderer widget style face
+                              border-color
+                              arrow-width
+                              (if (expanded-p widget) "^" "v")
+                              (<widget-style>-combo-box-arrow-offset-y style)
+                              :border-width 0
+                              :text-color text-color
+                              :arrow-color text-color)
       (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-dark-gray+)
-      (%render-combo-box-main renderer widget style face
-                              border-color
-                              arrow-width
-                              (if (expanded-p widget) "^" "v")
-                              (<widget-style>-combo-box-arrow-offset-y style)
-                              :border-width 0
-                              :text-color text-color
-                              :arrow-color text-color)
+      (render-bevel-rect renderer x y w h +color-medium-gray+ +color-darker-gray+ 2)
+      
       (when (combo-box-header-focused-p widget)
-        (%render-combo-box-focus-outline renderer widget style 1)))))
+        (stroke-rect-outside renderer
+                             x y
+                             w h
+                             (<widget-style>-focus-border-color style)
+                             (<widget-style>-border-width style))))))
 
-(defmethod render (renderer (widget <combo-box-header>) (style <motif-widget-style>))
-  (when *debug-combo-box-focus*
-    (format t "[combo-box-header-render] motif focused=~S owner-focused=~S enabled=~S expanded=~S~%"
-            (<widget>-focused widget)
-            (and (<widget>-owner widget) (<widget>-focused (<widget>-owner widget)))
-            (enabled-p widget) (expanded-p widget)))
-  (multiple-value-bind (face border-color text-color)
-      (combo-box-header-render-colors widget style)
-    (let* ((x (<widget>-x widget))
-           (y (<widget>-y widget))
-           (w (<widget>-width widget))
-           (h (main-height widget))
-           (arrow-width 24))
-      (fill-rect renderer x y w h face)
-      (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
-      (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
-      (%render-combo-box-main renderer widget style face
-                              border-color
-                              arrow-width
-                              (if (expanded-p widget) "^" "v")
-                              (<widget-style>-combo-box-arrow-offset-y style)
-                              :border-width 0
-                              :text-color text-color
-                              :arrow-color text-color)
-      (when (combo-box-header-focused-p widget)
-        (%render-combo-box-focus-outline renderer widget style 1)))))
+(mnas-debug:disable :<combo-box-header>)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;                    
 
 (defmethod render (renderer (widget <combo-box>) (style <widget-style>))
   (when (header-widget widget)
@@ -826,23 +814,6 @@
                            (<widget-style>-text-color style))))))))
 
 (defmethod render (renderer (widget <editable-combo-box>) (style <widget-style>))
-  (let ((arrow-width (<widget-style>-combo-box-arrow-width style))
-        (border-color (if (<widget>-focused widget)
-                          (<widget-style>-focus-border-color style)
-                          (<widget-style>-border-color style))))
-    (%render-editable-combo-box-main renderer widget style
-                                     (if (enabled-p widget)
-                                         (<widget-style>-panel-background-color style)
-                                         (<widget-style>-button-face-disabled-color style))
-                                     border-color
-                                     arrow-width
-                                     (if (expanded-p widget) "^" "v")
-                                     (<widget-style>-combo-box-arrow-offset-y style))
-    (when (and (expanded-p widget)
-               (not (<combo-box-popup>-window-enabled-p widget)))
-      (%render-combo-box-popup renderer widget style))))
-
-(defmethod render (renderer (widget <editable-combo-box>) (style <windows-widget-style>))
   (let ((x (<widget>-x widget))
         (y (<widget>-y widget))
         (w (<widget>-width widget))
@@ -863,38 +834,11 @@
                                      (<widget-style>-combo-box-arrow-offset-y style)
                                      :border-width 0)
     (when (<widget>-focused widget)
-      (%render-combo-box-focus-outline renderer widget 3)))
+      (stroke-rect-outside renderer x y w h '(255 0 0 255) 2)
+      ))
   (when (and (expanded-p widget)
              (not (<combo-box-popup>-window-enabled-p widget)))
     (%render-combo-box-popup renderer widget style)))
-
-(defmethod render (renderer (widget <editable-combo-box>) (style <motif-widget-style>))
-  (let ((x (<widget>-x widget))
-        (y (<widget>-y widget))
-        (w (<widget>-width widget))
-        (h (main-height widget))
-        (arrow-width 24)
-        (face (if (enabled-p widget) +color-motif-light+ +color-medium-gray+)))
-    (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
-    (%render-editable-combo-box-main renderer widget style face
-                                     (if (<widget>-focused widget)
-                                         (<widget-style>-focus-border-color style)
-                                         (<widget-style>-border-color style))
-                                     arrow-width
-                                     (if (expanded-p widget) "^" "v")
-                                     (<widget-style>-combo-box-arrow-offset-y style)
-                                     :border-width 0)
-    (when (<widget>-focused widget)
-      (%render-combo-box-focus-outline renderer widget 4)))
-  (when (and (expanded-p widget)
-             (not (<combo-box-popup>-window-enabled-p widget)))
-    (%render-combo-box-popup renderer widget style)))
-
-;; popup rendering for combo-boxes that use separate popup windows.
-;; Implemented as `render` methods on a transient `combo-box-popup` proxy
-;; so popup windows are rendered after main widgets in `widgets-in-render-order`.
 
 (defmethod render (renderer (popup <combo-box-popup>) (style <windows-widget-style>))
   (let ((owner (<widget>-owner popup)))
@@ -966,77 +910,7 @@
   (declare (ignore style))
   (render renderer popup (make-instance '<flat-widget-style>)))
 
-(defmethod render (renderer (widget <button>) (style <windows-widget-style>))
-  (declare (ignore style))
-  (let* ((x (<widget>-x widget))
-         (y (<widget>-y widget))
-         (w (<widget>-width widget))
-         (h (main-height widget))
-         (arrow-width 24)
-         (face (if (enabled-p widget) +color-motif-light+ +color-medium-gray+)))
-    (fill-rect renderer x y w h face)
-    (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2)
-    (stroke-rect renderer (- (+ x w) arrow-width) y arrow-width h +color-motif-border+)
-    (%render-combo-box-main renderer widget style face
-                            (if (<widget>-focused widget) +color-focus-border+ +color-motif-border+)
-                            arrow-width
-                            (if (expanded-p widget) "^" "v")
-                            (<widget-style>-combo-box-arrow-offset-y style)
-                            :border-width 0)
-    (when (<widget>-focused widget)
-      (%render-combo-box-focus-outline renderer widget 4)))
-  (when (expanded-p widget)
-    (%render-combo-box-popup renderer widget style)))
 
-(defmethod render (renderer (widget <button>) (style <windows-widget-style>))
-  (let ((x (<widget>-x widget))
-        (y (<widget>-y widget))
-        (w (<widget>-width widget))
-        (h (<widget>-height widget))
-        (pressed (<button>-pressed-p widget))
-        (face (if (enabled-p widget)
-                  (<widget-style>-button-face-color style)
-                  (<widget-style>-button-face-disabled-color style))))
-    (fill-rect renderer x y w h face)
-    (if pressed
-        (progn
-          (render-bevel-rect renderer x y w h +color-dark-gray+ +color-white+ 1)
-          (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                             +color-darker-gray+ +color-light-gray+ 1))
-        (progn
-          (render-bevel-rect renderer x y w h +color-white+ +color-dark-gray+ 1)
-          (render-bevel-rect renderer (+ x 1) (+ y 1) (- w 2) (- h 2)
-                             +color-light-gray+ +color-darker-gray+ 1)))
-    (when (<widget>-focused widget)
-      (render-button-focus-outline renderer widget :inset 2)))
-  (render-button-label renderer widget
-                       (if (enabled-p widget)
-                           (<widget-style>-text-color style)
-                           (<widget-style>-disabled-color style))
-                       :offset-x (if (<button>-pressed-p widget) 1 0)
-                       :offset-y (if (<button>-pressed-p widget) 1 0)))
-
-(defmethod render (renderer (widget <button>) (style <motif-widget-style>))
-  (let ((x (<widget>-x widget))
-        (y (<widget>-y widget))
-        (w (<widget>-width widget))
-        (h (<widget>-height widget))
-        (pressed (<button>-pressed-p widget))
-        (face (if (enabled-p widget)
-                  (<widget-style>-button-face-color style)
-                  (<widget-style>-button-face-disabled-color style))))
-    (fill-rect renderer x y w h face)
-    (if pressed
-        (render-bevel-rect renderer x y w h +color-motif-dark+ +color-motif-light+ 2)
-        (render-bevel-rect renderer x y w h +color-motif-light+ +color-motif-dark+ 2))
-    (when (<widget>-focused widget)
-      (render-button-focus-outline renderer widget :inset 4)))
-  (render-button-label renderer widget
-                       (if (enabled-p widget)
-                           (<widget-style>-text-color style)
-                           (<widget-style>-disabled-color style))
-                       :offset-x (if (<button>-pressed-p widget) 1 0)
-                       :offset-y (if (<button>-pressed-p widget) 1 0)))
 
 (defmethod render :around ((renderer t) (popup <combo-box-popup>) style)
   (let ((owner (<widget>-owner popup)))

@@ -188,7 +188,7 @@
       (setf (<widget>-focused widget) nil)
       (normalize-list-box-scroll-offset widget))
     (when (and down (<widget>-focused widget))
-      (mnas-debug:%log  "~A~%" widget)
+      (mnas-debug:%log :widget "~A~%" widget)
       #+nil (format t "x=~A~%" widget)
       (let* ((scrollbar-width +list-box-scrollbar-width+)
              (visible-count (list-box-visible-item-count widget))
@@ -323,7 +323,7 @@
       (format t "[combo-box-mouse-button] down=~S inside=~S x=~D y=~D win-id=~S focused-before=~S~%"
               down inside x y win-id (<widget>-focused widget)))
     (when (and down inside)
-      (mnas-debug:%log "x:~A y:~A window:~A~%" x y (<widget>-window widget))
+      (mnas-debug:%log :combo "x:~A y:~A window:~A~%" x y (<widget>-window widget))
       (loop :for w :in (mnas-sdl3-gui/widgets:widgets-for-window (<widget>-window widget))
             :do (setf (<widget>-focused w) nil))
       (setf (<widget>-focused widget) t)

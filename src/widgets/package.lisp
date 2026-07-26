@@ -92,20 +92,22 @@
            #:set-widget-style
            #:<widget-style>-name
 ;;; concrete widgets
-           #:<label>
-           #:<list-box-item>
-           #:<button>
-           #:<toggle>
-           #:<check-box>
-           #:<entry>
-           #:<password-entry>
-           #:<integer-entry>
-           #:<real-entry>
-           #:<tree-node>
-           #:<tree-view>
-           #:<list-box>
-           #:<combo-box>
-           #:<editable-combo-box>)
+           :<label>
+           :<list-box-item>
+           :<button>
+           :<toggle>
+           :<check-box>
+           :<entry>
+           :<password-entry>
+           :<integer-entry>
+           :<real-entry>
+           :<tree-node>
+           :<tree-view>
+           :<list-box>
+           :<combo-box>
+           :<combo-box-header>
+           :<combo-box-popup>
+           :<editable-combo-box>)
 ;;; toolbar widgets  
   (:export #:<toolbar>
            #:<toolbar-button>
@@ -227,20 +229,20 @@
 ;;; header/popup accessors
            #:header-widget
            #:popup-widget
-           #:<combo-box-header>-display-text
+           :<combo-box-header>-display-text
 ;;; popup compatibility/accessors
-           #:<combo-box-popup>-mode
+           :<combo-box-popup>-mode
            #:host-window
            #:scrollbar-geometry
            #:scroll-offset-from-thumb-top
-           #:<combo-box-popup>-window
+           :<combo-box-popup>-window
            #:popup-renderer
-           #:<combo-box-popup>-window-id
+           :<combo-box-popup>-window-id
            #:popup-visible-p
            #:selected-item
            #:combo-box-popup-host-window
-           #:<combo-box-popup>-layer-manager
-           #:<combo-box-popup>-window-enabled-p
+           :<combo-box-popup>-layer-manager
+           :<combo-box-popup>-window-enabled-p
            #:enable-popup-window
            #:disable-popup-window
            #:show-popup-window

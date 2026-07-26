@@ -1,7 +1,7 @@
 ;;;; ./tests/package.lisp
 
 (defpackage #:mnas-sdl3-gui/tests
-  (:use #:cl #:fiveam)
+  (:use #:cl #:fiveam #:mnas-sdl3-gui/widgets)
   (:import-from #:mnas-sdl3-gui
                 #:project-name
                 #:hello)

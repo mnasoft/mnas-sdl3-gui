@@ -167,6 +167,7 @@
                              (:file "handle-text-input-event")
 
                              (:file "widget-measure")
+                             (:file "widget-layout")
 
                              (:file "selected-index")
                              (:file "header-widget")
