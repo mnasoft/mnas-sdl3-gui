@@ -22,3 +22,5 @@
 
 ;;;;(mnas-debug:enable)
 ;;;;(mnas-debug:disable)
+;;;; mnas-sdl3-gui/widgets::*ttf-font*
+;;;; (mnas-sdl3-gui/widgets::widget-text-pixel-size "M")
