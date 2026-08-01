@@ -20,7 +20,7 @@
 (defmethod print-object ((obj <label>) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (%print-widget-core obj stream)
-    (format stream " text=~S" (<label>-text obj))))
+    (format stream " text=~S" (<label>-label obj))))
 
 (defmethod print-object ((obj <button>) stream)
   (print-unreadable-object (obj stream :type t :identity t)

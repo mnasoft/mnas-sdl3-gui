@@ -124,7 +124,7 @@ Returns the window id that was processed or NIL."
 (defun label-text (widget)
   "Compatibility wrapper for old demos using label-text."
   (if (typep widget '<label>)
-      (<label>-text widget)
+      (<label>-label widget)
       nil))
 
 (defun tree-node-path (node)

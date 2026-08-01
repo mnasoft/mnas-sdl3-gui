@@ -26,6 +26,12 @@
 (defgeneric enabled-p (widget)
   (:documentation "Return non-NIL when WIDGET is enabled for interaction."))
 
+(defgeneric label (widget)
+  (:documentation "Return the label text for WIDGET."))
+
+(defgeneric (setf label) (new-value widget)
+  (:documentation "Set the label text for WIDGET."))
+
 (defgeneric focusable-p (widget)
   (:documentation "Return non-NIL when WIDGET participates in keyboard focus traversal."))
 

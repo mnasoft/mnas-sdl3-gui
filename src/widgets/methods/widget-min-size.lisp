@@ -9,7 +9,7 @@
 
 (defmethod widget-min-size ((obj <label>))
   (multiple-value-bind (tw th)
-      (widget-text-pixel-size (<label>-text obj))
+      (widget-text-pixel-size (<label>-label obj))
     (values (max 24 (+ tw 8))
             (max 20 (+ th 8)))))
 

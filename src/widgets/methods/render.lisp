@@ -15,7 +15,7 @@
                (<widget>-width widget) (<widget>-height widget)
                (<widget-style>-border-color style))
   (let ((text-padding (<widget-style>-text-padding style)))
-    (render-text renderer (<label>-text widget)
+    (render-text renderer (<label>-label widget)
                  (+ (<widget>-x widget) text-padding)
                  (+ (<widget>-y widget) text-padding)
                  (if (enabled-p widget)

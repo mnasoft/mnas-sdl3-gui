@@ -149,6 +149,7 @@
                              (:file "initialize-instance")
                              (:file "canvas-2d-methods")
                              (:file "contains-point-p")
+                             (:file "label")
                              (:file "visible-p")
                              (:file "enabled-p")
                              (:file "focusable-widget-p")

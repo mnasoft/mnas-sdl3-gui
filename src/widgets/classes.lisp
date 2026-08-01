@@ -298,7 +298,7 @@
   ((text
     :initarg :text
     :initform ""
-    :accessor <label>-text
+    :accessor <label>-label
     :documentation "Text content of <label>"))
   (:documentation "Simple text <label> widget"))
 

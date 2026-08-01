@@ -2,8 +2,20 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/check-box-01)
 
+;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/check-box-01)
 
-(mnas-sdl3-gui/widgets:widgets-for-window *window*)
+;;;; (mnas-sdl3-gui/demos/dialog/check-box-01:check-box-01)
+
+
+(setf 
+ (mnas-sdl3-gui/widgets:label
+  (last
+   (mnas-sdl3-gui/widgets:widgets-for-window *window*)))
+ "CCCLLLQQQQ"
+ )
+
+(loop :for i :in (mnas-sdl3-gui/widgets:widgets-for-window *window*)
+      :collect (mnas-sdl3-gui/widgets:label i))
 
 (setf (mnas-sdl3-gui/widgets:<widget>-x *toolbar*) 100)
 (setf (mnas-sdl3-gui/widgets:<widget>-y *toolbar*) 280)

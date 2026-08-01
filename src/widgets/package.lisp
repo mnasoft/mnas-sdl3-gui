@@ -129,7 +129,7 @@
            #:button-y
 
 ;;; <label> accessors
-           #:<label>-text
+           #:<label>-label
            #:<list-box-item>-text
 ;;; button accessors
            #:<button>-text
