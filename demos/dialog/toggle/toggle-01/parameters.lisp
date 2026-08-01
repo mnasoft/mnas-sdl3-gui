@@ -18,3 +18,13 @@
 (defparameter +section-gap+ 8)
 (defparameter +window-width+ 500)
 (defparameter +window-height+ 322)
+
+(defparameter +command-map+
+  '((:toggle-01/group-1-option-1 :group-1 "Вариант 1" :one)
+    (:toggle-01/group-1-option-2 :group-1 "Вариант 2" :two)
+    (:toggle-01/group-1-option-3 :group-1 "Вариант 3" :three)
+    (:toggle-01/group-1-option-4 :group-1 "Вариант 4" :four)
+    (:toggle-01/group-2-option-1 :group-2 "Опция 1" :q)
+    (:toggle-01/group-2-option-2 :group-2 "Опция 2" :w)
+    (:toggle-01/group-2-option-3 :group-2 "Опция 3" :e)
+    (:toggle-01/group-2-option-4 :group-2 "Опция 4" :r)))

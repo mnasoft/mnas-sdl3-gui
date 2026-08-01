@@ -4,8 +4,7 @@
   (:nicknames :gui/widgets)
   (:use #:cl)
 ;;; base widget class
-  (:export #:widget
-           #:<widget>
+  (:export #:<widget>
            #:toolbar
            #:toolbar-button
            #:button

@@ -522,6 +522,7 @@
                              (:file "parameters")
                              (:file "commands")
                              (:file "callbacks")
+                             (:file "toolbar")
                              (:file "toggle-01")
                              (:file "main")))))
 

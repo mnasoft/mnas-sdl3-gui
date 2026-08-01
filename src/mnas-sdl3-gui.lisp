@@ -14,3 +14,5 @@
 (defun hello ()
   "Return a smoke-check message."
   "Hello from mnas-sdl3-gui")
+
+(hello)

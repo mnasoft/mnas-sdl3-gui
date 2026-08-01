@@ -61,7 +61,6 @@
   (mnas-sdl3-gui/widgets:render-text *renderer*
                                      "Click one toggle in each group to switch selection."
                                      20.0 (+ *status-y* 18.0) '(90 90 90 255))
-
   (sdl3:render-present *renderer*)
   :continue)
 
@@ -87,9 +86,18 @@
               (setf *open* nil)
               (return-from callback-event :success)))))
        :continue)
-      (sdl3:mouse-motion-event (mnas-sdl3-gui/widgets:handle-mouse-motion-event (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev) :continue)
-      (sdl3:mouse-button-event (mnas-sdl3-gui/widgets:handle-mouse-button-event (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev) :continue)
-      (sdl3:keyboard-event     (mnas-sdl3-gui/widgets:handle-keyboard-event (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev) :continue)
+      (sdl3:mouse-motion-event
+       (mnas-sdl3-gui/widgets:handle-mouse-motion-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
+       :continue)
+      (sdl3:mouse-button-event
+       (mnas-sdl3-gui/widgets:handle-mouse-button-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
+       :continue)
+      (sdl3:keyboard-event
+       (mnas-sdl3-gui/widgets:handle-keyboard-event
+        (mnas-sdl3-gui/widgets:widgets-for-window *window*) ev)
+       :continue)
       (t :continue))))
 
 (sdl3:def-app-quit callback-quit (result)
