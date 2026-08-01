@@ -2,12 +2,13 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-02)
 
-(defun main ()
-  "Run the popup-menu window demo."
-  (window-02))
+(defun main (&optional (style :windows))
+  "Compatibility wrapper for the older demo entrypoint."
+  (window-02 style))
 
-(defun window-02 ()
+(defun window-02 (&optional (style :windows))
   "Run popup-menu demo using a dedicated :popup-menu window."
+  (mnas-sdl3-gui/widgets:set-widget-style style)
   (setf *main-window* nil
         *main-renderer* nil
         *main-id* 0

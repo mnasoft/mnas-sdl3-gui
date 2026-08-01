@@ -71,10 +71,13 @@
   (sdl3:render-present *renderer*)
   :continue)
 
+#+nil
+(mnas-debug:enable :callback-event)
+
 (sdl3:def-app-event callback-event (type event)
   (declare (ignore type))
   (let ((ev (sdl3:event-unmarshal event)))
-    (mnas-debug:with
+    (mnas-debug:with :callback-event
       (mnas-sdl3-gui/events:update-from-sdl-event ev)
       (mnas-sdl3-gui/events:log-event ev))
     (typecase ev
@@ -98,6 +101,9 @@
         ev)
        :continue)
       (t :continue))))
+
+#+nil
+(mnas-debug:disable :callback-event)
 
 (sdl3:def-app-quit callback-quit (result)
   (declare (ignore result))

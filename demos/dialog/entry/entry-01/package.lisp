@@ -2,11 +2,10 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/entry-01
   (:use #:cl)
-  (:export #:main
-           #:entry-01))
+  (:export #:entry-01))
 
 (in-package :mnas-sdl3-gui/demos/dialog/entry-01)
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/entry-01)
 
-;;;; (main)
+;;;; (entry-01)

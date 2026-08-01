@@ -2,6 +2,6 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/toggle-01
   (:use #:cl)
-  (:export #:main))
+  (:export #:toggle-01))
 
 (in-package :mnas-sdl3-gui/demos/dialog/toggle-01)

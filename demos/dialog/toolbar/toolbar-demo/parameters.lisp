@@ -6,3 +6,4 @@
 (defparameter *renderer* nil)
 (defparameter *toolbar* nil)
 (defparameter *open* t)
+(defparameter *style* :flat)

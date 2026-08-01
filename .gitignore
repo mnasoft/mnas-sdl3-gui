@@ -45,6 +45,7 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+debug.log
 
 # Dependencies
 node_modules/

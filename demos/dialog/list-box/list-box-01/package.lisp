@@ -2,7 +2,7 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/list-box-01
   (:use #:cl)
-  (:export #:main))
+  (:export #:list-box-01))
 
 (in-package :mnas-sdl3-gui/demos/dialog/list-box-01)
 

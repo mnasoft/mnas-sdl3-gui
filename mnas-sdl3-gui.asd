@@ -233,7 +233,14 @@
   :components ((:module "demos/dialog/simple/simple-01"
                 :serial t
                 :components ((:file "package")
-                             (:file "simple-01")))))
+                             (:file "callbacks")
+                             (:file "commands")
+                             (:file "parameters")
+                             (:file "shortcuts")
+                             (:file "toolbar")
+                             (:file "simple-01")
+                             (:file "main")
+                             ))))
 
 (defsystem "mnas-sdl3-gui/demos/dialog/check-box"
   :description "Demos for mnas-sdl3-gui"

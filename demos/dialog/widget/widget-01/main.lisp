@@ -2,7 +2,7 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/widget-01)
 
-(defun main (&optional (style :flat))
+(defun widget-01 (&optional (style :flat))
   "Run the widget dialog demo with STYLE (:flat, :windows, :motif)."
   (setf *style* style
         *open* t)
@@ -12,9 +12,13 @@
    'callback-event
    'callback-quit))
 
+(defun main (&optional (style :flat))
+      "Compatibility wrapper for the older demo entrypoint."
+      (widget-01 style))
+
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/widget-01)
 
-;;;; (mnas-sdl3-gui/demos/dialog/widget-01:main)
-;;;; (main)
+;;;; (mnas-sdl3-gui/demos/dialog/widget-01:widget-01)
+;;;; (widget-01)

@@ -2,8 +2,7 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/window-01
   (:use #:cl)
-  (:export #:main
-           #:window-01
+  (:export #:window-01
            #:fullscreen
            #:opengl
            #:occluded

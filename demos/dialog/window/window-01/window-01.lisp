@@ -9,8 +9,9 @@
       *demo-flags*
       (list *demo-flags*)))
 
-(defun run-demo (title flags)
+(defun run-demo (title flags &optional (style :windows))
   "Run window demo with custom title and SDL window flags."
+  (mnas-sdl3-gui/widgets:set-widget-style style)
   (setf *demo-title* title
         *demo-flags* flags
         *window* nil
@@ -33,11 +34,12 @@
 
 (defmacro define-flag-demo (name flag)
   "Define a small wrapper demo for a single window flag."
-  `(defun ,name ()
+  `(defun ,name (&optional (style :windows))
      ,(format nil "Run a window demo using the ~S flag." flag)
      (run-demo
       ,(format nil "Window Flag Demo: ~S" flag)
-      ,flag)))
+      ,flag
+      style)))
 
 (defun update-window-size ()
   "Query current window client size and update demo state."

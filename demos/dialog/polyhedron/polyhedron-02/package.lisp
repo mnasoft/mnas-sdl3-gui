@@ -2,6 +2,6 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/polyhedron-02
   (:use #:cl)
-  (:export #:polyhedron-vulkan-01))
+  (:export #:polyhedron-02))
 
 (in-package :mnas-sdl3-gui/demos/dialog/polyhedron-02)

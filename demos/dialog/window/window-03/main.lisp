@@ -2,8 +2,9 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-03)
 
-(defun window-03 ()
+(defun window-03 (&optional (style :windows))
   "Run dedicated demo for :transparent window flag."
+  (mnas-sdl3-gui/widgets:set-widget-style style)
   (setf *window* nil
         *renderer* nil
         *window-id* 0
@@ -19,11 +20,11 @@
    'callback-quit)
   :done)
 
-(defun main ()
+(defun main (&optional (style :windows))
   "Compatibility wrapper for old demo entrypoints."
-  (window-03))
+  (window-03 style))
 
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-03)
 
-;;;; (mnas-sdl3-gui/demos/dialog/window-03:main)
+;;;; (mnas-sdl3-gui/demos/dialog/window-03:window-03)

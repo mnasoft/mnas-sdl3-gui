@@ -47,7 +47,7 @@
           *toolbar* (make-toolbar-demo-widget window)
           *open* t)
     (register-toolbar-demo-commands)
-    (mnas-sdl3-gui/widgets:set-widget-style :flat)
+        (mnas-sdl3-gui/widgets:set-widget-style *style*)
     (mnas-sdl3-gui/widgets:init-ttf-font)
     :continue))
 
@@ -91,18 +91,23 @@
   (sdl3:quit)
   :success)
 
-(defun main ()
-  "Run toolbar demo."
+(defun toolbar-demo (&optional (style :flat))
+  "Run toolbar demo with STYLE (:flat, :windows, :motif)."
+  (setf *style* style)
   (sdl3:enter-app-main-callbacks
    'toolbar-demo-init
    'toolbar-demo-iterate
    'toolbar-demo-event
    'toolbar-demo-quit))
 
+(defun main (&optional (style :flat))
+  "Compatibility wrapper for the older demo entrypoint."
+  (toolbar-demo style))
+
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/toolbar-demo)
 
-;;;; (mnas-sdl3-gui/demos/dialog/toolbar-demo:main)
-;;;; (main)
+;;;; (mnas-sdl3-gui/demos/dialog/toolbar-demo:toolbar-demo)
+;;;; (toolbar-demo)
 
 ;;;; (setf (mnas-sdl3-gui/widgets:<widget>-visible *toolbar*) t)
 ;;;; (setf (mnas-sdl3-gui/widgets:<widget>-x  *toolbar*) 50)

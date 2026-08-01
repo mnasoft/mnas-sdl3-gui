@@ -4,6 +4,6 @@
   (:use #:cl)
   (:export #:register-commands
            #:register-shortcuts
-           #:main))
+           #:window-04))
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-04)

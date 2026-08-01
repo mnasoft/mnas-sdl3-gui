@@ -4,7 +4,6 @@
   (:use #:cl)
   (:export #:register-commands
            #:register-shortcuts
-           #:main
            #:window-03
            ))
 

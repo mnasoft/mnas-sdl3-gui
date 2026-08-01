@@ -2,7 +2,7 @@
 
 (defpackage :mnas-sdl3-gui/demos/dialog/check-box-01
   (:use #:cl)
-  (:export #:main))
+  (:export #:check-box-01))
 
 (in-package :mnas-sdl3-gui/demos/dialog/check-box-01)
 

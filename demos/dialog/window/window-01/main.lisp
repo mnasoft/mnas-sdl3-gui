@@ -2,13 +2,13 @@
 
 (in-package :mnas-sdl3-gui/demos/dialog/window-01)
 
-(defun main ()
-  "Run the resizable window demo."
-  (window-01))
+(defun main (&optional (style :windows))
+  "Compatibility wrapper for the older demo entrypoint."
+  (window-01 style))
 
-(defun window-01 ()
+(defun window-01 (&optional (style :windows))
   "Run a resizable window demo."
-  (run-demo "Resizable Window Demo" :resizable))
+  (run-demo "Resizable Window Demo" :resizable style))
 
 (define-flag-demo fullscreen :fullscreen)
 (define-flag-demo opengl :opengl)
@@ -34,21 +34,21 @@
 (define-flag-demo metal :metal)
 (define-flag-demo not-focusable :not-focusable)
 
-(defun transparent ()
+(defun transparent (&optional (style :windows))
   "Run dedicated transparent-window demo from window-03."
-  (mnas-sdl3-gui/demos/dialog/window-03:window-03))
+  (mnas-sdl3-gui/demos/dialog/window-03:window-03 style))
 
-(defun popup-menu ()
+(defun popup-menu (&optional (style :windows))
   "Run dedicated popup-menu demo from window-02."
-  (mnas-sdl3-gui/demos/dialog/window-02:window-02))
+  (mnas-sdl3-gui/demos/dialog/window-02:window-02 style))
 
-(defun all-flags ()
+(defun all-flags (&optional (style :windows))
   "Run demo with all available window flags combined."
-  (run-demo "Window Flag Demo: ALL" *all-flags*))
+  (run-demo "Window Flag Demo: ALL" *all-flags* style))
 
-(defun modal-stack-runtime ()
+(defun modal-stack-runtime (&optional (style :windows))
   "Run visual runtime demo for nested modal focus-trap policy."
-  (run-demo "Window Modal Stack Runtime Demo" :resizable))
+  (run-demo "Window Modal Stack Runtime Demo" :resizable style))
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/window-01)
-;;;; (mnas-sdl3-gui/demos/dialog/window-01:main)
+;;;; (mnas-sdl3-gui/demos/dialog/window-01:window-01)

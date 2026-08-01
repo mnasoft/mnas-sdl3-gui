@@ -456,6 +456,10 @@
    'polyhedron-vulkan-demo-event
    'polyhedron-vulkan-demo-quit))
 
+(defun polyhedron-vulkan-01 ()
+  "Compatibility wrapper for the older demo entrypoint."
+  (polyhedron-02))
+
 
 ;;;; (ql:quickload :mnas-sdl3-gui/demos)
 ;;;; (ql:quickload :mnas-sdl3-gui/demos/dialog/polyhedron)
