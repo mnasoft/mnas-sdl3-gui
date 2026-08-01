@@ -55,8 +55,8 @@
                     'mnas-sdl3-gui/widgets:<check-box>
                     :x       x
                     :y       y
-                    :width   190
-                    :height  28
+                    :width   200
+                    :height  25
                     :label   label
                     :checked checked-p
                     :focused nil
@@ -73,31 +73,32 @@
   (list
    (make-instance 'mnas-sdl3-gui/widgets:<label>
                   :x 20
-                  :y 16
+                  :y 35
                   :width 420
                   :height 28
                   :text "Check-box demo"
                   :window window)
    (make-instance 'mnas-sdl3-gui/widgets:<label>
-                  :x 40 :y 56
+                  :x 40
+                  :y 70
                   :width 190
                   :height 22
                   :text "Левая колонка"
                   :window window)
    (make-instance 'mnas-sdl3-gui/widgets:<label>
                   :x 250
-                  :y 56
+                  :y 70
                   :width 190
                   :height 22
                   :text "Правая колонка"
                   :window window)
-   (make-demo-check-box 40   90 "Л1 Уведомления"    t   window)
-   (make-demo-check-box 40  124 "Л2 Звук"           nil window)
-   (make-demo-check-box 40  158 "Л3 Подсказки"      t   window)
-   (make-demo-check-box 40  192 "Л4 Автосохранение" nil window)
-   (make-demo-check-box 250  90 "П1 Сеть"           nil window)
-   (make-demo-check-box 250 124 "П2 Логи"           t   window)
-   (make-demo-check-box 250 158 "П3 Кэш"            nil window)
-   (make-demo-check-box 250 192 "П4 Резерв"         t   window))
+   (make-demo-check-box 40  100 "Л1 Уведомления"    t   window)
+   (make-demo-check-box 40  125 "Л2 Звук"           nil window)
+   (make-demo-check-box 40  150 "Л3 Подсказки"      t   window)
+   (make-demo-check-box 40  175 "Л4 Автосохранение" nil window)
+   (make-demo-check-box 250 100 "П1 Сеть"           nil window)
+   (make-demo-check-box 250 125 "П2 Логи"           t   window)
+   (make-demo-check-box 250 150 "П3 Кэш"            nil window)
+   (make-demo-check-box 250 175 "П4 Резерв"         t   window))
   (refresh-check-box-status))
 
