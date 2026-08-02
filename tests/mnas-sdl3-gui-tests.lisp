@@ -134,11 +134,13 @@
                                  :children '("alpha" "beta" "gamma" "delta")
                                  :selected-index 0
                                  :scroll-offset 1
-                                 :item-height 24))
+                                 :item-height 24
+                                 :visible t
+                                 :enabled t))
          (event (make-instance 'sdl3:mouse-wheel-event
-                               :%x 10 :%y 10 :%mouse-x 10 :%mouse-y 10)))
+                               :%x 10 :%y 10 :%mouse-x 10 :%mouse-y 10 :%direction 1)))
     (is (not (null (mnas-sdl3-gui/widgets:handle-mouse-wheel-event widget event))))
-    (is (= 2 (mnas-sdl3-gui/widgets:scroll-offset widget)))))
+    (is (= 0 (mnas-sdl3-gui/widgets:scroll-offset widget)))))
 
 (test list-box-scrollbar-drag-offset-accessor
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<list-box>

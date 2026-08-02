@@ -636,6 +636,19 @@
       (and (<widget>-owner widget)
            (<widget>-focused (<widget>-owner widget)))))
 
+(defun combo-box-header-render-colors (widget style)
+  "Return background, border, and text colors for combo-box header WIDGET." 
+  (let ((focused-p (combo-box-header-focused-p widget)))
+    (values (if focused-p
+                +color-highlight+
+                (<widget-style>-background-color style))
+            (if focused-p
+                +color-focus-border+
+                (<widget-style>-border-color style))
+            (if focused-p
+                +color-focus-border+
+                (<widget-style>-text-color style)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #+nil (mnas-debug:enable :<combo-box-header>)
 (mnas-debug:disable :<combo-box-header>)
@@ -652,25 +665,28 @@
          (label (if selected-item (format nil "~a" selected-item) ""))
          (text-height (nth-value 1 (widget-text-pixel-size label)))
          (main-height (main-height widget))
-         (text-padding (<widget-style>-text-padding style)))
+         (text-padding (<widget-style>-text-padding style))
+         (bg-color (nth-value 0 (combo-box-header-render-colors widget style)))
+         (border-color (nth-value 1 (combo-box-header-render-colors widget style)))
+         (text-color (nth-value 2 (combo-box-header-render-colors widget style))))
     (block render-combo-box-main
-      (fill-rect renderer x y w h (<widget-style>-background-color style))
+      (fill-rect renderer x y w h bg-color)
       (stroke-rect renderer
                    (- (+ (<widget>-x widget) (<widget>-width widget)) arrow-width)
                    (<widget>-y widget)
                    arrow-width
                    main-height
-                   (<widget-style>-text-color style))
+                   text-color)
       (render-text renderer label
                    (+ (<widget>-x widget) text-padding)
                    (+ (<widget>-y widget)
                       (max 0 (floor (- main-height text-height) 2)))
-                   (<widget-style>-text-color style))
+                   text-color)
       (fill-triangle renderer
                      (+ (<widget>-x widget) (<widget>-width widget) (* arrow-width -1/2))
                      (+ (<widget>-y widget) (/ main-height 2))
                      8
-                     (<widget-style>-text-color style)
+                     text-color
                      (if (expanded-p widget) (* pi -1/2) (* pi 1/2))))
     (stroke-rect renderer
                  (- (+ x w) arrow-width) y
@@ -681,7 +697,7 @@
       (stroke-rect-outside renderer
                            x y
                            w h
-                           (<widget-style>-focus-border-color style)
+                           border-color
                            (<widget-style>-border-width style)))))
 
 (mnas-debug:disable :<combo-box-header>)
