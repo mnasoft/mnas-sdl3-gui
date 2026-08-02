@@ -76,7 +76,7 @@
     (multiple-value-bind (min-width min-height)
         (mnas-sdl3-gui/widgets:widget-min-size widget)
       (is (>= min-width (+ (* 2 8) indicator-width label-gap label-width)))
-      (is (>= min-height (+ (* 2 8) 22))))))
+      (is (>= min-height (+ (* 2 8) 16))))))
 
 (test focusable-p-dispatches-to-specific-method
   (let ((widget (make-instance 'focusable-test-widget

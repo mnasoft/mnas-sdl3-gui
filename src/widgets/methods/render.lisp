@@ -270,7 +270,7 @@
          (content-height (max 1 (- (<widget>-height widget) (* 2 padding))))
          (box-size (min box-size (max 8 content-height)))
          (box-x (+ (<widget>-x widget) padding))
-         (box-y (+ (<widget>-y widget) padding (/ (- content-height box-size) 2)))
+         (box-y (+ (<widget>-y widget) padding))
          (check-mark-offset (<widget-style>-check-mark-offset style))
          (check-mark-size (<widget-style>-check-mark-size style))
          (label-height (nth-value 1 (widget-text-pixel-size (<check-box>-label widget))))
@@ -288,7 +288,7 @@
                            (<widget-style>-border-width style)))
     (render-text renderer (<check-box>-label widget)
                  (+ box-x box-size label-gap)
-                 (+ (<widget>-y widget) padding (/ (- (- (<widget>-height widget) (* 2 padding)) label-height) 2))
+                 (+ (<widget>-y widget) padding)
                  (<widget-style>-text-color style))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

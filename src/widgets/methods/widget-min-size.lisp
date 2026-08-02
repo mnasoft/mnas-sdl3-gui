@@ -33,9 +33,10 @@
       (widget-text-pixel-size (<check-box>-label obj))
     (let* ((padding (or (<widget>-padding obj) 0))
            (indicator-width 16)
+           (content-height (max 8 (max 16 th)))
            (<label>-gap (nth-value 0 (widget-text-pixel-size "M"))))
       (values (max 72 (+ (* 2 padding) indicator-width <label>-gap tw))
-              (max 22 (+ (* 2 padding) (max 16 th) 4))))))
+              (max 20 (+ (* 2 padding) content-height))))))
 
 (defmethod widget-min-size ((obj <entry>))
   (multiple-value-bind (tw th)
