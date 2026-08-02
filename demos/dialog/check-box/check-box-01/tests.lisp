@@ -17,6 +17,9 @@
 (loop :for i :in (mnas-sdl3-gui/widgets:widgets-for-window *window*)
       :collect (mnas-sdl3-gui/widgets:label i))
 
+(mnas-sdl3-gui/widgets:widget-min-size
+ (nth 0 (mnas-sdl3-gui/widgets:widgets-for-window *window*)))
+
 (setf (mnas-sdl3-gui/widgets:<widget>-x *toolbar*) 100)
 (setf (mnas-sdl3-gui/widgets:<widget>-y *toolbar*) 280)
 

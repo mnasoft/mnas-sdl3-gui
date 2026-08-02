@@ -58,6 +58,14 @@
     (is (eq t (mnas-sdl3-gui/widgets:handle-mouse-button-event button up-event)))
     (is (null (mnas-sdl3-gui/widgets:<toolbar-button>-checked-p button)))))
 
+(test check-box-initializes-with-minimum-size
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<check-box>
+                                :label "Enable")))
+    (multiple-value-bind (min-width min-height)
+        (mnas-sdl3-gui/widgets:widget-min-size widget)
+      (is (= min-width (mnas-sdl3-gui/widgets:<widget>-width widget)))
+      (is (= min-height (mnas-sdl3-gui/widgets:<widget>-height widget))))))
+
 (test focusable-p-dispatches-to-specific-method
   (let ((widget (make-instance 'focusable-test-widget
                                 :x 0 :y 0 :width 10 :height 10

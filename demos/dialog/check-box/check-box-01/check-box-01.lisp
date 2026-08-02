@@ -55,8 +55,8 @@
                     'mnas-sdl3-gui/widgets:<check-box>
                     :x       x
                     :y       y
-                    :width   200
-                    :height  25
+                    ;;:width   200
+                    ;;:height  25
                     :label   label
                     :checked checked-p
                     :focused nil

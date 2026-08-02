@@ -69,6 +69,16 @@
   (when popup-host-window
     (enable-popup-window widget popup-host-window :layer-manager popup-layer-manager)))
 
+(defmethod initialize-instance :after ((widget <check-box>) &rest initargs)
+  (let ((width-supplied (member :width initargs))
+        (height-supplied (member :height initargs)))
+    (multiple-value-bind (min-width min-height)
+        (widget-min-size widget)
+      (unless width-supplied
+        (setf (<widget>-width widget) min-width))
+      (unless height-supplied
+        (setf (<widget>-height widget) min-height)))))
+
 (defmethod initialize-instance :after ((widget <integer-entry>) &key &allow-other-keys)
   (unless (<entry>-validate widget)
     (setf (<entry>-validate widget) #'<integer-entry>-text-p)))
