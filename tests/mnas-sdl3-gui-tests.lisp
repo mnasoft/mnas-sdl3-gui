@@ -66,6 +66,18 @@
       (is (= min-width (mnas-sdl3-gui/widgets:<widget>-width widget)))
       (is (= min-height (mnas-sdl3-gui/widgets:<widget>-height widget))))))
 
+(test check-box-min-size-includes-padding
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<check-box>
+                                 :label "Enable"
+                                 :padding 8))
+         (label-width (nth-value 0 (mnas-sdl3-gui/widgets::widget-text-pixel-size "Enable")))
+         (label-gap (nth-value 0 (mnas-sdl3-gui/widgets::widget-text-pixel-size "M")))
+         (indicator-width 16))
+    (multiple-value-bind (min-width min-height)
+        (mnas-sdl3-gui/widgets:widget-min-size widget)
+      (is (>= min-width (+ (* 2 8) indicator-width label-gap label-width)))
+      (is (>= min-height (+ (* 2 8) 22))))))
+
 (test focusable-p-dispatches-to-specific-method
   (let ((widget (make-instance 'focusable-test-widget
                                 :x 0 :y 0 :width 10 :height 10
@@ -205,6 +217,20 @@
                                 :items '("alpha" "beta"))))
     (setf (mnas-sdl3-gui/widgets:scroll-offset widget) 3)
     (is (= 3 (mnas-sdl3-gui/widgets:scroll-offset widget)))))
+
+(test combo-box-initializes-with-default-padding-from-font-height
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :items '("alpha" "beta"))))
+    (is (= (max 1 (floor mnas-sdl3-gui/widgets::+font-text-height+ 8))
+           (mnas-sdl3-gui/widgets:<widget>-padding widget)))))
+
+(test combo-box-content-width-respects-padding
+  (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>
+                                :x 0 :y 0 :width 120 :height 24
+                                :padding 8
+                                :items '("alpha" "beta"))))
+    (is (= 104 (mnas-sdl3-gui/widgets:combo-box-content-width widget)))))
 
 (test combo-box-items-initarg-uses-popup-children
   (let ((widget (make-instance 'mnas-sdl3-gui/widgets:<combo-box>

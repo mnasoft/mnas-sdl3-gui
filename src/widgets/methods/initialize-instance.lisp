@@ -45,8 +45,13 @@
                                          popup-layer-manager
                                          selected-index
                                          items
+                                         padding
                                        &allow-other-keys)
   ;; Ensure header and popup instances exist and are linked.
+  (when (and (null padding)
+             (zerop (or (<widget>-padding widget) 0)))
+    (setf (<widget>-padding widget)
+          (max 1 (floor +font-text-height+ 8))))
   (unless (header-widget widget)
     (let* ((hdr (make-instance '<combo-box-header> :owner widget))
            (pop (make-instance '<combo-box-popup> :owner widget)))
@@ -71,7 +76,12 @@
 
 (defmethod initialize-instance :after ((widget <check-box>) &rest initargs)
   (let ((width-supplied (member :width initargs))
-        (height-supplied (member :height initargs)))
+        (height-supplied (member :height initargs))
+        (padding-supplied (member :padding initargs)))
+    (when (and (not padding-supplied)
+               (zerop (or (<widget>-padding widget) 0)))
+      (setf (<widget>-padding widget)
+            (max 1 (floor +font-text-height+ 8))))
     (multiple-value-bind (min-width min-height)
         (widget-min-size widget)
       (unless width-supplied

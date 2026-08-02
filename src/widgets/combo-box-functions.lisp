@@ -238,10 +238,13 @@ non-zero window id/renderer from a previous creation step."
 
 (defun combo-box-content-width (widget)
   "Return popup content width excluding scrollbar when present." 
-  (- (<widget>-width widget)
-     (if (combo-box-scrollbar-needed-p widget)
-         +list-box-scrollbar-width+
-         0)))
+  (let* ((padding (or (<widget>-padding widget) 0))
+         (scrollbar-width (if (combo-box-scrollbar-needed-p widget)
+                              +list-box-scrollbar-width+
+                              0)))
+    (max 1 (- (<widget>-width widget)
+              (* 2 padding)
+              scrollbar-width))))
 
 (defun combo-box-scrollbar-geometry (widget)
   "Return popup scrollbar geometry for WIDGET.
