@@ -22,7 +22,7 @@
            #:<widget>-height
            #:<widget>-z-order
            #:<widget>-padding
-           #:<widget>-border-width
+           #:<widget>-border
            #:<widget>-margin
            #:widget-content-box
            #:<widget>-enabled

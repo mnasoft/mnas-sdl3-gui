@@ -48,7 +48,7 @@
            'mnas-sdl3-gui/widgets:<toggle>
            :x x
            :y y
-           :width 180 :height 28
+           ;; :width 180 :height 28
            :label label
            :group group
            :state selected-p
@@ -115,7 +115,7 @@
      :side :left
      :fill :x
      :expand t
-     :padx 8
+     :padx 38
      :pady 4
      :use-content-size t)
     (mnas-sdl3-gui/widgets:pack-widget
@@ -136,7 +136,7 @@
          :side :left
          :fill :x
          :expand t
-         :padx 8
+         :padx 48
          :pady 4
          :use-content-size t)))
 

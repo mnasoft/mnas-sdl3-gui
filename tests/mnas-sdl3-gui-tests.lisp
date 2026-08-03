@@ -78,6 +78,32 @@
       (is (>= min-width (+ (* 2 8) indicator-width label-gap label-width)))
       (is (>= min-height (+ (* 2 8) 16))))))
 
+(test toggle-min-size-includes-padding
+  (let* ((widget (make-instance 'mnas-sdl3-gui/widgets:<toggle>
+                                 :label "Enable"
+                                 :padding 8))
+         (label-width (nth-value 0 (mnas-sdl3-gui/widgets::widget-text-pixel-size "Enable")))
+         (label-gap (nth-value 0 (mnas-sdl3-gui/widgets::widget-text-pixel-size "M")))
+         (indicator-width 16))
+    (multiple-value-bind (min-width min-height)
+        (mnas-sdl3-gui/widgets:widget-min-size widget)
+      (is (>= min-width (+ (* 2 8) indicator-width label-gap label-width)))
+      (is (>= min-height (+ (* 2 8) 16))))))
+
+(test toolbar-initializes-with-default-padding-and-size
+  (let* ((button-1 (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                                  :label "A"
+                                  :width 24 :height 24))
+         (button-2 (make-instance 'mnas-sdl3-gui/widgets:<toolbar-button>
+                                  :label "B"
+                                  :width 24 :height 24))
+         (toolbar (make-instance 'mnas-sdl3-gui/widgets:<toolbar>
+                                  :children (list button-1 button-2))))
+    (is (>= (mnas-sdl3-gui/widgets:<toolbar>-padding toolbar)
+            1))
+    (is (>= (mnas-sdl3-gui/widgets:<widget>-width toolbar) 48))
+    (is (>= (mnas-sdl3-gui/widgets:<widget>-height toolbar) 24))))
+
 (test focusable-p-dispatches-to-specific-method
   (let ((widget (make-instance 'focusable-test-widget
                                 :x 0 :y 0 :width 10 :height 10

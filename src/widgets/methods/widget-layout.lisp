@@ -4,7 +4,7 @@
 
 (defmethod widget-content-box ((widget <widget>))
   (let* ((padding (or (<widget>-padding widget) 0))
-         (border (or (<widget>-border-width widget) 0))
+         (border (or (<widget>-border widget) 0))
          (content-x (+ (<widget>-x widget) border padding))
          (content-y (+ (<widget>-y widget) border padding))
          (content-w (max 0 (- (<widget>-width widget) (* 2 (+ border padding)))))

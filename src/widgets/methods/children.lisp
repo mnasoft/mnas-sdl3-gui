@@ -28,16 +28,17 @@
 (defmethod children ((tb <toolbar>))
   (let ((kids (<widget-container>-children tb)))
     (if (and (null kids)
-             (slot-boundp tb 'buttons)
-             (not (null (slot-value tb 'buttons))))
+             (ignore-errors (slot-exists-p tb 'buttons))
+             (ignore-errors (slot-boundp tb 'buttons))
+             (not (null (ignore-errors (slot-value tb 'buttons)))))
           ;; Legacy: expose buttons as children
-          (slot-value tb 'buttons)
-          kids))
-        )
+          (ignore-errors (slot-value tb 'buttons))
+          kids)))
 
 (defmethod (setf children) (newlist (tb <toolbar>))
   ;; update both <widget-container>-children and legacy buttons slot for compatibility
   (setf (<widget-container>-children tb) newlist)
-  (when (slot-boundp tb 'buttons)
+  (when (and (ignore-errors (slot-exists-p tb 'buttons))
+             (ignore-errors (slot-boundp tb 'buttons)))
     (setf (slot-value tb 'buttons) newlist))
   newlist)

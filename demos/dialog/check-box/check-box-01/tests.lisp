@@ -6,6 +6,14 @@
 
 ;;;; (mnas-sdl3-gui/demos/dialog/check-box-01:check-box-01)
 
+(let* ((wdgets (mnas-sdl3-gui/widgets:widgets-for-window *window*))
+       (num 4)
+       (tgl (nth num wdgets)))
+  (setf  (mnas-sdl3-gui/widgets:<widget>-padding tgl) 3)
+  (list tgl (mnas-sdl3-gui/widgets:<widget>-padding tgl)))
+
+        (mnas-sdl3-gui/widgets:widget-min-size tgl)))
+
 
 (setf 
  (mnas-sdl3-gui/widgets:label

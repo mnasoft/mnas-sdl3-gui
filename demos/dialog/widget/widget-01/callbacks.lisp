@@ -10,7 +10,11 @@
     (format t "~a~%" (sdl3:get-error))
     (return-from callback-init :failure))
   (multiple-value-bind (ok window render)
-      (sdl3:create-window-and-renderer "Widget Controls Demo" 400 500 0)
+      (sdl3:create-window-and-renderer
+       "Widget Controls Demo"
+       +window-width+ 
+       +window-height+ 
+       0)
     (if (not ok)
         (progn
           (format t "~a~%" (sdl3:get-error))
@@ -19,7 +23,7 @@
           (setf *window* window
                 *render* render
                 *layer-manager* (mnas-sdl3-gui/window-manager:make-window-layer-manager)
-                *widgets* (create-demo-widgets)
+                *widgets* (create-widgets *window*)
                 *widget-root* (mnas-sdl3-gui/widgets:make-widget-container
                                :x 0 :y 0 :width 400 :height 500
                                :children *widgets*)

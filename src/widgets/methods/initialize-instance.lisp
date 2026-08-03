@@ -10,6 +10,21 @@
 (defmethod initialize-instance :after ((widget <toggle>) &key &allow-other-keys)
   (register-toggle-group-member widget))
 
+(defmethod initialize-instance :after ((widget <toggle>) &rest initargs)
+  (let ((width-supplied (member :width initargs))
+        (height-supplied (member :height initargs))
+        (padding-supplied (member :padding initargs)))
+    (when (and (not padding-supplied)
+               (zerop (or (<widget>-padding widget) 0)))
+      (setf (<widget>-padding widget)
+            (max 1 (floor +font-text-height+ 8))))
+    (multiple-value-bind (min-width min-height)
+        (widget-min-size widget)
+      (unless width-supplied
+        (setf (<widget>-width widget) min-width))
+      (unless height-supplied
+        (setf (<widget>-height widget) min-height)))))
+
 (defmethod initialize-instance :after ((widget <widget>) &key &allow-other-keys)
   "Auto-register WIDGET in global window->widgets registry when :window slot is provided."
   (let ((win (<widget>-window widget)))
@@ -88,6 +103,33 @@
         (setf (<widget>-width widget) min-width))
       (unless height-supplied
         (setf (<widget>-height widget) min-height)))))
+
+(defmethod initialize-instance :after ((widget <toolbar>) &rest initargs)
+  (let ((width-supplied (member :width initargs))
+        (height-supplied (member :height initargs))
+        (padding-supplied (member :padding initargs)))
+    (when (and (not padding-supplied)
+               (zerop (or (<toolbar>-padding widget) 0)))
+      (setf (<toolbar>-padding widget)
+            (max 1 (floor +font-text-height+ 8))))
+    (unless width-supplied
+      (let ((child-widths (loop for child in (children widget)
+                                collect (max 1 (or (<widget>-width child) 0)))))
+        (when child-widths
+          (setf (<widget>-width widget)
+                (+ (reduce #'+ child-widths :initial-value 0)
+                   (* 2 (or (<toolbar>-padding widget) 0))
+                   (* (max 0 (1- (length child-widths)))
+                      (or (and *widget-style*
+                               (<widget-style>-toolbar-spacing *widget-style*))
+                          0)))))))
+    (unless height-supplied
+      (let ((child-heights (loop for child in (children widget)
+                                 collect (max 1 (or (<widget>-height child) 0)))))
+        (when child-heights
+          (setf (<widget>-height widget)
+                (max 24 (+ (reduce #'max child-heights :initial-value 0)
+                           (* 2 (or (<toolbar>-padding widget) 0))))))))))
 
 (defmethod initialize-instance :after ((widget <integer-entry>) &key &allow-other-keys)
   (unless (<entry>-validate widget)

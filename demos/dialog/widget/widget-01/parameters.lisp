@@ -16,3 +16,6 @@
 (defparameter +toolbar-y+ 400.0)
 (defparameter +toolbar-width+ 300.0)
 (defparameter +toolbar-height+ 34.0)
+
+(defparameter +window-width+ 400)
+(defparameter +window-height+ 500)

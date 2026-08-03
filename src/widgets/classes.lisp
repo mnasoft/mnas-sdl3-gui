@@ -12,41 +12,49 @@
     :initarg :x
     :initform 0
     :accessor <widget>-x
+    :type integer 
     :documentation "X coordinate of widget")
    (y
     :initarg :y
     :initform 0
     :accessor <widget>-y
+    :type integer 
     :documentation "Y coordinate of widget")
    (width
     :initarg :width
     :initform 100
     :accessor <widget>-width
+    :type integer 
     :documentation "Width of widget")
    (height
     :initarg :height
     :initform 30
     :accessor <widget>-height
+    :type integer 
     :documentation "Height of widget")
    (padding
     :initarg :padding
-    :initform 0
+    :initform 2
     :accessor <widget>-padding
+    :type integer 
     :documentation "Inner padding around widget content")
    (spacing
     :initarg :spacing
     :initform 0
     :accessor <widget>-spacing
+    :type integer 
     :documentation "Inter-item spacing used by stack-like containers")
-   (border-width
+   (border
     :initarg :border-width
-    :initform 0
-    :accessor <widget>-border-width
+    :initform 2
+    :accessor <widget>-border
+    :type integer 
     :documentation "Border thickness around widget content")
    (margin
     :initarg :margin
-    :initform 0
+    :initform 4
     :accessor <widget>-margin
+    :type integer 
     :documentation "Outer margin around widget box")
    (window
     :initarg :window
@@ -63,6 +71,7 @@
     :initarg :z-order
     :initform 0
     :accessor <widget>-z-order
+    :type integer 
     :documentation "Relative drawing order; higher values are rendered above lower ones")
    (enabled
     :initarg :enabled :initform t :accessor <widget>-enabled
@@ -76,11 +85,13 @@
     :initarg :visible
     :initform t
     :accessor <widget>-visible
+    :type (or null t)
     :documentation "Whether widget is visible")
    (focusable
     :initarg :focusable
     :initform t
     :accessor <widget>-focusable
+    :type (or null t)    
     :documentation "Whether widget can receive keyboard focus.")
    (value
     :initarg :value

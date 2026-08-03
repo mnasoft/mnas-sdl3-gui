@@ -223,44 +223,6 @@
                        :offset-x (if (<button>-pressed-p widget) 1 0)
                        :offset-y (if (<button>-pressed-p widget) 1 0)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod render (renderer (widget <toggle>) (style <widget-style>))
-  (let* ((circle-radius (<widget-style>-toggle-circle-radius style))
-         (indicator-width (* 2 circle-radius))
-         (toggle-height (<widget-style>-toggle-height style))
-         (indicator-inner-radius (<widget-style>-toggle-indicator-inner-radius style))
-         (toggle-x (<widget>-x widget))
-         (toggle-y (+ (<widget>-y widget) (/ (- (<widget>-height widget) toggle-height) 2)))
-         (circle-cx (+ toggle-x circle-radius))
-         (circle-cy (+ toggle-y circle-radius))
-         (label-height (nth-value 1 (widget-text-pixel-size (<toggle>-label widget))))
-         (label-gap (nth-value 0 (widget-text-pixel-size "M")))
-         (label-x (+ toggle-x indicator-width label-gap))
-         (label-y (+ toggle-y (/ (- indicator-width label-height) 2))))
-    (fill-circle renderer
-                 circle-cx circle-cy
-                 circle-radius
-                 (<widget-style>-background-color style))
-    (stroke-circle renderer
-                   circle-cx circle-cy
-                   circle-radius
-                   (<widget-style>-border-color style))
-    (when (<toggle>-state widget)
-      (fill-circle renderer
-                     circle-cx circle-cy
-                     indicator-inner-radius
-                     (<widget-style>-text-color style)))
-    (when (<widget>-focused widget)
-      (stroke-rect-outside renderer
-                           (<widget>-x widget) (<widget>-y widget)
-                           (<widget>-width widget) (<widget>-height widget)
-                           (<widget-style>-focus-border-color style)
-                           (<widget-style>-border-width style)))
-    (render-text renderer
-                 (<toggle>-label widget)
-                 label-x label-y
-                 (<widget-style>-text-color style))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -281,11 +243,12 @@
       (fill-rect renderer (+ box-x check-mark-offset) (+ box-y check-mark-offset)
                  check-mark-size check-mark-size (<widget-style>-text-color style)))
     (when (<widget>-focused widget)
-      (stroke-rect-outside renderer
-                           (<widget>-x widget) (<widget>-y widget)
-                           (<widget>-width widget) (<widget>-height widget)
-                           (<widget-style>-focus-border-color style)
-                           (<widget-style>-border-width style)))
+      (multiple-value-bind (content-x content-y content-w content-h)
+          (widget-content-box widget)
+        (stroke-rect-outside renderer
+                             content-x content-y content-w content-h
+                             (<widget-style>-focus-border-color style)
+                             (<widget-style>-border-width style))))
     (render-text renderer (<check-box>-label widget)
                  (+ box-x box-size label-gap)
                  (+ (<widget>-y widget) padding)
@@ -901,3 +864,59 @@
         (call-next-method)
         (when (visible-p popup)
           (call-next-method)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#+nil
+(defmethod widget-min-size ((obj <toggle>))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (<toggle>-label obj))
+    (let* ((padding (<widget>-padding obj))
+           (border  (<widget>-border obj))
+           (indicator-width (nth-value 1 (widget-text-pixel-size "M")))
+           (gap indicator-width))
+      (values (+ (* 2 (+ border padding)) indicator-width gap tw)
+              (+ (* 2 (+ border padding)) th)))))
+
+
+(defmethod render (renderer (widget <toggle>) (style <widget-style>))
+  (multiple-value-bind (tw th)
+      (widget-text-pixel-size (<toggle>-label widget))
+    (let* ((padding (<widget>-padding widget))
+           (border  (<widget>-border widget))
+           (indicator-width (nth-value 1 (widget-text-pixel-size "M")))
+           (circle-radius  (floor indicator-width 2))
+           (label-gap indicator-width)
+
+
+           (indicator-inner-radius (<widget-style>-toggle-indicator-inner-radius style))
+           (toggle-x (+ (<widget>-x widget) padding border))
+           (toggle-y (+ (<widget>-y widget) padding border))
+           (circle-cx (+ toggle-x circle-radius))
+           (circle-cy (+ toggle-y circle-radius))
+           (label-x (+ toggle-x indicator-width label-gap))
+           (label-y (+ (<widget>-y widget) padding border)))
+      (fill-circle renderer
+                   circle-cx circle-cy
+                   circle-radius
+                   (<widget-style>-background-color style))
+      (stroke-circle renderer
+                     circle-cx circle-cy
+                     circle-radius
+                     (<widget-style>-border-color style))
+      (when (<toggle>-state widget)
+        (fill-circle renderer
+                     circle-cx circle-cy
+                     indicator-inner-radius
+                     (<widget-style>-text-color style)))
+      (when (<widget>-focused widget)
+        (multiple-value-bind (content-x content-y content-w content-h)
+            (widget-content-box widget)
+          (stroke-rect-outside renderer
+                               content-x content-y content-w content-h
+                               (<widget-style>-focus-border-color style)
+                               (<widget-style>-border-width style))))
+      (render-text renderer
+                   (<toggle>-label widget)
+                   label-x label-y
+                   (<widget-style>-text-color style)))))
